@@ -1,0 +1,25 @@
+(function () {
+  const ns = (window.Keiba = window.Keiba || {});
+
+  ns.HistoricalHorseRegistry.register({
+    id: "special-week",
+    name: "スペシャルウィーク",
+    displayName: "Special Week",
+    profile: {
+      baseAbility: 80,
+      peakAbility: 82,
+      note: "德比与1999年古马王道代表。"
+    },
+    races: [
+      { raceId: "kisaragi-sho", year: 1998, ability: 79, jockeyId: "take-yutaka", finish: 1 },
+      { raceId: "yayoi-sho", year: 1998, ability: 80, jockeyId: "take-yutaka", finish: 1 },
+      { raceId: "tokyo-yushun", year: 1998, ability: 82, jockeyId: "take-yutaka", finish: 1 },
+      { raceId: "kyoto-shimbun-hai", year: 1998, ability: 80, jockeyId: "take-yutaka", finish: 1 },
+      { raceId: "american-jockey-club-cup", year: 1999, ability: 81, jockeyId: "generic-local", finish: 1 },
+      { raceId: "hanshin-daishoten", year: 1999, ability: 81, jockeyId: "take-yutaka", finish: 1 },
+      { raceId: "tenno-sho-haru", year: 1999, ability: 82, jockeyId: "take-yutaka", finish: 1 },
+      { raceId: "tenno-sho-aki", year: 1999, ability: 82, jockeyId: "take-yutaka", finish: 1 },
+      { raceId: "japan-cup", year: 1999, ability: 82, jockeyId: "take-yutaka", finish: 1 }
+    ]
+  });
+})();

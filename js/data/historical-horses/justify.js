@@ -1,0 +1,19 @@
+(function () {
+  const ns = (window.Keiba = window.Keiba || {});
+
+  ns.HistoricalHorseRegistry.register({
+    id: "justify",
+    name: "Justify",
+    displayName: "Justify",
+    profile: {
+      baseAbility: 85,
+      peakAbility: 87,
+      note: "无败美国三冠马，短生涯内完成高压经典路线。"
+    },
+    races: [
+      { raceId: "kentucky-derby", year: 2018, ability: 86, jockeyId: "mike-smith", finish: 1 },
+      { raceId: "preakness-stakes", year: 2018, ability: 86, jockeyId: "mike-smith", finish: 1 },
+      { raceId: "belmont-stakes", year: 2018, ability: 87, jockeyId: "mike-smith", finish: 1 }
+    ]
+  });
+})();
