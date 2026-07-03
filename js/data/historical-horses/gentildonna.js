@@ -12,14 +12,14 @@
     },
     races: [
       { raceId: "shinzan-kinen", year: 2012, ability: 81, jockeyId: "christophe-lemaire", finish: 1, trackCondition: "良" },
-      { raceId: "oka-sho", year: 2012, ability: 82, jockeyId: "generic-local", finish: 1 },
-      { raceId: "yushun-himba", year: 2012, ability: 83, jockeyId: "generic-local", finish: 1 },
-      { raceId: "rose-stakes", year: 2012, ability: 82, jockeyId: "generic-local", finish: 1, trackCondition: "良" },
-      { raceId: "shuka-sho", year: 2012, ability: 83, jockeyId: "generic-local", finish: 1 },
-      { raceId: "japan-cup", year: 2012, ability: 84, jockeyId: "generic-local", finish: 1 },
+      { raceId: "oka-sho", year: 2012, ability: 82, jockeyId: "yasunari-iwata", finish: 1 },
+      { raceId: "yushun-himba", year: 2012, ability: 83, jockeyId: "yuga-kawada", finish: 1 },
+      { raceId: "rose-stakes", year: 2012, ability: 82, jockeyId: "yasunari-iwata", finish: 1, trackCondition: "良" },
+      { raceId: "shuka-sho", year: 2012, ability: 83, jockeyId: "yasunari-iwata", finish: 1 },
+      { raceId: "japan-cup", year: 2012, ability: 84, jockeyId: "yasunari-iwata", finish: 1 },
       { raceId: "japan-cup", year: 2013, ability: 84, jockeyId: "ryan-moore", finish: 1 },
       { raceId: "dubai-sheema-classic", year: 2014, ability: 84, jockeyId: "ryan-moore", finish: 1 },
-      { raceId: "arima-kinen", year: 2014, ability: 84, jockeyId: "generic-local", finish: 1 }
+      { raceId: "arima-kinen", year: 2014, ability: 84, jockeyId: "keita-tosaki", finish: 1 }
     ]
   });
 })();

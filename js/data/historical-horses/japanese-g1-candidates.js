@@ -64,12 +64,12 @@
         note: "高松宫纪念连霸，短途至一四路线长年保持一线水准。"
       },
       races: [
-        { raceId: "swan-stakes", year: 2009, ability: 78, jockeyId: "generic-local", finish: 1 },
-        { raceId: "hanshin-cup", year: 2009, ability: 78, jockeyId: "generic-local", finish: 1 },
-        { raceId: "ocean-stakes", year: 2010, ability: 78, jockeyId: "generic-local", finish: 1 },
-        { raceId: "takamatsunomiya-kinen", year: 2010, ability: 80, jockeyId: "generic-local", finish: 1 },
-        { raceId: "hanshin-cup", year: 2010, ability: 79, jockeyId: "generic-local", finish: 1 },
-        { raceId: "takamatsunomiya-kinen", year: 2011, ability: 80, jockeyId: "generic-local", finish: 1 }
+        { raceId: "swan-stakes", year: 2009, ability: 78, jockeyId: "christophe-soumillon", finish: 1 },
+        { raceId: "hanshin-cup", year: 2009, ability: 78, jockeyId: "mirco-demuro", finish: 1 },
+        { raceId: "ocean-stakes", year: 2010, ability: 78, jockeyId: "hirofumi-shii", finish: 1 },
+        { raceId: "takamatsunomiya-kinen", year: 2010, ability: 80, jockeyId: "hirofumi-shii", finish: 1 },
+        { raceId: "hanshin-cup", year: 2010, ability: 79, jockeyId: "christophe-soumillon", finish: 1 },
+        { raceId: "takamatsunomiya-kinen", year: 2011, ability: 80, jockeyId: "umberto-rispoli", finish: 1 }
       ]
     },
     {
@@ -82,9 +82,9 @@
         note: "1996年春秋短途G1连胜，早期日本短途雌马名将。"
       },
       races: [
-        { raceId: "silk-road-stakes", year: 1996, ability: 77, jockeyId: "generic-local", finish: 1 },
-        { raceId: "takamatsunomiya-kinen", year: 1996, ability: 79, jockeyId: "generic-local", finish: 1 },
-        { raceId: "sprinters-stakes", year: 1996, ability: 79, jockeyId: "generic-local", finish: 1 }
+        { raceId: "silk-road-stakes", year: 1996, ability: 77, jockeyId: "tabara-seiki", finish: 1 },
+        { raceId: "takamatsunomiya-kinen", year: 1996, ability: 79, jockeyId: "tabara-seiki", finish: 1 },
+        { raceId: "sprinters-stakes", year: 1996, ability: 79, jockeyId: "tabara-seiki", finish: 1 }
       ]
     },
     {
@@ -97,7 +97,7 @@
         note: "良血万能型，最终在高松宫纪念完成G1制霸。"
       },
       races: [
-        { raceId: "tokyo-sports-hai", year: 1997, ability: 76, jockeyId: "generic-local", finish: 1 },
+        { raceId: "tokyo-sports-hai", year: 1997, ability: 76, jockeyId: "yuichi-fukunaga", finish: 1 },
         { raceId: "takamatsunomiya-kinen", year: 2000, ability: 78, jockeyId: "yoshitomi-shibata", finish: 1 }
       ]
     },
@@ -427,8 +427,8 @@
         note: "无败两岁王者，短生涯但素质评价很高。"
       },
       races: [
-        { raceId: "asahi-hai-fs", year: 1994, ability: 80, jockeyId: "generic-local", finish: 1 },
-        { raceId: "yayoi-sho", year: 1995, ability: 79, jockeyId: "generic-local", finish: 1 }
+        { raceId: "asahi-hai-fs", year: 1994, ability: 80, jockeyId: "koichi-tsunoda", finish: 1 },
+        { raceId: "yayoi-sho", year: 1995, ability: 79, jockeyId: "koichi-tsunoda", finish: 1 }
       ]
     },
     {

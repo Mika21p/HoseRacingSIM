@@ -11,7 +11,7 @@
       note: "长距离与春天皇赏代表。"
     },
     races: [
-      { raceId: "kikka-sho", year: 1990, ability: 79, jockeyId: "generic-local", finish: 1 },
+      { raceId: "kikka-sho", year: 1990, ability: 79, jockeyId: "koichi-uchida", finish: 1 },
       { raceId: "hanshin-daishoten", year: 1991, ability: 80, jockeyId: "take-yutaka", finish: 1 },
       { raceId: "tenno-sho-haru", year: 1991, ability: 81, jockeyId: "take-yutaka", finish: 1 },
       { raceId: "kyoto-daishoten", year: 1991, ability: 80, jockeyId: "take-yutaka", finish: 1 },

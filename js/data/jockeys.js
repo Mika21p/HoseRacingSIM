@@ -6,73 +6,82 @@
       id: "take-yutaka",
       name: "武豊",
       periods: [
-        { from: 1987, to: 1994, ability: 82 },
-        { from: 1995, to: 2010, ability: 90 },
-        { from: 2011, to: 2026, ability: 84 }
+        { from: 1987, to: 1994, ability: 70 },
+        { from: 1995, to: 2010, ability: 80 },
+        { from: 2011, to: 2026, ability: 70 }
       ]
     },
     {
       id: "christophe-lemaire",
       name: "C. Lemaire",
       periods: [
-        { from: 2002, to: 2014, ability: 82 },
-        { from: 2015, to: 2026, ability: 90 }
+        { from: 2002, to: 2014, ability: 70 },
+        { from: 2015, to: 2026, ability: 80 }
       ]
     },
     {
       id: "mirco-demuro",
       name: "M. Demuro",
       periods: [
-        { from: 2003, to: 2014, ability: 80 },
-        { from: 2015, to: 2026, ability: 85 }
+        { from: 2003, to: 2014, ability: 70 },
+        { from: 2015, to: 2018, ability: 80 },
+        { from: 2019, to: 2026, ability: 70 }
       ]
     },
     {
       id: "kenichi-ikezoe",
       name: "池添謙一",
       periods: [
-        { from: 1998, to: 2008, ability: 76 },
-        { from: 2009, to: 2026, ability: 83 }
+        { from: 1998, to: 2008, ability: 50 },
+        { from: 2009, to: 2026, ability: 60 }
       ]
     },
     {
       id: "yuichi-fukunaga",
       name: "福永祐一",
       periods: [
-        { from: 1996, to: 2012, ability: 78 },
-        { from: 2013, to: 2023, ability: 86 }
+        { from: 1996, to: 2012, ability: 60 },
+        { from: 2013, to: 2023, ability: 70 }
       ]
     },
     {
       id: "keita-tosaki",
       name: "戸崎圭太",
       periods: [
-        { from: 2005, to: 2012, ability: 74 },
-        { from: 2013, to: 2026, ability: 82 }
+        { from: 2005, to: 2012, ability: 50 },
+        { from: 2013, to: 2026, ability: 70 }
       ]
     },
     {
       id: "yuga-kawada",
       name: "川田将雅",
       periods: [
-        { from: 2004, to: 2013, ability: 76 },
-        { from: 2014, to: 2026, ability: 88 }
+        { from: 2004, to: 2013, ability: 60 },
+        { from: 2014, to: 2026, ability: 70 }
+      ]
+    },
+    {
+      id: "norihiro-yokoyama",
+      name: "横山典弘",
+      periods: [
+        { from: 1986, to: 2008, ability: 70 },
+        { from: 2009, to: 2026, ability: 60 }
       ]
     },
     {
       id: "kazuo-yokoyama",
-      name: "横山典弘",
+      name: "横山和生",
       periods: [
-        { from: 1986, to: 2008, ability: 84 },
-        { from: 2009, to: 2026, ability: 80 }
+        { from: 2011, to: 2021, ability: 50 },
+        { from: 2022, to: 2026, ability: 60 }
       ]
     },
     {
       id: "tetsuzo-wada",
       name: "和田竜二",
       periods: [
-        { from: 1996, to: 2010, ability: 78 },
-        { from: 2011, to: 2026, ability: 74 }
+        { from: 1996, to: 2010, ability: 50 },
+        { from: 2011, to: 2026, ability: 50 }
       ]
     },
     {
@@ -101,23 +110,220 @@
       id: "takeshi-yokoyama",
       name: "横山武史",
       periods: [
-        { from: 2017, to: 2026, ability: 82 }
+        { from: 2017, to: 2026, ability: 60 }
       ]
     },
     {
       id: "ryusei-sakai",
       name: "坂井瑠星",
       periods: [
-        { from: 2016, to: 2020, ability: 74 },
-        { from: 2021, to: 2026, ability: 82 }
+        { from: 2016, to: 2020, ability: 50 },
+        { from: 2021, to: 2026, ability: 60 }
       ]
     },
     {
       id: "kohei-matsuyama",
       name: "松山弘平",
       periods: [
-        { from: 2009, to: 2019, ability: 78 },
-        { from: 2020, to: 2026, ability: 84 }
+        { from: 2009, to: 2019, ability: 50 },
+        { from: 2020, to: 2026, ability: 60 }
+      ]
+    },
+    {
+      id: "yasunari-iwata",
+      name: "岩田康誠",
+      periods: [
+        { from: 1991, to: 2005, ability: 60 },
+        { from: 2006, to: 2015, ability: 70 },
+        { from: 2016, to: 2020, ability: 60 },
+        { from: 2021, to: 2026, ability: 50 }
+      ]
+    },
+    {
+      id: "hideaki-miyuki",
+      name: "幸英明",
+      periods: [
+        { from: 1994, to: 1999, ability: 50 },
+        { from: 2000, to: 2026, ability: 60 }
+      ]
+    },
+    {
+      id: "hitoshi-matoba",
+      name: "的場均",
+      periods: [
+        { from: 1975, to: 1983, ability: 60 },
+        { from: 1984, to: 1999, ability: 70 },
+        { from: 2000, to: 2001, ability: 50 }
+      ]
+    },
+    {
+      id: "hiroyuki-uchida",
+      name: "内田博幸",
+      periods: [
+        { from: 1989, to: 2007, ability: 60 },
+        { from: 2008, to: 2013, ability: 70 },
+        { from: 2014, to: 2018, ability: 60 },
+        { from: 2019, to: 2026, ability: 50 }
+      ]
+    },
+    {
+      id: "sueo-masuzawa",
+      name: "増沢末夫",
+      periods: [
+        { from: 1975, to: 1991, ability: 70 }
+      ]
+    },
+    {
+      id: "suguru-hamanaka",
+      name: "浜中俊",
+      periods: [
+        { from: 2008, to: 2010, ability: 60 },
+        { from: 2011, to: 2015, ability: 70 },
+        { from: 2016, to: 2018, ability: 60 },
+        { from: 2019, to: 2026, ability: 50 }
+      ]
+    },
+    {
+      id: "mirai-iwata",
+      name: "岩田望来",
+      periods: [
+        { from: 2019, to: 2026, ability: 60 }
+      ]
+    },
+    {
+      id: "mikio-matsunaga",
+      name: "松永幹夫",
+      periods: [
+        { from: 1986, to: 1987, ability: 50 },
+        { from: 1988, to: 2001, ability: 70 },
+        { from: 2002, to: 2005, ability: 60 }
+      ]
+    },
+    {
+      id: "hiroki-goto",
+      name: "後藤浩輝",
+      periods: [
+        { from: 1995, to: 1999, ability: 50 },
+        { from: 2000, to: 2010, ability: 60 },
+        { from: 2011, to: 2014, ability: 50 }
+      ]
+    },
+    {
+      id: "akihiro-iida",
+      name: "飯田明弘",
+      periods: [
+        { from: 1975, to: 1978, ability: 60 },
+        { from: 1979, to: 1986, ability: 50 }
+      ]
+    },
+    {
+      id: "hiroshi-nakajima",
+      name: "中島啓之",
+      periods: [
+        { from: 1975, to: 1980, ability: 60 },
+        { from: 1981, to: 1985, ability: 50 }
+      ]
+    },
+    {
+      id: "eiji-nakadate",
+      name: "中舘英二",
+      periods: [
+        { from: 1985, to: 1992, ability: 50 },
+        { from: 1993, to: 2009, ability: 60 },
+        { from: 2010, to: 2012, ability: 50 }
+      ]
+    },
+    {
+      id: "masami-matsuoka",
+      name: "松岡正海",
+      periods: [
+        { from: 2004, to: 2007, ability: 50 },
+        { from: 2008, to: 2012, ability: 60 },
+        { from: 2013, to: 2026, ability: 50 }
+      ]
+    },
+    {
+      id: "katsuharu-tanaka",
+      name: "田中勝春",
+      periods: [
+        { from: 1990, to: 1990, ability: 50 },
+        { from: 1991, to: 2007, ability: 60 },
+        { from: 2008, to: 2018, ability: 50 }
+      ]
+    },
+    {
+      id: "hiroshi-kitamura",
+      name: "北村宏司",
+      periods: [
+        { from: 1999, to: 2002, ability: 50 },
+        { from: 2003, to: 2015, ability: 60 },
+        { from: 2016, to: 2023, ability: 50 }
+      ]
+    },
+    {
+      id: "hironobu-tanabe",
+      name: "田辺裕信",
+      periods: [
+        { from: 2002, to: 2010, ability: 50 },
+        { from: 2011, to: 2023, ability: 60 },
+        { from: 2024, to: 2026, ability: 50 }
+      ]
+    },
+    {
+      id: "shoichi-osaki",
+      name: "大崎昭一",
+      periods: [
+        { from: 1975, to: 1977, ability: 60 },
+        { from: 1978, to: 1994, ability: 50 }
+      ]
+    },
+    {
+      id: "isao-shimada",
+      name: "嶋田功",
+      periods: [
+        { from: 1975, to: 1982, ability: 60 },
+        { from: 1983, to: 1987, ability: 50 }
+      ]
+    },
+    {
+      id: "ichizo-iwamoto",
+      name: "岩元市三",
+      periods: [
+        { from: 1976, to: 1982, ability: 50 },
+        { from: 1983, to: 1987, ability: 60 },
+        { from: 1988, to: 1988, ability: 50 }
+      ]
+    },
+    {
+      id: "kunihiko-take",
+      name: "武邦彦",
+      periods: [
+        { from: 1975, to: 1980, ability: 60 },
+        { from: 1981, to: 1983, ability: 50 }
+      ]
+    },
+    {
+      id: "takayuki-yasuda",
+      name: "安田隆行",
+      periods: [
+        { from: 1972, to: 1987, ability: 50 },
+        { from: 1988, to: 1993, ability: 60 }
+      ]
+    },
+    {
+      id: "koichi-tsunoda",
+      name: "角田晃一",
+      periods: [
+        { from: 1989, to: 1996, ability: 60 },
+        { from: 1997, to: 2010, ability: 50 }
+      ]
+    },
+    {
+      id: "koichi-uchida",
+      name: "内田浩一",
+      periods: [
+        { from: 1988, to: 1991, ability: 50 },
+        { from: 1992, to: 2004, ability: 40 }
       ]
     },
     {
@@ -128,83 +334,91 @@
       ]
     },
     {
+      id: "umberto-rispoli",
+      name: "U. Rispoli",
+      periods: [
+        { from: 2005, to: 2008, ability: 80 },
+        { from: 2009, to: 2026, ability: 90 }
+      ]
+    },
+    {
       id: "okabe-yukio",
       name: "岡部幸雄",
       periods: [
-        { from: 1967, to: 1983, ability: 82 },
-        { from: 1984, to: 1998, ability: 88 },
-        { from: 1999, to: 2005, ability: 82 }
+        { from: 1967, to: 1983, ability: 70 },
+        { from: 1984, to: 1998, ability: 70 },
+        { from: 1999, to: 2005, ability: 60 }
       ]
     },
     {
       id: "shibata-masato",
       name: "柴田政人",
       periods: [
-        { from: 1967, to: 1979, ability: 78 },
-        { from: 1980, to: 1995, ability: 85 }
+        { from: 1967, to: 1979, ability: 60 },
+        { from: 1980, to: 1995, ability: 70 }
       ]
     },
     {
       id: "kawachi-hiroshi",
       name: "河内洋",
       periods: [
-        { from: 1974, to: 1990, ability: 80 },
-        { from: 1991, to: 2003, ability: 84 }
+        { from: 1974, to: 1990, ability: 70 },
+        { from: 1991, to: 2003, ability: 60 }
       ]
     },
     {
       id: "gohara-hiroyuki",
       name: "郷原洋行",
       periods: [
-        { from: 1962, to: 1979, ability: 83 },
-        { from: 1980, to: 1993, ability: 78 }
+        { from: 1962, to: 1979, ability: 70 },
+        { from: 1980, to: 1993, ability: 50 }
       ]
     },
     {
       id: "nohira-yuji",
       name: "野平祐二",
       periods: [
-        { from: 1944, to: 1960, ability: 84 },
-        { from: 1961, to: 1975, ability: 80 }
+        { from: 1944, to: 1960, ability: 70 },
+        { from: 1961, to: 1975, ability: 60 }
       ]
     },
     {
       id: "yasuda-takayoshi",
       name: "保田隆芳",
       periods: [
-        { from: 1936, to: 1956, ability: 85 },
-        { from: 1957, to: 1970, ability: 80 }
+        { from: 1936, to: 1956, ability: 50 },
+        { from: 1957, to: 1970, ability: 70 }
       ]
     },
     {
       id: "fukunaga-yoichi",
       name: "福永洋一",
       periods: [
-        { from: 1968, to: 1979, ability: 88 }
+        { from: 1968, to: 1979, ability: 70 }
       ]
     },
     {
       id: "kaga-takemi",
       name: "加賀武見",
       periods: [
-        { from: 1960, to: 1979, ability: 84 },
-        { from: 1980, to: 1988, ability: 78 }
+        { from: 1960, to: 1979, ability: 70 },
+        { from: 1980, to: 1988, ability: 50 }
       ]
     },
     {
       id: "tabara-seiki",
       name: "田原成貴",
       periods: [
-        { from: 1978, to: 1992, ability: 80 },
-        { from: 1993, to: 1998, ability: 86 }
+        { from: 1978, to: 1992, ability: 70 },
+        { from: 1993, to: 1998, ability: 50 }
       ]
     },
     {
       id: "minai-katsumi",
       name: "南井克巳",
       periods: [
-        { from: 1979, to: 1990, ability: 80 },
-        { from: 1991, to: 1999, ability: 85 }
+        { from: 1979, to: 1990, ability: 60 },
+        { from: 1991, to: 1999, ability: 70 }
       ]
     },
     {
@@ -831,81 +1045,81 @@
       id: "katsumi-ando",
       name: "安藤勝己",
       periods: [
-        { from: 1976, to: 1994, ability: 80 },
-        { from: 1995, to: 2013, ability: 87 }
+        { from: 1976, to: 1994, ability: 60 },
+        { from: 1995, to: 2013, ability: 70 }
       ]
     },
     {
       id: "hirofumi-shii",
       name: "四位洋文",
       periods: [
-        { from: 1991, to: 2000, ability: 80 },
-        { from: 2001, to: 2020, ability: 83 }
+        { from: 1991, to: 2000, ability: 60 },
+        { from: 2001, to: 2020, ability: 60 }
       ]
     },
     {
       id: "masayoshi-ebina",
       name: "蛯名正義",
       periods: [
-        { from: 1987, to: 1997, ability: 80 },
-        { from: 1998, to: 2015, ability: 85 },
-        { from: 2016, to: 2021, ability: 81 }
+        { from: 1987, to: 1997, ability: 60 },
+        { from: 1998, to: 2015, ability: 70 },
+        { from: 2016, to: 2021, ability: 50 }
       ]
     },
     {
       id: "yoshitomi-shibata",
       name: "柴田善臣",
       periods: [
-        { from: 1985, to: 1998, ability: 82 },
-        { from: 1999, to: 2010, ability: 84 },
-        { from: 2011, to: 2026, ability: 78 }
+        { from: 1985, to: 1998, ability: 60 },
+        { from: 1999, to: 2010, ability: 70 },
+        { from: 2011, to: 2026, ability: 50 }
       ]
     },
     {
       id: "shu-ishibashi",
       name: "石橋脩",
       periods: [
-        { from: 2003, to: 2016, ability: 76 },
-        { from: 2017, to: 2026, ability: 80 }
+        { from: 2003, to: 2016, ability: 50 },
+        { from: 2017, to: 2026, ability: 50 }
       ]
     },
     {
       id: "yusuke-fujioka",
       name: "藤岡佑介",
       periods: [
-        { from: 2004, to: 2015, ability: 76 },
-        { from: 2016, to: 2026, ability: 80 }
+        { from: 2004, to: 2015, ability: 50 },
+        { from: 2016, to: 2026, ability: 50 }
       ]
     },
     {
       id: "yuichi-kitamura",
       name: "北村友一",
       periods: [
-        { from: 2006, to: 2018, ability: 78 },
-        { from: 2019, to: 2026, ability: 82 }
+        { from: 2006, to: 2018, ability: 50 },
+        { from: 2019, to: 2026, ability: 60 }
       ]
     },
     {
       id: "futoshi-kojima",
       name: "小島太",
       periods: [
-        { from: 1970, to: 1988, ability: 80 },
-        { from: 1989, to: 1996, ability: 82 }
+        { from: 1970, to: 1988, ability: 60 },
+        { from: 1989, to: 1996, ability: 50 }
       ]
     },
     {
       id: "koshiro-take",
       name: "武幸四郎",
       periods: [
-        { from: 1997, to: 2017, ability: 78 }
+        { from: 1997, to: 2017, ability: 50 }
       ]
     },
     {
       id: "shinji-fujita",
       name: "藤田伸二",
       periods: [
-        { from: 1991, to: 2001, ability: 80 },
-        { from: 2002, to: 2015, ability: 83 }
+        { from: 1991, to: 2001, ability: 60 },
+        { from: 2002, to: 2015, ability: 60 }
       ]
     },
     {
@@ -1047,7 +1261,7 @@
       name: "默认骑手",
       mainSelectable: false,
       periods: [
-        { from: 1980, to: 2035, ability: 70 }
+        { from: 1980, to: 2035, ability: 40 }
       ]
     }
   ];
@@ -1069,6 +1283,7 @@
     "yuichi-fukunaga": ["japan"],
     "keita-tosaki": ["japan"],
     "yuga-kawada": ["japan"],
+    "norihiro-yokoyama": ["japan"],
     "kazuo-yokoyama": ["japan"],
     "tetsuzo-wada": ["japan"],
     "olivier-peslier": ["europe"],
@@ -1077,7 +1292,31 @@
     "takeshi-yokoyama": ["japan"],
     "ryusei-sakai": ["japan"],
     "kohei-matsuyama": ["japan"],
+    "yasunari-iwata": ["japan"],
+    "hideaki-miyuki": ["japan"],
+    "hitoshi-matoba": ["japan"],
+    "hiroyuki-uchida": ["japan"],
+    "sueo-masuzawa": ["japan"],
+    "suguru-hamanaka": ["japan"],
+    "mirai-iwata": ["japan"],
+    "mikio-matsunaga": ["japan"],
+    "hiroki-goto": ["japan"],
+    "akihiro-iida": ["japan"],
+    "hiroshi-nakajima": ["japan"],
+    "eiji-nakadate": ["japan"],
+    "masami-matsuoka": ["japan"],
+    "katsuharu-tanaka": ["japan"],
+    "hiroshi-kitamura": ["japan"],
+    "hironobu-tanabe": ["japan"],
+    "shoichi-osaki": ["japan"],
+    "isao-shimada": ["japan"],
+    "ichizo-iwamoto": ["japan"],
+    "kunihiko-take": ["japan"],
+    "takayuki-yasuda": ["japan"],
+    "koichi-tsunoda": ["japan"],
+    "koichi-uchida": ["japan"],
     "joao-moreira": ["hongkong"],
+    "umberto-rispoli": ["europe", "usa"],
     "okabe-yukio": ["japan"],
     "shibata-masato": ["japan"],
     "kawachi-hiroshi": ["japan"],

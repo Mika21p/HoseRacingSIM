@@ -15,7 +15,7 @@
       { raceId: "yayoi-sho", year: 1998, ability: 81, jockeyId: "take-yutaka", finish: 1 },
       { raceId: "tokyo-yushun", year: 1998, ability: 83, jockeyId: "take-yutaka", finish: 1 },
       { raceId: "kyoto-shimbun-hai", year: 1998, ability: 81, jockeyId: "take-yutaka", finish: 1 },
-      { raceId: "american-jockey-club-cup", year: 1999, ability: 82, jockeyId: "generic-local", finish: 1 },
+      { raceId: "american-jockey-club-cup", year: 1999, ability: 82, jockeyId: "olivier-peslier", finish: 1 },
       { raceId: "hanshin-daishoten", year: 1999, ability: 82, jockeyId: "take-yutaka", finish: 1 },
       { raceId: "tenno-sho-haru", year: 1999, ability: 83, jockeyId: "take-yutaka", finish: 1 },
       { raceId: "tenno-sho-aki", year: 1999, ability: 83, jockeyId: "take-yutaka", finish: 1 },
