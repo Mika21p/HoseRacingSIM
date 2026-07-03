@@ -6,14 +6,15 @@
     name: "Affirmed",
     displayName: "Affirmed",
     profile: {
-      baseAbility: 86,
-      peakAbility: 88,
+      baseAbility: 93,
+      peakAbility: 95,
       note: "美国三冠马，与Alydar的三冠对决构成经典世代标尺。"
     },
     races: [
-      { raceId: "kentucky-derby", year: 1978, ability: 87, jockeyId: "steve-cauthen", finish: 1 },
-      { raceId: "preakness-stakes", year: 1978, ability: 88, jockeyId: "steve-cauthen", finish: 1 },
-      { raceId: "belmont-stakes", year: 1978, ability: 88, jockeyId: "steve-cauthen", finish: 1 }
+      { raceId: "kentucky-derby", year: 1978, ability: 94, jockeyId: "steve-cauthen", finish: 1 },
+      { raceId: "preakness-stakes", year: 1978, ability: 95, jockeyId: "steve-cauthen", finish: 1 },
+      { raceId: "belmont-stakes", year: 1978, ability: 95, jockeyId: "steve-cauthen", finish: 1 },
+      { raceId: "santa-anita-handicap", year: 1979, ability: 95, jockeyId: "laffit-pincay-jr", finish: 1 }
     ]
   });
 })();

@@ -70,10 +70,18 @@
     return horse.gender === race.sexRestriction;
   }
 
-  function resolveNextRaceDate(career, race) {
+  function minAvailableRaceIndex(career) {
     const currentIndex = career.currentTime ? career.currentTime.index : startTime().index;
     const raceCooldownIndex = career.lastRaceIndex == null ? currentIndex : career.lastRaceIndex + 1;
-    const minIndex = Math.max(currentIndex, raceCooldownIndex);
+    return Math.max(currentIndex, raceCooldownIndex);
+  }
+
+  function isReachableSchedule(career, schedule) {
+    return !!schedule && schedule.index >= minAvailableRaceIndex(career);
+  }
+
+  function resolveNextRaceDate(career, race) {
+    const minIndex = minAvailableRaceIndex(career);
     const start = fromIndex(minIndex);
     const startAge = start.age;
     const raceMonth = race.month || 1;
@@ -105,7 +113,8 @@
         return a.race.name.localeCompare(b.race.name, "zh-CN");
       });
     const progressed = ns.RaceProgression ? ns.RaceProgression.filterPlans(career, plans) : plans;
-    return ns.DebutLockRules ? ns.DebutLockRules.filterPlans(career, progressed) : progressed;
+    const locked = ns.DebutLockRules ? ns.DebutLockRules.filterPlans(career, progressed) : progressed;
+    return locked.filter((plan) => isReachableSchedule(career, plan.schedule));
   }
 
   ns.TimeRules = {
@@ -124,6 +133,8 @@
     turnGap,
     isAgeEligible,
     isSexEligible,
+    minAvailableRaceIndex,
+    isReachableSchedule,
     resolveNextRaceDate,
     getAvailableRacePlans
   };

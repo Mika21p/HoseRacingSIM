@@ -22,12 +22,22 @@
   ];
 
   function refresh() {
+    clearExpiredRegistration();
     ns.UI.renderHorse(document.getElementById("horsePanel"), state.career);
     ns.UI.renderRaceSelector(document.getElementById("racePanel"), state.career, state.filters);
+    ns.UI.renderLastRaceComment(document.getElementById("feedbackPanel"), state.career);
     ns.UI.renderHistory(document.getElementById("historyPanel"), state.career, state.retiredSummary, {
       expanded: state.historyExpanded
     });
     bindDynamicEvents();
+  }
+
+  function clearExpiredRegistration() {
+    if (!state.career || !state.career.scheduledRace || !state.career.currentTime) return false;
+    const schedule = state.career.scheduledRace.schedule;
+    if (!schedule || schedule.index >= state.career.currentTime.index) return false;
+    state.career.scheduledRace = null;
+    return true;
   }
 
   function generate() {
@@ -162,6 +172,7 @@
     if (ns.CareerRules.isResting(state.career)) return;
     const plan = selectedRacePlan();
     if (!plan) return;
+    if (!ns.TimeRules.isReachableSchedule(state.career, plan.schedule)) return;
     const selectedRace = plan.race;
     const schedule = plan.schedule;
     if (!shouldConfirmLongGap(schedule)) return;
@@ -174,6 +185,10 @@
     if (!state.career || state.career.retired || !state.career.scheduledRace) return false;
     const payload = state.career.scheduledRace;
     if (state.career.currentTime.index < payload.schedule.index) return false;
+    if (state.career.currentTime.index > payload.schedule.index) {
+      state.career.scheduledRace = null;
+      return false;
+    }
     completeRace(payload, state.career.mainJockeyId);
     return true;
   }
@@ -248,6 +263,8 @@
   function bindSetupEvents() {
     const helpToggleBtn = document.getElementById("helpToggleBtn");
     const helpPanel = document.getElementById("helpPanel");
+    const trainerHelpToggleBtn = document.getElementById("trainerHelpToggleBtn");
+    const trainerHelpPanel = document.getElementById("trainerHelpPanel");
     const debugModeToggle = document.getElementById("debugModeToggle");
     const debugPanel = document.getElementById("debugPanel");
     const debugStrength = document.getElementById("debugStrength");
@@ -258,6 +275,13 @@
         helpPanel.hidden = !shouldShow;
         helpToggleBtn.textContent = shouldShow ? "收起帮助" : "属性帮助";
         helpToggleBtn.setAttribute("aria-expanded", shouldShow ? "true" : "false");
+      });
+    }
+    if (trainerHelpToggleBtn && trainerHelpPanel) {
+      trainerHelpToggleBtn.addEventListener("click", () => {
+        const shouldShow = trainerHelpPanel.hidden;
+        trainerHelpPanel.hidden = !shouldShow;
+        trainerHelpToggleBtn.setAttribute("aria-expanded", shouldShow ? "true" : "false");
       });
     }
     if (debugModeToggle && debugPanel) {

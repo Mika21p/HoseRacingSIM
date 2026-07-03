@@ -6,19 +6,19 @@
     name: "ウオッカ",
     displayName: "Vodka",
     profile: {
-      baseAbility: 82,
-      peakAbility: 84,
+      baseAbility: 81,
+      peakAbility: 83,
       note: "牝马德比马，英里与东京中距离顶级表现。"
     },
     races: [
-      { raceId: "hanshin-juvenile-fillies", year: 2006, ability: 80, jockeyId: "generic-local", finish: 1 },
-      { raceId: "tulip-sho", year: 2007, ability: 81, jockeyId: "generic-local", finish: 1 },
-      { raceId: "tokyo-yushun", year: 2007, ability: 84, jockeyId: "generic-local", finish: 1 },
-      { raceId: "yasuda-kinen", year: 2008, ability: 84, jockeyId: "take-yutaka", finish: 1 },
-      { raceId: "tenno-sho-aki", year: 2008, ability: 84, jockeyId: "take-yutaka", finish: 1 },
-      { raceId: "victoria-mile", year: 2009, ability: 83, jockeyId: "take-yutaka", finish: 1 },
-      { raceId: "yasuda-kinen", year: 2009, ability: 84, jockeyId: "take-yutaka", finish: 1 },
-      { raceId: "japan-cup", year: 2009, ability: 84, jockeyId: "christophe-lemaire", finish: 1 }
+      { raceId: "hanshin-juvenile-fillies", year: 2006, ability: 79, jockeyId: "generic-local", finish: 1 },
+      { raceId: "tulip-sho", year: 2007, ability: 80, jockeyId: "generic-local", finish: 1 },
+      { raceId: "tokyo-yushun", year: 2007, ability: 83, jockeyId: "generic-local", finish: 1 },
+      { raceId: "yasuda-kinen", year: 2008, ability: 83, jockeyId: "take-yutaka", finish: 1 },
+      { raceId: "tenno-sho-aki", year: 2008, ability: 83, jockeyId: "take-yutaka", finish: 1 },
+      { raceId: "victoria-mile", year: 2009, ability: 82, jockeyId: "take-yutaka", finish: 1 },
+      { raceId: "yasuda-kinen", year: 2009, ability: 83, jockeyId: "take-yutaka", finish: 1 },
+      { raceId: "japan-cup", year: 2009, ability: 83, jockeyId: "christophe-lemaire", finish: 1 }
     ]
   });
 })();

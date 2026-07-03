@@ -162,7 +162,8 @@ h2 {
   gap: 12px;
 }
 
-label {
+label,
+.field-block {
   display: grid;
   gap: 6px;
   color: #b7c2d6;
@@ -215,6 +216,21 @@ button.secondary {
   flex: 0 0 auto;
 }
 
+.field-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.icon-help-button {
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  border-radius: 999px;
+  line-height: 1;
+}
+
 .help-panel {
   border: 1px solid #30394e;
   border-radius: 8px;
@@ -229,6 +245,14 @@ button.secondary {
 .help-content {
   display: grid;
   gap: 18px;
+}
+
+.trainer-help-panel {
+  margin-top: -6px;
+}
+
+.trainer-help-content {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
 }
 
 .help-section {
@@ -386,9 +410,67 @@ button.secondary {
   margin: 6px 0 0;
 }
 
+.race-panel-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.current-time-block {
+  min-width: 172px;
+  border: 1px solid #dd805f;
+  border-radius: 8px;
+  background: #2b170d;
+  box-shadow: 0 0 0 1px rgba(255, 159, 128, 0.18), 0 10px 28px rgba(230, 95, 47, 0.12);
+  padding: 12px 14px;
+  text-align: right;
+}
+
+.current-time-block span {
+  display: block;
+  margin-bottom: 4px;
+  color: #ffbf9f;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.current-time-block strong {
+  color: #fff4d6;
+  font-size: 26px;
+  line-height: 1.15;
+}
+
+.feedback-panel[hidden] {
+  display: none;
+}
+
+.post-race-comment-card {
+  border: 1px solid #6bd3c2;
+  border-left-width: 5px;
+  border-radius: 8px;
+  background: #10211f;
+  padding: 15px 16px;
+}
+
+.post-race-comment-card span {
+  display: block;
+  margin-bottom: 8px;
+  color: #9ee7dc;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.post-race-comment-card p {
+  margin: 0;
+  color: #e4f7f3;
+  line-height: 1.75;
+}
+
 .trainer-card-grid {
   display: grid;
-  grid-template-columns: 1.2fr repeat(2, minmax(0, 1fr));
+  grid-template-columns: 1.2fr repeat(4, minmax(0, 1fr));
   gap: 12px;
   margin-top: 12px;
 }
@@ -443,23 +525,6 @@ button.secondary {
 .trainer-card-trainer {
   border-color: #6bd3c2;
   background: #10211f;
-}
-
-.trainer-card-time {
-  border-color: #dd805f;
-  background: #2b170d;
-  box-shadow: 0 0 0 1px rgba(255, 159, 128, 0.18), 0 10px 28px rgba(230, 95, 47, 0.12);
-  grid-column: span 2;
-}
-
-.trainer-card-time span {
-  color: #ffbf9f;
-}
-
-.trainer-card-time strong {
-  color: #fff4d6;
-  font-size: 26px;
-  line-height: 1.2;
 }
 
 .trainer-comments {
@@ -631,6 +696,7 @@ th {
 @media (max-width: 760px) {
   .form-grid,
   .debug-grid,
+  .trainer-help-content,
   .trainer-card-grid,
   .stat-grid,
   .aptitude-grid {
@@ -639,9 +705,16 @@ th {
 
   .horse-head,
   .race-row,
+  .race-panel-header,
   .setup-title-row {
     align-items: stretch;
     flex-direction: column;
+  }
+
+  .current-time-block {
+    width: 100%;
+    min-width: 0;
+    text-align: left;
   }
 
   .filter-row {

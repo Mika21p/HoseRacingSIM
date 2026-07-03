@@ -191,10 +191,6 @@
       : [];
   }
 
-  function getLegacyCandidates(race) {
-    return (ns.Opponents || []).filter((item) => item.raceId === race.id);
-  }
-
   function isChampionOpponent(candidate) {
     if (!candidate) return false;
     return candidate.finish === 1 || candidate.champion === true;
@@ -213,7 +209,7 @@
   function chooseOpponent(race, options) {
     const opts = options || {};
     const candidates = filterOpponentCandidates(
-      getHistoricalCandidates(race).concat(getLegacyCandidates(race)),
+      getHistoricalCandidates(race),
       { pool: opts.opponentPool || "champions" }
     );
     if (candidates.length > 0) {
@@ -232,7 +228,7 @@
         trackCondition: picked.trackCondition || "",
         finish: picked.finish || null,
         historical: true,
-        source: picked.source || "legacy-opponents"
+        source: picked.source || "historical-horses"
       };
     }
     return createGeneratedOpponent(race, null, "fallback");
@@ -375,7 +371,6 @@
     chooseOpponent,
     createGeneratedOpponent,
     getHistoricalCandidates,
-    getLegacyCandidates,
     isChampionOpponent,
     filterOpponentCandidates,
     getBaseGeneratedOpponentRange,

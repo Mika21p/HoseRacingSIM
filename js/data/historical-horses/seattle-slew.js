@@ -6,14 +6,14 @@
     name: "Seattle Slew",
     displayName: "Seattle Slew",
     profile: {
-      baseAbility: 86,
-      peakAbility: 88,
+      baseAbility: 94,
+      peakAbility: 96,
       note: "无败美国三冠马，速度与先行压制力兼备。"
     },
     races: [
-      { raceId: "kentucky-derby", year: 1977, ability: 87, jockeyId: "jean-cruguet", finish: 1 },
-      { raceId: "preakness-stakes", year: 1977, ability: 88, jockeyId: "jean-cruguet", finish: 1 },
-      { raceId: "belmont-stakes", year: 1977, ability: 88, jockeyId: "jean-cruguet", finish: 1 }
+      { raceId: "kentucky-derby", year: 1977, ability: 95, jockeyId: "jean-cruguet", finish: 1 },
+      { raceId: "preakness-stakes", year: 1977, ability: 96, jockeyId: "jean-cruguet", finish: 1 },
+      { raceId: "belmont-stakes", year: 1977, ability: 96, jockeyId: "jean-cruguet", finish: 1 }
     ]
   });
 })();

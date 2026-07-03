@@ -6,14 +6,14 @@
     name: "Galileo",
     displayName: "Galileo",
     profile: {
-      baseAbility: 86,
-      peakAbility: 87,
+      baseAbility: 91,
+      peakAbility: 92,
       note: "欧洲三岁中长距离冠军，退役后成为现代草地血统核心。"
     },
     races: [
-      { raceId: "epsom-derby", year: 2001, ability: 87, jockeyId: "mick-kinane", finish: 1 },
-      { raceId: "irish-derby", year: 2001, ability: 87, jockeyId: "mick-kinane", finish: 1 },
-      { raceId: "king-george-vi-and-queen-elizabeth-stakes", year: 2001, ability: 87, jockeyId: "mick-kinane", finish: 1 }
+      { raceId: "epsom-derby", year: 2001, ability: 92, jockeyId: "mick-kinane", finish: 1 },
+      { raceId: "irish-derby", year: 2001, ability: 92, jockeyId: "mick-kinane", finish: 1 },
+      { raceId: "king-george-vi-and-queen-elizabeth-stakes", year: 2001, ability: 92, jockeyId: "mick-kinane", finish: 1 }
     ]
   });
 })();

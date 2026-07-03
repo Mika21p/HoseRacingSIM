@@ -6,13 +6,13 @@
     name: "Cigar",
     displayName: "Cigar",
     profile: {
-      baseAbility: 86,
-      peakAbility: 88,
+      baseAbility: 90,
+      peakAbility: 92,
       note: "美国古马泥地王者，连胜与国际远征表现兼具。"
     },
     races: [
-      { raceId: "breeders-cup-classic", year: 1995, ability: 88, jockeyId: "jerry-bailey", finish: 1 },
-      { raceId: "dubai-world-cup", year: 1996, ability: 88, jockeyId: "jerry-bailey", finish: 1 }
+      { raceId: "breeders-cup-classic", year: 1995, ability: 92, jockeyId: "jerry-bailey", finish: 1 },
+      { raceId: "dubai-world-cup", year: 1996, ability: 92, jockeyId: "jerry-bailey", finish: 1 }
     ]
   });
 })();

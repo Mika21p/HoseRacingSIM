@@ -158,13 +158,18 @@
           <label>母系
             <select id="damSelect">${optionList(damBloodlines, "random")}</select>
           </label>
-          <label>练马师
+          <div class="field-block trainer-field">
+            <div class="field-label-row">
+              <span>练马师</span>
+              <button class="secondary icon-help-button" id="trainerHelpToggleBtn" type="button" aria-expanded="false" aria-label="查看练马师信息" title="练马师信息">?</button>
+            </div>
             <select id="trainerSelect">${optionList(trainers, "sato-yuta")}</select>
-          </label>
+          </div>
           <label>主战骑手
             <select id="mainJockeySelect">${optionList(jockeys, "take-yutaka")}</select>
           </label>
         </div>
+        <div class="help-panel trainer-help-panel" id="trainerHelpPanel" hidden>${ns.Help ? ns.Help.trainerHelpHtml : ""}</div>
         <label class="debug-toggle">
           <input id="debugModeToggle" type="checkbox">
           调试模式
@@ -252,6 +257,7 @@
       </section>
       <section class="panel" id="horsePanel"></section>
       <section class="panel" id="racePanel"></section>
+      <section class="panel feedback-panel" id="feedbackPanel" hidden></section>
       <section class="panel" id="historyPanel"></section>
     `;
   }
@@ -267,16 +273,6 @@
     const comments = career.commentDetails && career.commentDetails.length
       ? career.commentDetails
       : career.comments.map((text, index) => ({ label: `评语 ${index + 1}`, text }));
-    const lastRaceCommentHtml = career.lastRaceComment && career.lastRaceComment.text
-      ? `
-        <div class="trainer-comments post-race-comments">
-          <div class="trainer-comment comment-tone-5">
-            <span>上场比赛评语</span>
-            <p>${career.lastRaceComment.text}</p>
-          </div>
-        </div>
-      `
-      : "";
     panel.innerHTML = `
       <p class="eyebrow">出道前评语</p>
       <div class="trainer-card-grid">
@@ -300,10 +296,6 @@
           <span>练马师</span>
           <strong>${trainer ? trainer.name : "未指定"}</strong>
         </div>
-        <div class="trainer-card trainer-card-time">
-          <span>当前年龄</span>
-          <strong>${ns.TimeRules.formatAgeMonth(career.currentTime)}</strong>
-        </div>
       </div>
       <div class="trainer-comments">
         ${comments.map((comment, index) => `
@@ -313,7 +305,43 @@
           </div>
         `).join("")}
       </div>
-      ${lastRaceCommentHtml}
+    `;
+  }
+
+  function currentTimeBlock(career) {
+    return `
+      <div class="current-time-block">
+        <span>当前时间</span>
+        <strong>${ns.TimeRules.formatAgeMonth(career.currentTime)}</strong>
+      </div>
+    `;
+  }
+
+  function racePanelHeader(career, title) {
+    return `
+      <div class="race-panel-header">
+        <p class="eyebrow">${title}</p>
+        ${currentTimeBlock(career)}
+      </div>
+    `;
+  }
+
+  function renderLastRaceComment(panel, career) {
+    if (!panel) return;
+    if (!career || !career.lastRaceComment || !career.lastRaceComment.text) {
+      panel.hidden = true;
+      panel.innerHTML = "";
+      return;
+    }
+    panel.hidden = false;
+    panel.innerHTML = `
+      <div class="section-title-row">
+        <p class="eyebrow">上场比赛评语</p>
+      </div>
+      <div class="post-race-comment-card">
+        <span>${career.lastRaceComment.label || "练马师回顾"}</span>
+        <p>${career.lastRaceComment.text}</p>
+      </div>
     `;
   }
 
@@ -327,7 +355,7 @@
       : null;
     if (restStatus) {
       panel.innerHTML = `
-        <p class="eyebrow">强制休养</p>
+        ${racePanelHeader(career, "强制休养")}
         <div class="scheduled-race">
           <span class="badge">休养中</span>
           <h2>${restStatus.severityLabel} · ${restStatus.reason}</h2>
@@ -338,7 +366,6 @@
           <button id="nextTurnBtn">下一回合</button>
           <button class="secondary" id="retireBtn">退役</button>
         </div>
-        <p class="muted">当前时间：${ns.TimeRules.formatAgeMonth(career.currentTime)}。</p>
       `;
       return;
     }
@@ -348,7 +375,7 @@
       const opponentName = payload.opponent.displayName || payload.opponent.name || "随机对手";
       const opponentYear = payload.year ? `${payload.year} ` : "";
       panel.innerHTML = `
-        <p class="eyebrow">下一场比赛</p>
+        ${racePanelHeader(career, "下一场比赛")}
         <div class="scheduled-race">
           <span class="badge">已报名</span>
           <h2>${payload.schedule.label} · ${race.name}</h2>
@@ -360,7 +387,7 @@
           <button class="secondary" id="cancelRegistrationBtn">取消报名</button>
           <button class="secondary" id="retireBtn">退役</button>
         </div>
-        <p class="muted">当前时间：${ns.TimeRules.formatAgeMonth(career.currentTime)}。到达报名赛事回合时会自动进行比赛。</p>
+        <p class="muted">到达报名赛事回合时会自动进行比赛。</p>
       `;
       return;
     }
@@ -370,7 +397,7 @@
         ? "根据出道前评语锁定后，没有符合距离、场地和成熟时机的新马战。可以重新生成小马，或之后放宽锁定规则。"
         : "没有可参加的未来赛事。可以选择退役。";
       panel.innerHTML = `
-        <p class="eyebrow">下一场比赛</p>
+        ${racePanelHeader(career, "下一场比赛")}
         <p class="muted">${message}</p>
         <button id="nextTurnBtn">下一回合</button>
         <button class="secondary" id="retireBtn">退役</button>
@@ -380,7 +407,7 @@
     const currentFilters = filters || { grade: "all", surface: "all", distance: "all" };
     const filteredPlans = plans.filter((plan) => raceMatchesFilters(plan, currentFilters));
     panel.innerHTML = `
-      <p class="eyebrow">下一场比赛</p>
+      ${racePanelHeader(career, "下一场比赛")}
       <div class="filter-row">
         <label>等级
           <select id="gradeFilter">
@@ -425,7 +452,7 @@
         <button id="nextTurnBtn">下一回合</button>
         <button class="secondary" id="retireBtn">退役</button>
       `}
-      <p class="muted">当前时间：${ns.TimeRules.formatAgeMonth(career.currentTime)}。报名赛事后，可以逐回合推进到该赛事自动开赛。</p>
+      <p class="muted">报名赛事后，可以逐回合推进到该赛事自动开赛。</p>
     `;
   }
 
@@ -510,5 +537,5 @@
     `;
   }
 
-  ns.UI = { renderSetup, renderChangelog, renderHorse, renderRaceSelector, renderHistory };
+  ns.UI = { renderSetup, renderChangelog, renderHorse, renderLastRaceComment, renderRaceSelector, renderHistory };
 })();

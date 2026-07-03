@@ -18,9 +18,7 @@
       { raceId: "kikka-sho", year: 2011, ability: 88, jockeyId: "kenichi-ikezoe", finish: 1 },
       { raceId: "arima-kinen", year: 2011, ability: 88, jockeyId: "kenichi-ikezoe", finish: 1 },
       { raceId: "takarazuka-kinen", year: 2012, ability: 88, jockeyId: "kenichi-ikezoe", finish: 1 },
-      { raceId: "prix-de-larc", year: 2012, ability: 88, jockeyId: "generic-local", finish: 2 },
       { raceId: "osaka-hai", year: 2013, ability: 88, jockeyId: "kenichi-ikezoe", finish: 1 },
-      { raceId: "prix-de-larc", year: 2013, ability: 88, jockeyId: "kenichi-ikezoe", finish: 2 },
       { raceId: "arima-kinen", year: 2013, ability: 88, jockeyId: "kenichi-ikezoe", finish: 1 }
     ]
   });

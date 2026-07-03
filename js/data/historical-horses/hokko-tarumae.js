@@ -17,6 +17,7 @@
       { raceId: "antares-stakes", year: 2013, ability: 77, jockeyId: "generic-local", finish: 1 },
       { raceId: "kashiwa-kinen", year: 2013, ability: 79, jockeyId: "generic-local", finish: 1 },
       { raceId: "teio-sho", year: 2013, ability: 79, jockeyId: "generic-local", finish: 1 },
+      { raceId: "mercury-cup", year: 2013, ability: 78, jockeyId: "generic-local", finish: 1 },
       { raceId: "jbc-classic", year: 2013, ability: 79, jockeyId: "generic-local", finish: 1 },
       { raceId: "tokyo-daishoten", year: 2013, ability: 80, jockeyId: "generic-local", finish: 1 },
       { raceId: "kawasaki-kinen", year: 2014, ability: 80, jockeyId: "generic-local", finish: 1 },

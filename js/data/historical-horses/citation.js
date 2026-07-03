@@ -6,14 +6,14 @@
     name: "Citation",
     displayName: "Citation",
     profile: {
-      baseAbility: 87,
-      peakAbility: 89,
+      baseAbility: 95,
+      peakAbility: 97,
       note: "美国三冠与长连胜时代代表，稳定性和赛程适应极强。"
     },
     races: [
-      { raceId: "kentucky-derby", year: 1948, ability: 88, jockeyId: "eddie-arcaro", finish: 1 },
-      { raceId: "preakness-stakes", year: 1948, ability: 88, jockeyId: "eddie-arcaro", finish: 1 },
-      { raceId: "belmont-stakes", year: 1948, ability: 89, jockeyId: "eddie-arcaro", finish: 1 }
+      { raceId: "kentucky-derby", year: 1948, ability: 96, jockeyId: "eddie-arcaro", finish: 1 },
+      { raceId: "preakness-stakes", year: 1948, ability: 96, jockeyId: "eddie-arcaro", finish: 1 },
+      { raceId: "belmont-stakes", year: 1948, ability: 97, jockeyId: "eddie-arcaro", finish: 1 }
     ]
   });
 })();
