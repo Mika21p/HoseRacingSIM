@@ -29,6 +29,21 @@ select {
   z-index: 20;
 }
 
+.changelog-widget > div {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px 10px;
+  max-width: min(420px, calc(100vw - 28px));
+}
+
+.changelog-widget small {
+  color: #91a0b8;
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1.4;
+}
+
 .changelog-toggle {
   box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22);
 }
@@ -734,6 +749,27 @@ th {
 }
 
 @media (max-width: 760px) {
+  .changelog-widget {
+    position: static;
+    width: min(1080px, calc(100% - 32px));
+    margin: 14px auto 0;
+  }
+
+  .changelog-widget > div {
+    max-width: none;
+    width: 100%;
+  }
+
+  .changelog-widget small {
+    display: block;
+    width: 100%;
+  }
+
+  .changelog-panel {
+    width: 100%;
+    max-height: min(560px, calc(100vh - 120px));
+  }
+
   .form-grid,
   .debug-grid,
   .trainer-help-content,
