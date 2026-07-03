@@ -14,7 +14,7 @@
     },
     {
       id: "deep-impact",
-      name: "Deep Impact 系",
+      name: "Deep Impact系 大震撼系（日）",
       region: "日本",
       strengthType: "burst",
       surfaceWeights: { 草地: 20, 泥地: -10 },
@@ -29,7 +29,7 @@
     },
     {
       id: "kizuna",
-      name: "Kizuna 系",
+      name: "Kizuna系 高情厚意系（日）",
       region: "日本",
       strengthType: "stable",
       surfaceWeights: { 草地: 18, 泥地: -5 },
@@ -44,7 +44,7 @@
     },
     {
       id: "kitasan-black",
-      name: "Kitasan Black 系",
+      name: "Kitasan Black系 北部玄驹系（日）",
       region: "日本",
       strengthType: "late",
       surfaceWeights: { 草地: 18, 泥地: -5 },
@@ -60,7 +60,7 @@
     },
     {
       id: "lord-kanaloa",
-      name: "Lord Kanaloa 系",
+      name: "Lord Kanaloa系 龙王系（日）",
       region: "日本",
       strengthType: "early",
       surfaceWeights: { 草地: 18, 泥地: -8 },
@@ -76,7 +76,7 @@
     },
     {
       id: "epiphaneia",
-      name: "Epiphaneia 系",
+      name: "Epiphaneia系 神威启示系（日）",
       region: "日本",
       strengthType: "burst",
       surfaceWeights: { 草地: 18, 泥地: -8 },
@@ -91,7 +91,7 @@
     },
     {
       id: "contrail",
-      name: "Contrail 系",
+      name: "Contrail系 铁鸟翱天系（日）",
       region: "日本",
       strengthType: "early",
       surfaceWeights: { 草地: 18, 泥地: -5 },
@@ -106,7 +106,7 @@
     },
     {
       id: "duramente",
-      name: "Duramente 系",
+      name: "Duramente系 大鸣大放系（日）",
       region: "日本",
       strengthType: "burst",
       surfaceWeights: { 草地: 18, 泥地: -8 },
@@ -121,7 +121,7 @@
     },
     {
       id: "maurice",
-      name: "Maurice 系",
+      name: "Maurice系 满乐时系（日）",
       region: "日本",
       strengthType: "standard",
       surfaceWeights: { 草地: 12, 泥地: 5, 二刀流: 4 },
@@ -136,7 +136,7 @@
     },
     {
       id: "frankel",
-      name: "Frankel 系",
+      name: "Frankel系 范高尔系（欧）",
       region: "欧洲",
       strengthType: "burst",
       surfaceWeights: { 草地: 22, 泥地: -12 },
@@ -151,7 +151,7 @@
     },
     {
       id: "dubawi",
-      name: "Dubawi 系",
+      name: "Dubawi系 杜拜威系（欧）",
       region: "欧洲",
       strengthType: "stable",
       surfaceWeights: { 草地: 22, 泥地: -10 },
@@ -166,7 +166,7 @@
     },
     {
       id: "galileo",
-      name: "Galileo 系",
+      name: "Galileo系 伽利略系（欧）",
       region: "欧洲",
       strengthType: "late",
       surfaceWeights: { 草地: 24, 泥地: -12 },
@@ -182,7 +182,7 @@
     },
     {
       id: "sea-the-stars",
-      name: "Sea The Stars 系",
+      name: "Sea The Stars系 海都之星系（欧）",
       region: "欧洲",
       strengthType: "stable",
       surfaceWeights: { 草地: 22, 泥地: -10 },
@@ -198,7 +198,7 @@
     },
     {
       id: "wootton-bassett",
-      name: "Wootton Bassett 系",
+      name: "Wootton Bassett系 胡顿巴塞特系（欧）",
       region: "欧洲",
       strengthType: "early",
       surfaceWeights: { 草地: 20, 泥地: -8 },
@@ -213,7 +213,7 @@
     },
     {
       id: "i-am-invincible",
-      name: "I Am Invincible 系",
+      name: "I Am Invincible系 我志气高系（澳）",
       region: "澳洲",
       strengthType: "early",
       surfaceWeights: { 草地: 20, 泥地: -8 },
@@ -229,7 +229,7 @@
     },
     {
       id: "zoustar",
-      name: "Zoustar 系",
+      name: "Zoustar系 摘星勇骥系（澳）",
       region: "澳洲",
       strengthType: "early",
       surfaceWeights: { 草地: 20, 泥地: -8 },
@@ -245,7 +245,7 @@
     },
     {
       id: "into-mischief",
-      name: "Into Mischief 系",
+      name: "Into Mischief系 淘气鬼系（美）",
       region: "北美",
       strengthType: "early",
       surfaceWeights: { 草地: -12, 泥地: 24, 二刀流: 2 },
@@ -260,7 +260,7 @@
     },
     {
       id: "gun-runner",
-      name: "Gun Runner 系",
+      name: "Gun Runner系 枪跑者系（美）",
       region: "北美",
       strengthType: "late",
       surfaceWeights: { 草地: -8, 泥地: 24, 二刀流: 3 },
@@ -275,7 +275,7 @@
     },
     {
       id: "curlin",
-      name: "Curlin 系",
+      name: "Curlin系 卷毛系（美）",
       region: "北美",
       strengthType: "late",
       surfaceWeights: { 草地: -8, 泥地: 24, 二刀流: 3 },
@@ -291,7 +291,7 @@
     },
     {
       id: "tapit",
-      name: "Tapit 系",
+      name: "Tapit系 塔皮特系（美）",
       region: "北美",
       strengthType: "stable",
       surfaceWeights: { 草地: -8, 泥地: 22, 二刀流: 2 },
@@ -306,7 +306,7 @@
     },
     {
       id: "justify",
-      name: "Justify 系",
+      name: "Justify系 正义系（美）",
       region: "北美",
       strengthType: "standard",
       surfaceWeights: { 草地: 6, 泥地: 18, 二刀流: 4 },

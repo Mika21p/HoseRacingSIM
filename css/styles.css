@@ -440,6 +440,11 @@ button.secondary {
   background: #1d1428;
 }
 
+.trainer-card-trainer {
+  border-color: #6bd3c2;
+  background: #10211f;
+}
+
 .trainer-card-time {
   border-color: #dd805f;
   background: #2b170d;

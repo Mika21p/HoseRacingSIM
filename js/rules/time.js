@@ -72,7 +72,8 @@
 
   function resolveNextRaceDate(career, race) {
     const currentIndex = career.currentTime ? career.currentTime.index : startTime().index;
-    const minIndex = career.lastRaceIndex == null ? currentIndex : career.lastRaceIndex + 1;
+    const raceCooldownIndex = career.lastRaceIndex == null ? currentIndex : career.lastRaceIndex + 1;
+    const minIndex = Math.max(currentIndex, raceCooldownIndex);
     const start = fromIndex(minIndex);
     const startAge = start.age;
     const raceMonth = race.month || 1;
@@ -94,6 +95,7 @@
   }
 
   function getAvailableRacePlans(career, races) {
+    if (ns.CareerRules && ns.CareerRules.isResting && ns.CareerRules.isResting(career)) return [];
     const plans = races
       .map((race) => ({ race, schedule: resolveNextRaceDate(career, race) }))
       .filter((plan) => plan.schedule)

@@ -126,6 +126,7 @@
     const jockeys = ns.JockeyRules
       ? ns.JockeyRules.getPlayerSelectableJockeys("japan")
       : ns.Jockeys || [];
+    const trainers = ns.CommentRules ? ns.CommentRules.getTrainerOptions() : [];
     const grades = ["S", "A", "B", "C", "G"];
     const courseGrades = ["S", "A", "B"];
     const seasons = [
@@ -156,6 +157,9 @@
           </label>
           <label>母系
             <select id="damSelect">${optionList(damBloodlines, "random")}</select>
+          </label>
+          <label>练马师
+            <select id="trainerSelect">${optionList(trainers, "sato-yuta")}</select>
           </label>
           <label>主战骑手
             <select id="mainJockeySelect">${optionList(jockeys, "take-yutaka")}</select>
@@ -234,7 +238,7 @@
             </div>
           </div>
           <div class="debug-section">
-            <h3>赛场适性</h3>
+            <h3>日本赛场适性</h3>
             <div class="debug-grid">
               ${debugGradeSelect("debugCourseTokyo", "东京", "A", courseGrades)}
               ${debugGradeSelect("debugCourseNakayama", "中山", "A", courseGrades)}
@@ -258,7 +262,21 @@
       return;
     }
     const horse = career.horse;
+    const trainer = career.trainer || (ns.CommentRules && ns.CommentRules.getTrainer(career.trainerId || horse.trainerId));
     const mainJockey = ns.JockeyRules.getJockey(career.mainJockeyId);
+    const comments = career.commentDetails && career.commentDetails.length
+      ? career.commentDetails
+      : career.comments.map((text, index) => ({ label: `评语 ${index + 1}`, text }));
+    const lastRaceCommentHtml = career.lastRaceComment && career.lastRaceComment.text
+      ? `
+        <div class="trainer-comments post-race-comments">
+          <div class="trainer-comment comment-tone-5">
+            <span>上场比赛评语</span>
+            <p>${career.lastRaceComment.text}</p>
+          </div>
+        </div>
+      `
+      : "";
     panel.innerHTML = `
       <p class="eyebrow">出道前评语</p>
       <div class="trainer-card-grid">
@@ -278,25 +296,50 @@
           <span>主战骑手</span>
           <strong>${mainJockey ? mainJockey.name : "未指定"}</strong>
         </div>
+        <div class="trainer-card trainer-card-trainer">
+          <span>练马师</span>
+          <strong>${trainer ? trainer.name : "未指定"}</strong>
+        </div>
         <div class="trainer-card trainer-card-time">
           <span>当前年龄</span>
           <strong>${ns.TimeRules.formatAgeMonth(career.currentTime)}</strong>
         </div>
       </div>
       <div class="trainer-comments">
-        ${career.comments.map((text, index) => `
+        ${comments.map((comment, index) => `
           <div class="trainer-comment comment-tone-${(index % 5) + 1}">
-            <span>评语 ${index + 1}</span>
-            <p>${text}</p>
+            <span>${comment.label || comment.item || `评语 ${index + 1}`}</span>
+            <p>${comment.text}</p>
           </div>
         `).join("")}
       </div>
+      ${lastRaceCommentHtml}
     `;
   }
 
   function renderRaceSelector(panel, career, filters) {
     if (!career || career.retired) {
       panel.innerHTML = "";
+      return;
+    }
+    const restStatus = ns.CareerRules && ns.CareerRules.getRestStatus
+      ? ns.CareerRules.getRestStatus(career)
+      : null;
+    if (restStatus) {
+      panel.innerHTML = `
+        <p class="eyebrow">强制休养</p>
+        <div class="scheduled-race">
+          <span class="badge">休养中</span>
+          <h2>${restStatus.severityLabel} · ${restStatus.reason}</h2>
+          <p>需休养至 ${restStatus.restUntilLabel}，预计剩余 ${restStatus.remainingMonths} 个月。</p>
+          <p class="muted">强制休养期间不能报名比赛，只能逐回合推进时间。</p>
+        </div>
+        <div class="race-row">
+          <button id="nextTurnBtn">下一回合</button>
+          <button class="secondary" id="retireBtn">退役</button>
+        </div>
+        <p class="muted">当前时间：${ns.TimeRules.formatAgeMonth(career.currentTime)}。</p>
+      `;
       return;
     }
     if (career.scheduledRace) {
@@ -397,15 +440,18 @@
       .reverse();
     const visibleRecords = expanded ? orderedRecords : orderedRecords.slice(0, 3);
     const hasHiddenRows = orderedRecords.length > visibleRecords.length;
+    const revealScores = !!summary;
     const rows = visibleRecords.map(({ item, number }) => {
       const opponentYear = item.public.opponentYear ? `${item.public.opponentYear} ` : "";
       const opponent = item.public.opponentName ? `${opponentYear}${item.public.opponentName}` : "随机对手";
       const opponentJockey = item.public.opponentJockeyName ? ` / ${item.public.opponentJockeyName}` : "";
       const replacementNote = item.public.scheduledOpponentRetired ? " 退赛（随机对手递补）" : "";
       const retired = item.public.retired ? ` · ${item.public.retiredPhase}退赛` : "";
-      const resultText = `${item.public.rankLabel || "着外"}${retired}`;
+      const injuryText = item.public.injury && item.public.injury.label ? ` · ${item.public.injury.label}` : "";
+      const resultText = `${item.public.rankLabel || "着外"}${retired}${injuryText}`;
       const trackCondition = item.public.trackCondition || (item.hidden && item.hidden.trackCondition) || "";
-      return `<tr><td>${number}</td><td>${item.public.timeLabel || ""}</td><td>${item.public.raceName}</td><td>${trackCondition}</td><td>${resultText}</td><td>${item.public.playerJockeyName || ""}</td><td>${opponent}${opponentJockey}${replacementNote}</td></tr>`;
+      const scoreLine = revealScores ? `<td>${(item.hidden && item.hidden.scoreLine) || ""}</td>` : "";
+      return `<tr><td>${number}</td><td>${item.public.timeLabel || ""}</td><td>${item.public.raceName}</td><td>${trackCondition}</td><td>${resultText}</td><td>${item.public.playerJockeyName || ""}</td><td>${opponent}${opponentJockey}${replacementNote}</td>${scoreLine}</tr>`;
     }).join("");
 
     let reveal = "";
@@ -416,6 +462,7 @@
         <div class="reveal">
           <p class="eyebrow">退役揭晓</p>
           <h2>${h.name} 生涯 ${summary.starts}战 ${summary.wins}胜 · G1 ${summary.g1Wins}胜 · JpnI ${summary.jpn1Wins || 0}胜</h2>
+          ${summary.retirementReason ? `<p class="muted">${summary.retirementReason}</p>` : ""}
           <div class="stat-grid">
             <span>真实实力 <b>${h.strength}</b></span>
             <span>退役时实力 <b>${finalMaturity.adjustedStrength}</b></span>
@@ -437,7 +484,7 @@
               <div class="grade-list">${renderGradeList(h.dirt)}</div>
             </div>
             <div>
-              <h3>赛场适性</h3>
+              <h3>日本赛场适性</h3>
               <div class="grade-list">${renderGradeList(h.courseGrades)}</div>
             </div>
           </div>
@@ -455,8 +502,8 @@
       </div>
       <div class="history-table-wrap">
         <table>
-          <thead><tr><th>#</th><th>时间</th><th>比赛</th><th>场地</th><th>结果</th><th>骑手</th><th>主要对手</th></tr></thead>
-          <tbody>${rows || `<tr><td colspan="7">还没有出赛记录。</td></tr>`}</tbody>
+          <thead><tr><th>#</th><th>时间</th><th>比赛</th><th>场地</th><th>结果</th><th>骑手</th><th>主要对手</th>${revealScores ? "<th>出目</th>" : ""}</tr></thead>
+          <tbody>${rows || `<tr><td colspan="${revealScores ? 8 : 7}">还没有出赛记录。</td></tr>`}</tbody>
         </table>
       </div>
       ${reveal}

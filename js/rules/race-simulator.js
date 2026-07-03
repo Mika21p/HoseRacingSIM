@@ -51,6 +51,11 @@
     return rank ? labels[rank] || `${rank}着` : "着外";
   }
 
+  function finalMark(result) {
+    if (!result || result.retired) return "退赛";
+    return String(result.total);
+  }
+
   function runOneRunner(entry) {
     const riderMod = Math.floor(entry.riderAbility / 10);
     const base = entry.ability + riderMod;
@@ -318,6 +323,9 @@
         playerRank = rollPlacementWhenBehind(marginLengths);
       }
     }
+    const injury = playerResult.retired && ns.InjuryRules
+      ? ns.InjuryRules.rollInjury(playerResult.retiredPhase)
+      : null;
 
     return {
       public: {
@@ -334,7 +342,14 @@
         replacementOpponentJockeyName: replacementOpponent ? replacementOpponent.jockeyName : "",
         opponentRank,
         retired: playerResult.retired,
-        retiredPhase: playerResult.retiredPhase
+        retiredPhase: playerResult.retiredPhase,
+        injury: injury ? {
+          phase: injury.phase,
+          reason: injury.reason,
+          severity: injury.severityLabel,
+          restMonths: injury.restMonths,
+          forcedRetirement: injury.forcedRetirement
+        } : null
       },
       hidden: {
         race,
@@ -342,6 +357,8 @@
         pointsPerLength,
         scoreDiff,
         marginLengths,
+        scoreLine: `${finalMark(playerResult)} - ${finalMark(competitiveOpponentResult)}`,
+        injury,
         playerCalc,
         opponent: competitiveOpponent,
         scheduledOpponent: opponent,

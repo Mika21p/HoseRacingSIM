@@ -34,16 +34,20 @@
     const name = document.getElementById("horseNameInput").value || "未命名小马";
     const sireId = document.getElementById("sireSelect").value;
     const damId = document.getElementById("damSelect").value;
+    const trainerId = document.getElementById("trainerSelect").value;
     const mainJockeyId = document.getElementById("mainJockeySelect").value;
     const debugOptions = collectDebugOptions();
     if (debugOptions && !validateDebugOptions(debugOptions)) return;
     const horse = ns.HorseRules.generateHorse({ name, sireId, damId });
     if (debugOptions) ns.HorseRules.applyDebugOverrides(horse, debugOptions);
+    const trainer = ns.CommentRules.getTrainer(trainerId);
+    horse.trainerId = trainer.id;
+    horse.trainerName = trainer.name;
     horse.mainJockeyId = mainJockeyId;
-    const commentDetails = ns.CommentRules.generateDebutCommentDetails(horse);
+    const commentDetails = ns.CommentRules.generateDebutCommentDetails(horse, trainer.id);
     const comments = commentDetails.map((comment) => comment.text);
     const debutLock = ns.CommentRules.buildDebutLock(commentDetails);
-    state.career = ns.CareerRules.createCareer(horse, comments, commentDetails, debutLock);
+    state.career = ns.CareerRules.createCareer(horse, comments, commentDetails, debutLock, trainer);
     state.retiredSummary = null;
     state.historyExpanded = false;
     state.filters = { grade: "all", surface: "all", distance: "all" };
@@ -135,6 +139,12 @@
     });
     ns.CareerRules.addRace(state.career, result, payload.schedule);
     state.career.scheduledRace = null;
+    if (state.career.forcedRetirement) {
+      state.retiredSummary = ns.CareerRules.retire(
+        state.career,
+        state.career.forcedRetirementReason || "因重伤被迫退役"
+      );
+    }
     refresh();
   }
 
@@ -149,6 +159,7 @@
 
   function registerRace() {
     if (!state.career || state.career.retired || state.career.scheduledRace) return;
+    if (ns.CareerRules.isResting(state.career)) return;
     const plan = selectedRacePlan();
     if (!plan) return;
     const selectedRace = plan.race;
@@ -169,6 +180,12 @@
 
   function advanceTurn() {
     if (!state.career || state.career.retired) return;
+    if (ns.CareerRules.isResting(state.career)) {
+      const nextRestTurn = ns.TimeRules.nextTurn(state.career.currentTime);
+      ns.CareerRules.advanceToTime(state.career, nextRestTurn);
+      refresh();
+      return;
+    }
     if (triggerScheduledRace()) return;
     const next = ns.TimeRules.nextTurn(state.career.currentTime);
     ns.CareerRules.advanceToTime(state.career, next);

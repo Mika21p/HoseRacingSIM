@@ -265,15 +265,13 @@
   function nonStrongMainGrade() {
     const roll = R.roll(100);
     if (roll <= 55) return "B";
-    if (roll <= 90) return "C";
-    return "G";
+    return "C";
   }
 
   function dualNonStrongGrade() {
     const roll = R.roll(100);
     if (roll <= 55) return "B";
-    if (roll <= 90) return "C";
-    return "G";
+    return "C";
   }
 
   function regionWeight(mod) {
@@ -689,7 +687,10 @@
     const surfaceGrade = getSurfaceGrade(horse, race);
     const surfaceRegion = race.surfaceRegion || "日本";
     const surfaceLabel = `${surfaceRegion}${race.surface}`;
-    const courseGrade = horse.courseGrades[race.course] || horse.courseGrades["其他地方"] || "A";
+    const isJapaneseRace = !race.surfaceRegion || race.surfaceRegion === "日本";
+    const courseGrade = isJapaneseRace
+      ? horse.courseGrades[race.course] || horse.courseGrades["其他地方"] || "A"
+      : "A";
     const distancePenalty = calcDistancePenalty(race.distance, horse.distMin, horse.distMax);
     const surfaceMod = gradeMod(surfaceGrade, { S: 5, A: 0, B: -5, C: -10, G: -20 });
     const courseMod = gradeMod(courseGrade, { S: 4, A: 0, B: -4 });
