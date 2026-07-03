@@ -1,6 +1,7 @@
 (function () {
   const ns = (window.Keiba = window.Keiba || {});
   const R = ns.Random;
+  const PLAYER_EXCELLENT_MIN_ABILITY = 70;
 
   function getJockey(jockeyId) {
     return (ns.Jockeys || []).find((jockey) => jockey.id === jockeyId) || null;
@@ -34,7 +35,8 @@
     return !!jockey && Array.isArray(jockey.affiliations) && jockey.affiliations.includes(affiliation);
   }
 
-  function getPlayerSelectableJockeys(affiliation) {
+  function getPlayerSelectableJockeys(affiliation, options) {
+    const filters = options || {};
     return (ns.Jockeys || [])
       .filter((jockey) => jockey.mainSelectable !== false)
       .filter((jockey) => hasAffiliation(jockey, affiliation || "japan"))
@@ -44,7 +46,8 @@
         ability: getDefaultAbility(jockey.id),
         affiliations: jockey.affiliations || []
       }))
-      .filter((jockey) => jockey.ability !== null);
+      .filter((jockey) => jockey.ability !== null)
+      .filter((jockey) => filters.minAbility == null || jockey.ability >= filters.minAbility);
   }
 
   function getDefaultJockeys(affiliation) {
@@ -113,6 +116,7 @@
   }
 
   ns.JockeyRules = {
+    PLAYER_EXCELLENT_MIN_ABILITY,
     getJockey,
     getDefaultAbility,
     getAbility,

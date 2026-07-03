@@ -126,6 +126,7 @@
     const jockeys = ns.JockeyRules
       ? ns.JockeyRules.getPlayerSelectableJockeys("japan")
       : ns.Jockeys || [];
+    const excellentJockeyMinAbility = ns.JockeyRules ? ns.JockeyRules.PLAYER_EXCELLENT_MIN_ABILITY : 70;
     const trainers = ns.CommentRules ? ns.CommentRules.getTrainerOptions() : [];
     const grades = ["S", "A", "B", "C", "G"];
     const courseGrades = ["S", "A", "B"];
@@ -148,6 +149,13 @@
           <button class="secondary help-toggle" id="helpToggleBtn" type="button" aria-expanded="false">属性帮助</button>
         </div>
         <div class="help-panel" id="helpPanel" hidden>${ns.Help ? ns.Help.attributeHelpHtml : ""}</div>
+        <div class="save-panel" id="savePanel" aria-live="polite">
+          <div>
+            <p class="eyebrow">本机存档</p>
+            <p class="muted" id="saveStatusText">暂无存档</p>
+          </div>
+          <button class="secondary save-clear" id="clearSaveBtn" type="button" hidden>清除存档</button>
+        </div>
         <div class="form-grid">
           <label>马名
             <input id="horseNameInput" type="text" value="未命名小马">
@@ -165,9 +173,18 @@
             </div>
             <select id="trainerSelect">${optionList(trainers, "sato-yuta")}</select>
           </div>
-          <label>主战骑手
+          <div class="field-block jockey-field">
+            <div class="field-label-row">
+              <span>主战骑手</span>
+            </div>
             <select id="mainJockeySelect">${optionList(jockeys, "take-yutaka")}</select>
-          </label>
+            <div class="jockey-filter-row" aria-label="骑手筛选">
+              <label class="filter-checkbox">
+                <input id="excellentJockeyToggle" type="checkbox" data-min-ability="${excellentJockeyMinAbility}">
+                优秀骑手
+              </label>
+            </div>
+          </div>
         </div>
         <div class="help-panel trainer-help-panel" id="trainerHelpPanel" hidden>${ns.Help ? ns.Help.trainerHelpHtml : ""}</div>
         <label class="debug-toggle">

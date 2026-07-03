@@ -216,11 +216,51 @@ button.secondary {
   flex: 0 0 auto;
 }
 
+.save-panel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid #30394e;
+  border-radius: 8px;
+  background: #111722;
+  padding: 14px 16px;
+}
+
+.save-panel .eyebrow {
+  margin-bottom: 4px;
+}
+
+.save-panel .muted {
+  margin: 0;
+}
+
+.save-clear {
+  flex: 0 0 auto;
+}
+
 .field-label-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
+}
+
+.jockey-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+
+.filter-checkbox {
+  display: inline-flex;
+  grid-template-columns: none;
+  align-items: center;
+  width: fit-content;
+  gap: 8px;
+  color: #dce5f4;
+  font-size: 12px;
 }
 
 .icon-help-button {
@@ -715,6 +755,15 @@ th {
     width: 100%;
     min-width: 0;
     text-align: left;
+  }
+
+  .save-panel {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .save-clear {
+    width: 100%;
   }
 
   .filter-row {
