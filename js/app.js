@@ -5,6 +5,9 @@
     career: null,
     retiredSummary: null,
     historyExpanded: false,
+    expandedRaceRecords: {},
+    horseNameLanguage: "zh",
+    raceNameMode: "zh",
     activeFilterGroup: "",
     filters: {
       grade: [],
@@ -15,6 +18,8 @@
   };
 
   const SAVE_KEY = "keiba-career-save-v1";
+  const HORSE_NAME_LANGUAGE_KEY = "keiba-horse-name-language-v1";
+  const RACE_NAME_MODE_KEY = "keiba-race-name-mode-v1";
   const SAVE_VERSION = 1;
   const saveStatus = {
     storageAvailable: true,
@@ -36,11 +41,16 @@
     const didClearExpiredRegistration = clearExpiredRegistration();
     ns.UI.renderHorse(document.getElementById("horsePanel"), state.career);
     ns.UI.renderRaceSelector(document.getElementById("racePanel"), state.career, state.filters, {
-      activeFilterGroup: state.activeFilterGroup
+      activeFilterGroup: state.activeFilterGroup,
+      horseNameLanguage: state.horseNameLanguage,
+      raceNameMode: state.raceNameMode
     });
     ns.UI.renderLastRaceComment(document.getElementById("feedbackPanel"), state.career);
     ns.UI.renderHistory(document.getElementById("historyPanel"), state.career, state.retiredSummary, {
-      expanded: state.historyExpanded
+      expanded: state.historyExpanded,
+      expandedRecords: state.expandedRaceRecords,
+      horseNameLanguage: state.horseNameLanguage,
+      raceNameMode: state.raceNameMode
     });
     bindDynamicEvents();
     updateSaveStatus();
@@ -77,6 +87,14 @@
     };
   }
 
+  function normalizeExpandedRaceRecords(records) {
+    if (!records || typeof records !== "object" || Array.isArray(records)) return {};
+    return Object.keys(records).reduce((items, key) => {
+      if (/^race-\d+$/.test(key) && records[key]) items[key] = true;
+      return items;
+    }, {});
+  }
+
   function getStorage() {
     try {
       return window.localStorage || null;
@@ -84,6 +102,55 @@
       saveStatus.storageAvailable = false;
       console.warn("Local save storage is unavailable.", error);
       return null;
+    }
+  }
+
+  function normalizeHorseNameLanguage(language) {
+    return language === "en" ? "en" : "zh";
+  }
+
+  function normalizeRaceNameMode(mode) {
+    return ns.RaceNameRules && ns.RaceNameRules.normalizeMode
+      ? ns.RaceNameRules.normalizeMode(mode)
+      : (mode === "original" ? "original" : "zh");
+  }
+
+  function raceDisplayName(race) {
+    if (ns.RaceNameRules && ns.RaceNameRules.displayName) {
+      return ns.RaceNameRules.displayName(race, state.raceNameMode);
+    }
+    return race && race.name ? race.name : "";
+  }
+
+  function loadHorseNameLanguage() {
+    const storage = getStorage();
+    if (!storage) return;
+    state.horseNameLanguage = normalizeHorseNameLanguage(storage.getItem(HORSE_NAME_LANGUAGE_KEY));
+  }
+
+  function saveHorseNameLanguage() {
+    const storage = getStorage();
+    if (!storage) return;
+    try {
+      storage.setItem(HORSE_NAME_LANGUAGE_KEY, state.horseNameLanguage);
+    } catch (error) {
+      console.warn("Failed to save horse name language.", error);
+    }
+  }
+
+  function loadRaceNameMode() {
+    const storage = getStorage();
+    if (!storage) return;
+    state.raceNameMode = normalizeRaceNameMode(storage.getItem(RACE_NAME_MODE_KEY));
+  }
+
+  function saveRaceNameMode() {
+    const storage = getStorage();
+    if (!storage) return;
+    try {
+      storage.setItem(RACE_NAME_MODE_KEY, state.raceNameMode);
+    } catch (error) {
+      console.warn("Failed to save race name mode.", error);
     }
   }
 
@@ -115,6 +182,7 @@
         career: state.career,
         retiredSummary: state.retiredSummary,
         historyExpanded: !!state.historyExpanded,
+        expandedRaceRecords: normalizeExpandedRaceRecords(state.expandedRaceRecords),
         filters: normalizeFilters(state.filters)
       }
     };
@@ -170,6 +238,7 @@
       state.career = restoredCareer;
       state.retiredSummary = payload.state.retiredSummary || null;
       state.historyExpanded = !!payload.state.historyExpanded;
+      state.expandedRaceRecords = normalizeExpandedRaceRecords(payload.state.expandedRaceRecords);
       state.filters = normalizeFilters(payload.state.filters);
       saveStatus.storageAvailable = true;
       saveStatus.savedAt = payload.savedAt || null;
@@ -320,6 +389,7 @@
     state.career = ns.CareerRules.createCareer(horse, comments, commentDetails, debutLock, trainer);
     state.retiredSummary = null;
     state.historyExpanded = false;
+    state.expandedRaceRecords = {};
     state.activeFilterGroup = "";
     state.filters = defaultFilters();
     refresh();
@@ -409,7 +479,7 @@
       ? "报名通过或被除外都会消耗 1 次格上机会。"
       : "报名通过会消耗 1 次格上机会；如果被除外，本次不消耗机会。";
     return window.confirm(
-      `「${plan.race.name}」属于格上挑战。\n当前阶段剩余 ${challenge.remaining} 次格上机会。\n${consumeText}\n若被除外，本届比赛不能再次报名。\n确定报名吗？`
+      `「${raceDisplayName(plan.race)}」属于格上挑战。\n当前阶段剩余 ${challenge.remaining} 次格上机会。\n${consumeText}\n若被除外，本届比赛不能再次报名。\n确定报名吗？`
     );
   }
 
@@ -423,7 +493,7 @@
       ? "本次格上机会已消耗 1 次。"
       : "本次没有消耗格上机会。";
     window.alert(
-      `「${plan.race.name}」的格上报名被除外，报名失败。\n本届比赛不能再次报名。\n${consumeText}`
+      `「${raceDisplayName(plan.race)}」的格上报名被除外，报名失败。\n本届比赛不能再次报名。\n${consumeText}`
     );
   }
 
@@ -544,6 +614,34 @@
     saveGame();
   }
 
+  function toggleHistoryRecord(recordKey) {
+    if (!state.career || !recordKey) return;
+    state.expandedRaceRecords = normalizeExpandedRaceRecords(state.expandedRaceRecords);
+    if (state.expandedRaceRecords[recordKey]) {
+      delete state.expandedRaceRecords[recordKey];
+    } else {
+      state.expandedRaceRecords[recordKey] = true;
+    }
+    refresh();
+    saveGame();
+  }
+
+  function setHorseNameLanguage(language) {
+    const nextLanguage = normalizeHorseNameLanguage(language);
+    if (state.horseNameLanguage === nextLanguage) return;
+    state.horseNameLanguage = nextLanguage;
+    saveHorseNameLanguage();
+    refresh();
+  }
+
+  function setRaceNameMode(mode) {
+    const nextMode = normalizeRaceNameMode(mode);
+    if (state.raceNameMode === nextMode) return;
+    state.raceNameMode = nextMode;
+    saveRaceNameMode();
+    refresh();
+  }
+
   function setRaceFilterValue(group, value, checked) {
     state.filters = normalizeFilters(state.filters);
     const values = state.filters[group] || [];
@@ -576,6 +674,9 @@
     const cancelRegistrationBtn = document.getElementById("cancelRegistrationBtn");
     const retireBtn = document.getElementById("retireBtn");
     const historyToggleBtn = document.getElementById("historyToggleBtn");
+    const historyRecordButtons = Array.from(document.querySelectorAll("[data-history-record-toggle]"));
+    const horseNameLanguageButtons = Array.from(document.querySelectorAll("[data-horse-name-language]"));
+    const raceNameModeButtons = Array.from(document.querySelectorAll("[data-race-name-mode]"));
     const raceFilterToggles = Array.from(document.querySelectorAll("[data-race-filter]"));
     const raceFilterPanels = Array.from(document.querySelectorAll("[data-race-filter-group]"));
     const raceFilterClearButtons = Array.from(document.querySelectorAll("[data-filter-clear]"));
@@ -585,6 +686,15 @@
     if (cancelRegistrationBtn) cancelRegistrationBtn.addEventListener("click", cancelRegistration);
     if (retireBtn) retireBtn.addEventListener("click", retire);
     if (historyToggleBtn) historyToggleBtn.addEventListener("click", toggleHistory);
+    historyRecordButtons.forEach((button) => {
+      button.addEventListener("click", () => toggleHistoryRecord(button.dataset.historyRecordToggle));
+    });
+    horseNameLanguageButtons.forEach((button) => {
+      button.addEventListener("click", () => setHorseNameLanguage(button.dataset.horseNameLanguage));
+    });
+    raceNameModeButtons.forEach((button) => {
+      button.addEventListener("click", () => setRaceNameMode(button.dataset.raceNameMode));
+    });
     raceFilterToggles.forEach((toggle) => {
       toggle.addEventListener("change", () => {
         setRaceFilterValue(toggle.dataset.raceFilter, toggle.value, toggle.checked);
@@ -687,6 +797,8 @@
       }
     }
     loadSavedGame();
+    loadHorseNameLanguage();
+    loadRaceNameMode();
     const root = document.getElementById("app");
     ns.UI.renderChangelog(document.getElementById("changelogContent"));
     bindChangelogEvents();

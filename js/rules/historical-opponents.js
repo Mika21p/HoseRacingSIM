@@ -8,6 +8,8 @@
       horseId: horse.id,
       name: horse.name,
       displayName: horse.displayName || horse.name,
+      displayNameZh: horse.displayNameZh || horse.displayName || horse.name,
+      displayNameEn: horse.displayNameEn || horse.name || horse.displayName,
       year: entry.year,
       ability: entry.ability,
       jockeyId: entry.jockeyId,

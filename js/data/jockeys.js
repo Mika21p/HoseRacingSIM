@@ -327,6 +327,87 @@
       ]
     },
     {
+      id: "masaru-kurita",
+      name: "M. Kurita",
+      periods: [
+        { from: 1955, to: 1965, ability: 70 }
+      ]
+    },
+    {
+      id: "yoshito-matsumoto",
+      name: "Y. Matsumoto",
+      periods: [
+        { from: 1960, to: 1964, ability: 50 },
+        { from: 1965, to: 1979, ability: 60 }
+      ]
+    },
+    {
+      id: "akira-shikato",
+      name: "A. Shikato",
+      periods: [
+        { from: 1968, to: 1974, ability: 50 },
+        { from: 1975, to: 1978, ability: 60 },
+        { from: 1979, to: 1986, ability: 50 }
+      ]
+    },
+    {
+      id: "sadahiro-kojima",
+      name: "S. Kojima",
+      periods: [
+        { from: 1982, to: 1990, ability: 50 },
+        { from: 1991, to: 1995, ability: 60 },
+        { from: 1996, to: 2001, ability: 50 }
+      ]
+    },
+    {
+      id: "masahiro-ikegami",
+      name: "M. Ikegami",
+      periods: [
+        { from: 1966, to: 1974, ability: 50 }
+      ]
+    },
+    {
+      id: "seiichi-nakanowatari",
+      name: "S. Nakanowatari",
+      periods: [
+        { from: 1970, to: 1975, ability: 50 },
+        { from: 1976, to: 1978, ability: 60 },
+        { from: 1979, to: 1985, ability: 50 }
+      ]
+    },
+    {
+      id: "ryoji-furuyama",
+      name: "R. Furuyama",
+      periods: [
+        { from: 1955, to: 1969, ability: 60 }
+      ]
+    },
+    {
+      id: "masato-yoshinaga",
+      name: "M. Yoshinaga",
+      periods: [
+        { from: 1970, to: 1982, ability: 60 },
+        { from: 1983, to: 1984, ability: 70 },
+        { from: 1985, to: 1992, ability: 60 }
+      ]
+    },
+    {
+      id: "kizo-konishi",
+      name: "K. Konishi",
+      periods: [
+        { from: 1939, to: 1942, ability: 70 }
+      ]
+    },
+    {
+      id: "hayato-yoshida",
+      name: "H. Yoshida",
+      periods: [
+        { from: 2004, to: 2014, ability: 50 },
+        { from: 2015, to: 2023, ability: 60 },
+        { from: 2024, to: 2026, ability: 50 }
+      ]
+    },
+    {
       id: "joao-moreira",
       name: "J. Moreira",
       periods: [
@@ -1017,6 +1098,15 @@
       ]
     },
     {
+      id: "kent-desormeaux",
+      name: "K. Desormeaux",
+      periods: [
+        { from: 1986, to: 1988, ability: 80 },
+        { from: 1989, to: 2016, ability: 90 },
+        { from: 2017, to: 2026, ability: 80 }
+      ]
+    },
+    {
       id: "jay-ford",
       name: "J. Ford",
       periods: [
@@ -1407,6 +1497,16 @@
     "takayuki-yasuda": ["japan"],
     "koichi-tsunoda": ["japan"],
     "koichi-uchida": ["japan"],
+    "masaru-kurita": ["japan"],
+    "yoshito-matsumoto": ["japan"],
+    "akira-shikato": ["japan"],
+    "sadahiro-kojima": ["japan"],
+    "masahiro-ikegami": ["japan"],
+    "seiichi-nakanowatari": ["japan"],
+    "ryoji-furuyama": ["japan"],
+    "masato-yoshinaga": ["japan"],
+    "kizo-konishi": ["japan"],
+    "hayato-yoshida": ["japan"],
     "joao-moreira": ["hongkong"],
     "umberto-rispoli": ["europe", "usa"],
     "okabe-yukio": ["japan"],
@@ -1494,6 +1594,7 @@
     "rossa-ryan": ["europe"],
     "luke-morris": ["europe"],
     "john-velazquez": ["usa"],
+    "kent-desormeaux": ["usa"],
     "jay-ford": ["australia"],
     "luke-nolen": ["australia"],
     "adam-kirby": ["europe"],

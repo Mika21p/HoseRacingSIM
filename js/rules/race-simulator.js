@@ -220,6 +220,8 @@
         horseId: picked.horseId || "",
         name: picked.name,
         displayName: picked.displayName || picked.name,
+        displayNameZh: picked.displayNameZh || picked.displayName || picked.name,
+        displayNameEn: picked.displayNameEn || picked.name || picked.displayName,
         year: picked.year,
         ability: picked.ability,
         jockeyId: jockey.id,
@@ -322,15 +324,23 @@
     const injury = playerResult.retired && ns.InjuryRules
       ? ns.InjuryRules.rollInjury(playerResult.retiredPhase)
       : null;
+    const raceNameSource = ns.RaceNameRules && ns.RaceNameRules.findRaceById
+      ? ns.RaceNameRules.findRaceById(race.id) || race
+      : race;
 
     return {
       public: {
         raceId: race.id,
-        raceName: race.name,
+        raceName: ns.RaceNameRules ? ns.RaceNameRules.displayName(raceNameSource, "zh") : race.name,
+        raceNameZh: ns.RaceNameRules ? ns.RaceNameRules.displayName(raceNameSource, "zh") : race.name,
+        raceNameOriginal: ns.RaceNameRules ? ns.RaceNameRules.displayName(raceNameSource, "original") : race.name,
+        raceNameEn: raceNameSource.nameEn || race.nameEn || race.name,
         trackCondition,
         rank: playerRank,
         rankLabel: rankLabel(playerRank, playerResult.retired),
         opponentName: opponent.displayName || opponent.name || "",
+        opponentNameZh: opponent.displayNameZh || opponent.displayName || opponent.name || "",
+        opponentNameEn: opponent.displayNameEn || opponent.name || opponent.displayName || "",
         opponentYear: opponent.year || "",
         scheduledOpponentRetired: !!replacementOpponent,
         playerJockeyName: playerJockey.name,

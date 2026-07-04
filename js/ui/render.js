@@ -44,6 +44,104 @@
     return String(b.date || "").localeCompare(String(a.date || ""));
   }
 
+  function normalizeHorseNameLanguage(language) {
+    return language === "en" ? "en" : "zh";
+  }
+
+  function historicalHorseById(horseId) {
+    if (!horseId) return null;
+    return (ns.HistoricalHorses || []).find((horse) => horse.id === horseId) || null;
+  }
+
+  function historicalOpponentName(opponent, language, fallback) {
+    const normalizedLanguage = normalizeHorseNameLanguage(language);
+    const fallbackName = fallback || "随机对手";
+    if (!opponent) return fallbackName;
+    if (!opponent.historical && !opponent.horseId) {
+      return opponent.displayName || opponent.name || fallbackName;
+    }
+    const horse = historicalHorseById(opponent.horseId);
+    const source = horse || opponent;
+    if (normalizedLanguage === "en") {
+      return source.displayNameEn
+        || opponent.displayNameEn
+        || source.name
+        || opponent.name
+        || source.displayName
+        || opponent.displayName
+        || fallbackName;
+    }
+    return source.displayNameZh
+      || opponent.displayNameZh
+      || source.displayName
+      || opponent.displayName
+      || source.name
+      || opponent.name
+      || fallbackName;
+  }
+
+  function recordOpponentName(record, language) {
+    const item = record || {};
+    const publicResult = item.public || {};
+    const hidden = item.hidden || {};
+    const source = hidden.scheduledOpponent || hidden.opponent || null;
+    const fallback = normalizeHorseNameLanguage(language) === "en"
+      ? publicResult.opponentNameEn || publicResult.opponentName
+      : publicResult.opponentNameZh || publicResult.opponentName;
+    return historicalOpponentName(source, language, fallback || "随机对手");
+  }
+
+  function renderHorseNameLanguageToggle(language) {
+    const current = normalizeHorseNameLanguage(language);
+    return `
+      <div class="name-language-toggle" role="group" aria-label="史实马对手名称语言">
+        <button class="secondary name-language-button ${current === "zh" ? "is-active" : ""}" type="button" data-horse-name-language="zh" aria-pressed="${current === "zh" ? "true" : "false"}">中文</button>
+        <button class="secondary name-language-button ${current === "en" ? "is-active" : ""}" type="button" data-horse-name-language="en" aria-pressed="${current === "en" ? "true" : "false"}">EN</button>
+      </div>
+    `;
+  }
+
+  function normalizeRaceNameMode(mode) {
+    return ns.RaceNameRules && ns.RaceNameRules.normalizeMode
+      ? ns.RaceNameRules.normalizeMode(mode)
+      : (mode === "original" ? "original" : "zh");
+  }
+
+  function raceById(raceId) {
+    if (!raceId) return null;
+    if (ns.RaceNameRules && ns.RaceNameRules.findRaceById) {
+      return ns.RaceNameRules.findRaceById(raceId);
+    }
+    return (ns.Races || []).find((race) => race && race.id === raceId) || null;
+  }
+
+  function raceDisplayName(race, mode, fallback) {
+    if (ns.RaceNameRules && ns.RaceNameRules.displayName) {
+      return ns.RaceNameRules.displayName(race, mode, fallback);
+    }
+    return (race && (race.nameZh || race.name || race.nameOriginal)) || fallback || "";
+  }
+
+  function recordRaceName(record, mode) {
+    const item = record || {};
+    const publicResult = item.public || {};
+    const race = raceById(publicResult.raceId) || (item.hidden && item.hidden.race) || null;
+    const fallback = normalizeRaceNameMode(mode) === "original"
+      ? publicResult.raceNameOriginal || publicResult.raceName
+      : publicResult.raceNameZh || publicResult.raceName;
+    return raceDisplayName(race, mode, fallback || "");
+  }
+
+  function renderRaceNameModeToggle(mode) {
+    const current = normalizeRaceNameMode(mode);
+    return `
+      <div class="name-language-toggle race-name-mode-toggle" role="group" aria-label="赛事名显示模式">
+        <button class="secondary name-language-button ${current === "zh" ? "is-active" : ""}" type="button" data-race-name-mode="zh" aria-pressed="${current === "zh" ? "true" : "false"}">中文</button>
+        <button class="secondary name-language-button ${current === "original" ? "is-active" : ""}" type="button" data-race-name-mode="original" aria-pressed="${current === "original" ? "true" : "false"}">原名</button>
+      </div>
+    `;
+  }
+
   function renderChangelogEntry(entry) {
     return `
       <article class="changelog-entry">
@@ -98,9 +196,48 @@
     return race.sexRestriction ? ` · ${race.sexRestriction}限定` : "";
   }
 
-  function raceOptionLabel(plan) {
+  function raceSurfaceDistanceLabel(race) {
+    return `${race.surface}${race.distance}m`;
+  }
+
+  function raceVenueLabel(race) {
+    const region = race.surfaceRegion || "日本";
+    return region === "日本" ? race.course : region;
+  }
+
+  function historyRecordKey(number) {
+    return `race-${number}`;
+  }
+
+  function historyRaceDetail(record) {
+    const item = record || {};
+    const publicResult = item.public || {};
+    const race = (item.hidden && item.hidden.race) || raceById(publicResult.raceId);
+    if (!race) return "";
+    return [
+      race.surface,
+      race.grade,
+      race.distance ? `${race.distance}m` : "",
+      raceVenueLabel(race)
+    ].filter(Boolean).join(" · ");
+  }
+
+  function formatMarginLength(value) {
+    if (typeof value !== "number" || !Number.isFinite(value)) return "";
+    const rounded = Math.round(value * 10) / 10;
+    return `${Number.isInteger(rounded) ? rounded : rounded.toFixed(1)}马身`;
+  }
+
+  function historyMarginText(record) {
+    const hidden = record && record.hidden ? record.hidden : {};
+    const margin = formatMarginLength(hidden.marginLengths);
+    if (!margin) return "";
+    return hidden.scoreDiff < 0 ? `（${margin}）` : margin;
+  }
+
+  function raceOptionLabel(plan, mode) {
     const challengeLabel = plan.challenge ? "[格上] " : "";
-    return `${challengeLabel}${plan.schedule.label} · ${plan.race.name} · ${plan.race.grade} · ${plan.race.ageRule}${raceRestrictionLabel(plan.race)} · ${plan.race.surfaceRegion || "日本"}${plan.race.surface}${plan.race.distance}m · ${plan.race.course}`;
+    return `${challengeLabel}${plan.schedule.label} · ${raceDisplayName(plan.race, mode)} · ${plan.race.grade} · ${plan.race.ageRule}${raceRestrictionLabel(plan.race)} · ${raceSurfaceDistanceLabel(plan.race)} · ${raceVenueLabel(plan.race)}`;
   }
 
   const FEATURED_COURSES = ["京都", "阪神", "中山", "东京"];
@@ -504,6 +641,7 @@
       panel.innerHTML = "";
       return;
     }
+    const raceNameMode = normalizeRaceNameMode(options && options.raceNameMode);
     const restStatus = ns.CareerRules && ns.CareerRules.getRestStatus
       ? ns.CareerRules.getRestStatus(career)
       : null;
@@ -526,15 +664,16 @@
     if (career.scheduledRace) {
       const payload = career.scheduledRace;
       const race = payload.race;
-      const opponentName = payload.opponent.displayName || payload.opponent.name || "随机对手";
+      const horseNameLanguage = normalizeHorseNameLanguage(options && options.horseNameLanguage);
+      const opponentName = historicalOpponentName(payload.opponent, horseNameLanguage, "随机对手");
       const opponentYear = payload.year ? `${payload.year} ` : "";
       panel.innerHTML = `
         ${racePanelHeader(career, "下一场比赛")}
         <div class="scheduled-race">
           <span class="badge">已报名</span>
           ${payload.challenge ? `<span class="badge">格上通过</span>` : ""}
-          <h2>${payload.schedule.label} · ${race.name}</h2>
-          <p>${race.grade} · ${race.ageRule}${raceRestrictionLabel(race)} · ${race.surfaceRegion || "日本"}${race.surface}${race.distance}m · ${race.course}</p>
+          <h2>${payload.schedule.label} · ${raceDisplayName(race, raceNameMode)}</h2>
+          <p>${race.grade} · ${race.ageRule}${raceRestrictionLabel(race)} · ${raceSurfaceDistanceLabel(race)} · ${raceVenueLabel(race)}</p>
           <p class="muted">预定对手：${opponentYear}${opponentName}</p>
         </div>
         <div class="race-row">
@@ -569,7 +708,7 @@
       ${filteredPlans.length ? `
         <div class="race-row">
           <select id="raceSelect">
-            ${filteredPlans.map((plan) => `<option value="${plan.race.id}">${raceOptionLabel(plan)}</option>`).join("")}
+            ${filteredPlans.map((plan) => `<option value="${plan.race.id}">${raceOptionLabel(plan, raceNameMode)}</option>`).join("")}
           </select>
           <button id="registerRaceBtn">报名比赛</button>
           <button class="secondary" id="nextTurnBtn">下一回合</button>
@@ -590,6 +729,9 @@
       return;
     }
     const expanded = !!(options && options.expanded);
+    const horseNameLanguage = normalizeHorseNameLanguage(options && options.horseNameLanguage);
+    const raceNameMode = normalizeRaceNameMode(options && options.raceNameMode);
+    const expandedRecords = (options && options.expandedRecords) || {};
     const orderedRecords = career.races
       .map((item, index) => ({ item, number: index + 1 }))
       .reverse();
@@ -597,16 +739,46 @@
     const hasHiddenRows = orderedRecords.length > visibleRecords.length;
     const revealScores = !!summary;
     const rows = visibleRecords.map(({ item, number }) => {
+      const recordKey = historyRecordKey(number);
+      const isRecordExpanded = !!expandedRecords[recordKey];
       const opponentYear = item.public.opponentYear ? `${item.public.opponentYear} ` : "";
-      const opponent = item.public.opponentName ? `${opponentYear}${item.public.opponentName}` : "随机对手";
-      const opponentJockey = item.public.opponentJockeyName ? ` / ${item.public.opponentJockeyName}` : "";
+      const opponentName = recordOpponentName(item, horseNameLanguage);
+      const opponent = opponentName ? `${opponentYear}${opponentName}` : "随机对手";
+      const opponentJockey = item.public.opponentJockeyName || "";
       const replacementNote = item.public.scheduledOpponentRetired ? " 退赛（随机对手递补）" : "";
       const retired = item.public.retired ? ` · ${item.public.retiredPhase}退赛` : "";
       const injuryText = item.public.injury && item.public.injury.label ? ` · ${item.public.injury.label}` : "";
       const resultText = `${item.public.rankLabel || "着外"}${retired}${injuryText}`;
       const trackCondition = item.public.trackCondition || (item.hidden && item.hidden.trackCondition) || "";
+      const raceName = recordRaceName(item, raceNameMode);
+      const raceDetail = isRecordExpanded ? historyRaceDetail(item) : "";
+      const marginText = isRecordExpanded ? historyMarginText(item) : "";
+      const toggleLabel = isRecordExpanded ? "收起比赛详情" : "展开比赛详情";
       const scoreLine = revealScores ? `<td>${(item.hidden && item.hidden.scoreLine) || ""}</td>` : "";
-      return `<tr><td>${number}</td><td>${item.public.timeLabel || ""}</td><td>${item.public.raceName}</td><td>${trackCondition}</td><td>${resultText}</td><td>${item.public.playerJockeyName || ""}</td><td>${opponent}${opponentJockey}${replacementNote}</td>${scoreLine}</tr>`;
+      return `
+        <tr class="${isRecordExpanded ? "history-record-expanded" : ""}">
+          <td class="history-index-cell">
+            <button class="secondary history-record-toggle" type="button" data-history-record-toggle="${recordKey}" aria-expanded="${isRecordExpanded ? "true" : "false"}" aria-label="${toggleLabel}" title="${toggleLabel}">${isRecordExpanded ? "▲" : "▼"}</button>
+            <span>${number}</span>
+          </td>
+          <td>${item.public.timeLabel || ""}</td>
+          <td>
+            <span>${raceName}</span>
+            ${raceDetail ? `<span class="history-cell-subtext">${raceDetail}</span>` : ""}
+          </td>
+          <td>${trackCondition}</td>
+          <td>
+            <span>${resultText}</span>
+            ${marginText ? `<span class="history-cell-subtext history-margin-text">${marginText}</span>` : ""}
+          </td>
+          <td>${item.public.playerJockeyName || ""}</td>
+          <td>
+            <span>${opponent}${replacementNote}</span>
+            ${isRecordExpanded && opponentJockey ? `<span class="history-cell-subtext">${opponentJockey}</span>` : ""}
+          </td>
+          ${scoreLine}
+        </tr>
+      `;
     }).join("");
 
     let reveal = "";
@@ -657,7 +829,7 @@
       </div>
       <div class="history-table-wrap">
         <table>
-          <thead><tr><th>#</th><th>时间</th><th>比赛</th><th>场地</th><th>结果</th><th>骑手</th><th>主要对手</th>${revealScores ? "<th>出目</th>" : ""}</tr></thead>
+          <thead><tr><th>#</th><th>时间</th><th class="race-name-header"><span>比赛</span>${renderRaceNameModeToggle(raceNameMode)}</th><th>场地</th><th>结果</th><th>骑手</th><th class="opponent-name-header"><span>主要对手</span>${renderHorseNameLanguageToggle(horseNameLanguage)}</th>${revealScores ? "<th>出目</th>" : ""}</tr></thead>
           <tbody>${rows || `<tr><td colspan="${revealScores ? 8 : 7}">还没有出赛记录。</td></tr>`}</tbody>
         </table>
       </div>
