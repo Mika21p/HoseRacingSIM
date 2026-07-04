@@ -11,6 +11,7 @@
       note: "无败法国雌马，法国橡树、红宝锦标与凯旋门赏连贯制压。"
     },
     races: [
+      { raceId: "prix-marcel-boussac", year: 2007, ability: 89, jockeyId: "christophe-soumillon", finish: 1 },
       { raceId: "prix-de-diane", year: 2008, ability: 90, jockeyId: "christophe-soumillon", finish: 1 },
       { raceId: "prix-vermeille", year: 2008, ability: 90, jockeyId: "christophe-soumillon", finish: 1 },
       { raceId: "prix-de-larc", year: 2008, ability: 91, jockeyId: "christophe-soumillon", finish: 1 }

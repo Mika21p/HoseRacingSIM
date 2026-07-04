@@ -93,6 +93,9 @@
     if (!Array.isArray(career.races)) career.races = [];
     if (!career.injury) career.injury = { active: null, history: [] };
     if (!Array.isArray(career.injury.history)) career.injury.history = [];
+    if (ns.RaceProgression && ns.RaceProgression.ensureChallengeState) {
+      ns.RaceProgression.ensureChallengeState(career);
+    }
     if (!career.maturity) {
       career.maturity = {
         decline: 0,
@@ -377,9 +380,17 @@
     return true;
   }
 
-  function buildRacePayload(selectedRace, schedule) {
+  function buildRacePayload(selectedRace, schedule, challenge) {
     const opponent = ns.RaceRules.chooseOpponent(selectedRace);
-    return { race: selectedRace, schedule, opponent, year: opponent.year || null };
+    const payload = { race: selectedRace, schedule, opponent, year: opponent.year || null };
+    if (challenge) {
+      payload.challenge = {
+        key: challenge.key,
+        window: challenge.window,
+        acceptedAtIndex: state.career && state.career.currentTime ? state.career.currentTime.index : null
+      };
+    }
+    return payload;
   }
 
   function shouldConfirmLongGap(schedule) {
@@ -388,6 +399,31 @@
     if (turnGap <= 12) return true;
     return window.confirm(
       `这场比赛将在${schedule.label}举行，距离当前时间超过6个月。确定报名并逐回合推进到该赛事吗？`
+    );
+  }
+
+  function confirmChallengeRegistration(plan) {
+    const challenge = plan && plan.challenge;
+    if (!challenge) return true;
+    const consumeText = challenge.consumesOnExclusion
+      ? "报名通过或被除外都会消耗 1 次格上机会。"
+      : "报名通过会消耗 1 次格上机会；如果被除外，本次不消耗机会。";
+    return window.confirm(
+      `「${plan.race.name}」属于格上挑战。\n当前阶段剩余 ${challenge.remaining} 次格上机会。\n${consumeText}\n若被除外，本届比赛不能再次报名。\n确定报名吗？`
+    );
+  }
+
+  function rollChallengeExclusion(challenge) {
+    return !!challenge && Math.random() < challenge.probability;
+  }
+
+  function alertChallengeExclusion(plan) {
+    const challenge = plan && plan.challenge;
+    const consumeText = challenge && challenge.consumesOnExclusion
+      ? "本次格上机会已消耗 1 次。"
+      : "本次没有消耗格上机会。";
+    window.alert(
+      `「${plan.race.name}」的格上报名被除外，报名失败。\n本届比赛不能再次报名。\n${consumeText}`
     );
   }
 
@@ -435,8 +471,20 @@
     if (!ns.TimeRules.isReachableSchedule(state.career, plan.schedule)) return;
     const selectedRace = plan.race;
     const schedule = plan.schedule;
+    const challenge = plan.challenge || null;
+    if (challenge && !confirmChallengeRegistration(plan)) return;
     if (!shouldConfirmLongGap(schedule)) return;
-    const payload = buildRacePayload(selectedRace, schedule);
+    if (challenge) {
+      const excluded = rollChallengeExclusion(challenge);
+      ns.RaceProgression.applyChallengeOutcome(state.career, plan, excluded);
+      if (excluded) {
+        refresh();
+        saveGame();
+        alertChallengeExclusion(plan);
+        return;
+      }
+    }
+    const payload = buildRacePayload(selectedRace, schedule, challenge);
     state.career.scheduledRace = payload;
     refresh();
     saveGame();

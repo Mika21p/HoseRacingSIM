@@ -14,6 +14,7 @@
       { raceId: "prix-du-jockey-club", year: 1999, ability: 93, jockeyId: "cash-asmussen", finish: 1 },
       { raceId: "irish-derby", year: 1999, ability: 93, jockeyId: "cash-asmussen", finish: 1 },
       { raceId: "prix-de-larc", year: 1999, ability: 93, jockeyId: "mick-kinane", finish: 1 },
+      { raceId: "tattersalls-gold-cup", year: 2000, ability: 92, jockeyId: "mick-kinane", finish: 1 },
       { raceId: "grand-prix-de-saint-cloud", year: 2000, ability: 93, jockeyId: "cash-asmussen", finish: 1 },
       { raceId: "king-george-vi-and-queen-elizabeth-stakes", year: 2000, ability: 93, jockeyId: "mick-kinane", finish: 1 }
     ]

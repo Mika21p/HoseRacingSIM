@@ -98,6 +98,11 @@
     return race.sexRestriction ? ` · ${race.sexRestriction}限定` : "";
   }
 
+  function raceOptionLabel(plan) {
+    const challengeLabel = plan.challenge ? "[格上] " : "";
+    return `${challengeLabel}${plan.schedule.label} · ${plan.race.name} · ${plan.race.grade} · ${plan.race.ageRule}${raceRestrictionLabel(plan.race)} · ${plan.race.surfaceRegion || "日本"}${plan.race.surface}${plan.race.distance}m · ${plan.race.course}`;
+  }
+
   const FEATURED_COURSES = ["京都", "阪神", "中山", "东京"];
   const COURSE_VALUE_MAP = {
     kyoto: "京都",
@@ -527,6 +532,7 @@
         ${racePanelHeader(career, "下一场比赛")}
         <div class="scheduled-race">
           <span class="badge">已报名</span>
+          ${payload.challenge ? `<span class="badge">格上通过</span>` : ""}
           <h2>${payload.schedule.label} · ${race.name}</h2>
           <p>${race.grade} · ${race.ageRule}${raceRestrictionLabel(race)} · ${race.surfaceRegion || "日本"}${race.surface}${race.distance}m · ${race.course}</p>
           <p class="muted">预定对手：${opponentYear}${opponentName}</p>
@@ -563,7 +569,7 @@
       ${filteredPlans.length ? `
         <div class="race-row">
           <select id="raceSelect">
-            ${filteredPlans.map((plan) => `<option value="${plan.race.id}">${plan.schedule.label} · ${plan.race.name} · ${plan.race.grade} · ${plan.race.ageRule}${raceRestrictionLabel(plan.race)} · ${plan.race.surfaceRegion || "日本"}${plan.race.surface}${plan.race.distance}m · ${plan.race.course}</option>`).join("")}
+            ${filteredPlans.map((plan) => `<option value="${plan.race.id}">${raceOptionLabel(plan)}</option>`).join("")}
           </select>
           <button id="registerRaceBtn">报名比赛</button>
           <button class="secondary" id="nextTurnBtn">下一回合</button>

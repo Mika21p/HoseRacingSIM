@@ -19,6 +19,9 @@
         active: null,
         history: []
       },
+      challenge: ns.RaceProgression && ns.RaceProgression.createChallengeState
+        ? ns.RaceProgression.createChallengeState()
+        : { age2Used: 0, age3SpringUsed: 0, exclusions: [] },
       maturity: {
         decline: 0,
         lastCheckedIndex: start.index,

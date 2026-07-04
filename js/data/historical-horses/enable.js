@@ -12,12 +12,15 @@
     },
     races: [
       { raceId: "epsom-oaks", year: 2017, ability: 91, jockeyId: "frankie-dettori", finish: 1 },
+      { raceId: "irish-oaks", year: 2017, ability: 91, jockeyId: "frankie-dettori", finish: 1 },
       { raceId: "king-george-vi-and-queen-elizabeth-stakes", year: 2017, ability: 92, jockeyId: "frankie-dettori", finish: 1 },
+      { raceId: "yorkshire-oaks", year: 2017, ability: 91, jockeyId: "frankie-dettori", finish: 1 },
       { raceId: "prix-de-larc", year: 2017, ability: 92, jockeyId: "frankie-dettori", finish: 1 },
       { raceId: "prix-de-larc", year: 2018, ability: 92, jockeyId: "frankie-dettori", finish: 1 },
       { raceId: "breeders-cup-turf", year: 2018, ability: 92, jockeyId: "frankie-dettori", finish: 1 },
       { raceId: "eclipse-stakes", year: 2019, ability: 91, jockeyId: "frankie-dettori", finish: 1 },
       { raceId: "king-george-vi-and-queen-elizabeth-stakes", year: 2019, ability: 92, jockeyId: "frankie-dettori", finish: 1 },
+      { raceId: "yorkshire-oaks", year: 2019, ability: 91, jockeyId: "frankie-dettori", finish: 1 },
       { raceId: "king-george-vi-and-queen-elizabeth-stakes", year: 2020, ability: 91, jockeyId: "frankie-dettori", finish: 1 }
     ]
   });

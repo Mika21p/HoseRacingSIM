@@ -814,6 +814,98 @@
       ]
     },
     {
+      id: "kevin-darley",
+      name: "K. Darley",
+      periods: [
+        { from: 1978, to: 1992, ability: 80 },
+        { from: 1993, to: 2006, ability: 90 },
+        { from: 2007, to: 2007, ability: 80 }
+      ]
+    },
+    {
+      id: "seamie-heffernan",
+      name: "S. Heffernan",
+      periods: [
+        { from: 1988, to: 1999, ability: 80 },
+        { from: 2000, to: 2021, ability: 90 },
+        { from: 2022, to: 2026, ability: 80 }
+      ]
+    },
+    {
+      id: "jimmy-fortune",
+      name: "J. Fortune",
+      periods: [
+        { from: 1988, to: 1997, ability: 80 },
+        { from: 1998, to: 2009, ability: 90 },
+        { from: 2010, to: 2017, ability: 80 }
+      ]
+    },
+    {
+      id: "joe-mercer",
+      name: "J. Mercer",
+      periods: [
+        { from: 1947, to: 1952, ability: 80 },
+        { from: 1953, to: 1981, ability: 90 },
+        { from: 1982, to: 1985, ability: 80 }
+      ]
+    },
+    {
+      id: "geoff-lewis",
+      name: "G. Lewis",
+      periods: [
+        { from: 1953, to: 1962, ability: 80 },
+        { from: 1963, to: 1973, ability: 90 },
+        { from: 1974, to: 1979, ability: 80 }
+      ]
+    },
+    {
+      id: "eduardo-pedroza",
+      name: "E. Pedroza",
+      periods: [
+        { from: 1995, to: 2002, ability: 80 },
+        { from: 2003, to: 2019, ability: 90 },
+        { from: 2020, to: 2026, ability: 80 }
+      ]
+    },
+    {
+      id: "lukas-delozier",
+      name: "L. Delozier",
+      periods: [
+        { from: 2018, to: 2026, ability: 80 }
+      ]
+    },
+    {
+      id: "rene-piechulek",
+      name: "R. Piechulek",
+      periods: [
+        { from: 2004, to: 2020, ability: 80 },
+        { from: 2021, to: 2024, ability: 90 },
+        { from: 2025, to: 2026, ability: 80 }
+      ]
+    },
+    {
+      id: "gary-w-moore",
+      name: "G. Moore",
+      periods: [
+        { from: 1970, to: 1988, ability: 90 }
+      ]
+    },
+    {
+      id: "hollie-doyle",
+      name: "H. Doyle",
+      periods: [
+        { from: 2013, to: 2019, ability: 80 },
+        { from: 2020, to: 2026, ability: 90 }
+      ]
+    },
+    {
+      id: "oisin-orr",
+      name: "O. Orr",
+      periods: [
+        { from: 2017, to: 2026, ability: 80 }
+      ]
+    },
+    {
       id: "george-duffield",
       name: "G. Duffield",
       periods: [
@@ -1377,6 +1469,17 @@
     "paul-hanagan": ["europe"],
     "stephane-pasquier": ["europe"],
     "jamie-spencer": ["europe"],
+    "kevin-darley": ["europe"],
+    "seamie-heffernan": ["europe"],
+    "jimmy-fortune": ["europe"],
+    "joe-mercer": ["europe"],
+    "geoff-lewis": ["europe"],
+    "eduardo-pedroza": ["europe"],
+    "lukas-delozier": ["europe"],
+    "rene-piechulek": ["europe"],
+    "gary-w-moore": ["australia", "hongkong", "europe"],
+    "hollie-doyle": ["europe"],
+    "oisin-orr": ["europe"],
     "george-duffield": ["europe"],
     "colm-odonoghue": ["europe"],
     "chris-hayes": ["europe"],

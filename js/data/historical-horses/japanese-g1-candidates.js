@@ -334,6 +334,7 @@
       },
       races: [
         { raceId: "epsom-oaks", year: 2010, ability: 85, jockeyId: "ryan-moore", finish: 1 },
+        { raceId: "irish-oaks", year: 2010, ability: 85, jockeyId: "ryan-moore", finish: 1 },
         { raceId: "queen-elizabeth-ii-cup", year: 2010, ability: 86, jockeyId: "ryan-moore", finish: 1 },
         { raceId: "queen-elizabeth-ii-cup", year: 2011, ability: 86, jockeyId: "ryan-moore", finish: 1 }
       ]

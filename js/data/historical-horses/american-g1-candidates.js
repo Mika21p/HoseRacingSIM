@@ -186,6 +186,7 @@
         note: "欧洲德比马兼育马者杯草地双冠，国际中长距离代表。"
       },
       races: [
+        { raceId: "futurity-trophy", year: 2001, ability: 86, jockeyId: "kevin-darley", finish: 1 },
         { raceId: "epsom-derby", year: 2002, ability: 88, jockeyId: "johnny-murtagh", finish: 1 },
         { raceId: "irish-derby", year: 2002, ability: 88, jockeyId: "mick-kinane", finish: 1 },
         { raceId: "breeders-cup-turf", year: 2002, ability: 88, jockeyId: "mick-kinane", finish: 1 },
@@ -323,9 +324,12 @@
         note: "Godolphin全球远征型草地马，育马者杯草地双胜并取下迪拜与香港G1。"
       },
       races: [
+        { raceId: "grosser-preis-von-berlin", year: 2022, ability: 82, jockeyId: "james-doyle", finish: 1 },
+        { raceId: "preis-von-europa", year: 2022, ability: 82, jockeyId: "william-buick", finish: 1 },
         { raceId: "breeders-cup-turf", year: 2022, ability: 82, jockeyId: "james-doyle", finish: 1 },
         { raceId: "dubai-sheema-classic", year: 2024, ability: 82, jockeyId: "william-buick", finish: 1 },
         { raceId: "champions-chater-cup", year: 2024, ability: 82, jockeyId: "william-buick", finish: 1 },
+        { raceId: "preis-von-europa", year: 2024, ability: 82, jockeyId: "william-buick", finish: 1 },
         { raceId: "breeders-cup-turf", year: 2024, ability: 82, jockeyId: "william-buick", finish: 1 }
       ]
     },
