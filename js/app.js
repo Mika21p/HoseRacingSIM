@@ -5,10 +5,12 @@
     career: null,
     retiredSummary: null,
     historyExpanded: false,
+    activeFilterGroup: "",
     filters: {
-      grade: "all",
-      surface: "all",
-      distance: "all"
+      grade: [],
+      surface: [],
+      distance: [],
+      course: []
     }
   };
 
@@ -33,7 +35,9 @@
   function refresh() {
     const didClearExpiredRegistration = clearExpiredRegistration();
     ns.UI.renderHorse(document.getElementById("horsePanel"), state.career);
-    ns.UI.renderRaceSelector(document.getElementById("racePanel"), state.career, state.filters);
+    ns.UI.renderRaceSelector(document.getElementById("racePanel"), state.career, state.filters, {
+      activeFilterGroup: state.activeFilterGroup
+    });
     ns.UI.renderLastRaceComment(document.getElementById("feedbackPanel"), state.career);
     ns.UI.renderHistory(document.getElementById("historyPanel"), state.career, state.retiredSummary, {
       expanded: state.historyExpanded
@@ -52,13 +56,24 @@
   }
 
   function defaultFilters() {
-    return { grade: "all", surface: "all", distance: "all" };
+    return { grade: [], surface: [], distance: [], course: [] };
+  }
+
+  function normalizeFilterGroup(value) {
+    if (Array.isArray(value)) {
+      return [...new Set(value.filter((item) => item && item !== "all"))];
+    }
+    if (!value || value === "all") return [];
+    return [value];
   }
 
   function normalizeFilters(filters) {
+    const source = filters || {};
     return {
-      ...defaultFilters(),
-      ...(filters || {})
+      grade: normalizeFilterGroup(source.grade),
+      surface: normalizeFilterGroup(source.surface),
+      distance: normalizeFilterGroup(source.distance),
+      course: normalizeFilterGroup(source.course)
     };
   }
 
@@ -302,6 +317,7 @@
     state.career = ns.CareerRules.createCareer(horse, comments, commentDetails, debutLock, trainer);
     state.retiredSummary = null;
     state.historyExpanded = false;
+    state.activeFilterGroup = "";
     state.filters = defaultFilters();
     refresh();
     saveGame();
@@ -464,6 +480,10 @@
 
   function retire() {
     if (!state.career || state.career.retired) return;
+    const horseName = state.career.horse && state.career.horse.name
+      ? state.career.horse.name
+      : "当前小马";
+    if (!window.confirm(`确定让${horseName}退役吗？退役后会结束当前生涯并揭示隐藏能力。`)) return;
     state.retiredSummary = ns.CareerRules.retire(state.career);
     refresh();
     saveGame();
@@ -476,41 +496,68 @@
     saveGame();
   }
 
+  function setRaceFilterValue(group, value, checked) {
+    state.filters = normalizeFilters(state.filters);
+    const values = state.filters[group] || [];
+    state.filters[group] = checked
+      ? [...new Set(values.concat(value))]
+      : values.filter((item) => item !== value);
+    state.activeFilterGroup = group;
+    refresh();
+    saveGame();
+  }
+
+  function clearRaceFilterGroup(group) {
+    state.filters = normalizeFilters(state.filters);
+    state.filters[group] = [];
+    state.activeFilterGroup = group;
+    refresh();
+    saveGame();
+  }
+
+  function clearAllRaceFilters() {
+    state.filters = defaultFilters();
+    state.activeFilterGroup = "";
+    refresh();
+    saveGame();
+  }
+
   function bindDynamicEvents() {
     const registerRaceBtn = document.getElementById("registerRaceBtn");
     const nextTurnBtn = document.getElementById("nextTurnBtn");
     const cancelRegistrationBtn = document.getElementById("cancelRegistrationBtn");
     const retireBtn = document.getElementById("retireBtn");
     const historyToggleBtn = document.getElementById("historyToggleBtn");
-    const gradeFilter = document.getElementById("gradeFilter");
-    const surfaceFilter = document.getElementById("surfaceFilter");
-    const distanceFilter = document.getElementById("distanceFilter");
+    const raceFilterToggles = Array.from(document.querySelectorAll("[data-race-filter]"));
+    const raceFilterPanels = Array.from(document.querySelectorAll("[data-race-filter-group]"));
+    const raceFilterClearButtons = Array.from(document.querySelectorAll("[data-filter-clear]"));
+    const clearAllRaceFiltersBtn = document.getElementById("clearAllRaceFiltersBtn");
     if (registerRaceBtn) registerRaceBtn.addEventListener("click", registerRace);
     if (nextTurnBtn) nextTurnBtn.addEventListener("click", advanceTurn);
     if (cancelRegistrationBtn) cancelRegistrationBtn.addEventListener("click", cancelRegistration);
     if (retireBtn) retireBtn.addEventListener("click", retire);
     if (historyToggleBtn) historyToggleBtn.addEventListener("click", toggleHistory);
-    if (gradeFilter) {
-      gradeFilter.addEventListener("change", () => {
-        state.filters.grade = gradeFilter.value;
-        refresh();
-        saveGame();
+    raceFilterToggles.forEach((toggle) => {
+      toggle.addEventListener("change", () => {
+        setRaceFilterValue(toggle.dataset.raceFilter, toggle.value, toggle.checked);
       });
-    }
-    if (surfaceFilter) {
-      surfaceFilter.addEventListener("change", () => {
-        state.filters.surface = surfaceFilter.value;
-        refresh();
-        saveGame();
+    });
+    raceFilterPanels.forEach((panel) => {
+      panel.addEventListener("toggle", () => {
+        if (panel.open) {
+          raceFilterPanels.forEach((otherPanel) => {
+            if (otherPanel !== panel) otherPanel.open = false;
+          });
+          state.activeFilterGroup = panel.dataset.raceFilterGroup;
+        } else if (state.activeFilterGroup === panel.dataset.raceFilterGroup) {
+          state.activeFilterGroup = "";
+        }
       });
-    }
-    if (distanceFilter) {
-      distanceFilter.addEventListener("change", () => {
-        state.filters.distance = distanceFilter.value;
-        refresh();
-        saveGame();
-      });
-    }
+    });
+    raceFilterClearButtons.forEach((button) => {
+      button.addEventListener("click", () => clearRaceFilterGroup(button.dataset.filterClear));
+    });
+    if (clearAllRaceFiltersBtn) clearAllRaceFiltersBtn.addEventListener("click", clearAllRaceFilters);
   }
 
   function bindSetupEvents() {

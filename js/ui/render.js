@@ -98,26 +98,158 @@
     return race.sexRestriction ? ` · ${race.sexRestriction}限定` : "";
   }
 
+  const FEATURED_COURSES = ["京都", "阪神", "中山", "东京"];
+  const COURSE_VALUE_MAP = {
+    kyoto: "京都",
+    hanshin: "阪神",
+    nakayama: "中山",
+    tokyo: "东京"
+  };
+  const RACE_FILTER_GROUPS = [
+    {
+      id: "grade",
+      label: "等级",
+      options: [
+        { value: "g1", label: "G1/JpnI" },
+        { value: "g2", label: "G2/JpnII" },
+        { value: "g3", label: "G3/JpnIII" },
+        { value: "op", label: "公开赛" },
+        { value: "condition", label: "条件赛" }
+      ]
+    },
+    {
+      id: "surface",
+      label: "场地",
+      options: [
+        { value: "草地", label: "草地" },
+        { value: "泥地", label: "泥地" }
+      ]
+    },
+    {
+      id: "distance",
+      label: "距离",
+      options: [
+        { value: "sprint", label: "短途1000-1300" },
+        { value: "mile", label: "英里1400-1800" },
+        { value: "middle", label: "中距离1900-2200" },
+        { value: "intermediate", label: "中长距离2300-2600" },
+        { value: "long", label: "长距离2601+" }
+      ]
+    },
+    {
+      id: "course",
+      label: "赛场",
+      options: [
+        { value: "kyoto", label: "京都" },
+        { value: "hanshin", label: "阪神" },
+        { value: "nakayama", label: "中山" },
+        { value: "tokyo", label: "东京" },
+        { value: "other-japan", label: "其他地方" },
+        { value: "overseas", label: "海外" }
+      ]
+    }
+  ];
+
+  function filterValues(filters, key) {
+    const value = filters && filters[key];
+    if (Array.isArray(value)) return value.filter((item) => item && item !== "all");
+    if (!value || value === "all") return [];
+    return [value];
+  }
+
+  function normalizeRaceFilters(filters) {
+    return {
+      grade: filterValues(filters, "grade"),
+      surface: filterValues(filters, "surface"),
+      distance: filterValues(filters, "distance"),
+      course: filterValues(filters, "course")
+    };
+  }
+
+  function gradeMatches(raceClass, value) {
+    return raceClass === value
+      || (value === "g1" && raceClass === "jpn1")
+      || (value === "g2" && raceClass === "jpn2")
+      || (value === "g3" && raceClass === "jpn3")
+      || (value === "condition" && ns.RaceProgression.CONDITION_CLASSES.includes(raceClass));
+  }
+
+  function distanceMatches(distance, value) {
+    return (value === "sprint" && distance >= 1000 && distance <= 1300)
+      || (value === "mile" && distance >= 1400 && distance <= 1800)
+      || (value === "middle" && distance >= 1900 && distance <= 2200)
+      || (value === "intermediate" && distance >= 2300 && distance <= 2600)
+      || (value === "long" && distance >= 2601);
+  }
+
+  function courseMatches(race, value) {
+    const region = race.surfaceRegion || "日本";
+    if (COURSE_VALUE_MAP[value]) return race.course === COURSE_VALUE_MAP[value];
+    if (value === "overseas") return region !== "日本";
+    if (value === "other-japan") return region === "日本" && !FEATURED_COURSES.includes(race.course);
+    return false;
+  }
+
+  function groupMatches(values, matcher) {
+    return values.length === 0 || values.some(matcher);
+  }
+
   function raceMatchesFilters(plan, filters) {
-    const grade = filters && filters.grade ? filters.grade : "all";
-    const surface = filters && filters.surface ? filters.surface : "all";
-    const distance = filters && filters.distance ? filters.distance : "all";
+    const currentFilters = normalizeRaceFilters(filters);
     const raceClass = plan.race.raceClass;
-    const gradeMatched = grade === "all"
-      || raceClass === grade
-      || (grade === "g1" && raceClass === "jpn1")
-      || (grade === "g2" && raceClass === "jpn2")
-      || (grade === "g3" && raceClass === "jpn3")
-      || (grade === "condition" && ns.RaceProgression.CONDITION_CLASSES.includes(raceClass));
-    const surfaceMatched = surface === "all" || plan.race.surface === surface;
     const raceDistance = plan.race.distance;
-    const distanceMatched = distance === "all"
-      || (distance === "sprint" && raceDistance >= 1000 && raceDistance <= 1300)
-      || (distance === "mile" && raceDistance >= 1400 && raceDistance <= 1800)
-      || (distance === "middle" && raceDistance >= 1900 && raceDistance <= 2200)
-      || (distance === "intermediate" && raceDistance >= 2300 && raceDistance <= 2600)
-      || (distance === "long" && raceDistance >= 2601);
-    return gradeMatched && surfaceMatched && distanceMatched;
+    const gradeMatched = groupMatches(currentFilters.grade, (value) => gradeMatches(raceClass, value));
+    const surfaceMatched = groupMatches(currentFilters.surface, (value) => plan.race.surface === value);
+    const distanceMatched = groupMatches(currentFilters.distance, (value) => distanceMatches(raceDistance, value));
+    const courseMatched = groupMatches(currentFilters.course, (value) => courseMatches(plan.race, value));
+    return gradeMatched && surfaceMatched && distanceMatched && courseMatched;
+  }
+
+  function filterSummary(group, selectedValues) {
+    if (selectedValues.length === 0) return "全部";
+    const labels = selectedValues
+      .map((value) => (group.options.find((option) => option.value === value) || {}).label)
+      .filter(Boolean);
+    if (labels.length <= 2) return labels.join("+");
+    return `${labels.slice(0, 2).join("+")}+${labels.length - 2}`;
+  }
+
+  function renderFilterGroup(group, filters, activeFilterGroup) {
+    const selectedValues = filterValues(filters, group.id);
+    const selectedSet = new Set(selectedValues);
+    const isOpen = activeFilterGroup === group.id;
+    return `
+      <details class="race-filter-menu" data-race-filter-group="${group.id}" ${isOpen ? "open" : ""}>
+        <summary>
+          <span>${group.label}：${filterSummary(group, selectedValues)}</span>
+          <b>${selectedValues.length || "全部"}</b>
+        </summary>
+        <div class="race-filter-options">
+          ${group.options.map((option) => `
+            <label class="race-filter-option">
+              <input type="checkbox" data-race-filter="${group.id}" value="${option.value}" ${selectedSet.has(option.value) ? "checked" : ""}>
+              <span>${option.label}</span>
+            </label>
+          `).join("")}
+          <button class="secondary filter-clear-button" type="button" data-filter-clear="${group.id}" ${selectedValues.length ? "" : "disabled"}>清除${group.label}</button>
+        </div>
+      </details>
+    `;
+  }
+
+  function hasActiveRaceFilters(filters) {
+    return RACE_FILTER_GROUPS.some((group) => filterValues(filters, group.id).length > 0);
+  }
+
+  function renderRaceFilters(filters, activeFilterGroup) {
+    const currentFilters = normalizeRaceFilters(filters);
+    const active = hasActiveRaceFilters(currentFilters);
+    return `
+      <div class="filter-row" aria-label="比赛筛选">
+        ${RACE_FILTER_GROUPS.map((group) => renderFilterGroup(group, currentFilters, activeFilterGroup)).join("")}
+        <button class="secondary filter-clear-all" id="clearAllRaceFiltersBtn" type="button" ${active ? "" : "disabled"}>清除筛选</button>
+      </div>
+    `;
   }
 
   function renderSetup(root) {
@@ -362,7 +494,7 @@
     `;
   }
 
-  function renderRaceSelector(panel, career, filters) {
+  function renderRaceSelector(panel, career, filters, options) {
     if (!career || career.retired) {
       panel.innerHTML = "";
       return;
@@ -421,39 +553,12 @@
       `;
       return;
     }
-    const currentFilters = filters || { grade: "all", surface: "all", distance: "all" };
+    const currentFilters = normalizeRaceFilters(filters);
+    const activeFilterGroup = options && options.activeFilterGroup;
     const filteredPlans = plans.filter((plan) => raceMatchesFilters(plan, currentFilters));
     panel.innerHTML = `
       ${racePanelHeader(career, "下一场比赛")}
-      <div class="filter-row">
-        <label>等级
-          <select id="gradeFilter">
-            <option value="all" ${currentFilters.grade === "all" ? "selected" : ""}>全部</option>
-            <option value="g1" ${currentFilters.grade === "g1" ? "selected" : ""}>G1/JpnI</option>
-            <option value="g2" ${currentFilters.grade === "g2" ? "selected" : ""}>G2/JpnII</option>
-            <option value="g3" ${currentFilters.grade === "g3" ? "selected" : ""}>G3/JpnIII</option>
-            <option value="op" ${currentFilters.grade === "op" ? "selected" : ""}>公开赛</option>
-            <option value="condition" ${currentFilters.grade === "condition" ? "selected" : ""}>条件赛</option>
-          </select>
-        </label>
-        <label>场地
-          <select id="surfaceFilter">
-            <option value="all" ${currentFilters.surface === "all" ? "selected" : ""}>全部</option>
-            <option value="草地" ${currentFilters.surface === "草地" ? "selected" : ""}>草地</option>
-            <option value="泥地" ${currentFilters.surface === "泥地" ? "selected" : ""}>泥地</option>
-          </select>
-        </label>
-        <label>距离
-          <select id="distanceFilter">
-            <option value="all" ${currentFilters.distance === "all" ? "selected" : ""}>全部</option>
-            <option value="sprint" ${currentFilters.distance === "sprint" ? "selected" : ""}>短途1000-1300</option>
-            <option value="mile" ${currentFilters.distance === "mile" ? "selected" : ""}>英里1400-1800</option>
-            <option value="middle" ${currentFilters.distance === "middle" ? "selected" : ""}>中距离1900-2200</option>
-            <option value="intermediate" ${currentFilters.distance === "intermediate" ? "selected" : ""}>中长距离2300-2600</option>
-            <option value="long" ${currentFilters.distance === "long" ? "selected" : ""}>长距离2601+</option>
-          </select>
-        </label>
-      </div>
+      ${renderRaceFilters(currentFilters, activeFilterGroup)}
       <div id="jockeyNotice"></div>
       ${filteredPlans.length ? `
         <div class="race-row">
