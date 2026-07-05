@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "lookin-at-lucky",
     "name": "Lookin At Lucky",
-    "displayName": "Lookin At Lucky",
-    "displayNameZh": "Lookin At Lucky",
+    "displayName": "看运气",
+    "displayNameZh": "看运气",
     "displayNameEn": "Lookin At Lucky",
     "profile": {
       "baseAbility": 85,

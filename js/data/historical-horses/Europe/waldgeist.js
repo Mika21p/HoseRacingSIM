@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "waldgeist",
     "name": "Waldgeist",
-    "displayName": "Waldgeist",
-    "displayNameZh": "Waldgeist",
+    "displayName": "树林之灵",
+    "displayNameZh": "树林之灵",
     "displayNameEn": "Waldgeist",
     "profile": {
       "baseAbility": 90,

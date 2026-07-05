@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "inspiral",
     "name": "Inspiral",
-    "displayName": "Inspiral",
-    "displayNameZh": "Inspiral",
+    "displayName": "旋进轨迹",
+    "displayNameZh": "旋进轨迹",
     "displayNameEn": "Inspiral",
     "profile": {
       "baseAbility": 89,

@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "dalakhani",
     "name": "Dalakhani",
-    "displayName": "Dalakhani",
-    "displayNameZh": "Dalakhani",
+    "displayName": "带来吉利",
+    "displayNameZh": "带来吉利",
     "displayNameEn": "Dalakhani",
     "profile": {
       "baseAbility": 94,

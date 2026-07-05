@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "panthalassa",
     "name": "Panthalassa",
-    "displayName": "Panthalassa",
-    "displayNameZh": "Panthalassa",
+    "displayName": "本初之海",
+    "displayNameZh": "本初之海",
     "displayNameEn": "Panthalassa",
     "profile": {
       "baseAbility": 86,

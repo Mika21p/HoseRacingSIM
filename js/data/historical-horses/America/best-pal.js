@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "best-pal",
     "name": "Best Pal",
-    "displayName": "Best Pal",
-    "displayNameZh": "Best Pal",
+    "displayName": "挚友",
+    "displayNameZh": "挚友",
     "displayNameEn": "Best Pal",
     "profile": {
       "baseAbility": 86,

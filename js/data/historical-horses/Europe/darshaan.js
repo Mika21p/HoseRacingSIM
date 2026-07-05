@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "darshaan",
     "name": "Darshaan",
-    "displayName": "Darshaan",
-    "displayNameZh": "Darshaan",
+    "displayName": "达善",
+    "displayNameZh": "达善",
     "displayNameEn": "Darshaan",
     "profile": {
       "baseAbility": 87,

@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "alpinista",
     "name": "Alpinista",
-    "displayName": "登山家",
-    "displayNameZh": "登山家",
+    "displayName": "登山英雌",
+    "displayNameZh": "登山英雌",
     "displayNameEn": "Alpinista",
     "profile": {
       "baseAbility": 83,

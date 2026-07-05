@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "flanders",
     "name": "Flanders",
-    "displayName": "Flanders",
-    "displayNameZh": "Flanders",
+    "displayName": "法兰德斯",
+    "displayNameZh": "法兰德斯",
     "displayNameEn": "Flanders",
     "profile": {
       "baseAbility": 84,

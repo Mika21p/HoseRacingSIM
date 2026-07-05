@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "roaring-lion",
     "name": "Roaring Lion",
-    "displayName": "咆哮狮",
-    "displayNameZh": "咆哮狮",
+    "displayName": "猛狮怒吼",
+    "displayNameZh": "猛狮怒吼",
     "displayNameEn": "Roaring Lion",
     "profile": {
       "baseAbility": 88,

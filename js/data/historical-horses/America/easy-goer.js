@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "easy-goer",
     "name": "Easy Goer",
-    "displayName": "Easy Goer",
-    "displayNameZh": "Easy Goer",
+    "displayName": "平易君子",
+    "displayNameZh": "平易君子",
     "displayNameEn": "Easy Goer",
     "profile": {
       "baseAbility": 92,

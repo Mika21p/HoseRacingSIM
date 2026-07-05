@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "marling",
     "name": "Marling",
-    "displayName": "Marling",
-    "displayNameZh": "Marling",
+    "displayName": "马灵",
+    "displayNameZh": "马灵",
     "displayNameEn": "Marling",
     "profile": {
       "baseAbility": 86,

@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "nyquist",
     "name": "Nyquist",
-    "displayName": "Nyquist",
-    "displayNameZh": "Nyquist",
+    "displayName": "奈奎斯特",
+    "displayNameZh": "奈奎斯特",
     "displayNameEn": "Nyquist",
     "profile": {
       "baseAbility": 86,

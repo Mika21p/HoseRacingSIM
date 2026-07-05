@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "alcohol-free",
     "name": "Alcohol Free",
-    "displayName": "Alcohol Free",
-    "displayNameZh": "Alcohol Free",
+    "displayName": "滴酒不沾",
+    "displayNameZh": "滴酒不沾",
     "displayNameEn": "Alcohol Free",
     "profile": {
       "baseAbility": 84,

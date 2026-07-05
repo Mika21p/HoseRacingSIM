@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "los-angeles",
     "name": "Los Angeles",
-    "displayName": "Los Angeles",
-    "displayNameZh": "Los Angeles",
+    "displayName": "南加名城",
+    "displayNameZh": "南加名城",
     "displayNameEn": "Los Angeles",
     "profile": {
       "baseAbility": 86,

@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "bago",
     "name": "Bago",
-    "displayName": "Bago",
-    "displayNameZh": "Bago",
+    "displayName": "缅甸皇城",
+    "displayNameZh": "缅甸皇城",
     "displayNameEn": "Bago",
     "profile": {
       "baseAbility": 91,

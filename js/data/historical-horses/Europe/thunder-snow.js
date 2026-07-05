@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "thunder-snow",
     "name": "Thunder Snow",
-    "displayName": "Thunder Snow",
-    "displayNameZh": "Thunder Snow",
+    "displayName": "轰雷暴雪",
+    "displayNameZh": "轰雷暴雪",
     "displayNameEn": "Thunder Snow",
     "profile": {
       "baseAbility": 89,

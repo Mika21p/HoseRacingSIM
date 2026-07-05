@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "midnight-bisou",
     "name": "Midnight Bisou",
-    "displayName": "Midnight Bisou",
-    "displayNameZh": "Midnight Bisou",
+    "displayName": "子夜爱意",
+    "displayNameZh": "子夜爱意",
     "displayNameEn": "Midnight Bisou",
     "profile": {
       "baseAbility": 86,

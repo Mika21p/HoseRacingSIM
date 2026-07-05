@@ -334,7 +334,6 @@
         raceName: ns.RaceNameRules ? ns.RaceNameRules.displayName(raceNameSource, "zh") : race.name,
         raceNameZh: ns.RaceNameRules ? ns.RaceNameRules.displayName(raceNameSource, "zh") : race.name,
         raceNameOriginal: ns.RaceNameRules ? ns.RaceNameRules.displayName(raceNameSource, "original") : race.name,
-        raceNameEn: raceNameSource.nameEn || race.nameEn || race.name,
         trackCondition,
         rank: playerRank,
         rankLabel: rankLabel(playerRank, playerResult.retired),

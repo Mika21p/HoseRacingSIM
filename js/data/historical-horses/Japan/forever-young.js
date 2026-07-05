@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "forever-young",
     "name": "Forever Young",
-    "displayName": "Forever Young",
-    "displayNameZh": "Forever Young",
+    "displayName": "青春永驻",
+    "displayNameZh": "青春永驻",
     "displayNameEn": "Forever Young",
     "profile": {
       "baseAbility": 90,

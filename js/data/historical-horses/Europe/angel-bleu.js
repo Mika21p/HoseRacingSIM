@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "angel-bleu",
     "name": "Angel Bleu",
-    "displayName": "Angel Bleu",
-    "displayNameZh": "Angel Bleu",
+    "displayName": "蔚蓝天使",
+    "displayNameZh": "蔚蓝天使",
     "displayNameEn": "Angel Bleu",
     "profile": {
       "baseAbility": 83,

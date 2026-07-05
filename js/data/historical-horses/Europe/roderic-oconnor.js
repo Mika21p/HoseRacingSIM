@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "roderic-oconnor",
     "name": "Roderic O'Connor",
-    "displayName": "Roderic O'Connor",
-    "displayNameZh": "Roderic O'Connor",
+    "displayName": "天才画家",
+    "displayNameZh": "天才画家",
     "displayNameEn": "Roderic O'Connor",
     "profile": {
       "baseAbility": 83,

@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "barney-roy",
     "name": "Barney Roy",
-    "displayName": "Barney Roy",
-    "displayNameZh": "Barney Roy",
+    "displayName": "吵闹不休",
+    "displayNameZh": "吵闹不休",
     "displayNameEn": "Barney Roy",
     "profile": {
       "baseAbility": 84,

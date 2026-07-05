@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "echo-zulu",
     "name": "Echo Zulu",
-    "displayName": "Echo Zulu",
-    "displayNameZh": "Echo Zulu",
+    "displayName": "祖鲁回声",
+    "displayNameZh": "祖鲁回声",
     "displayNameEn": "Echo Zulu",
     "profile": {
       "baseAbility": 84,

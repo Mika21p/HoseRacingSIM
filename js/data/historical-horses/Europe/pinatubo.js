@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "pinatubo",
     "name": "Pinatubo",
-    "displayName": "Pinatubo",
-    "displayNameZh": "Pinatubo",
+    "displayName": "吕宋火山",
+    "displayNameZh": "吕宋火山",
     "displayNameEn": "Pinatubo",
     "profile": {
       "baseAbility": 90,

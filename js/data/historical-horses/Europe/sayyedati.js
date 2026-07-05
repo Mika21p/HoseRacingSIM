@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "sayyedati",
     "name": "Sayyedati",
-    "displayName": "Sayyedati",
-    "displayNameZh": "Sayyedati",
+    "displayName": "萨耶达蒂",
+    "displayNameZh": "萨耶达蒂",
     "displayNameEn": "Sayyedati",
     "profile": {
       "baseAbility": 85,

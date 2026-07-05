@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "game-winner",
     "name": "Game Winner",
-    "displayName": "Game Winner",
-    "displayNameZh": "Game Winner",
+    "displayName": "游戏赢家",
+    "displayNameZh": "游戏赢家",
     "displayNameEn": "Game Winner",
     "profile": {
       "baseAbility": 84,

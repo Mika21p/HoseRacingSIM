@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "snow-fairy",
     "name": "Snow Fairy",
-    "displayName": "雪仙子",
-    "displayNameZh": "雪仙子",
+    "displayName": "飞雪仙踪",
+    "displayNameZh": "飞雪仙踪",
     "displayNameEn": "Snow Fairy",
     "profile": {
       "baseAbility": 84,

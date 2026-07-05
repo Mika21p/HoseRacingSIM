@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "senor-buscador",
     "name": "Senor Buscador",
-    "displayName": "Senor Buscador",
-    "displayNameZh": "Senor Buscador",
+    "displayName": "探查男儿",
+    "displayNameZh": "探查男儿",
     "displayNameEn": "Senor Buscador",
     "profile": {
       "baseAbility": 83,

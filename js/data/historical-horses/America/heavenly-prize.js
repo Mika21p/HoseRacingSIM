@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "heavenly-prize",
     "name": "Heavenly Prize",
-    "displayName": "Heavenly Prize",
-    "displayNameZh": "Heavenly Prize",
+    "displayName": "天赐之奖",
+    "displayNameZh": "天赐之奖",
     "displayNameEn": "Heavenly Prize",
     "profile": {
       "baseAbility": 87,

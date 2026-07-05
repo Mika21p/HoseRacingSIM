@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "african-story",
     "name": "African Story",
-    "displayName": "African Story",
-    "displayNameZh": "African Story",
+    "displayName": "非洲传说",
+    "displayNameZh": "非洲传说",
     "displayNameEn": "African Story",
     "profile": {
       "baseAbility": 83,

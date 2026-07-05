@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "vercingetorix",
     "name": "Vercingetorix",
-    "displayName": "Vercingetorix",
-    "displayNameZh": "Vercingetorix",
+    "displayName": "高卢英豪",
+    "displayNameZh": "高卢英豪",
     "displayNameEn": "Vercingetorix",
     "profile": {
       "baseAbility": 83,

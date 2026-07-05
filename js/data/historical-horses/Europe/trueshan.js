@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "trueshan",
     "name": "Trueshan",
-    "displayName": "真善",
-    "displayNameZh": "真善",
+    "displayName": "真章",
+    "displayNameZh": "真章",
     "displayNameEn": "Trueshan",
     "profile": {
       "baseAbility": 85,

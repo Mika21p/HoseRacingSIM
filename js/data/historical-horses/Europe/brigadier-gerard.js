@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "brigadier-gerard",
     "name": "Brigadier Gerard",
-    "displayName": "杰拉德准将",
-    "displayNameZh": "杰拉德准将",
+    "displayName": "格烈准将",
+    "displayNameZh": "格烈准将",
     "displayNameEn": "Brigadier Gerard",
     "profile": {
       "baseAbility": 98,

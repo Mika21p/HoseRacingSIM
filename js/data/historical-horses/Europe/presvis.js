@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "presvis",
     "name": "Presvis",
-    "displayName": "Presvis",
-    "displayNameZh": "Presvis",
+    "displayName": "百威胜",
+    "displayNameZh": "百威胜",
     "displayNameEn": "Presvis",
     "profile": {
       "baseAbility": 84,

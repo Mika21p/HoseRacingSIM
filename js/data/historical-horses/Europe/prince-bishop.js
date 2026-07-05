@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "prince-bishop",
     "name": "Prince Bishop",
-    "displayName": "Prince Bishop",
-    "displayNameZh": "Prince Bishop",
+    "displayName": "枢机主教",
+    "displayNameZh": "枢机主教",
     "displayNameEn": "Prince Bishop",
     "profile": {
       "baseAbility": 84,

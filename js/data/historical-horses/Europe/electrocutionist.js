@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "electrocutionist",
     "name": "Electrocutionist",
-    "displayName": "Electrocutionist",
-    "displayNameZh": "Electrocutionist",
+    "displayName": "电极使者",
+    "displayNameZh": "电极使者",
     "displayNameEn": "Electrocutionist",
     "profile": {
       "baseAbility": 88,

@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "soviet-song",
     "name": "Soviet Song",
-    "displayName": "Soviet Song",
-    "displayNameZh": "Soviet Song",
+    "displayName": "苏维埃歌",
+    "displayNameZh": "苏维埃歌",
     "displayNameEn": "Soviet Song",
     "profile": {
       "baseAbility": 86,

@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "sir-ivor",
     "name": "Sir Ivor",
-    "displayName": "Sir Ivor",
-    "displayNameZh": "Sir Ivor",
+    "displayName": "艾骅绅士",
+    "displayNameZh": "艾骅绅士",
     "displayNameEn": "Sir Ivor",
     "profile": {
       "baseAbility": 93,

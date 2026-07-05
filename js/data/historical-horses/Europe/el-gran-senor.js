@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "el-gran-senor",
     "name": "El Gran Senor",
-    "displayName": "El Gran Senor",
-    "displayNameZh": "El Gran Senor",
+    "displayName": "大先生",
+    "displayNameZh": "大先生",
     "displayNameEn": "El Gran Senor",
     "profile": {
       "baseAbility": 94,

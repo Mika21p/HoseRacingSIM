@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "lake-victoria",
     "name": "Lake Victoria",
-    "displayName": "Lake Victoria",
-    "displayNameZh": "Lake Victoria",
+    "displayName": "维多湖",
+    "displayNameZh": "维多湖",
     "displayNameEn": "Lake Victoria",
     "profile": {
       "baseAbility": 86,

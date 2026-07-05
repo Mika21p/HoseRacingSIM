@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "maybe",
     "name": "Maybe",
-    "displayName": "Maybe",
-    "displayNameZh": "Maybe",
+    "displayName": "也许",
+    "displayNameZh": "也许",
     "displayNameEn": "Maybe",
     "profile": {
       "baseAbility": 83,

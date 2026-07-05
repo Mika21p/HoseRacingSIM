@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "mishriff",
     "name": "Mishriff",
-    "displayName": "Mishriff",
-    "displayNameZh": "Mishriff",
+    "displayName": "万胜飞",
+    "displayNameZh": "万胜飞",
     "displayNameEn": "Mishriff",
     "profile": {
       "baseAbility": 91,

@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "personal-ensign",
     "name": "Personal Ensign",
-    "displayName": "Personal Ensign",
-    "displayNameZh": "Personal Ensign",
+    "displayName": "个人荣誉",
+    "displayNameZh": "个人荣誉",
     "displayNameEn": "Personal Ensign",
     "profile": {
       "baseAbility": 92,

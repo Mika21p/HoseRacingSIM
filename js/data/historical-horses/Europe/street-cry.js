@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "street-cry",
     "name": "Street Cry",
-    "displayName": "Street Cry",
-    "displayNameZh": "Street Cry",
+    "displayName": "街头号角",
+    "displayNameZh": "街头号角",
     "displayNameEn": "Street Cry",
     "profile": {
       "baseAbility": 88,

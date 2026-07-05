@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "princess-rooney",
     "name": "Princess Rooney",
-    "displayName": "Princess Rooney",
-    "displayNameZh": "Princess Rooney",
+    "displayName": "鲁尼公主",
+    "displayNameZh": "鲁尼公主",
     "displayNameEn": "Princess Rooney",
     "profile": {
       "baseAbility": 88,

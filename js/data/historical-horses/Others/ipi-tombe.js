@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "ipi-tombe",
     "name": "Ipi Tombe",
-    "displayName": "Ipi Tombe",
-    "displayNameZh": "Ipi Tombe",
+    "displayName": "伊人何处",
+    "displayNameZh": "伊人何处",
     "displayNameEn": "Ipi Tombe",
     "profile": {
       "baseAbility": 85,

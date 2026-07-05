@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "ballingarry",
     "name": "Ballingarry",
-    "displayName": "Ballingarry",
-    "displayNameZh": "Ballingarry",
+    "displayName": "巴林加里",
+    "displayNameZh": "巴林加里",
     "displayNameEn": "Ballingarry",
     "profile": {
       "baseAbility": 83,
