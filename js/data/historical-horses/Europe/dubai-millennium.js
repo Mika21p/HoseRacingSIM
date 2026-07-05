@@ -21,6 +21,13 @@
         "finish": 1
       },
       {
+        "raceId": "al-maktoum-challenge",
+        "year": 2000,
+        "ability": 97,
+        "jockeyId": "frankie-dettori",
+        "finish": 1
+      },
+      {
         "raceId": "dubai-world-cup",
         "year": 2000,
         "ability": 98,
@@ -31,7 +38,7 @@
         "raceId": "prince-of-wales-stakes",
         "year": 2000,
         "ability": 98,
-        "jockeyId": "frankie-dettori",
+        "jockeyId": "jerry-bailey",
         "finish": 1
       }
     ]

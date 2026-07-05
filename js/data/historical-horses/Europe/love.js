@@ -9,10 +9,17 @@
     "displayNameEn": "Love",
     "profile": {
       "baseAbility": 83,
-      "peakAbility": 85,
+      "peakAbility": 88,
       "note": "2020年欧洲三岁雌马代表，经典赛大胜并延续至古马G1。"
     },
     "races": [
+      {
+        "raceId": "moyglare-stud-stakes",
+        "year": 2019,
+        "ability": 88,
+        "jockeyId": "ryan-moore",
+        "finish": 1
+      },
       {
         "raceId": "one-thousand-guineas",
         "year": 2020,

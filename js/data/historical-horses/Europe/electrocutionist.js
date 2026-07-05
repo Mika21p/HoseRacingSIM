@@ -1,0 +1,39 @@
+(function () {
+  const ns = (window.Keiba = window.Keiba || {});
+
+  ns.HistoricalHorseRegistry.register({
+    "id": "electrocutionist",
+    "name": "Electrocutionist",
+    "displayName": "Electrocutionist",
+    "displayNameZh": "Electrocutionist",
+    "displayNameEn": "Electrocutionist",
+    "profile": {
+      "baseAbility": 88,
+      "peakAbility": 90,
+      "note": "Electrocutionist major race wins recorded for currently available project race IDs."
+    },
+    "races": [
+      {
+        "raceId": "international-stakes",
+        "year": 2005,
+        "ability": 89,
+        "jockeyId": "mick-kinane",
+        "finish": 1
+      },
+      {
+        "raceId": "al-maktoum-challenge",
+        "year": 2006,
+        "ability": 88,
+        "jockeyId": "frankie-dettori",
+        "finish": 1
+      },
+      {
+        "raceId": "dubai-world-cup",
+        "year": 2006,
+        "ability": 90,
+        "jockeyId": "frankie-dettori",
+        "finish": 1
+      }
+    ]
+  });
+})();

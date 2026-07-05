@@ -9,15 +9,36 @@
     "displayNameEn": "Bosra Sham",
     "profile": {
       "baseAbility": 83,
-      "peakAbility": 85,
+      "peakAbility": 92,
       "note": "九十年代英国顶级雌马，三岁时夺取一千坚尼。"
     },
     "races": [
+      {
+        "raceId": "fillies-mile",
+        "year": 1995,
+        "ability": 90,
+        "jockeyId": "pat-eddery",
+        "finish": 1
+      },
       {
         "raceId": "one-thousand-guineas",
         "year": 1996,
         "ability": 84,
         "jockeyId": "pat-eddery",
+        "finish": 1
+      },
+      {
+        "raceId": "champion-stakes",
+        "year": 1996,
+        "ability": 92,
+        "jockeyId": "pat-eddery",
+        "finish": 1
+      },
+      {
+        "raceId": "prince-of-wales-stakes",
+        "year": 1997,
+        "ability": 91,
+        "jockeyId": "kieren-fallon",
         "finish": 1
       }
     ]

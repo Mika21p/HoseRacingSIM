@@ -9,10 +9,17 @@
     "displayNameEn": "Buckpasser",
     "profile": {
       "baseAbility": 91,
-      "peakAbility": 93,
+      "peakAbility": 94,
       "note": "六十年代美国全能名马，三岁与古马让赛路线均有代表作。"
     },
     "races": [
+      {
+        "raceId": "champagne-stakes-us",
+        "year": 1965,
+        "ability": 94,
+        "jockeyId": "braulio-baeza",
+        "finish": 1
+      },
       {
         "raceId": "travers-stakes",
         "year": 1966,

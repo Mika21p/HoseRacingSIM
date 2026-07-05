@@ -9,10 +9,17 @@
     "displayNameEn": "Fame And Glory",
     "profile": {
       "baseAbility": 84,
-      "peakAbility": 86,
+      "peakAbility": 88,
       "note": "由中长距离转向长途仍能夺G1，加冕杯与雅士谷金杯胜出。"
     },
     "races": [
+      {
+        "raceId": "criterium-de-saint-cloud",
+        "year": 2008,
+        "ability": 88,
+        "jockeyId": "johnny-murtagh",
+        "finish": 1
+      },
       {
         "raceId": "coronation-cup",
         "year": 2010,

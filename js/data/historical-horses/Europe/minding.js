@@ -14,6 +14,20 @@
     },
     "races": [
       {
+        "raceId": "moyglare-stud-stakes",
+        "year": 2015,
+        "ability": 88,
+        "jockeyId": "ryan-moore",
+        "finish": 1
+      },
+      {
+        "raceId": "fillies-mile",
+        "year": 2015,
+        "ability": 88,
+        "jockeyId": "ryan-moore",
+        "finish": 1
+      },
+      {
         "raceId": "one-thousand-guineas",
         "year": 2016,
         "ability": 88,

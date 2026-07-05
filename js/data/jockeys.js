@@ -408,6 +408,17 @@
       ]
     },
     {
+      id: "yutaka-yoshida",
+      name: "吉田豊",
+      periods: [
+        { from: 1994, to: 1995, ability: 50 },
+        { from: 1996, to: 2002, ability: 60 },
+        { from: 2003, to: 2020, ability: 50 },
+        { from: 2021, to: 2023, ability: 60 },
+        { from: 2024, to: 2026, ability: 50 }
+      ]
+    },
+    {
       id: "joao-moreira",
       name: "J. Moreira",
       periods: [
@@ -987,6 +998,80 @@
       ]
     },
     {
+      id: "david-egan",
+      name: "D. Egan",
+      periods: [
+        { from: 2016, to: 2020, ability: 80 },
+        { from: 2021, to: 2026, ability: 90 }
+      ]
+    },
+    {
+      id: "silvestre-de-sousa",
+      name: "S. de Sousa",
+      periods: [
+        { from: 2006, to: 2011, ability: 80 },
+        { from: 2012, to: 2019, ability: 90 },
+        { from: 2020, to: 2026, ability: 80 }
+      ]
+    },
+    {
+      id: "kevin-shea",
+      name: "K. Shea",
+      periods: [
+        { from: 1979, to: 1999, ability: 80 },
+        { from: 2000, to: 2012, ability: 90 },
+        { from: 2013, to: 2015, ability: 80 }
+      ]
+    },
+    {
+      id: "oscar-urbina",
+      name: "O. Urbina",
+      periods: [
+        { from: 1992, to: 2006, ability: 80 }
+      ]
+    },
+    {
+      id: "willie-lane",
+      name: "W. Lane",
+      periods: [
+        { from: 1898, to: 1901, ability: 80 },
+        { from: 1902, to: 1904, ability: 90 },
+        { from: 1905, to: 1912, ability: 80 }
+      ]
+    },
+    {
+      id: "brett-doyle",
+      name: "B. Doyle",
+      periods: [
+        { from: 1993, to: 2011, ability: 80 }
+      ]
+    },
+    {
+      id: "rob-hornby",
+      name: "R. Hornby",
+      periods: [
+        { from: 2014, to: 2026, ability: 80 }
+      ]
+    },
+    {
+      id: "thierry-gillet",
+      name: "T. Gillet",
+      periods: [
+        { from: 1993, to: 2000, ability: 80 },
+        { from: 2001, to: 2007, ability: 90 },
+        { from: 2008, to: 2009, ability: 80 }
+      ]
+    },
+    {
+      id: "yves-saint-martin",
+      name: "Y. Saint-Martin",
+      periods: [
+        { from: 1958, to: 1959, ability: 80 },
+        { from: 1960, to: 1983, ability: 90 },
+        { from: 1984, to: 1987, ability: 80 }
+      ]
+    },
+    {
       id: "george-duffield",
       name: "G. Duffield",
       periods: [
@@ -1104,6 +1189,67 @@
         { from: 1986, to: 1988, ability: 80 },
         { from: 1989, to: 2016, ability: 90 },
         { from: 2017, to: 2026, ability: 80 }
+      ]
+    },
+    {
+      id: "pat-day",
+      name: "P. Day",
+      periods: [
+        { from: 1973, to: 1981, ability: 80 },
+        { from: 1982, to: 2002, ability: 90 },
+        { from: 2003, to: 2005, ability: 80 }
+      ]
+    },
+    {
+      id: "randy-romero",
+      name: "R. Romero",
+      periods: [
+        { from: 1975, to: 1984, ability: 80 },
+        { from: 1985, to: 1995, ability: 90 },
+        { from: 1996, to: 1999, ability: 80 }
+      ]
+    },
+    {
+      id: "jeffrey-fell",
+      name: "J. Fell",
+      periods: [
+        { from: 1974, to: 1977, ability: 80 },
+        { from: 1978, to: 1982, ability: 90 },
+        { from: 1983, to: 1989, ability: 80 }
+      ]
+    },
+    {
+      id: "eddie-delahoussaye",
+      name: "E. Delahoussaye",
+      periods: [
+        { from: 1968, to: 1977, ability: 80 },
+        { from: 1978, to: 1998, ability: 90 },
+        { from: 1999, to: 2003, ability: 80 }
+      ]
+    },
+    {
+      id: "ricardo-santana-jr",
+      name: "R. Santana Jr.",
+      periods: [
+        { from: 2009, to: 2026, ability: 80 }
+      ]
+    },
+    {
+      id: "mario-gutierrez",
+      name: "M. Gutierrez",
+      periods: [
+        { from: 2006, to: 2011, ability: 80 },
+        { from: 2012, to: 2016, ability: 90 },
+        { from: 2017, to: 2026, ability: 80 }
+      ]
+    },
+    {
+      id: "martin-garcia",
+      name: "M. Garcia",
+      periods: [
+        { from: 2005, to: 2009, ability: 80 },
+        { from: 2010, to: 2015, ability: 90 },
+        { from: 2016, to: 2026, ability: 80 }
       ]
     },
     {
@@ -1507,6 +1653,7 @@
     "masato-yoshinaga": ["japan"],
     "kizo-konishi": ["japan"],
     "hayato-yoshida": ["japan"],
+    "yutaka-yoshida": ["japan"],
     "joao-moreira": ["hongkong"],
     "umberto-rispoli": ["europe", "usa"],
     "okabe-yukio": ["japan"],
@@ -1580,6 +1727,15 @@
     "gary-w-moore": ["australia", "hongkong", "europe"],
     "hollie-doyle": ["europe"],
     "oisin-orr": ["europe"],
+    "david-egan": ["europe"],
+    "silvestre-de-sousa": ["europe", "hongkong"],
+    "kevin-shea": ["europe"],
+    "oscar-urbina": ["europe"],
+    "willie-lane": ["europe"],
+    "brett-doyle": ["europe", "hongkong"],
+    "rob-hornby": ["europe"],
+    "thierry-gillet": ["europe"],
+    "yves-saint-martin": ["europe"],
     "george-duffield": ["europe"],
     "colm-odonoghue": ["europe"],
     "chris-hayes": ["europe"],
@@ -1595,6 +1751,13 @@
     "luke-morris": ["europe"],
     "john-velazquez": ["usa"],
     "kent-desormeaux": ["usa"],
+    "pat-day": ["usa"],
+    "randy-romero": ["usa"],
+    "jeffrey-fell": ["usa"],
+    "eddie-delahoussaye": ["usa"],
+    "ricardo-santana-jr": ["usa"],
+    "mario-gutierrez": ["usa"],
+    "martin-garcia": ["usa"],
     "jay-ford": ["australia"],
     "luke-nolen": ["australia"],
     "adam-kirby": ["europe"],

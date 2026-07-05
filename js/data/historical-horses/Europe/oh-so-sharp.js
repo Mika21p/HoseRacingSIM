@@ -9,10 +9,17 @@
     "displayNameEn": "Oh So Sharp",
     "profile": {
       "baseAbility": 87,
-      "peakAbility": 89,
+      "peakAbility": 91,
       "note": "1985年英国雌马三冠，经典距离适性完整。"
     },
     "races": [
+      {
+        "raceId": "fillies-mile",
+        "year": 1984,
+        "ability": 91,
+        "jockeyId": "steve-cauthen",
+        "finish": 1
+      },
       {
         "raceId": "one-thousand-guineas",
         "year": 1985,

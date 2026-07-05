@@ -14,6 +14,13 @@
     },
     "races": [
       {
+        "raceId": "vincent-obrien-national-stakes",
+        "year": 2004,
+        "ability": 89,
+        "jockeyId": "frankie-dettori",
+        "finish": 1
+      },
+      {
         "raceId": "irish-two-thousand-guineas",
         "year": 2005,
         "ability": 90,
