@@ -14,6 +14,13 @@
     },
     "races": [
       {
+        "raceId": "hopeful-stakes-us",
+        "year": 1965,
+        "ability": 92,
+        "jockeyId": "braulio-baeza",
+        "finish": 1
+      },
+      {
         "raceId": "champagne-stakes-us",
         "year": 1965,
         "ability": 94,
@@ -24,6 +31,13 @@
         "raceId": "travers-stakes",
         "year": 1966,
         "ability": 92,
+        "jockeyId": "braulio-baeza",
+        "finish": 1
+      },
+      {
+        "raceId": "jockey-club-gold-cup",
+        "year": 1966,
+        "ability": 94,
         "jockeyId": "braulio-baeza",
         "finish": 1
       },

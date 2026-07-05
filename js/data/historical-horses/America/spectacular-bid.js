@@ -21,6 +21,13 @@
         "finish": 1
       },
       {
+        "raceId": "florida-derby",
+        "year": 1979,
+        "ability": 94,
+        "jockeyId": "ron-franklin",
+        "finish": 1
+      },
+      {
         "raceId": "blue-grass-stakes",
         "year": 1979,
         "ability": 96,

@@ -21,6 +21,13 @@
         "finish": 1
       },
       {
+        "raceId": "prix-jean-prat",
+        "year": 2019,
+        "ability": 89,
+        "jockeyId": "frankie-dettori",
+        "finish": 1
+      },
+      {
         "raceId": "sussex-stakes",
         "year": 2019,
         "ability": 87,

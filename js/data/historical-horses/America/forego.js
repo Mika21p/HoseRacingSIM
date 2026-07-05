@@ -14,6 +14,13 @@
     },
     "races": [
       {
+        "raceId": "jockey-club-gold-cup",
+        "year": 1974,
+        "ability": 92,
+        "jockeyId": "heliodoro-gustines",
+        "finish": 1
+      },
+      {
         "raceId": "metropolitan-handicap",
         "year": 1976,
         "ability": 91,

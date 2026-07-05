@@ -123,7 +123,7 @@
 
   function jockeyAffiliationForRace(race) {
     const region = race.surfaceRegion || "日本";
-    if (region === "美国") return "usa";
+    if (region === "美国" || region === "阿根廷") return "usa";
     if (region === "欧洲" || region === "中东") return "europe";
     if (region === "香港") return "hongkong";
     if (region === "澳洲") return "australia";

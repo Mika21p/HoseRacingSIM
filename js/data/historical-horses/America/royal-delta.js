@@ -14,6 +14,13 @@
     },
     "races": [
       {
+        "raceId": "alabama-stakes",
+        "year": 2011,
+        "ability": 81,
+        "jockeyId": "jose-lezcano",
+        "finish": 1
+      },
+      {
         "raceId": "breeders-cup-distaff",
         "year": 2011,
         "ability": 81,
@@ -23,6 +30,13 @@
       {
         "raceId": "breeders-cup-distaff",
         "year": 2012,
+        "ability": 81,
+        "jockeyId": "mike-smith",
+        "finish": 1
+      },
+      {
+        "raceId": "personal-ensign-stakes",
+        "year": 2013,
         "ability": 81,
         "jockeyId": "mike-smith",
         "finish": 1

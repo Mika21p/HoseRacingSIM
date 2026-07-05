@@ -14,6 +14,13 @@
     },
     "races": [
       {
+        "raceId": "spinaway-stakes",
+        "year": 1974,
+        "ability": 92,
+        "jockeyId": "jacinto-vasquez",
+        "finish": 1
+      },
+      {
         "raceId": "acorn-stakes",
         "year": 1975,
         "ability": 90,

@@ -42,6 +42,13 @@
         "finish": 1
       },
       {
+        "raceId": "sun-chariot-stakes",
+        "year": 2023,
+        "ability": 90,
+        "jockeyId": "frankie-dettori",
+        "finish": 1
+      },
+      {
         "raceId": "breeders-cup-filly-mare-turf",
         "year": 2023,
         "ability": 91,

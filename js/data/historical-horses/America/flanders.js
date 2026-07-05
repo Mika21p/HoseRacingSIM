@@ -14,6 +14,13 @@
     },
     "races": [
       {
+        "raceId": "spinaway-stakes",
+        "year": 1994,
+        "ability": 85,
+        "jockeyId": "pat-day",
+        "finish": 1
+      },
+      {
         "raceId": "frizette-stakes",
         "year": 1994,
         "ability": 84,

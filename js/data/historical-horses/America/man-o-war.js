@@ -14,6 +14,13 @@
     },
     "races": [
       {
+        "raceId": "hopeful-stakes-us",
+        "year": 1919,
+        "ability": 95,
+        "jockeyId": "johnny-loftus",
+        "finish": 1
+      },
+      {
         "raceId": "preakness-stakes",
         "year": 1920,
         "ability": 96,
@@ -29,6 +36,13 @@
       },
       {
         "raceId": "travers-stakes",
+        "year": 1920,
+        "ability": 97,
+        "jockeyId": "clarence-kummer",
+        "finish": 1
+      },
+      {
+        "raceId": "jockey-club-gold-cup",
         "year": 1920,
         "ability": 97,
         "jockeyId": "clarence-kummer",

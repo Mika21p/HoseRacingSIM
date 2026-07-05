@@ -21,9 +21,23 @@
         "finish": 1
       },
       {
+        "raceId": "irish-one-thousand-guineas",
+        "year": 2023,
+        "ability": 85,
+        "jockeyId": "chris-hayes",
+        "finish": 1
+      },
+      {
         "raceId": "coronation-stakes",
         "year": 2023,
         "ability": 84,
+        "jockeyId": "chris-hayes",
+        "finish": 1
+      },
+      {
+        "raceId": "matron-stakes",
+        "year": 2023,
+        "ability": 86,
         "jockeyId": "chris-hayes",
         "finish": 1
       }

@@ -21,6 +21,13 @@
         "finish": 1
       },
       {
+        "raceId": "del-mar-futurity",
+        "year": 2018,
+        "ability": 84,
+        "jockeyId": "joel-rosario",
+        "finish": 1
+      },
+      {
         "raceId": "breeders-cup-juvenile",
         "year": 2018,
         "ability": 86,

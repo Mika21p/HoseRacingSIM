@@ -21,6 +21,20 @@
         "finish": 1
       },
       {
+        "raceId": "del-mar-futurity",
+        "year": 2014,
+        "ability": 89,
+        "jockeyId": "victor-espinoza",
+        "finish": 1
+      },
+      {
+        "raceId": "arkansas-derby",
+        "year": 2015,
+        "ability": 90,
+        "jockeyId": "victor-espinoza",
+        "finish": 1
+      },
+      {
         "raceId": "kentucky-derby",
         "year": 2015,
         "ability": 91,

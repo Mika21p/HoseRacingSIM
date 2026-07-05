@@ -21,6 +21,20 @@
         "finish": 1
       },
       {
+        "raceId": "del-mar-futurity",
+        "year": 1990,
+        "ability": 86,
+        "jockeyId": "gary-stevens",
+        "finish": 1
+      },
+      {
+        "raceId": "pacific-classic",
+        "year": 1991,
+        "ability": 88,
+        "jockeyId": "gary-stevens",
+        "finish": 1
+      },
+      {
         "raceId": "santa-anita-handicap",
         "year": 1992,
         "ability": 88,

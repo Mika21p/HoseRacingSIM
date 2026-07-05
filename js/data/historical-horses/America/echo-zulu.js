@@ -14,6 +14,13 @@
     },
     "races": [
       {
+        "raceId": "spinaway-stakes",
+        "year": 2021,
+        "ability": 84,
+        "jockeyId": "ricardo-santana-jr",
+        "finish": 1
+      },
+      {
         "raceId": "frizette-stakes",
         "year": 2021,
         "ability": 84,

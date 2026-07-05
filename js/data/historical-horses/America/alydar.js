@@ -21,6 +21,13 @@
         "finish": 1
       },
       {
+        "raceId": "florida-derby",
+        "year": 1978,
+        "ability": 89,
+        "jockeyId": "jorge-velasquez",
+        "finish": 1
+      },
+      {
         "raceId": "blue-grass-stakes",
         "year": 1978,
         "ability": 88,
@@ -31,6 +38,13 @@
         "raceId": "travers-stakes",
         "year": 1978,
         "ability": 89,
+        "jockeyId": "jorge-velasquez",
+        "finish": 1
+      },
+      {
+        "raceId": "whitney-stakes",
+        "year": 1978,
+        "ability": 90,
         "jockeyId": "jorge-velasquez",
         "finish": 1
       }

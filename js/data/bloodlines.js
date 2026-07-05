@@ -407,7 +407,7 @@
       id: "dirt-dam",
       name: "泥地母系",
       strengthType: "standard",
-      surfaceWeights: { 草地: -6, 泥地: 14, 二刀流: 2 },
+      surfaceWeights: { 草地: -6, 泥地: 14, 二刀流: 5 },
       distanceMods: { 1600: 4, 2000: 8, 2400: 4 },
       growthMods: { 普早: 4, 普迟: 6 },
       temperament: 0,

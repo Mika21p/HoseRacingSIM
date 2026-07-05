@@ -14,6 +14,13 @@
     },
     "races": [
       {
+        "raceId": "irish-one-thousand-guineas",
+        "year": 2018,
+        "ability": 87,
+        "jockeyId": "colm-odonoghue",
+        "finish": 1
+      },
+      {
         "raceId": "coronation-stakes",
         "year": 2018,
         "ability": 85,

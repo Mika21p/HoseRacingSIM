@@ -21,6 +21,13 @@
         "finish": 1
       },
       {
+        "raceId": "pacific-classic",
+        "year": 2022,
+        "ability": 96,
+        "jockeyId": "flavien-prat",
+        "finish": 1
+      },
+      {
         "raceId": "breeders-cup-classic",
         "year": 2022,
         "ability": 96,

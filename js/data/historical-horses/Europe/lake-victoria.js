@@ -33,6 +33,13 @@
         "ability": 88,
         "jockeyId": "ryan-moore",
         "finish": 1
+      },
+      {
+        "raceId": "irish-one-thousand-guineas",
+        "year": 2025,
+        "ability": 88,
+        "jockeyId": "ryan-moore",
+        "finish": 1
       }
     ]
   });

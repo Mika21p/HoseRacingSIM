@@ -1072,6 +1072,54 @@
       ]
     },
     {
+      id: "alexis-pouchin",
+      name: "A. Pouchin",
+      periods: [
+        { from: 2017, to: 2026, ability: 80 }
+      ]
+    },
+    {
+      id: "daniel-tudhope",
+      name: "D. Tudhope",
+      periods: [
+        { from: 2003, to: 2026, ability: 80 }
+      ]
+    },
+    {
+      id: "davy-bonilla",
+      name: "D. Bonilla",
+      periods: [
+        { from: 1993, to: 1999, ability: 80 },
+        { from: 2000, to: 2008, ability: 90 },
+        { from: 2009, to: 2013, ability: 80 }
+      ]
+    },
+    {
+      id: "filip-minarik",
+      name: "F. Minarik",
+      periods: [
+        { from: 1993, to: 2004, ability: 80 },
+        { from: 2005, to: 2017, ability: 90 },
+        { from: 2018, to: 2020, ability: 80 }
+      ]
+    },
+    {
+      id: "pj-mcdonald",
+      name: "P. J. McDonald",
+      periods: [
+        { from: 2007, to: 2026, ability: 80 }
+      ]
+    },
+    {
+      id: "ted-durcan",
+      name: "T. Durcan",
+      periods: [
+        { from: 1992, to: 2002, ability: 80 },
+        { from: 2003, to: 2009, ability: 90 },
+        { from: 2010, to: 2017, ability: 80 }
+      ]
+    },
+    {
       id: "george-duffield",
       name: "G. Duffield",
       periods: [
@@ -1250,6 +1298,160 @@
         { from: 2005, to: 2009, ability: 80 },
         { from: 2010, to: 2015, ability: 90 },
         { from: 2016, to: 2026, ability: 80 }
+      ]
+    },
+    {
+      id: "albin-jimenez",
+      name: "A. Jimenez",
+      periods: [
+        { from: 2010, to: 2026, ability: 80 }
+      ]
+    },
+    {
+      id: "alex-solis",
+      name: "A. Solis",
+      periods: [
+        { from: 1982, to: 1985, ability: 80 },
+        { from: 1986, to: 2006, ability: 90 },
+        { from: 2007, to: 2017, ability: 80 }
+      ]
+    },
+    {
+      id: "bill-hartack",
+      name: "B. Hartack",
+      periods: [
+        { from: 1953, to: 1954, ability: 80 },
+        { from: 1955, to: 1974, ability: 90 },
+        { from: 1975, to: 1981, ability: 80 }
+      ]
+    },
+    {
+      id: "brian-hernandez-jr",
+      name: "B. Hernandez Jr.",
+      periods: [
+        { from: 2003, to: 2011, ability: 80 },
+        { from: 2012, to: 2012, ability: 90 },
+        { from: 2013, to: 2023, ability: 80 },
+        { from: 2024, to: 2026, ability: 90 }
+      ]
+    },
+    {
+      id: "edgar-prado",
+      name: "E. Prado",
+      periods: [
+        { from: 1986, to: 1996, ability: 80 },
+        { from: 1997, to: 2008, ability: 90 },
+        { from: 2009, to: 2023, ability: 80 }
+      ]
+    },
+    {
+      id: "ismael-valenzuela",
+      name: "I. Valenzuela",
+      periods: [
+        { from: 1950, to: 1957, ability: 80 },
+        { from: 1958, to: 1968, ability: 90 },
+        { from: 1969, to: 1980, ability: 80 }
+      ]
+    },
+    {
+      id: "jeremy-rose",
+      name: "J. Rose",
+      periods: [
+        { from: 2001, to: 2004, ability: 80 },
+        { from: 2005, to: 2005, ability: 90 },
+        { from: 2006, to: 2026, ability: 80 }
+      ]
+    },
+    {
+      id: "johnny-loftus",
+      name: "J. Loftus",
+      periods: [
+        { from: 1909, to: 1915, ability: 80 },
+        { from: 1916, to: 1919, ability: 90 }
+      ]
+    },
+    {
+      id: "jose-ortiz",
+      name: "J. Ortiz",
+      periods: [
+        { from: 2012, to: 2015, ability: 80 },
+        { from: 2016, to: 2026, ability: 90 }
+      ]
+    },
+    {
+      id: "jose-santos",
+      name: "J. Santos",
+      periods: [
+        { from: 1984, to: 1985, ability: 80 },
+        { from: 1986, to: 2003, ability: 90 },
+        { from: 2004, to: 2007, ability: 80 }
+      ]
+    },
+    {
+      id: "julie-krone",
+      name: "J. Krone",
+      periods: [
+        { from: 1981, to: 1986, ability: 80 },
+        { from: 1987, to: 2004, ability: 90 }
+      ]
+    },
+    {
+      id: "patrick-valenzuela",
+      name: "P. Valenzuela",
+      periods: [
+        { from: 1978, to: 1982, ability: 80 },
+        { from: 1983, to: 1993, ability: 90 },
+        { from: 1994, to: 2012, ability: 80 }
+      ]
+    },
+    {
+      id: "ramon-dominguez",
+      name: "R. Dominguez",
+      periods: [
+        { from: 1996, to: 2004, ability: 80 },
+        { from: 2005, to: 2013, ability: 90 }
+      ]
+    },
+    {
+      id: "robby-albarado",
+      name: "R. Albarado",
+      periods: [
+        { from: 1990, to: 2006, ability: 80 },
+        { from: 2007, to: 2012, ability: 90 },
+        { from: 2013, to: 2021, ability: 80 }
+      ]
+    },
+    {
+      id: "stewart-elliott",
+      name: "S. Elliott",
+      periods: [
+        { from: 1981, to: 2003, ability: 80 },
+        { from: 2004, to: 2004, ability: 90 },
+        { from: 2005, to: 2026, ability: 80 }
+      ]
+    },
+    {
+      id: "tyler-gaffalione",
+      name: "T. Gaffalione",
+      periods: [
+        { from: 2015, to: 2018, ability: 80 },
+        { from: 2019, to: 2026, ability: 90 }
+      ]
+    },
+    {
+      id: "wayne-d-wright",
+      name: "W. Wright",
+      periods: [
+        { from: 1931, to: 1933, ability: 80 },
+        { from: 1934, to: 1946, ability: 90 },
+        { from: 1947, to: 1950, ability: 80 }
+      ]
+    },
+    {
+      id: "armando-c-glades",
+      name: "A. Glades",
+      periods: [
+        { from: 2002, to: 2003, ability: 80 }
       ]
     },
     {
@@ -1736,6 +1938,12 @@
     "rob-hornby": ["europe"],
     "thierry-gillet": ["europe"],
     "yves-saint-martin": ["europe"],
+    "alexis-pouchin": ["europe"],
+    "daniel-tudhope": ["europe"],
+    "davy-bonilla": ["europe"],
+    "filip-minarik": ["europe"],
+    "pj-mcdonald": ["europe"],
+    "ted-durcan": ["europe"],
     "george-duffield": ["europe"],
     "colm-odonoghue": ["europe"],
     "chris-hayes": ["europe"],
@@ -1758,6 +1966,24 @@
     "ricardo-santana-jr": ["usa"],
     "mario-gutierrez": ["usa"],
     "martin-garcia": ["usa"],
+    "albin-jimenez": ["usa"],
+    "alex-solis": ["usa"],
+    "bill-hartack": ["usa", "hongkong"],
+    "brian-hernandez-jr": ["usa"],
+    "edgar-prado": ["usa"],
+    "ismael-valenzuela": ["usa"],
+    "jeremy-rose": ["usa"],
+    "johnny-loftus": ["usa"],
+    "jose-ortiz": ["usa"],
+    "jose-santos": ["usa"],
+    "julie-krone": ["usa"],
+    "patrick-valenzuela": ["usa"],
+    "ramon-dominguez": ["usa"],
+    "robby-albarado": ["usa"],
+    "stewart-elliott": ["usa"],
+    "tyler-gaffalione": ["usa"],
+    "wayne-d-wright": ["usa"],
+    "armando-c-glades": ["usa"],
     "jay-ford": ["australia"],
     "luke-nolen": ["australia"],
     "adam-kirby": ["europe"],

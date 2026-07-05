@@ -14,9 +14,30 @@
     },
     "races": [
       {
+        "raceId": "cotillion-stakes",
+        "year": 2018,
+        "ability": 87,
+        "jockeyId": "mike-smith",
+        "finish": 1
+      },
+      {
         "raceId": "apple-blossom-handicap",
         "year": 2019,
         "ability": 87,
+        "jockeyId": "mike-smith",
+        "finish": 1
+      },
+      {
+        "raceId": "ogden-phipps-stakes",
+        "year": 2019,
+        "ability": 88,
+        "jockeyId": "mike-smith",
+        "finish": 1
+      },
+      {
+        "raceId": "personal-ensign-stakes",
+        "year": 2019,
+        "ability": 88,
         "jockeyId": "mike-smith",
         "finish": 1
       },

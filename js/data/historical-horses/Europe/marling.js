@@ -21,6 +21,13 @@
         "finish": 1
       },
       {
+        "raceId": "irish-one-thousand-guineas",
+        "year": 1992,
+        "ability": 87,
+        "jockeyId": "walter-swinburn",
+        "finish": 1
+      },
+      {
         "raceId": "coronation-stakes",
         "year": 1992,
         "ability": 87,

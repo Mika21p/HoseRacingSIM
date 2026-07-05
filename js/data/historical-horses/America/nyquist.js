@@ -21,9 +21,23 @@
         "finish": 1
       },
       {
+        "raceId": "del-mar-futurity",
+        "year": 2015,
+        "ability": 86,
+        "jockeyId": "mario-gutierrez",
+        "finish": 1
+      },
+      {
         "raceId": "breeders-cup-juvenile",
         "year": 2015,
         "ability": 87,
+        "jockeyId": "mario-gutierrez",
+        "finish": 1
+      },
+      {
+        "raceId": "florida-derby",
+        "year": 2016,
+        "ability": 88,
         "jockeyId": "mario-gutierrez",
         "finish": 1
       },

@@ -26,6 +26,13 @@
         "ability": 92,
         "jockeyId": "william-buick",
         "finish": 1
+      },
+      {
+        "raceId": "prix-jean-prat",
+        "year": 2020,
+        "ability": 90,
+        "jockeyId": "william-buick",
+        "finish": 1
       }
     ]
   });

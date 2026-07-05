@@ -14,6 +14,13 @@
     },
     "races": [
       {
+        "raceId": "breeders-futurity-stakes",
+        "year": 2018,
+        "ability": 84,
+        "jockeyId": "albin-jimenez",
+        "finish": 1
+      },
+      {
         "raceId": "breeders-cup-dirt-mile",
         "year": 2020,
         "ability": 83,
@@ -22,6 +29,13 @@
       },
       {
         "raceId": "pegasus-world-cup",
+        "year": 2021,
+        "ability": 84,
+        "jockeyId": "joel-rosario",
+        "finish": 1
+      },
+      {
+        "raceId": "whitney-stakes",
         "year": 2021,
         "ability": 84,
         "jockeyId": "joel-rosario",

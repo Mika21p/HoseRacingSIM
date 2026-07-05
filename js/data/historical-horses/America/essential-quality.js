@@ -14,6 +14,13 @@
     },
     "races": [
       {
+        "raceId": "breeders-futurity-stakes",
+        "year": 2020,
+        "ability": 85,
+        "jockeyId": "luis-saez",
+        "finish": 1
+      },
+      {
         "raceId": "breeders-cup-juvenile",
         "year": 2020,
         "ability": 80,

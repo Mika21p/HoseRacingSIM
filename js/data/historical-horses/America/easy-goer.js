@@ -14,6 +14,13 @@
     },
     "races": [
       {
+        "raceId": "hopeful-stakes-us",
+        "year": 1988,
+        "ability": 92,
+        "jockeyId": "pat-day",
+        "finish": 1
+      },
+      {
         "raceId": "champagne-stakes-us",
         "year": 1988,
         "ability": 92,
@@ -29,6 +36,20 @@
       },
       {
         "raceId": "travers-stakes",
+        "year": 1989,
+        "ability": 94,
+        "jockeyId": "pat-day",
+        "finish": 1
+      },
+      {
+        "raceId": "whitney-stakes",
+        "year": 1989,
+        "ability": 94,
+        "jockeyId": "pat-day",
+        "finish": 1
+      },
+      {
+        "raceId": "jockey-club-gold-cup",
         "year": 1989,
         "ability": 94,
         "jockeyId": "pat-day",

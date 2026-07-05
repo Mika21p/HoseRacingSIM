@@ -21,6 +21,13 @@
         "finish": 1
       },
       {
+        "raceId": "prix-jean-prat",
+        "year": 2017,
+        "ability": 89,
+        "jockeyId": "christophe-soumillon",
+        "finish": 1
+      },
+      {
         "raceId": "dubai-world-cup",
         "year": 2018,
         "ability": 91,

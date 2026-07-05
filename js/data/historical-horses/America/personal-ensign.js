@@ -21,6 +21,13 @@
         "finish": 1
       },
       {
+        "raceId": "whitney-stakes",
+        "year": 1988,
+        "ability": 94,
+        "jockeyId": "randy-romero",
+        "finish": 1
+      },
+      {
         "raceId": "breeders-cup-distaff",
         "year": 1988,
         "ability": 94,

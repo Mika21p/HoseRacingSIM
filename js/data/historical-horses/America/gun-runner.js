@@ -14,6 +14,20 @@
     },
     "races": [
       {
+        "raceId": "stephen-foster-stakes",
+        "year": 2017,
+        "ability": 91,
+        "jockeyId": "florent-geroux",
+        "finish": 1
+      },
+      {
+        "raceId": "whitney-stakes",
+        "year": 2017,
+        "ability": 92,
+        "jockeyId": "florent-geroux",
+        "finish": 1
+      },
+      {
         "raceId": "breeders-cup-classic",
         "year": 2017,
         "ability": 89,

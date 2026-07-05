@@ -12,10 +12,11 @@
     { name: "白毛", en: "White/Rare", base: 1, color: "#f0f0f0" }
   ];
   const SURFACES = [
-    { name: "草地", base: 55 },
-    { name: "泥地", base: 40 },
+    { name: "草地", base: 60 },
+    { name: "泥地", base: 35 },
     { name: "二刀流", base: 5 }
   ];
+  const SURFACE_BLOODLINE_MULTIPLIER = 1.2;
   const DISTS = [
     { dist: 1200, type: "短途", base: 20 },
     { dist: 1600, type: "英里", base: 20 },
@@ -25,19 +26,21 @@
     { dist: 3600, type: "超长距离", base: 10 }
   ];
   const DISTS_DIRT = [
-    { dist: 1200, type: "短途", base: 25 },
-    { dist: 1600, type: "英里", base: 25 },
-    { dist: 2000, type: "中距离", base: 25 },
-    { dist: 2400, type: "中长距离", base: 20 },
-    { dist: 3000, type: "长距离", base: 5 },
+    { dist: 1200, type: "短途", base: 30 },
+    { dist: 1600, type: "英里", base: 30 },
+    { dist: 2000, type: "中距离", base: 30 },
+    { dist: 2400, type: "中长距离", base: 12 },
+    { dist: 3000, type: "长距离", base: 2 },
     { dist: 3600, type: "超长距离", base: 0 }
   ];
+  const DIRT_DISTANCE_MIN_WEIGHT = 1;
+  const DIRT_DISTANCE_MAX_WEIGHT = { 2400: 15, 3000: 4, 3600: 1 };
   const MIN_EFFECTIVE_RACE_ABILITY = 60;
   const GRASS_REGIONS = ["日本", "香港", "美国", "欧洲", "其他"];
   const DIRT_REGIONS = ["日本", "中东", "美国"];
   const GROWTH_TYPES = ["早熟", "普早", "普迟", "晚熟"];
-  const SURFACE_MIN_PCT = { 草地: 18, 泥地: 18, 二刀流: 3 };
-  const SURFACE_MAX_PCT = { 草地: 78, 泥地: 78, 二刀流: 12 };
+  const SURFACE_MIN_PCT = { 草地: 15, 泥地: 15, 二刀流: 5 };
+  const SURFACE_MAX_PCT = { 草地: 80, 泥地: 80, 二刀流: 12 };
   const TEMPERAMENT_WEIGHTS = {
     "极端暴躁": 15,
     "暴躁": 15,
@@ -218,7 +221,7 @@
   function pickSurface(effects) {
     const raw = {};
     SURFACES.forEach((surface) => {
-      raw[surface.name] = Math.max(1, surface.base + (effects.surfaceWeights[surface.name] || 0));
+      raw[surface.name] = Math.max(1, surface.base + (effects.surfaceWeights[surface.name] || 0) * SURFACE_BLOODLINE_MULTIPLIER);
     });
     const weights = clampDistribution(raw, SURFACE_MIN_PCT, SURFACE_MAX_PCT);
     return R.weightedPick(SURFACES, (surface) => weights[surface.name] || 0).name;
@@ -226,7 +229,13 @@
 
   function pickDistance(effects, surface) {
     const table = surface === "泥地" ? DISTS_DIRT : DISTS;
-    return R.weightedPick(table, (item) => Math.max(4, item.base + (effects.distanceMods[item.dist] || 0)));
+    const minWeight = surface === "泥地" ? DIRT_DISTANCE_MIN_WEIGHT : 4;
+    const maxWeights = surface === "泥地" ? DIRT_DISTANCE_MAX_WEIGHT : {};
+    return R.weightedPick(table, (item) => {
+      const weight = Math.max(minWeight, item.base + (effects.distanceMods[item.dist] || 0));
+      const maxWeight = maxWeights[item.dist];
+      return maxWeight ? Math.min(weight, maxWeight) : weight;
+    });
   }
 
   function applyStrengthType(value, strengthType) {
@@ -661,8 +670,13 @@
     return horse;
   }
 
-  function getSurfaceGrade(horse, race) {
+  function effectiveSurfaceRegion(race) {
     const region = race.surfaceRegion || "日本";
+    return region === "阿根廷" ? "美国" : region;
+  }
+
+  function getSurfaceGrade(horse, race) {
+    const region = effectiveSurfaceRegion(race);
     if (race.surface === "泥地") return horse.dirt[region] || horse.dirt.日本 || "B";
     return horse.grass[region] || horse.grass.其他 || horse.grass.日本 || "B";
   }

@@ -28,6 +28,13 @@
         "finish": 1
       },
       {
+        "raceId": "prix-jean-prat",
+        "year": 2004,
+        "ability": 92,
+        "jockeyId": "thierry-gillet",
+        "finish": 1
+      },
+      {
         "raceId": "prix-de-larc",
         "year": 2004,
         "ability": 93,

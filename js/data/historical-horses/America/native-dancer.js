@@ -14,6 +14,13 @@
     },
     "races": [
       {
+        "raceId": "hopeful-stakes-us",
+        "year": 1952,
+        "ability": 94,
+        "jockeyId": "eric-guerin",
+        "finish": 1
+      },
+      {
         "raceId": "preakness-stakes",
         "year": 1953,
         "ability": 94,

@@ -28,6 +28,13 @@
         "finish": 1
       },
       {
+        "raceId": "pacific-classic",
+        "year": 2015,
+        "ability": 90,
+        "jockeyId": "gary-stevens",
+        "finish": 1
+      },
+      {
         "raceId": "breeders-cup-distaff",
         "year": 2016,
         "ability": 85,

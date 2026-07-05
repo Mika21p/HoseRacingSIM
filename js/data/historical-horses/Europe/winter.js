@@ -14,6 +14,13 @@
     },
     "races": [
       {
+        "raceId": "irish-one-thousand-guineas",
+        "year": 2017,
+        "ability": 87,
+        "jockeyId": "ryan-moore",
+        "finish": 1
+      },
+      {
         "raceId": "one-thousand-guineas",
         "year": 2017,
         "ability": 84,
