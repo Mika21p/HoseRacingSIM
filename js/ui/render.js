@@ -664,9 +664,6 @@
     if (career.scheduledRace) {
       const payload = career.scheduledRace;
       const race = payload.race;
-      const horseNameLanguage = normalizeHorseNameLanguage(options && options.horseNameLanguage);
-      const opponentName = historicalOpponentName(payload.opponent, horseNameLanguage, "随机对手");
-      const opponentYear = payload.year ? `${payload.year} ` : "";
       panel.innerHTML = `
         ${racePanelHeader(career, "下一场比赛")}
         <div class="scheduled-race">
@@ -674,7 +671,6 @@
           ${payload.challenge ? `<span class="badge">格上通过</span>` : ""}
           <h2>${payload.schedule.label} · ${raceDisplayName(race, raceNameMode)}</h2>
           <p>${race.grade} · ${race.ageRule}${raceRestrictionLabel(race)} · ${raceSurfaceDistanceLabel(race)} · ${raceVenueLabel(race)}</p>
-          <p class="muted">预定对手：${opponentYear}${opponentName}</p>
         </div>
         <div class="race-row">
           <button id="nextTurnBtn">下一回合</button>
