@@ -23,7 +23,7 @@
       {
         "raceId": "florida-derby",
         "year": 1979,
-        "ability": 94,
+        "ability": 95,
         "jockeyId": "ron-franklin",
         "finish": 1
       },

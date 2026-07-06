@@ -13,8 +13,8 @@
       note: "牝马经典与古马王道长期一线。"
     },
     races: [
-      { raceId: "hanshin-juvenile-fillies", year: 2008, ability: 80, jockeyId: "katsumi-ando", finish: 1 },
-      { raceId: "tulip-sho", year: 2009, ability: 80, jockeyId: "katsumi-ando", finish: 1 },
+      { raceId: "hanshin-juvenile-fillies", year: 2008, ability: 81, jockeyId: "katsumi-ando", finish: 1 },
+      { raceId: "tulip-sho", year: 2009, ability: 81, jockeyId: "katsumi-ando", finish: 1 },
       { raceId: "oka-sho", year: 2009, ability: 81, jockeyId: "katsumi-ando", finish: 1 },
       { raceId: "yushun-himba", year: 2009, ability: 82, jockeyId: "katsumi-ando", finish: 1 },
       { raceId: "kyoto-kinen", year: 2010, ability: 81, jockeyId: "norihiro-yokoyama", finish: 1 },

@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "auguste-rodin",
     "name": "Auguste Rodin",
-    "displayName": "奥古斯特罗丹",
-    "displayNameZh": "奥古斯特罗丹",
+    "displayName": "多产巨匠",
+    "displayNameZh": "多产巨匠",
     "displayNameEn": "Auguste Rodin",
     "profile": {
       "baseAbility": 86,

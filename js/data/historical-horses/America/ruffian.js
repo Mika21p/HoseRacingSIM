@@ -16,7 +16,7 @@
       {
         "raceId": "spinaway-stakes",
         "year": 1974,
-        "ability": 92,
+        "ability": 90,
         "jockeyId": "jacinto-vasquez",
         "finish": 1
       },

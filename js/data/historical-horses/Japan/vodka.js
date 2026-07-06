@@ -13,8 +13,8 @@
       note: "牝马德比马，英里与东京中距离顶级表现。"
     },
     races: [
-      { raceId: "hanshin-juvenile-fillies", year: 2006, ability: 79, jockeyId: "hirofumi-shii", finish: 1 },
-      { raceId: "tulip-sho", year: 2007, ability: 80, jockeyId: "hirofumi-shii", finish: 1 },
+      { raceId: "hanshin-juvenile-fillies", year: 2006, ability: 81, jockeyId: "hirofumi-shii", finish: 1 },
+      { raceId: "tulip-sho", year: 2007, ability: 81, jockeyId: "hirofumi-shii", finish: 1 },
       { raceId: "tokyo-yushun", year: 2007, ability: 83, jockeyId: "hirofumi-shii", finish: 1 },
       { raceId: "yasuda-kinen", year: 2008, ability: 83, jockeyId: "take-yutaka", finish: 1 },
       { raceId: "tenno-sho-aki", year: 2008, ability: 83, jockeyId: "take-yutaka", finish: 1 },

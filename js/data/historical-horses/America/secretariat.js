@@ -16,7 +16,7 @@
       {
         "raceId": "hopeful-stakes-us",
         "year": 1972,
-        "ability": 96,
+        "ability": 97,
         "jockeyId": "ron-turcotte",
         "finish": 1
       },

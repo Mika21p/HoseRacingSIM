@@ -16,7 +16,7 @@
       {
         "raceId": "mainichi-hai",
         "year": 2004,
-        "ability": 82,
+        "ability": 83,
         "jockeyId": "katsumi-ando",
         "finish": 1
       },

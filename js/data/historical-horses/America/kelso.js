@@ -65,7 +65,7 @@
       {
         "raceId": "jockey-club-gold-cup",
         "year": 1964,
-        "ability": 95,
+        "ability": 94,
         "jockeyId": "ismael-valenzuela",
         "finish": 1
       },

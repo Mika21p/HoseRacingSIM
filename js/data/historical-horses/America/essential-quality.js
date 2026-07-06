@@ -16,7 +16,7 @@
       {
         "raceId": "breeders-futurity-stakes",
         "year": 2020,
-        "ability": 85,
+        "ability": 80,
         "jockeyId": "luis-saez",
         "finish": 1
       },

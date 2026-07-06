@@ -13,7 +13,7 @@
       note: "三冠马，海外顶级表现，爆发力极高。"
     },
     races: [
-      { raceId: "spring-stakes", year: 2011, ability: 85, jockeyId: "kenichi-ikezoe", finish: 1, trackCondition: "良" },
+      { raceId: "spring-stakes", year: 2011, ability: 86, jockeyId: "kenichi-ikezoe", finish: 1, trackCondition: "良" },
       { raceId: "satsuki-sho", year: 2011, ability: 86, jockeyId: "kenichi-ikezoe", finish: 1 },
       { raceId: "tokyo-yushun", year: 2011, ability: 87, jockeyId: "kenichi-ikezoe", finish: 1 },
       { raceId: "kobe-shimbun-hai", year: 2011, ability: 87, jockeyId: "kenichi-ikezoe", finish: 1, trackCondition: "良" },

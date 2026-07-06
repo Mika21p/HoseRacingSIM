@@ -23,7 +23,7 @@
       {
         "raceId": "prix-jean-prat",
         "year": 2019,
-        "ability": 89,
+        "ability": 87,
         "jockeyId": "frankie-dettori",
         "finish": 1
       },

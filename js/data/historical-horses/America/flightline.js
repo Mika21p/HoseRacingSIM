@@ -9,28 +9,28 @@
     "displayNameEn": "Flightline",
     "profile": {
       "baseAbility": 94,
-      "peakAbility": 96,
+      "peakAbility": 97,
       "note": "现代美国泥地短生涯极限代表，六战全胜并以压倒性表现赢下育马者杯经典赛。"
     },
     "races": [
       {
         "raceId": "metropolitan-handicap",
         "year": 2022,
-        "ability": 95,
+        "ability": 96,
         "jockeyId": "flavien-prat",
         "finish": 1
       },
       {
         "raceId": "pacific-classic",
         "year": 2022,
-        "ability": 96,
+        "ability": 97,
         "jockeyId": "flavien-prat",
         "finish": 1
       },
       {
         "raceId": "breeders-cup-classic",
         "year": 2022,
-        "ability": 96,
+        "ability": 97,
         "jockeyId": "flavien-prat",
         "finish": 1
       }

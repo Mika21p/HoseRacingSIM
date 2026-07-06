@@ -8,29 +8,29 @@
       "displayNameZh": "大鸣大放",
       "displayNameEn": "Duramente",
       "profile": {
-          "baseAbility": 86,
-          "peakAbility": 88,
+          "baseAbility": 85,
+          "peakAbility": 87,
           "note": "Brilliant dual Classic winner and later influential sire."
       },
       "races": [
           {
               "raceId": "satsuki-sho",
               "year": 2015,
-              "ability": 87,
+              "ability": 86,
               "jockeyId": "mirco-demuro",
               "finish": 1
           },
           {
               "raceId": "tokyo-yushun",
               "year": 2015,
-              "ability": 88,
+              "ability": 87,
               "jockeyId": "mirco-demuro",
               "finish": 1
           },
           {
               "raceId": "nakayama-kinen",
               "year": 2016,
-              "ability": 87,
+              "ability": 86,
               "jockeyId": "mirco-demuro",
               "finish": 1
           }

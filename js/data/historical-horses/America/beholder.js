@@ -30,7 +30,7 @@
       {
         "raceId": "pacific-classic",
         "year": 2015,
-        "ability": 90,
+        "ability": 85,
         "jockeyId": "gary-stevens",
         "finish": 1
       },

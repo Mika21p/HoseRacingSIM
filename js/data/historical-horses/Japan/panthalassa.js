@@ -8,22 +8,22 @@
     "displayNameZh": "本初之海",
     "displayNameEn": "Panthalassa",
     "profile": {
-      "baseAbility": 86,
-      "peakAbility": 88,
+      "baseAbility": 85,
+      "peakAbility": 87,
       "note": "Panthalassa major race wins recorded for currently available project race IDs."
     },
     "races": [
       {
         "raceId": "dubai-turf",
         "year": 2022,
-        "ability": 87,
+        "ability": 86,
         "jockeyId": "yutaka-yoshida",
         "finish": 1
       },
       {
         "raceId": "saudi-cup",
         "year": 2023,
-        "ability": 88,
+        "ability": 87,
         "jockeyId": "yutaka-yoshida",
         "finish": 1
       }

@@ -16,7 +16,7 @@
       {
         "raceId": "prix-de-labbaye",
         "year": 2017,
-        "ability": 87,
+        "ability": 88,
         "jockeyId": "jim-crowley",
         "finish": 1
       },

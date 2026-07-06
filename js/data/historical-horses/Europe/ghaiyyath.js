@@ -16,7 +16,7 @@
       {
         "raceId": "grand-prix-de-saint-cloud",
         "year": 2019,
-        "ability": 88,
+        "ability": 89,
         "jockeyId": "william-buick",
         "finish": 1
       },

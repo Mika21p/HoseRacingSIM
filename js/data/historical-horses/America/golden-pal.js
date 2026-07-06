@@ -8,22 +8,22 @@
     "displayNameZh": "黄金伙伴",
     "displayNameEn": "Golden Pal",
     "profile": {
-      "baseAbility": 76,
-      "peakAbility": 78,
+      "baseAbility": 78,
+      "peakAbility": 80,
       "note": "美国草地短途专门马，育马者杯两岁草地短途与草地短途连续夺冠。"
     },
     "races": [
       {
         "raceId": "breeders-cup-juvenile-turf-sprint",
         "year": 2020,
-        "ability": 78,
+        "ability": 80,
         "jockeyId": "irad-ortiz-jr",
         "finish": 1
       },
       {
         "raceId": "breeders-cup-turf-sprint",
         "year": 2021,
-        "ability": 78,
+        "ability": 80,
         "jockeyId": "irad-ortiz-jr",
         "finish": 1
       }

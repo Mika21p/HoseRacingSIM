@@ -13,9 +13,9 @@
       note: "90年代三冠马，经典三冠与有马记念代表。"
     },
     races: [
-      { raceId: "asahi-hai-fs", year: 1993, ability: 79, jockeyId: "minai-katsumi", finish: 1 },
-      { raceId: "tokinominoru-kinen", year: 1994, ability: 80, jockeyId: "minai-katsumi", finish: 1 },
-      { raceId: "spring-stakes", year: 1994, ability: 80, jockeyId: "minai-katsumi", finish: 1 },
+      { raceId: "asahi-hai-fs", year: 1993, ability: 81, jockeyId: "minai-katsumi", finish: 1 },
+      { raceId: "tokinominoru-kinen", year: 1994, ability: 81, jockeyId: "minai-katsumi", finish: 1 },
+      { raceId: "spring-stakes", year: 1994, ability: 81, jockeyId: "minai-katsumi", finish: 1 },
       { raceId: "satsuki-sho", year: 1994, ability: 82, jockeyId: "minai-katsumi", finish: 1 },
       { raceId: "tokyo-yushun", year: 1994, ability: 83, jockeyId: "minai-katsumi", finish: 1 },
       { raceId: "kikka-sho", year: 1994, ability: 83, jockeyId: "minai-katsumi", finish: 1 },

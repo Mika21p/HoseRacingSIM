@@ -8,13 +8,13 @@
     displayNameZh: "嘉应高升",
     displayNameEn: "Ka Ying Rising",
     profile: {
-      baseAbility: 89,
+      baseAbility: 90,
       peakAbility: 92,
       note: "嘉应高升为近期香港短途代表，刷新沙田短途与千四表现标尺。"
     },
     races: [
-      { raceId: "hong-kong-sprint", year: 2024, ability: 90, jockeyId: "zac-purton", finish: 1 },
-      { raceId: "centenary-sprint-cup", year: 2025, ability: 90, jockeyId: "zac-purton", finish: 1 },
+      { raceId: "hong-kong-sprint", year: 2024, ability: 91, jockeyId: "zac-purton", finish: 1 },
+      { raceId: "centenary-sprint-cup", year: 2025, ability: 91, jockeyId: "zac-purton", finish: 1 },
       { raceId: "queens-silver-jubilee-cup", year: 2025, ability: 91, jockeyId: "karis-teetan", finish: 1 },
       { raceId: "chairmans-sprint-prize", year: 2025, ability: 91, jockeyId: "zac-purton", finish: 1 },
       { raceId: "the-everest", year: 2025, ability: 92, jockeyId: "zac-purton", finish: 1 },

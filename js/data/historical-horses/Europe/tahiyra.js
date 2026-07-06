@@ -37,7 +37,7 @@
       {
         "raceId": "matron-stakes",
         "year": 2023,
-        "ability": 86,
+        "ability": 85,
         "jockeyId": "chris-hayes",
         "finish": 1
       }

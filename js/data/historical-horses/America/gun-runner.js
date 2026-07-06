@@ -16,14 +16,14 @@
       {
         "raceId": "stephen-foster-stakes",
         "year": 2017,
-        "ability": 91,
+        "ability": 89,
         "jockeyId": "florent-geroux",
         "finish": 1
       },
       {
         "raceId": "whitney-stakes",
         "year": 2017,
-        "ability": 92,
+        "ability": 89,
         "jockeyId": "florent-geroux",
         "finish": 1
       },

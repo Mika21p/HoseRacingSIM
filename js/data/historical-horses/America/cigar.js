@@ -8,7 +8,7 @@
     "displayNameZh": "雪茄",
     "displayNameEn": "Cigar",
     "profile": {
-      "baseAbility": 90,
+      "baseAbility": 89,
       "peakAbility": 92,
       "note": "美国古马泥地王者，连胜与国际远征表现兼具。"
     },

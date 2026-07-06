@@ -13,7 +13,7 @@
       note: "德比与1999年古马王道代表。"
     },
     races: [
-      { raceId: "kisaragi-sho", year: 1998, ability: 80, jockeyId: "take-yutaka", finish: 1 },
+      { raceId: "kisaragi-sho", year: 1998, ability: 81, jockeyId: "take-yutaka", finish: 1 },
       { raceId: "yayoi-sho", year: 1998, ability: 81, jockeyId: "take-yutaka", finish: 1 },
       { raceId: "tokyo-yushun", year: 1998, ability: 83, jockeyId: "take-yutaka", finish: 1 },
       { raceId: "kyoto-shimbun-hai", year: 1998, ability: 81, jockeyId: "take-yutaka", finish: 1 },

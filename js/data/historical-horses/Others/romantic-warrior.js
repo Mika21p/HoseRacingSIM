@@ -8,29 +8,29 @@
     "displayNameZh": "浪漫勇士",
     "displayNameEn": "Romantic Warrior",
     "profile": {
-      "baseAbility": 87,
-      "peakAbility": 94,
+      "baseAbility": 88,
+      "peakAbility": 91,
       "note": "香港中距离国际代表，香港杯与女皇杯多胜，并远征澳日取得G1。"
     },
     "races": [
       {
         "raceId": "hong-kong-queen-elizabeth-ii-cup",
         "year": 2022,
-        "ability": 86,
+        "ability": 88,
         "jockeyId": "karis-teetan",
         "finish": 1
       },
       {
         "raceId": "hong-kong-cup",
         "year": 2022,
-        "ability": 87,
+        "ability": 88,
         "jockeyId": "james-mcdonald",
         "finish": 1
       },
       {
         "raceId": "hong-kong-queen-elizabeth-ii-cup",
         "year": 2023,
-        "ability": 87,
+        "ability": 88,
         "jockeyId": "james-mcdonald",
         "finish": 1
       },
@@ -51,7 +51,7 @@
       {
         "raceId": "jebel-hatta",
         "year": 2024,
-        "ability": 94,
+        "ability": 91,
         "jockeyId": "james-mcdonald",
         "finish": 1
       },
@@ -65,7 +65,7 @@
       {
         "raceId": "dubai-turf",
         "year": 2024,
-        "ability": 94,
+        "ability": 91,
         "jockeyId": "james-mcdonald",
         "finish": 1
       },

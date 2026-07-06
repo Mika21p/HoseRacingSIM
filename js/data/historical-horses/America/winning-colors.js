@@ -16,7 +16,7 @@
       {
         "raceId": "santa-anita-derby",
         "year": 1988,
-        "ability": 87,
+        "ability": 80,
         "jockeyId": "gary-stevens",
         "finish": 1
       },

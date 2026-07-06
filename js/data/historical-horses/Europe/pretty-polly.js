@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "pretty-polly",
     "name": "Pretty Polly",
-    "displayName": "Pretty Polly",
-    "displayNameZh": "Pretty Polly",
+    "displayName": "美宝莉",
+    "displayNameZh": "美宝莉",
     "displayNameEn": "Pretty Polly",
     "profile": {
       "baseAbility": 95,

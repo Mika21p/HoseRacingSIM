@@ -37,14 +37,14 @@
       {
         "raceId": "whitney-stakes",
         "year": 1938,
-        "ability": 93,
+        "ability": 92,
         "jockeyId": "wayne-d-wright",
         "finish": 1
       },
       {
         "raceId": "jockey-club-gold-cup",
         "year": 1938,
-        "ability": 94,
+        "ability": 92,
         "jockeyId": "wayne-d-wright",
         "finish": 1
       }

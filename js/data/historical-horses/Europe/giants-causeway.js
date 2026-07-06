@@ -16,7 +16,7 @@
       {
         "raceId": "st-jamess-palace-stakes",
         "year": 2000,
-        "ability": 89,
+        "ability": 90,
         "jockeyId": "george-duffield",
         "finish": 1
       },

@@ -8,15 +8,15 @@
     "displayNameZh": "威信英明",
     "displayNameEn": "Authority",
     "profile": {
-      "baseAbility": 83,
-      "peakAbility": 85,
+      "baseAbility": 82,
+      "peakAbility": 84,
       "note": "Authority major race wins recorded for currently available project race IDs."
     },
     "races": [
       {
         "raceId": "neom-turf-cup",
         "year": 2022,
-        "ability": 85,
+        "ability": 84,
         "jockeyId": "christophe-lemaire",
         "finish": 1
       }

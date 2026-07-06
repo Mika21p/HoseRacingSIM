@@ -13,7 +13,7 @@
       note: "三冠牝马，世界级中距离与英里能力。"
     },
     races: [
-      { raceId: "shinzan-kinen", year: 2018, ability: 84, jockeyId: "keita-tosaki", finish: 1, trackCondition: "稍重" },
+      { raceId: "shinzan-kinen", year: 2018, ability: 85, jockeyId: "keita-tosaki", finish: 1, trackCondition: "稍重" },
       { raceId: "oka-sho", year: 2018, ability: 85, jockeyId: "christophe-lemaire", finish: 1 },
       { raceId: "yushun-himba", year: 2018, ability: 86, jockeyId: "christophe-lemaire", finish: 1 },
       { raceId: "shuka-sho", year: 2018, ability: 86, jockeyId: "christophe-lemaire", finish: 1 },

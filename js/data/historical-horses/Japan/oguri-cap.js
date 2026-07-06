@@ -13,8 +13,8 @@
       note: "地方出身国民名马，英里到有马记念均有顶级表现。"
     },
     races: [
-      { raceId: "mainichi-hai", year: 1988, ability: 78, jockeyId: "kawachi-hiroshi", finish: 1 },
-      { raceId: "new-zealand-trophy", year: 1988, ability: 78, jockeyId: "kawachi-hiroshi", finish: 1 },
+      { raceId: "mainichi-hai", year: 1988, ability: 79, jockeyId: "kawachi-hiroshi", finish: 1 },
+      { raceId: "new-zealand-trophy", year: 1988, ability: 79, jockeyId: "kawachi-hiroshi", finish: 1 },
       { raceId: "takamatsunomiya-kinen", year: 1988, ability: 79, jockeyId: "kawachi-hiroshi", finish: 1 },
       { raceId: "mainichi-okan", year: 1988, ability: 79, jockeyId: "kawachi-hiroshi", finish: 1 },
       { raceId: "arima-kinen", year: 1988, ability: 81, jockeyId: "okabe-yukio", finish: 1 },

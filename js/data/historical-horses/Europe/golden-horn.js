@@ -16,7 +16,7 @@
       {
         "raceId": "epsom-derby",
         "year": 2015,
-        "ability": 87,
+        "ability": 88,
         "jockeyId": "frankie-dettori",
         "finish": 1
       },

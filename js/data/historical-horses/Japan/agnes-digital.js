@@ -13,8 +13,8 @@
       note: "草地、泥地、海外均有G1级胜利的万能型。"
     },
     races: [
-      { raceId: "zen-nippon-nisai-yushun", year: 1999, ability: 78, jockeyId: "hitoshi-matoba", finish: 1 },
-      { raceId: "unicorn-stakes", year: 2000, ability: 78, jockeyId: "hitoshi-matoba", finish: 1 },
+      { raceId: "zen-nippon-nisai-yushun", year: 1999, ability: 80, jockeyId: "hitoshi-matoba", finish: 1 },
+      { raceId: "unicorn-stakes", year: 2000, ability: 80, jockeyId: "hitoshi-matoba", finish: 1 },
       { raceId: "mile-championship", year: 2000, ability: 80, jockeyId: "hitoshi-matoba", finish: 1 },
       { raceId: "nippon-tv-hai", year: 2001, ability: 80, jockeyId: "hirofumi-shii", finish: 1 },
       { raceId: "mile-championship-nambu-hai", year: 2001, ability: 81, jockeyId: "hirofumi-shii", finish: 1 },

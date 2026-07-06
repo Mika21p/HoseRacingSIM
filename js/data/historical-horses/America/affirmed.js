@@ -16,14 +16,14 @@
       {
         "raceId": "hopeful-stakes-us",
         "year": 1977,
-        "ability": 91,
+        "ability": 93,
         "jockeyId": "steve-cauthen",
         "finish": 1
       },
       {
         "raceId": "santa-anita-derby",
         "year": 1978,
-        "ability": 92,
+        "ability": 93,
         "jockeyId": "steve-cauthen",
         "finish": 1
       },

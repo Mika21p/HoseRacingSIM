@@ -13,10 +13,10 @@
       note: "泥地G1/JpnI多胜，地方交流长期高稳定。"
     },
     races: [
-      { raceId: "leopard-stakes", year: 2012, ability: 76, jockeyId: "hideaki-miyuki", finish: 1 },
-      { raceId: "saga-kinen", year: 2013, ability: 77, jockeyId: "hideaki-miyuki", finish: 1 },
-      { raceId: "nagoya-daishoten", year: 2013, ability: 77, jockeyId: "hideaki-miyuki", finish: 1 },
-      { raceId: "antares-stakes", year: 2013, ability: 77, jockeyId: "yasunari-iwata", finish: 1 },
+      { raceId: "leopard-stakes", year: 2012, ability: 78, jockeyId: "hideaki-miyuki", finish: 1 },
+      { raceId: "saga-kinen", year: 2013, ability: 78, jockeyId: "hideaki-miyuki", finish: 1 },
+      { raceId: "nagoya-daishoten", year: 2013, ability: 78, jockeyId: "hideaki-miyuki", finish: 1 },
+      { raceId: "antares-stakes", year: 2013, ability: 78, jockeyId: "yasunari-iwata", finish: 1 },
       { raceId: "kashiwa-kinen", year: 2013, ability: 79, jockeyId: "hideaki-miyuki", finish: 1 },
       { raceId: "teio-sho", year: 2013, ability: 79, jockeyId: "hideaki-miyuki", finish: 1 },
       { raceId: "jbc-classic", year: 2013, ability: 79, jockeyId: "hideaki-miyuki", finish: 1 },

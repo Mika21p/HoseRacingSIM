@@ -13,6 +13,14 @@
 
   ns.Changelog.entries = [
     {
+      date: "2026.7.6",
+      version: "v0.07f",
+      title: "史实马翻译与实力值修订",
+      items: [
+        "修订一批史实马翻译和实力值，使名称显示与对手强度设定更加统一。"
+      ]
+    },
+    {
       date: "2026.7.5",
       version: "v0.07e",
       title: "名称与加载结构优化",

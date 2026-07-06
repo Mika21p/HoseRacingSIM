@@ -16,21 +16,21 @@
       {
         "raceId": "american-pharoah-stakes",
         "year": 2014,
-        "ability": 90,
+        "ability": 91,
         "jockeyId": "victor-espinoza",
         "finish": 1
       },
       {
         "raceId": "del-mar-futurity",
         "year": 2014,
-        "ability": 89,
+        "ability": 91,
         "jockeyId": "victor-espinoza",
         "finish": 1
       },
       {
         "raceId": "arkansas-derby",
         "year": 2015,
-        "ability": 90,
+        "ability": 91,
         "jockeyId": "victor-espinoza",
         "finish": 1
       },
