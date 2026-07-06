@@ -489,7 +489,7 @@
             <p class="eyebrow">出道准备</p>
             <h1>赛马生涯模拟</h1>
           </div>
-          <button class="secondary help-toggle" id="helpToggleBtn" type="button" aria-expanded="false">属性帮助</button>
+          <button class="secondary help-toggle" id="helpToggleBtn" type="button" aria-expanded="false">帮助</button>
         </div>
         <div class="help-panel" id="helpPanel" hidden>${ns.Help ? ns.Help.attributeHelpHtml : ""}</div>
         <div class="save-panel" id="savePanel" aria-live="polite">

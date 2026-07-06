@@ -867,7 +867,7 @@
       helpToggleBtn.addEventListener("click", () => {
         const shouldShow = helpPanel.hidden;
         helpPanel.hidden = !shouldShow;
-        helpToggleBtn.textContent = shouldShow ? "收起帮助" : "属性帮助";
+        helpToggleBtn.textContent = shouldShow ? "收起帮助" : "帮助";
         helpToggleBtn.setAttribute("aria-expanded", shouldShow ? "true" : "false");
       });
     }
