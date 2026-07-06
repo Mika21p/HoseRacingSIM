@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "vermilion",
     "name": "ヴァーミリアン",
-    "displayName": "朱红",
-    "displayNameZh": "朱红",
+    "displayName": "赤兔马",
+    "displayNameZh": "赤兔马",
     "displayNameEn": "Vermilion",
     "profile": {
       "baseAbility": 80,

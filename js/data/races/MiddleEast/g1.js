@@ -19,7 +19,7 @@
     {
       "id": "neom-turf-cup",
       "nameOriginal": "Neom Turf Cup",
-      "nameZh": "尼奥姆草地杯",
+      "nameZh": "新未来城草地锦标",
       "grade": "G1",
       "raceClass": "g1",
       "month": 2,
@@ -27,12 +27,12 @@
       "surface": "草地",
       "course": "其他地方",
       "distance": 2100,
-      "ageRule": "3岁以上"
+      "ageRule": "4岁以上"
     },
     {
       "id": "al-maktoum-challenge",
       "nameOriginal": "Al Maktoum Challenge",
-      "nameZh": "马克图姆挑战赛",
+      "nameZh": "麦通挑战赛",
       "grade": "G1",
       "raceClass": "g1",
       "month": 1,

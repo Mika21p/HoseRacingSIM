@@ -445,7 +445,7 @@
     {
       "id": "tattersalls-gold-cup",
       "nameOriginal": "Tattersalls Gold Cup",
-      "nameZh": "塔特索尔斯金杯",
+      "nameZh": "达德素金杯",
       "grade": "G1",
       "raceClass": "g1",
       "month": 5,
@@ -781,7 +781,7 @@
     {
       "id": "lockinge-stakes",
       "nameOriginal": "Lockinge Stakes",
-      "nameZh": "洛金锦标",
+      "nameZh": "乐景杰锦标",
       "grade": "G1",
       "raceClass": "g1",
       "month": 5,

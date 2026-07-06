@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     id: "ouija-board",
     name: "Ouija Board",
-    displayName: "占卜板",
-    displayNameZh: "占卜板",
+    displayName: "占卜",
+    displayNameZh: "占卜",
     displayNameEn: "Ouija Board",
     profile: {
       baseAbility: 81,

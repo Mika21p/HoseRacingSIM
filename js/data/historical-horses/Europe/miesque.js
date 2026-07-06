@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "miesque",
     "name": "Miesque",
-    "displayName": "米斯克",
-    "displayNameZh": "米斯克",
+    "displayName": "美艳时刻",
+    "displayNameZh": "美艳时刻",
     "displayNameEn": "Miesque",
     "profile": {
       "baseAbility": 88,

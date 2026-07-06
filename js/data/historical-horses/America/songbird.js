@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "songbird",
     "name": "Songbird",
-    "displayName": "鸣鸟不休",
-    "displayNameZh": "鸣鸟不休",
+    "displayName": "鸣禽",
+    "displayNameZh": "鸣禽",
     "displayNameEn": "Songbird",
     "profile": {
       "baseAbility": 88,

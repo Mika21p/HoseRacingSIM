@@ -10,7 +10,7 @@
     "profile": {
       "baseAbility": 82,
       "peakAbility": 84,
-      "note": "二千坚尼与洛金锦标冠军，一哩线稳定上位。"
+      "note": "二千坚尼与乐景杰锦标冠军，一哩线稳定上位。"
     },
     "races": [
       {

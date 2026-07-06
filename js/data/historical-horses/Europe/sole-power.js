@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "sole-power",
     "name": "Sole Power",
-    "displayName": "独力",
-    "displayNameZh": "独力",
+    "displayName": "独掌全权",
+    "displayNameZh": "独掌全权",
     "displayNameEn": "Sole Power",
     "profile": {
       "baseAbility": 83,

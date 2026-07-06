@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "advertise",
     "name": "Advertise",
-    "displayName": "广告",
-    "displayNameZh": "广告",
+    "displayName": "登广告",
+    "displayNameZh": "登广告",
     "displayNameEn": "Advertise",
     "profile": {
       "baseAbility": 81,

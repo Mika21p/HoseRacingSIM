@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     id: "lemon-pop",
     name: "レモンポップ",
-    displayName: "柠檬汽水",
-    displayNameZh: "柠檬汽水",
+    displayName: "清爽口味",
+    displayNameZh: "清爽口味",
     displayNameEn: "Lemon Pop",
     profile: {
       baseAbility: 79,

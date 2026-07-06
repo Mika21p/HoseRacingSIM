@@ -403,7 +403,7 @@
     {
       "id": "stephen-foster-stakes",
       "nameOriginal": "Stephen Foster Stakes",
-      "nameZh": "斯蒂芬福斯特锦标",
+      "nameZh": "史提芬科士打錦標",
       "grade": "G1",
       "raceClass": "g1",
       "month": 6,
@@ -469,7 +469,7 @@
     {
       "id": "personal-ensign-stakes",
       "nameOriginal": "Personal Ensign Stakes",
-      "nameZh": "个人旌旗锦标",
+      "nameZh": "个人荣誉锦标",
       "grade": "G1",
       "raceClass": "g1",
       "month": 8,
