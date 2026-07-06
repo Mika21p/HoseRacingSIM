@@ -2,6 +2,33 @@
   const ns = (window.Keiba = window.Keiba || {});
 
   ns.Help = ns.Help || {};
+
+  function escapeHtml(value) {
+    return String(value || "").replace(/[&<>"']/g, (char) => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      "\"": "&quot;",
+      "'": "&#39;"
+    }[char]));
+  }
+
+  function sireHelpItems(group) {
+    const targetClassic = group === "classic";
+    return (ns.SireBloodlines || ns.Bloodlines || [])
+      .filter((item) => item && item.id !== "random")
+      .filter((item) => (item.group === "classic") === targetClassic)
+      .map((item) => `<li><b>${escapeHtml(item.name)}</b>：${escapeHtml(item.note || "以该血统的路线倾向影响随机权重。")}</li>`)
+      .join("");
+  }
+
+  function damHelpItems() {
+    return (ns.DamBloodlines || [])
+      .filter((item) => item && item.id !== "random")
+      .map((item) => `<li><b>${escapeHtml(item.name)}</b>：${escapeHtml(item.note || "以该母系的素质倾向影响随机权重。")}</li>`)
+      .join("");
+  }
+
   ns.Help.attributeHelpHtml = `
     <div class="help-content">
       <div class="help-section">
@@ -26,9 +53,8 @@
 
       <div class="help-section">
         <h2>血统</h2>
-        <p>父系改为具体父系血统，主要影响路线倾向，例如草地/泥地、地区适性、核心距离、成长节奏、重场和体格。母系改为素质倾向，主要影响速度、瞬发、耐力、稳定、早熟、晚成、泥地或重场等底色。</p>
-        <p>血统只改变随机权重，不会硬锁结果。耐力组合仍可能出短途马，泥地组合也仍可能出草地马，只是概率更低。父母同向加成会有封顶，避免某个组合形成整体优势。</p>
-        <p>随机父系或随机母系表示不施加明确方向，适合想让系统自然生成的情况。</p>
+        <p>血统只改变随机权重，不会硬锁结果。耐力组合仍可能出短途马，泥地组合也仍可能出草地马，只是概率更低。同向加成会有封顶，避免某个组合形成整体优势。</p>
+        <p>随机父系或随机母系表示不施加明确方向，适合想让系统自然生成的情况。父系和母系特点可通过开局表单对应问号查看。</p>
       </div>
 
       <div class="help-section">
@@ -40,7 +66,7 @@
 
       <div class="help-section">
         <h2>格上挑战</h2>
-        <p>赢下新马战或未胜利战后，部分尚未通过常规胜利机制解锁的高等级赛事会以“格上”形式开放。比赛列表只会在赛事名前标记“[格上]”，具体除外规则以这里为准。</p>
+        <p>日本所属马使用格上挑战。赢下新马战或未胜利战后，部分尚未通过常规胜利机制解锁的高等级赛事会以“格上”形式开放。比赛列表只会在赛事名前标记“[格上]”，具体除外规则以这里为准。</p>
         <ul>
           <li>2 岁有 2 次格上机会，不继承到 3 岁。可格上报名 G2/JpnII 与 G1/JpnI；G2/JpnII 除外概率 20%，G1/JpnI 除外概率 40%。报名通过或被除外都会消耗 1 次机会。</li>
           <li>3 岁上半年有 2 次格上机会，独立于 2 岁机会。可格上报名 OP、G3/JpnIII、G2/JpnII 与 G1/JpnI；OP、G3/JpnIII、G2/JpnII 除外概率 20%，G1/JpnI 除外概率 40%。</li>
@@ -50,9 +76,28 @@
       </div>
 
       <div class="help-section">
+        <h2>所属地与欧美报名</h2>
+        <p>小马所属地由练马师决定，目前分为日本、欧洲、北美。日本继续使用新马战、未胜利战和胜级晋级；欧洲与北美使用更简化的五档制。</p>
+        <ul>
+          <li>maiden：出道赛和未胜利赛合并。</li>
+          <li>低级赛：一胜和二胜合并。</li>
+          <li>OP/L：公开赛和 Listed 级别合并。</li>
+          <li>重赏：G2 和 G3 合并。</li>
+          <li>G1：单独一档。</li>
+        </ul>
+        <p>欧美马赢下某档后不能回到该档及以下赛事。赢下 maiden 后关闭 maiden，赢下低级赛后关闭低级赛及以下，赢下 OP/L 或以上后只保留 G1/G2/G3。上一场胜利超过 2 马身可额外跳 1 档，超过 4 马身可直接开放至 G1 档。</p>
+      </div>
+
+      <div class="help-section">
+        <h2>远征与转厩</h2>
+        <p>非当前厩舍所属地的比赛会标记为远征。第一版远征只做标记和记录，不施加能力惩罚，也不锁定报名时间。低级赛只显示本地区赛事；远征只开放 G3/G2/G1，并且需要已经进入重赏准入阶段。</p>
+        <p>欧洲和北美之间有一次转厩机会。日本不能转厩；已报名、强制休养中或退役后不能转厩。转厩不会改变马匹适性和既有战绩，只会改变后续低级赛所属地。</p>
+      </div>
+
+      <div class="help-section">
         <h2>草地与泥地适性</h2>
         <p>每匹马会先生成主场地倾向：草地、泥地或二刀流。草地马通常会有 2 到 3 个草地地区达到 A 或 S，但泥地副适性最多只有 1 个地区能到 B 以上；泥地马则会集中在泥地地区，草地副适性也最多只有 1 个地区能到 B 以上。二刀流较稀有，但草地和泥地两边都会至少有一个 A 或 S 和一个 B。</p>
-        <p>父系和母系都会影响草地、泥地、二刀流的主倾向概率；具体强区位置只受父系小幅影响，例如欧洲父系更容易在欧洲草地高适性，北美父系更容易在美国泥地高适性。</p>
+        <p>血统会影响主场地倾向与强区位置的随机权重，但不会直接锁定场地或地区。</p>
         <p>比赛会根据赛事的场地类型和地区读取对应评级，例如日本草地、欧洲草地、日本泥地、美国泥地等。</p>
         <ul>
           <li>S：+5</li>
@@ -158,22 +203,61 @@
     </div>
   `;
 
+  ns.Help.sireHelpHtml = `
+    <div class="help-content sire-help-content">
+      <div class="help-section">
+        <h2>父系特点</h2>
+        <p>父系主要改变路线权重，包括草地/泥地、强势地区、核心距离、成长节奏、重场、体格和气性。它只影响概率，不会锁死结果；整体强弱差距被控制在小范围，更多体现为“强在哪里”。</p>
+        <p>默认下拉显示现代父系。勾选“经典父系”后会切换到传统经典父系池。随机父系不施加明确方向，适合让系统自然生成。</p>
+      </div>
+      <div class="sire-help-list-grid">
+        <div class="help-section">
+          <h2>现代父系</h2>
+          <ul>${sireHelpItems("current")}</ul>
+        </div>
+        <div class="help-section">
+          <h2>经典父系</h2>
+          <ul>${sireHelpItems("classic")}</ul>
+        </div>
+      </div>
+    </div>
+  `;
+
+  ns.Help.damHelpHtml = `
+    <div class="help-content dam-help-content">
+      <div class="help-section">
+        <h2>母系特点</h2>
+        <p>母系使用史实母系代表，主要改变素质底色，包括速度、瞬发、耐力、稳定、早熟、晚成、泥地、重场、体格和距离弹性。它只影响概率，不会锁死结果；整体强弱差距被控制在小范围。</p>
+        <p>随机母系不施加明确方向，适合让系统自然生成。</p>
+      </div>
+      <div class="help-section">
+        <h2>史实母系</h2>
+        <ul>${damHelpItems()}</ul>
+      </div>
+    </div>
+  `;
+
   ns.Help.trainerHelpHtml = `
     <div class="help-content trainer-help-content">
       <div class="help-section">
         <h2>练马师评语</h2>
         <p>出道前评语不是属性面板，而是带误差的判断。每个项目大致遵循：10% 非常准确、20% 基本准确、40% 模糊准确、20% 不知其详、10% 完全谬误。</p>
-        <p>评语会影响新马战锁定，尤其是距离、场地和成长时机。退役后才会揭示完整真实属性。</p>
+        <p>练马师会决定小马所属地，并影响主战骑手池、低级赛范围和评语重点。评语也会影响新马战锁定。</p>
       </div>
 
       <div class="help-section">
         <h2>佐藤悠太</h2>
-        <p>更重视日本草地、日本泥地和距离判断，适合以日本本土路线为核心规划出道战。实力判断偏保守。</p>
+        <p>日本所属。擅长距离判断，重点看日本草地和日本泥地；适合日本本土路线，实力判断偏保守。</p>
       </div>
 
       <div class="help-section">
         <h2>O'Brien（岳伯仁）</h2>
-        <p>更重视欧洲草地、美国泥地、成熟度和气性，适合更关注海外适性或成长节奏的判断。实力判断偏乐观。</p>
+        <p>欧洲所属。擅长成熟速度和气性判断，重点看欧洲草地和美国泥地；适合海外路线，实力判断偏乐观。</p>
+      </div>
+
+      <div class="help-section">
+        <h2>Pletcher（普莱彻）</h2>
+        <p>北美所属。擅长场地和实力判断，重点看美国泥地和美国草地；适合北美路线，实力判断偏乐观。</p>
       </div>
     </div>
   `;

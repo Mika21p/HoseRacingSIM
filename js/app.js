@@ -13,7 +13,8 @@
       grade: [],
       surface: [],
       distance: [],
-      course: []
+      region: [],
+      japanCourse: []
     }
   };
 
@@ -38,6 +39,7 @@
   ];
 
   function refresh() {
+    if (state.career && ns.RegionRules) ns.RegionRules.ensureCareerState(state.career);
     const didClearExpiredRegistration = clearExpiredRegistration();
     ns.UI.renderHorse(document.getElementById("horsePanel"), state.career);
     ns.UI.renderRaceSelector(document.getElementById("racePanel"), state.career, state.filters, {
@@ -66,7 +68,21 @@
   }
 
   function defaultFilters() {
-    return { grade: [], surface: [], distance: [], course: [] };
+    return { grade: [], surface: [], distance: [], region: [], japanCourse: [] };
+  }
+
+  const REGION_FILTER_VALUES = ["japan", "america", "europe", "other"];
+  const JAPAN_COURSE_FILTER_VALUES = ["kyoto", "hanshin", "tokyo", "nakayama", "other"];
+  const LEGACY_COURSE_TO_JAPAN_COURSE = {
+    kyoto: "kyoto",
+    hanshin: "hanshin",
+    tokyo: "tokyo",
+    nakayama: "nakayama",
+    "other-japan": "other"
+  };
+
+  function validFilterValues(values, allowedValues) {
+    return values.filter((item) => allowedValues.includes(item));
   }
 
   function normalizeFilterGroup(value) {
@@ -79,11 +95,24 @@
 
   function normalizeFilters(filters) {
     const source = filters || {};
+    let region = validFilterValues(normalizeFilterGroup(source.region), REGION_FILTER_VALUES);
+    let japanCourse = validFilterValues(normalizeFilterGroup(source.japanCourse), JAPAN_COURSE_FILTER_VALUES);
+    const legacyCourses = normalizeFilterGroup(source.course)
+      .map((item) => LEGACY_COURSE_TO_JAPAN_COURSE[item])
+      .filter(Boolean);
+
+    if (region.length === 0 && japanCourse.length === 0 && legacyCourses.length > 0) {
+      region = ["japan"];
+      japanCourse = [...new Set(legacyCourses)];
+    }
+    if (!region.includes("japan")) japanCourse = [];
+
     return {
       grade: normalizeFilterGroup(source.grade),
       surface: normalizeFilterGroup(source.surface),
       distance: normalizeFilterGroup(source.distance),
-      course: normalizeFilterGroup(source.course)
+      region,
+      japanCourse
     };
   }
 
@@ -158,6 +187,7 @@
     if (!career || typeof career !== "object") return null;
     if (!career.currentTime && ns.TimeRules) career.currentTime = ns.TimeRules.startTime();
     if (!Array.isArray(career.races)) career.races = [];
+    if (ns.RegionRules && ns.RegionRules.ensureCareerState) ns.RegionRules.ensureCareerState(career);
     if (!career.injury) career.injury = { active: null, history: [] };
     if (!Array.isArray(career.injury.history)) career.injury.history = [];
     if (ns.RaceProgression && ns.RaceProgression.ensureChallengeState) {
@@ -326,11 +356,29 @@
     return Math.max(...jockey.periods.map((period) => period.ability));
   }
 
-  function fallbackPlayerSelectableJockeys(filters) {
+  function currentSetupRegionId() {
+    const select = document.getElementById("trainerSelect");
+    const trainerId = select ? select.value : "sato-yuta";
+    const trainer = ns.CommentRules && ns.CommentRules.getTrainer
+      ? ns.CommentRules.getTrainer(trainerId)
+      : null;
+    return ns.RegionRules && ns.RegionRules.regionIdForTrainer
+      ? ns.RegionRules.regionIdForTrainer(trainer)
+      : "japan";
+  }
+
+  function updateTrainerRegionText() {
+    const text = document.getElementById("trainerRegionText");
+    if (!text || !ns.RegionRules) return;
+    text.textContent = `所属地：${ns.RegionRules.getRegion(currentSetupRegionId()).label}`;
+  }
+
+  function fallbackPlayerSelectableJockeys(filters, affiliation) {
     const currentFilters = filters || {};
+    const targetAffiliation = affiliation || "japan";
     return (ns.Jockeys || [])
       .filter((jockey) => jockey.mainSelectable !== false)
-      .filter((jockey) => !Array.isArray(jockey.affiliations) || jockey.affiliations.includes("japan"))
+      .filter((jockey) => !Array.isArray(jockey.affiliations) || jockey.affiliations.includes(targetAffiliation))
       .map((jockey) => ({
         id: jockey.id,
         name: jockey.name,
@@ -342,9 +390,13 @@
 
   function getMainJockeyOptions() {
     const filters = getMainJockeyFilters();
+    const regionId = currentSetupRegionId();
+    const affiliation = ns.RegionRules && ns.RegionRules.getJockeyAffiliation
+      ? ns.RegionRules.getJockeyAffiliation(regionId)
+      : "japan";
     return ns.JockeyRules
-      ? ns.JockeyRules.getPlayerSelectableJockeys("japan", filters)
-      : fallbackPlayerSelectableJockeys(filters);
+      ? ns.JockeyRules.getPlayerSelectableJockeys(affiliation, filters)
+      : fallbackPlayerSelectableJockeys(filters, affiliation);
   }
 
   function mainJockeyOptionList(jockeys, selectedId) {
@@ -366,6 +418,34 @@
       ? mainJockeyOptionList(jockeys, selectedId)
       : `<option value="">没有可选骑手</option>`;
     select.value = selectedId;
+    updateTrainerRegionText();
+  }
+
+  function sireBloodlineGroup(item) {
+    return item && item.group === "classic" ? "classic" : "current";
+  }
+
+  function getSireBloodlineOptions(useClassic) {
+    const targetGroup = useClassic ? "classic" : "current";
+    return (ns.SireBloodlines || ns.Bloodlines || [])
+      .filter((item) => item.id === "random" || sireBloodlineGroup(item) === targetGroup);
+  }
+
+  function sireOptionList(items, selectedId) {
+    return items
+      .map((item) => `<option value="${item.id}" ${item.id === selectedId ? "selected" : ""}>${item.name}</option>`)
+      .join("");
+  }
+
+  function refreshSireOptions() {
+    const select = document.getElementById("sireSelect");
+    const toggle = document.getElementById("classicSireToggle");
+    if (!select || !toggle) return;
+    const currentId = select.value || "random";
+    const sires = getSireBloodlineOptions(toggle.checked);
+    const selectedId = sires.some((item) => item.id === currentId) ? currentId : "random";
+    select.innerHTML = sireOptionList(sires, selectedId);
+    select.value = selectedId;
   }
 
   function generate() {
@@ -380,9 +460,14 @@
     const horse = ns.HorseRules.generateHorse({ name, sireId, damId });
     if (debugOptions) ns.HorseRules.applyDebugOverrides(horse, debugOptions);
     const trainer = ns.CommentRules.getTrainer(trainerId);
+    const regionId = ns.RegionRules && ns.RegionRules.regionIdForTrainer
+      ? ns.RegionRules.regionIdForTrainer(trainer)
+      : "japan";
     horse.trainerId = trainer.id;
     horse.trainerName = trainer.name;
     horse.mainJockeyId = mainJockeyId;
+    horse.homeRegionId = regionId;
+    horse.currentRegionId = regionId;
     const commentDetails = ns.CommentRules.generateDebutCommentDetails(horse, trainer.id);
     const comments = commentDetails.map((comment) => comment.text);
     const debutLock = ns.CommentRules.buildDebutLock(commentDetails);
@@ -450,9 +535,10 @@
     return true;
   }
 
-  function buildRacePayload(selectedRace, schedule, challenge) {
+  function buildRacePayload(selectedRace, schedule, challenge, expedition) {
     const opponent = ns.RaceRules.chooseOpponent(selectedRace);
     const payload = { race: selectedRace, schedule, opponent, year: opponent.year || null };
+    if (expedition) payload.expedition = expedition;
     if (challenge) {
       payload.challenge = {
         key: challenge.key,
@@ -512,6 +598,7 @@
       maturityDecline: state.career.maturity.decline,
       maturity
     });
+    result.hidden.expedition = payload.expedition || null;
     ns.CareerRules.addRace(state.career, result, payload.schedule);
     state.career.scheduledRace = null;
     if (state.career.forcedRetirement) {
@@ -554,7 +641,7 @@
         return;
       }
     }
-    const payload = buildRacePayload(selectedRace, schedule, challenge);
+    const payload = buildRacePayload(selectedRace, schedule, challenge, plan.expedition || null);
     state.career.scheduledRace = payload;
     refresh();
     saveGame();
@@ -592,6 +679,26 @@
   function cancelRegistration() {
     if (!state.career || state.career.retired) return;
     state.career.scheduledRace = null;
+    refresh();
+    saveGame();
+  }
+
+  function transferStable(targetRegionId) {
+    if (!state.career || !ns.RegionRules) return;
+    const transfer = ns.RegionRules.canTransfer(state.career);
+    if (!transfer.allowed) {
+      window.alert(transfer.reason || "当前不能转厩。");
+      return;
+    }
+    const targetLabel = ns.RegionRules.getRegion(targetRegionId || transfer.targetRegionId).label;
+    if (!window.confirm(`确定转厩至${targetLabel}吗？每匹马只有一次欧洲/北美转厩机会。`)) return;
+    const result = ns.RegionRules.transferStable(state.career, targetRegionId);
+    if (!result.ok) {
+      window.alert(result.reason || "转厩失败。");
+      return;
+    }
+    state.activeFilterGroup = "";
+    state.filters = defaultFilters();
     refresh();
     saveGame();
   }
@@ -644,10 +751,15 @@
 
   function setRaceFilterValue(group, value, checked) {
     state.filters = normalizeFilters(state.filters);
+    if (group === "japanCourse" && !state.filters.region.includes("japan")) return;
     const values = state.filters[group] || [];
     state.filters[group] = checked
       ? [...new Set(values.concat(value))]
       : values.filter((item) => item !== value);
+    if (group === "region" && !state.filters.region.includes("japan")) {
+      state.filters.japanCourse = [];
+      if (state.activeFilterGroup === "japanCourse") state.activeFilterGroup = "region";
+    }
     state.activeFilterGroup = group;
     refresh();
     saveGame();
@@ -656,6 +768,7 @@
   function clearRaceFilterGroup(group) {
     state.filters = normalizeFilters(state.filters);
     state.filters[group] = [];
+    if (group === "region") state.filters.japanCourse = [];
     state.activeFilterGroup = group;
     refresh();
     saveGame();
@@ -680,6 +793,7 @@
     const raceFilterToggles = Array.from(document.querySelectorAll("[data-race-filter]"));
     const raceFilterPanels = Array.from(document.querySelectorAll("[data-race-filter-group]"));
     const raceFilterClearButtons = Array.from(document.querySelectorAll("[data-filter-clear]"));
+    const transferStableBtn = document.getElementById("transferStableBtn");
     const clearAllRaceFiltersBtn = document.getElementById("clearAllRaceFiltersBtn");
     if (registerRaceBtn) registerRaceBtn.addEventListener("click", registerRace);
     if (nextTurnBtn) nextTurnBtn.addEventListener("click", advanceTurn);
@@ -715,12 +829,19 @@
     raceFilterClearButtons.forEach((button) => {
       button.addEventListener("click", () => clearRaceFilterGroup(button.dataset.filterClear));
     });
+    if (transferStableBtn) {
+      transferStableBtn.addEventListener("click", () => transferStable(transferStableBtn.dataset.transferRegion));
+    }
     if (clearAllRaceFiltersBtn) clearAllRaceFiltersBtn.addEventListener("click", clearAllRaceFilters);
   }
 
   function bindSetupEvents() {
     const helpToggleBtn = document.getElementById("helpToggleBtn");
     const helpPanel = document.getElementById("helpPanel");
+    const sireHelpToggleBtn = document.getElementById("sireHelpToggleBtn");
+    const sireHelpPanel = document.getElementById("sireHelpPanel");
+    const damHelpToggleBtn = document.getElementById("damHelpToggleBtn");
+    const damHelpPanel = document.getElementById("damHelpPanel");
     const trainerHelpToggleBtn = document.getElementById("trainerHelpToggleBtn");
     const trainerHelpPanel = document.getElementById("trainerHelpPanel");
     const debugModeToggle = document.getElementById("debugModeToggle");
@@ -728,7 +849,20 @@
     const debugStrength = document.getElementById("debugStrength");
     const debugStrengthValue = document.getElementById("debugStrengthValue");
     const excellentJockeyToggle = document.getElementById("excellentJockeyToggle");
+    const classicSireToggle = document.getElementById("classicSireToggle");
+    const trainerSelect = document.getElementById("trainerSelect");
     const clearSaveBtn = document.getElementById("clearSaveBtn");
+    const bindInlineHelpPanel = (toggleBtn, panel) => {
+      if (!toggleBtn || !panel) return;
+      const setOpen = (open) => {
+        panel.hidden = !open;
+        toggleBtn.setAttribute("aria-expanded", open ? "true" : "false");
+      };
+      toggleBtn.addEventListener("click", () => setOpen(panel.hidden));
+      Array.from(panel.querySelectorAll(`[data-help-close="${panel.id}"]`)).forEach((button) => {
+        button.addEventListener("click", () => setOpen(false));
+      });
+    };
     if (helpToggleBtn && helpPanel) {
       helpToggleBtn.addEventListener("click", () => {
         const shouldShow = helpPanel.hidden;
@@ -737,13 +871,9 @@
         helpToggleBtn.setAttribute("aria-expanded", shouldShow ? "true" : "false");
       });
     }
-    if (trainerHelpToggleBtn && trainerHelpPanel) {
-      trainerHelpToggleBtn.addEventListener("click", () => {
-        const shouldShow = trainerHelpPanel.hidden;
-        trainerHelpPanel.hidden = !shouldShow;
-        trainerHelpToggleBtn.setAttribute("aria-expanded", shouldShow ? "true" : "false");
-      });
-    }
+    bindInlineHelpPanel(sireHelpToggleBtn, sireHelpPanel);
+    bindInlineHelpPanel(damHelpToggleBtn, damHelpPanel);
+    bindInlineHelpPanel(trainerHelpToggleBtn, trainerHelpPanel);
     if (debugModeToggle && debugPanel) {
       debugModeToggle.addEventListener("change", () => {
         debugPanel.hidden = !debugModeToggle.checked;
@@ -757,7 +887,15 @@
     if (excellentJockeyToggle) {
       excellentJockeyToggle.addEventListener("change", refreshMainJockeyOptions);
     }
+    if (classicSireToggle) {
+      classicSireToggle.addEventListener("change", refreshSireOptions);
+      refreshSireOptions();
+    }
+    if (trainerSelect) {
+      trainerSelect.addEventListener("change", refreshMainJockeyOptions);
+    }
     if (clearSaveBtn) clearSaveBtn.addEventListener("click", clearSavedGame);
+    refreshMainJockeyOptions();
   }
 
   function bindChangelogEvents() {

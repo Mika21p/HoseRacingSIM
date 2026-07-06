@@ -3,6 +3,11 @@
 
   function createCareer(horse, comments, commentDetails, debutLock, trainer) {
     const start = ns.TimeRules.startTime();
+    const regionId = ns.RegionRules
+      ? ns.RegionRules.regionIdForTrainer(trainer) || "japan"
+      : "japan";
+    horse.homeRegionId = horse.homeRegionId || regionId;
+    horse.currentRegionId = horse.currentRegionId || horse.homeRegionId;
     return {
       horse,
       comments: comments || [],
@@ -17,6 +22,15 @@
       scheduledRace: null,
       injury: {
         active: null,
+        history: []
+      },
+      stable: {
+        originalRegionId: horse.homeRegionId,
+        regionId: horse.currentRegionId,
+        transferUsed: false,
+        transfers: []
+      },
+      expedition: {
         history: []
       },
       challenge: ns.RaceProgression && ns.RaceProgression.createChallengeState
@@ -145,6 +159,7 @@
   }
 
   function addRace(career, raceResult, schedule) {
+    ensureExpeditionState(career);
     if (schedule) {
       raceResult.public.timeLabel = schedule.label;
       raceResult.hidden.schedule = schedule;
@@ -162,6 +177,15 @@
       raceResult.hidden.postRaceComment = postRaceComment;
       career.lastRaceComment = postRaceComment;
     }
+    if (raceResult.hidden.expedition && raceResult.hidden.expedition.active) {
+      career.expedition.history.push({
+        ...raceResult.hidden.expedition,
+        raceId: raceResult.hidden.race ? raceResult.hidden.race.id : "",
+        raceName: raceResult.public.raceName || "",
+        timeLabel: raceResult.public.timeLabel || "",
+        scheduleIndex: schedule ? schedule.index : null
+      });
+    }
     career.races.push({
       public: raceResult.public,
       hidden: raceResult.hidden
@@ -170,6 +194,12 @@
 
   function isWin(record) {
     return (record.public.rank === 1 || record.public.rankLabel === "一着") && !record.public.retired;
+  }
+
+  function ensureExpeditionState(career) {
+    if (!career.expedition) career.expedition = { history: [] };
+    if (!Array.isArray(career.expedition.history)) career.expedition.history = [];
+    return career.expedition;
   }
 
   function retire(career, reason) {

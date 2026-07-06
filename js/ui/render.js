@@ -5,6 +5,10 @@
     return items.map((item) => `<option value="${item.id}" ${item.id === selectedId ? "selected" : ""}>${item.name}</option>`).join("");
   }
 
+  function currentSireBloodlines(items) {
+    return items.filter((item) => item.id === "random" || item.group !== "classic");
+  }
+
   function valueOptions(items, selected) {
     return items.map((item) => `<option value="${item}" ${item === selected ? "selected" : ""}>${item}</option>`).join("");
   }
@@ -202,7 +206,12 @@
 
   function raceVenueLabel(race) {
     const region = race.surfaceRegion || "日本";
-    return region === "日本" ? race.course : region;
+    const course = race.course || "";
+    if (region === "日本") return course || "其他地方";
+    if (course && course !== "其他地方") return course;
+    return ns.RegionRules && ns.RegionRules.getRaceRegionLabel
+      ? ns.RegionRules.getRaceRegionLabel(race)
+      : region;
   }
 
   function historyRecordKey(number) {
@@ -215,6 +224,7 @@
     const race = (item.hidden && item.hidden.race) || raceById(publicResult.raceId);
     if (!race) return "";
     return [
+      item.hidden && item.hidden.expedition && item.hidden.expedition.active ? "远征" : "",
       race.surface,
       race.grade,
       race.distance ? `${race.distance}m` : "",
@@ -237,15 +247,25 @@
 
   function raceOptionLabel(plan, mode) {
     const challengeLabel = plan.challenge ? "[格上] " : "";
-    return `${challengeLabel}${plan.schedule.label} · ${raceDisplayName(plan.race, mode)} · ${plan.race.grade} · ${plan.race.ageRule}${raceRestrictionLabel(plan.race)} · ${raceSurfaceDistanceLabel(plan.race)} · ${raceVenueLabel(plan.race)}`;
+    const expeditionLabel = plan.expedition && plan.expedition.active ? "[远征] " : "";
+    return `${expeditionLabel}${challengeLabel}${plan.schedule.label} · ${raceDisplayName(plan.race, mode)} · ${plan.race.grade} · ${plan.race.ageRule}${raceRestrictionLabel(plan.race)} · ${raceSurfaceDistanceLabel(plan.race)} · ${raceVenueLabel(plan.race)}`;
   }
 
   const FEATURED_COURSES = ["京都", "阪神", "中山", "东京"];
-  const COURSE_VALUE_MAP = {
+  const REGION_FILTER_VALUES = ["japan", "america", "europe", "other"];
+  const JAPAN_COURSE_FILTER_VALUES = ["kyoto", "hanshin", "tokyo", "nakayama", "other"];
+  const JAPAN_COURSE_VALUE_MAP = {
     kyoto: "京都",
     hanshin: "阪神",
     nakayama: "中山",
     tokyo: "东京"
+  };
+  const LEGACY_COURSE_TO_JAPAN_COURSE = {
+    kyoto: "kyoto",
+    hanshin: "hanshin",
+    tokyo: "tokyo",
+    nakayama: "nakayama",
+    "other-japan": "other"
   };
   const RACE_FILTER_GROUPS = [
     {
@@ -279,15 +299,24 @@
       ]
     },
     {
-      id: "course",
-      label: "赛场",
+      id: "region",
+      label: "地区",
+      options: [
+        { value: "japan", label: "日本" },
+        { value: "america", label: "美国" },
+        { value: "europe", label: "欧洲" },
+        { value: "other", label: "其他" }
+      ]
+    },
+    {
+      id: "japanCourse",
+      label: "日本赛场",
       options: [
         { value: "kyoto", label: "京都" },
         { value: "hanshin", label: "阪神" },
-        { value: "nakayama", label: "中山" },
         { value: "tokyo", label: "东京" },
-        { value: "other-japan", label: "其他地方" },
-        { value: "overseas", label: "海外" }
+        { value: "nakayama", label: "中山" },
+        { value: "other", label: "其他" }
       ]
     }
   ];
@@ -300,11 +329,24 @@
   }
 
   function normalizeRaceFilters(filters) {
+    let region = filterValues(filters, "region").filter((item) => REGION_FILTER_VALUES.includes(item));
+    let japanCourse = filterValues(filters, "japanCourse").filter((item) => JAPAN_COURSE_FILTER_VALUES.includes(item));
+    const legacyCourses = filterValues(filters, "course")
+      .map((item) => LEGACY_COURSE_TO_JAPAN_COURSE[item])
+      .filter(Boolean);
+
+    if (region.length === 0 && japanCourse.length === 0 && legacyCourses.length > 0) {
+      region = ["japan"];
+      japanCourse = [...new Set(legacyCourses)];
+    }
+    if (!region.includes("japan")) japanCourse = [];
+
     return {
       grade: filterValues(filters, "grade"),
       surface: filterValues(filters, "surface"),
       distance: filterValues(filters, "distance"),
-      course: filterValues(filters, "course")
+      region,
+      japanCourse
     };
   }
 
@@ -313,6 +355,7 @@
       || (value === "g1" && raceClass === "jpn1")
       || (value === "g2" && raceClass === "jpn2")
       || (value === "g3" && raceClass === "jpn3")
+      || (value === "op" && raceClass === "listed")
       || (value === "condition" && ns.RaceProgression.CONDITION_CLASSES.includes(raceClass));
   }
 
@@ -324,11 +367,23 @@
       || (value === "long" && distance >= 2601);
   }
 
-  function courseMatches(race, value) {
+  function raceRegionValue(race) {
     const region = race.surfaceRegion || "日本";
-    if (COURSE_VALUE_MAP[value]) return race.course === COURSE_VALUE_MAP[value];
-    if (value === "overseas") return region !== "日本";
-    if (value === "other-japan") return region === "日本" && !FEATURED_COURSES.includes(race.course);
+    if (region === "日本") return "japan";
+    if (region === "美国") return "america";
+    if (region === "欧洲") return "europe";
+    return "other";
+  }
+
+  function regionMatches(race, value) {
+    return raceRegionValue(race) === value;
+  }
+
+  function japanCourseMatches(race, value) {
+    const region = race.surfaceRegion || "日本";
+    if (region !== "日本") return true;
+    if (JAPAN_COURSE_VALUE_MAP[value]) return race.course === JAPAN_COURSE_VALUE_MAP[value];
+    if (value === "other") return !FEATURED_COURSES.includes(race.course);
     return false;
   }
 
@@ -343,11 +398,13 @@
     const gradeMatched = groupMatches(currentFilters.grade, (value) => gradeMatches(raceClass, value));
     const surfaceMatched = groupMatches(currentFilters.surface, (value) => plan.race.surface === value);
     const distanceMatched = groupMatches(currentFilters.distance, (value) => distanceMatches(raceDistance, value));
-    const courseMatched = groupMatches(currentFilters.course, (value) => courseMatches(plan.race, value));
-    return gradeMatched && surfaceMatched && distanceMatched && courseMatched;
+    const regionMatched = groupMatches(currentFilters.region, (value) => regionMatches(plan.race, value));
+    const japanCourseMatched = groupMatches(currentFilters.japanCourse, (value) => japanCourseMatches(plan.race, value));
+    return gradeMatched && surfaceMatched && distanceMatched && regionMatched && japanCourseMatched;
   }
 
-  function filterSummary(group, selectedValues) {
+  function filterSummary(group, selectedValues, disabled) {
+    if (disabled) return "需先选日本";
     if (selectedValues.length === 0) return "全部";
     const labels = selectedValues
       .map((value) => (group.options.find((option) => option.value === value) || {}).label)
@@ -356,24 +413,24 @@
     return `${labels.slice(0, 2).join("+")}+${labels.length - 2}`;
   }
 
-  function renderFilterGroup(group, filters, activeFilterGroup) {
+  function renderFilterGroup(group, filters, activeFilterGroup, disabled) {
     const selectedValues = filterValues(filters, group.id);
     const selectedSet = new Set(selectedValues);
-    const isOpen = activeFilterGroup === group.id;
+    const isOpen = !disabled && activeFilterGroup === group.id;
     return `
-      <details class="race-filter-menu" data-race-filter-group="${group.id}" ${isOpen ? "open" : ""}>
+      <details class="race-filter-menu ${disabled ? "is-disabled" : ""}" data-race-filter-group="${group.id}" ${isOpen ? "open" : ""} ${disabled ? `aria-disabled="true"` : ""}>
         <summary>
-          <span>${group.label}：${filterSummary(group, selectedValues)}</span>
-          <b>${selectedValues.length || "全部"}</b>
+          <span>${group.label}：${filterSummary(group, selectedValues, disabled)}</span>
+          <b>${disabled ? "未启用" : selectedValues.length || "全部"}</b>
         </summary>
         <div class="race-filter-options">
           ${group.options.map((option) => `
             <label class="race-filter-option">
-              <input type="checkbox" data-race-filter="${group.id}" value="${option.value}" ${selectedSet.has(option.value) ? "checked" : ""}>
+              <input type="checkbox" data-race-filter="${group.id}" value="${option.value}" ${selectedSet.has(option.value) ? "checked" : ""} ${disabled ? "disabled" : ""}>
               <span>${option.label}</span>
             </label>
           `).join("")}
-          <button class="secondary filter-clear-button" type="button" data-filter-clear="${group.id}" ${selectedValues.length ? "" : "disabled"}>清除${group.label}</button>
+          <button class="secondary filter-clear-button" type="button" data-filter-clear="${group.id}" ${selectedValues.length && !disabled ? "" : "disabled"}>清除${group.label}</button>
         </div>
       </details>
     `;
@@ -388,17 +445,29 @@
     const active = hasActiveRaceFilters(currentFilters);
     return `
       <div class="filter-row" aria-label="比赛筛选">
-        ${RACE_FILTER_GROUPS.map((group) => renderFilterGroup(group, currentFilters, activeFilterGroup)).join("")}
+        ${RACE_FILTER_GROUPS.map((group) => renderFilterGroup(
+          group,
+          currentFilters,
+          activeFilterGroup,
+          group.id === "japanCourse" && !currentFilters.region.includes("japan")
+        )).join("")}
         <button class="secondary filter-clear-all" id="clearAllRaceFiltersBtn" type="button" ${active ? "" : "disabled"}>清除筛选</button>
       </div>
     `;
   }
 
   function renderSetup(root) {
-    const sireBloodlines = ns.SireBloodlines || ns.Bloodlines || [];
+    const sireBloodlines = currentSireBloodlines(ns.SireBloodlines || ns.Bloodlines || []);
     const damBloodlines = ns.DamBloodlines || ns.Bloodlines || [];
+    const defaultTrainer = ns.CommentRules ? ns.CommentRules.getTrainer("sato-yuta") : null;
+    const defaultRegionId = ns.RegionRules && ns.RegionRules.regionIdForTrainer
+      ? ns.RegionRules.regionIdForTrainer(defaultTrainer)
+      : "japan";
+    const defaultAffiliation = ns.RegionRules && ns.RegionRules.getJockeyAffiliation
+      ? ns.RegionRules.getJockeyAffiliation(defaultRegionId)
+      : "japan";
     const jockeys = ns.JockeyRules
-      ? ns.JockeyRules.getPlayerSelectableJockeys("japan")
+      ? ns.JockeyRules.getPlayerSelectableJockeys(defaultAffiliation)
       : ns.Jockeys || [];
     const excellentJockeyMinAbility = ns.JockeyRules ? ns.JockeyRules.PLAYER_EXCELLENT_MIN_ABILITY : 70;
     const trainers = ns.CommentRules ? ns.CommentRules.getTrainerOptions() : [];
@@ -434,18 +503,35 @@
           <label>马名
             <input id="horseNameInput" type="text" value="未命名小马">
           </label>
-          <label>父系
+          <div class="field-block sire-field">
+            <div class="field-label-row">
+              <div class="field-label-title">
+                <span>父系</span>
+                <button class="secondary icon-help-button" id="sireHelpToggleBtn" type="button" aria-expanded="false" aria-label="查看父系特点" title="父系特点">?</button>
+              </div>
+              <label class="filter-checkbox sire-classic-toggle">
+                <input id="classicSireToggle" type="checkbox">
+                经典父系
+              </label>
+            </div>
             <select id="sireSelect">${optionList(sireBloodlines, "random")}</select>
-          </label>
-          <label>母系
+          </div>
+          <div class="field-block dam-field">
+            <div class="field-label-row">
+              <div class="field-label-title">
+                <span>母系</span>
+                <button class="secondary icon-help-button" id="damHelpToggleBtn" type="button" aria-expanded="false" aria-label="查看母系特点" title="母系特点">?</button>
+              </div>
+            </div>
             <select id="damSelect">${optionList(damBloodlines, "random")}</select>
-          </label>
+          </div>
           <div class="field-block trainer-field">
             <div class="field-label-row">
               <span>练马师</span>
               <button class="secondary icon-help-button" id="trainerHelpToggleBtn" type="button" aria-expanded="false" aria-label="查看练马师信息" title="练马师信息">?</button>
             </div>
             <select id="trainerSelect">${optionList(trainers, "sato-yuta")}</select>
+            <p class="muted trainer-region-note" id="trainerRegionText">所属地：${ns.RegionRules ? ns.RegionRules.getRegion(defaultRegionId).label : "日本"}</p>
           </div>
           <div class="field-block jockey-field">
             <div class="field-label-row">
@@ -460,7 +546,24 @@
             </div>
           </div>
         </div>
-        <div class="help-panel trainer-help-panel" id="trainerHelpPanel" hidden>${ns.Help ? ns.Help.trainerHelpHtml : ""}</div>
+        <div class="help-panel sire-help-panel" id="sireHelpPanel" hidden>
+          ${ns.Help ? ns.Help.sireHelpHtml : ""}
+          <div class="help-panel-actions">
+            <button class="secondary help-panel-close" type="button" data-help-close="sireHelpPanel">收起</button>
+          </div>
+        </div>
+        <div class="help-panel dam-help-panel" id="damHelpPanel" hidden>
+          ${ns.Help ? ns.Help.damHelpHtml : ""}
+          <div class="help-panel-actions">
+            <button class="secondary help-panel-close" type="button" data-help-close="damHelpPanel">收起</button>
+          </div>
+        </div>
+        <div class="help-panel trainer-help-panel" id="trainerHelpPanel" hidden>
+          ${ns.Help ? ns.Help.trainerHelpHtml : ""}
+          <div class="help-panel-actions">
+            <button class="secondary help-panel-close" type="button" data-help-close="trainerHelpPanel">收起</button>
+          </div>
+        </div>
         <label class="debug-toggle">
           <input id="debugModeToggle" type="checkbox">
           调试模式
@@ -561,6 +664,12 @@
     const horse = career.horse;
     const trainer = career.trainer || (ns.CommentRules && ns.CommentRules.getTrainer(career.trainerId || horse.trainerId));
     const mainJockey = ns.JockeyRules.getJockey(career.mainJockeyId);
+    const originalRegionLabel = ns.RegionRules ? ns.RegionRules.getOriginalRegionLabel(career) : "日本";
+    const stableRegionLabel = ns.RegionRules ? ns.RegionRules.getStableRegionLabel(career) : originalRegionLabel;
+    const transfer = ns.RegionRules ? ns.RegionRules.canTransfer(career) : { allowed: false };
+    const transferText = transfer.allowed
+      ? `<button class="secondary" id="transferStableBtn" type="button" data-transfer-region="${transfer.targetRegionId}">转厩至${transfer.targetLabel}</button>`
+      : "";
     const comments = career.commentDetails && career.commentDetails.length
       ? career.commentDetails
       : career.comments.map((text, index) => ({ label: `评语 ${index + 1}`, text }));
@@ -587,7 +696,16 @@
           <span>练马师</span>
           <strong>${trainer ? trainer.name : "未指定"}</strong>
         </div>
+        <div class="trainer-card trainer-card-region">
+          <span>所属地</span>
+          <strong>${originalRegionLabel}</strong>
+        </div>
+        <div class="trainer-card trainer-card-stable">
+          <span>当前厩舍</span>
+          <strong>${stableRegionLabel}</strong>
+        </div>
       </div>
+      ${transferText ? `<div class="race-row stable-action-row">${transferText}</div>` : ""}
       <div class="trainer-comments">
         ${comments.map((comment, index) => `
           <div class="trainer-comment comment-tone-${(index % 5) + 1}">
@@ -669,6 +787,7 @@
         <div class="scheduled-race">
           <span class="badge">已报名</span>
           ${payload.challenge ? `<span class="badge">格上通过</span>` : ""}
+          ${payload.expedition && payload.expedition.active ? `<span class="badge">远征</span>` : ""}
           <h2>${payload.schedule.label} · ${raceDisplayName(race, raceNameMode)}</h2>
           <p>${race.grade} · ${race.ageRule}${raceRestrictionLabel(race)} · ${raceSurfaceDistanceLabel(race)} · ${raceVenueLabel(race)}</p>
         </div>
@@ -781,6 +900,11 @@
     if (summary) {
       const h = summary.horse;
       const finalMaturity = ns.MaturityRules.evaluate(h, career.currentTime, career.maturity.decline);
+      const stable = career.stable || {};
+      const transfers = Array.isArray(stable.transfers) ? stable.transfers : [];
+      const transferText = transfers.length
+        ? transfers.map((item) => `${item.timeLabel || ""} ${item.fromLabel || ""}→${item.toLabel || ""}`).join("；")
+        : "无";
       reveal = `
         <div class="reveal">
           <p class="eyebrow">退役揭晓</p>
@@ -796,6 +920,9 @@
             <span>衰退扣点 <b>${summary.maturityDecline}</b></span>
             <span>重场 <b>${h.heavyType}</b></span>
             <span>气性 <b>${h.temperamentLabel}</b></span>
+            <span>初始所属地 <b>${ns.RegionRules ? ns.RegionRules.getOriginalRegionLabel(career) : "日本"}</b></span>
+            <span>退役所属地 <b>${ns.RegionRules ? ns.RegionRules.getStableRegionLabel(career) : "日本"}</b></span>
+            <span>转厩记录 <b>${transferText}</b></span>
           </div>
           <div class="aptitude-grid">
             <div>

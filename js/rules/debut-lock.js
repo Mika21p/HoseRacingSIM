@@ -29,7 +29,7 @@
 
   function isDebutRaceAllowed(career, plan) {
     if (!career || career.races.length > 0) return true;
-    if (plan.race.raceClass !== "new") return true;
+    if (!isDebutRaceClass(career, plan.race)) return true;
     const lock = career.debutLock;
     return isDistanceAllowed(lock, plan.race)
       && isSurfaceAllowed(lock, plan.race)
@@ -38,7 +38,7 @@
 
   function isFallbackDebutRaceAllowed(career, plan) {
     if (!career || career.races.length > 0) return true;
-    if (plan.race.raceClass !== "new") return true;
+    if (!isDebutRaceClass(career, plan.race)) return true;
     const lock = career.debutLock;
     return isFallbackDistanceAllowed(plan.race)
       && isSurfaceAllowed(lock, plan.race)
@@ -47,7 +47,7 @@
 
   function isSurfaceAndTimeAllowed(career, plan) {
     if (!career || career.races.length > 0) return true;
-    if (plan.race.raceClass !== "new") return true;
+    if (!isDebutRaceClass(career, plan.race)) return true;
     const lock = career.debutLock;
     return isSurfaceAllowed(lock, plan.race)
       && isTimeAllowed(lock, plan.schedule);
@@ -55,8 +55,18 @@
 
   function isTimeOnlyAllowed(career, plan) {
     if (!career || career.races.length > 0) return true;
-    if (plan.race.raceClass !== "new") return true;
+    if (!isDebutRaceClass(career, plan.race)) return true;
     return isTimeAllowed(career.debutLock, plan.schedule);
+  }
+
+  function debutRaceClasses(career) {
+    return ns.RegionRules && ns.RegionRules.getDebutRaceClasses
+      ? ns.RegionRules.getDebutRaceClasses(career)
+      : ["new"];
+  }
+
+  function isDebutRaceClass(career, race) {
+    return !!race && debutRaceClasses(career).includes(race.raceClass);
   }
 
   function filterPlans(career, plans) {
@@ -73,6 +83,8 @@
 
   ns.DebutLockRules = {
     surfaceKey,
+    debutRaceClasses,
+    isDebutRaceClass,
     isDebutRaceAllowed,
     isFallbackDebutRaceAllowed,
     isSurfaceAndTimeAllowed,

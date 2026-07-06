@@ -32,6 +32,7 @@
       id: "sato-yuta",
       name: "佐藤悠太",
       shortName: "佐藤",
+      regionId: "japan",
       strengthBias: "under",
       sharperItems: ["distance"],
       focusSurfaces: [
@@ -43,11 +44,24 @@
       id: "obrien",
       name: "O'Brien（岳伯仁）",
       shortName: "岳伯仁",
+      regionId: "europe",
       strengthBias: "over",
       sharperItems: ["growth", "temperament"],
       focusSurfaces: [
         { group: "grass", region: "欧洲", label: "欧洲草地" },
         { group: "dirt", region: "美国", label: "美国泥地" }
+      ]
+    },
+    {
+      id: "pletcher",
+      name: "Pletcher（普莱彻）",
+      shortName: "普莱彻",
+      regionId: "northAmerica",
+      strengthBias: "over",
+      sharperItems: ["surface", "strength"],
+      focusSurfaces: [
+        { group: "dirt", region: "美国", label: "北美泥地" },
+        { group: "grass", region: "美国", label: "北美草地" }
       ]
     }
   ];

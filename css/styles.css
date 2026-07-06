@@ -261,6 +261,13 @@ button.secondary {
   gap: 8px;
 }
 
+.field-label-title {
+  display: flex;
+  align-items: center;
+  min-width: 0;
+  gap: 8px;
+}
+
 .jockey-filter-row {
   display: flex;
   flex-wrap: wrap;
@@ -297,6 +304,16 @@ button.secondary {
   display: none;
 }
 
+.help-panel-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 16px;
+}
+
+.help-panel-close {
+  min-width: 88px;
+}
+
 .help-content {
   display: grid;
   gap: 18px;
@@ -306,8 +323,27 @@ button.secondary {
   margin-top: -6px;
 }
 
+.sire-help-panel {
+  margin-top: -6px;
+}
+
+.dam-help-panel {
+  margin-top: -6px;
+}
+
 .trainer-help-content {
   grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.sire-help-list-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+
+.sire-help-list-grid .help-section {
+  border-bottom: 0;
+  padding-bottom: 0;
 }
 
 .help-section {
@@ -957,6 +993,7 @@ th {
 
   .form-grid,
   .debug-grid,
+  .sire-help-list-grid,
   .trainer-help-content,
   .trainer-card-grid,
   .stat-grid,

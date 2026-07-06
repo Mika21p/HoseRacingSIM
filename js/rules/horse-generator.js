@@ -273,20 +273,21 @@
 
   function nonStrongMainGrade() {
     const roll = R.roll(100);
-    if (roll <= 55) return "B";
+    if (roll <= 65) return "B";
     return "C";
   }
 
   function dualNonStrongGrade() {
     const roll = R.roll(100);
-    if (roll <= 55) return "B";
+    if (roll <= 70) return "B";
     return "C";
   }
 
   function regionWeight(mod) {
-    if (mod >= 2) return 14;
-    if (mod >= 1) return 12;
-    if (mod <= -1) return 8;
+    if (mod >= 2) return 22;
+    if (mod >= 1) return 15;
+    if (mod <= -2) return 5;
+    if (mod <= -1) return 7;
     return 10;
   }
 
@@ -326,12 +327,6 @@
     return grades;
   }
 
-  function ensureAtLeastOneB(grades, regions, strongRegions) {
-    if (Object.values(grades).some((grade) => grade === "B")) return;
-    const candidates = regions.filter((region) => !strongRegions.includes(region));
-    if (candidates.length) grades[R.pickOne(candidates)] = "B";
-  }
-
   function generateGrassSurfaceGrades(effects) {
     const strongCount = rollPercentTable([
       { value: 2, weight: 50 },
@@ -360,13 +355,10 @@
     DIRT_REGIONS.forEach((region) => {
       if (strongRegions.includes(region)) {
         dirt[region] = strongGrade(15);
-      } else if (strongCount === 1) {
-        dirt[region] = "C";
       } else {
-        dirt[region] = R.roll(100) <= 60 ? "B" : "C";
+        dirt[region] = nonStrongMainGrade();
       }
     });
-    if (strongCount === 1) ensureAtLeastOneB(dirt, DIRT_REGIONS, strongRegions);
 
     const grass = assignSecondaryGrades(GRASS_REGIONS, "grass", effects, secondaryGradeType([
       { value: "none", weight: 58 },
@@ -412,8 +404,6 @@
     DIRT_REGIONS.forEach((region) => {
       dirt[region] = dirtStrongRegions.includes(region) ? strongGrade(18) : dualNonStrongGrade();
     });
-    ensureAtLeastOneB(grass, GRASS_REGIONS, grassStrongRegions);
-    ensureAtLeastOneB(dirt, DIRT_REGIONS, dirtStrongRegions);
     return { grass, dirt };
   }
 

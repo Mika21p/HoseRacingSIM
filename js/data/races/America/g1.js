@@ -12,7 +12,7 @@
       "month": 5,
       "half": 1,
       "surface": "泥地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 2000,
       "ageRule": "3岁"
     },
@@ -25,7 +25,7 @@
       "month": 5,
       "half": 2,
       "surface": "泥地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 1900,
       "ageRule": "3岁"
     },
@@ -38,7 +38,7 @@
       "month": 6,
       "half": 1,
       "surface": "泥地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 2400,
       "ageRule": "3岁"
     },
@@ -51,7 +51,7 @@
       "month": 1,
       "half": 2,
       "surface": "泥地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 1800,
       "ageRule": "4岁以上"
     },
@@ -64,7 +64,7 @@
       "month": 3,
       "half": 1,
       "surface": "泥地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 2000,
       "ageRule": "4岁以上"
     },
@@ -77,7 +77,7 @@
       "month": 4,
       "half": 1,
       "surface": "泥地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 1700,
       "ageRule": "4岁以上",
       "sexRestriction": "牝马"
@@ -91,7 +91,7 @@
       "month": 4,
       "half": 1,
       "surface": "泥地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 1800,
       "ageRule": "3岁"
     },
@@ -104,7 +104,7 @@
       "month": 5,
       "half": 1,
       "surface": "泥地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 1800,
       "ageRule": "3岁",
       "sexRestriction": "牝马"
@@ -118,7 +118,7 @@
       "month": 6,
       "half": 1,
       "surface": "泥地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 1800,
       "ageRule": "3岁",
       "sexRestriction": "牝马"
@@ -132,7 +132,7 @@
       "month": 7,
       "half": 2,
       "surface": "泥地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 1800,
       "ageRule": "3岁",
       "sexRestriction": "牝马"
@@ -146,7 +146,7 @@
       "month": 6,
       "half": 1,
       "surface": "泥地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 1600,
       "ageRule": "3岁以上"
     },
@@ -159,7 +159,7 @@
       "month": 7,
       "half": 2,
       "surface": "泥地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 1800,
       "ageRule": "3岁"
     },
@@ -172,7 +172,7 @@
       "month": 8,
       "half": 2,
       "surface": "泥地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 2000,
       "ageRule": "3岁"
     },
@@ -185,7 +185,7 @@
       "month": 1,
       "half": 2,
       "surface": "草地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 1800,
       "ageRule": "4岁以上"
     },
@@ -198,7 +198,7 @@
       "month": 5,
       "half": 1,
       "surface": "草地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 1700,
       "ageRule": "3岁"
     },
@@ -211,7 +211,7 @@
       "month": 5,
       "half": 1,
       "surface": "草地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 1800,
       "ageRule": "4岁以上"
     },
@@ -224,7 +224,7 @@
       "month": 6,
       "half": 1,
       "surface": "草地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 1900,
       "ageRule": "4岁以上"
     },
@@ -237,7 +237,7 @@
       "month": 6,
       "half": 1,
       "surface": "草地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 1600,
       "ageRule": "4岁以上",
       "sexRestriction": "牝马"
@@ -251,7 +251,7 @@
       "month": 7,
       "half": 2,
       "surface": "草地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 1800,
       "ageRule": "4岁以上",
       "sexRestriction": "牝马"
@@ -265,7 +265,7 @@
       "month": 8,
       "half": 1,
       "surface": "草地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 2000,
       "ageRule": "3岁以上"
     },
@@ -278,7 +278,7 @@
       "month": 10,
       "half": 1,
       "surface": "草地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 1600,
       "ageRule": "3岁以上"
     },
@@ -291,7 +291,7 @@
       "month": 6,
       "half": 1,
       "surface": "草地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 1200,
       "ageRule": "3岁以上"
     },
@@ -304,7 +304,7 @@
       "month": 8,
       "half": 2,
       "surface": "泥地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 1400,
       "ageRule": "4岁以上"
     },
@@ -317,7 +317,7 @@
       "month": 8,
       "half": 2,
       "surface": "泥地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 1400,
       "ageRule": "3岁"
     },
@@ -330,7 +330,7 @@
       "month": 10,
       "half": 1,
       "surface": "泥地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 1600,
       "ageRule": "2岁"
     },
@@ -343,7 +343,7 @@
       "month": 10,
       "half": 1,
       "surface": "泥地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 1600,
       "ageRule": "2岁",
       "sexRestriction": "牝马"
@@ -357,7 +357,7 @@
       "month": 9,
       "half": 2,
       "surface": "泥地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 1700,
       "ageRule": "2岁"
     },
@@ -370,7 +370,7 @@
       "month": 8,
       "half": 1,
       "surface": "泥地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 1800,
       "ageRule": "4岁以上"
     },
@@ -383,7 +383,7 @@
       "month": 8,
       "half": 2,
       "surface": "泥地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 2000,
       "ageRule": "3岁以上"
     },
@@ -396,7 +396,7 @@
       "month": 9,
       "half": 1,
       "surface": "泥地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 2000,
       "ageRule": "3岁以上"
     },
@@ -409,7 +409,7 @@
       "month": 6,
       "half": 2,
       "surface": "泥地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 1800,
       "ageRule": "3岁以上"
     },
@@ -422,7 +422,7 @@
       "month": 3,
       "half": 2,
       "surface": "泥地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 1800,
       "ageRule": "3岁"
     },
@@ -435,7 +435,7 @@
       "month": 4,
       "half": 1,
       "surface": "泥地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 1800,
       "ageRule": "3岁"
     },
@@ -448,7 +448,7 @@
       "month": 3,
       "half": 2,
       "surface": "泥地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 1800,
       "ageRule": "3岁"
     },
@@ -461,7 +461,7 @@
       "month": 8,
       "half": 2,
       "surface": "泥地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 2000,
       "ageRule": "3岁",
       "sexRestriction": "牝马"
@@ -475,7 +475,7 @@
       "month": 8,
       "half": 2,
       "surface": "泥地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 1800,
       "ageRule": "3岁以上",
       "sexRestriction": "牝马"
@@ -489,7 +489,7 @@
       "month": 9,
       "half": 1,
       "surface": "泥地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 1400,
       "ageRule": "2岁"
     },
@@ -502,7 +502,7 @@
       "month": 9,
       "half": 1,
       "surface": "泥地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 1400,
       "ageRule": "2岁",
       "sexRestriction": "牝马"
@@ -516,7 +516,7 @@
       "month": 9,
       "half": 1,
       "surface": "泥地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 1400,
       "ageRule": "2岁"
     },
@@ -529,7 +529,7 @@
       "month": 10,
       "half": 1,
       "surface": "泥地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 1700,
       "ageRule": "2岁"
     },
@@ -542,7 +542,7 @@
       "month": 11,
       "half": 2,
       "surface": "草地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 1800,
       "ageRule": "3岁"
     },
@@ -555,7 +555,7 @@
       "month": 9,
       "half": 1,
       "surface": "泥地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 1400,
       "ageRule": "2岁",
       "sexRestriction": "牝马"
@@ -569,7 +569,7 @@
       "month": 9,
       "half": 2,
       "surface": "泥地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 1700,
       "ageRule": "3岁",
       "sexRestriction": "牝马"
@@ -583,7 +583,7 @@
       "month": 6,
       "half": 1,
       "surface": "泥地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 1800,
       "ageRule": "4岁以上",
       "sexRestriction": "牝马"
@@ -597,7 +597,7 @@
       "month": 4,
       "half": 1,
       "surface": "泥地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 1700,
       "ageRule": "3岁",
       "sexRestriction": "牝马"
@@ -611,7 +611,7 @@
       "month": 10,
       "half": 1,
       "surface": "泥地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 1800,
       "ageRule": "3岁以上",
       "sexRestriction": "牝马"
@@ -625,7 +625,7 @@
       "month": 5,
       "half": 1,
       "surface": "泥地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 1700,
       "ageRule": "4岁以上",
       "sexRestriction": "牝马"
@@ -639,7 +639,7 @@
       "month": 11,
       "half": 1,
       "surface": "泥地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 2000,
       "ageRule": "3岁以上"
     },
@@ -652,7 +652,7 @@
       "month": 11,
       "half": 1,
       "surface": "泥地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 1800,
       "ageRule": "3岁以上",
       "sexRestriction": "牝马"
@@ -666,7 +666,7 @@
       "month": 11,
       "half": 1,
       "surface": "泥地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 1200,
       "ageRule": "3岁以上"
     },
@@ -679,7 +679,7 @@
       "month": 11,
       "half": 1,
       "surface": "泥地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 1600,
       "ageRule": "3岁以上"
     },
@@ -692,7 +692,7 @@
       "month": 11,
       "half": 1,
       "surface": "草地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 2400,
       "ageRule": "3岁以上"
     },
@@ -705,7 +705,7 @@
       "month": 11,
       "half": 1,
       "surface": "草地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 1600,
       "ageRule": "3岁以上"
     },
@@ -718,7 +718,7 @@
       "month": 11,
       "half": 1,
       "surface": "草地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 1000,
       "ageRule": "3岁以上"
     },
@@ -731,7 +731,7 @@
       "month": 11,
       "half": 1,
       "surface": "草地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 2000,
       "ageRule": "3岁以上",
       "sexRestriction": "牝马"
@@ -745,7 +745,7 @@
       "month": 11,
       "half": 1,
       "surface": "泥地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 1400,
       "ageRule": "3岁以上",
       "sexRestriction": "牝马"
@@ -759,7 +759,7 @@
       "month": 11,
       "half": 1,
       "surface": "泥地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 1700,
       "ageRule": "2岁"
     },
@@ -772,7 +772,7 @@
       "month": 11,
       "half": 1,
       "surface": "泥地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 1700,
       "ageRule": "2岁",
       "sexRestriction": "牝马"
@@ -786,7 +786,7 @@
       "month": 11,
       "half": 1,
       "surface": "草地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 1600,
       "ageRule": "2岁"
     },
@@ -799,7 +799,7 @@
       "month": 11,
       "half": 1,
       "surface": "草地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 1600,
       "ageRule": "2岁",
       "sexRestriction": "牝马"
@@ -813,7 +813,7 @@
       "month": 11,
       "half": 1,
       "surface": "草地",
-      "course": "其他地方",
+      "course": "美国",
       "distance": 1000,
       "ageRule": "2岁"
     }

@@ -104,17 +104,23 @@
 
   function getAvailableRacePlans(career, races) {
     if (ns.CareerRules && ns.CareerRules.isResting && ns.CareerRules.isResting(career)) return [];
+    if (ns.RegionRules && ns.RegionRules.ensureCareerState) ns.RegionRules.ensureCareerState(career);
     const plans = races
       .map((race) => ({ race, schedule: resolveNextRaceDate(career, race) }))
       .filter((plan) => plan.schedule)
       .filter((plan) => isSexEligible(career && career.horse, plan.race))
+      .filter((plan) => !ns.RegionRules || ns.RegionRules.isExpeditionVisible(career, plan.race))
       .sort((a, b) => {
         if (a.schedule.index !== b.schedule.index) return a.schedule.index - b.schedule.index;
         return a.race.name.localeCompare(b.race.name, "zh-CN");
       });
-    const progressed = ns.RaceProgression ? ns.RaceProgression.filterPlans(career, plans) : plans;
+    const progressed = ns.RegionRules && ns.RegionRules.isWesternCareer(career) && ns.WesternProgression
+      ? ns.WesternProgression.filterPlans(career, plans)
+      : (ns.RaceProgression ? ns.RaceProgression.filterPlans(career, plans) : plans);
     const locked = ns.DebutLockRules ? ns.DebutLockRules.filterPlans(career, progressed) : progressed;
-    return locked.filter((plan) => isReachableSchedule(career, plan.schedule));
+    return locked
+      .filter((plan) => isReachableSchedule(career, plan.schedule))
+      .map((plan) => (ns.RegionRules ? ns.RegionRules.decoratePlan(career, plan) : plan));
   }
 
   ns.TimeRules = {
