@@ -792,6 +792,15 @@ button.secondary {
   margin-top: 14px;
 }
 
+.adaptation-board[hidden] {
+  display: none;
+}
+
+.adaptation-toggle-row {
+  margin-top: 12px;
+  justify-content: flex-end;
+}
+
 .adaptation-section {
   border: 1px solid #30394e;
   border-radius: 8px;

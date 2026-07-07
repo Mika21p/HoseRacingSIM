@@ -6,6 +6,7 @@
     retiredSummary: null,
     historyExpanded: false,
     trainerCommentsCollapsed: false,
+    adaptationHintsCollapsed: false,
     expandedRaceRecords: {},
     expandedRaceComments: {},
     horseNameLanguage: "zh",
@@ -51,7 +52,9 @@
       horseNameLanguage: state.horseNameLanguage,
       raceNameMode: state.raceNameMode
     });
-    ns.UI.renderAdaptationHints(document.getElementById("feedbackPanel"), state.career);
+    ns.UI.renderAdaptationHints(document.getElementById("feedbackPanel"), state.career, {
+      collapsed: state.adaptationHintsCollapsed
+    });
     ns.UI.renderHistory(document.getElementById("historyPanel"), state.career, state.retiredSummary, {
       expanded: state.historyExpanded,
       expandedRecords: state.expandedRaceRecords,
@@ -221,6 +224,7 @@
         retiredSummary: state.retiredSummary,
         historyExpanded: !!state.historyExpanded,
         trainerCommentsCollapsed: !!state.trainerCommentsCollapsed,
+        adaptationHintsCollapsed: !!state.adaptationHintsCollapsed,
         expandedRaceRecords: normalizeExpandedRaceRecords(state.expandedRaceRecords),
         expandedRaceComments: normalizeExpandedRaceRecords(state.expandedRaceComments),
         filters: normalizeFilters(state.filters)
@@ -279,6 +283,7 @@
       state.retiredSummary = payload.state.retiredSummary || null;
       state.historyExpanded = !!payload.state.historyExpanded;
       state.trainerCommentsCollapsed = !!payload.state.trainerCommentsCollapsed;
+      state.adaptationHintsCollapsed = !!payload.state.adaptationHintsCollapsed;
       state.expandedRaceRecords = normalizeExpandedRaceRecords(payload.state.expandedRaceRecords);
       state.expandedRaceComments = normalizeExpandedRaceRecords(payload.state.expandedRaceComments);
       state.filters = normalizeFilters(payload.state.filters);
@@ -487,6 +492,7 @@
     state.retiredSummary = null;
     state.historyExpanded = false;
     state.trainerCommentsCollapsed = false;
+    state.adaptationHintsCollapsed = false;
     state.expandedRaceRecords = {};
     state.expandedRaceComments = {};
     state.activeFilterGroup = "";
@@ -742,6 +748,13 @@
     saveGame();
   }
 
+  function toggleAdaptationHints() {
+    if (!state.career) return;
+    state.adaptationHintsCollapsed = !state.adaptationHintsCollapsed;
+    refresh();
+    saveGame();
+  }
+
   function toggleHistoryRecord(recordKey) {
     if (!state.career || !recordKey) return;
     state.expandedRaceRecords = normalizeExpandedRaceRecords(state.expandedRaceRecords);
@@ -821,6 +834,7 @@
     const retireBtn = document.getElementById("retireBtn");
     const historyToggleBtn = document.getElementById("historyToggleBtn");
     const trainerCommentsToggleBtn = document.getElementById("trainerCommentsToggleBtn");
+    const adaptationHintsToggleBtn = document.getElementById("adaptationHintsToggleBtn");
     const historyRecordButtons = Array.from(document.querySelectorAll("[data-history-record-toggle]"));
     const historyCommentButtons = Array.from(document.querySelectorAll("[data-history-comment-toggle]"));
     const horseNameLanguageButtons = Array.from(document.querySelectorAll("[data-horse-name-language]"));
@@ -836,6 +850,7 @@
     if (retireBtn) retireBtn.addEventListener("click", retire);
     if (historyToggleBtn) historyToggleBtn.addEventListener("click", toggleHistory);
     if (trainerCommentsToggleBtn) trainerCommentsToggleBtn.addEventListener("click", toggleTrainerComments);
+    if (adaptationHintsToggleBtn) adaptationHintsToggleBtn.addEventListener("click", toggleAdaptationHints);
     historyRecordButtons.forEach((button) => {
       button.addEventListener("click", () => toggleHistoryRecord(button.dataset.historyRecordToggle));
     });

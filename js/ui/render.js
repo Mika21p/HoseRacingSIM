@@ -767,13 +767,15 @@
     `;
   }
 
-  function renderAdaptationHints(panel, career) {
+  function renderAdaptationHints(panel, career, options) {
     if (!panel) return;
     if (!career || !ns.AdaptationHintRules) {
       panel.hidden = true;
       panel.innerHTML = "";
       return;
     }
+    const opts = options || {};
+    const collapsed = !!opts.collapsed;
     const sections = ns.AdaptationHintRules.getSections(career);
     panel.hidden = false;
     panel.innerHTML = `
@@ -783,7 +785,7 @@
           <p class="muted">基于练马师评语与赛后确定反馈整理，可能存在误判。</p>
         </div>
       </div>
-      <div class="adaptation-board">
+      <div class="adaptation-board" id="adaptationHintsBoard" ${collapsed ? "hidden" : ""}>
         ${sections.map((section) => `
           <div class="adaptation-section adaptation-section-${section.id}">
             <h3>${section.label}</h3>
@@ -797,6 +799,9 @@
             </div>
           </div>
         `).join("")}
+      </div>
+      <div class="race-row adaptation-toggle-row">
+        <button class="secondary" id="adaptationHintsToggleBtn" type="button" aria-expanded="${collapsed ? "false" : "true"}" aria-controls="adaptationHintsBoard">${collapsed ? "展开提示" : "折叠提示"}</button>
       </div>
     `;
   }
