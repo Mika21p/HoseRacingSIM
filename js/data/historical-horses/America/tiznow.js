@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     id: "tiznow",
     name: "Tiznow",
-    displayName: "提兹现在",
-    displayNameZh: "提兹现在",
+    displayName: "铁胜龙",
+    displayNameZh: "铁胜龙",
     displayNameEn: "Tiznow",
     profile: {
       baseAbility: 85,

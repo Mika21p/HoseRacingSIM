@@ -17,6 +17,8 @@
     "./races/Europe/g2.js",
     "./races/Europe/g1.js",
     "./races/Australia/g1.js",
+    "./races/MiddleEast/g3.js",
+    "./races/MiddleEast/g2.js",
     "./races/MiddleEast/g1.js",
     "./races/HongKong/g1.js",
     "./races/Argentina/g1.js"
