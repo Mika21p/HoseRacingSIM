@@ -30,6 +30,10 @@
         "这个场地它跑得不顺，步子一直没完全打开。",
         "今天这个场地条件不太合它，跑起来一直没顺住。"
       ],
+      heavy_mismatch: [
+        "今天这个马场太吃力，它在重场下明显跑不开。",
+        "场地变重以后它不太能应付，脚下没能完全用上。"
+      ],
       distance_too_short: [
         "这场节奏太急，它还没把步子拉开，比赛就已经跑完了。",
         "距离对它来说偏短，整场都像是在被节奏催着走。"
@@ -126,13 +130,20 @@
       return { reason: "distance_too_long", issueState: "has_issue", severity: calc.distancePenalty };
     }
 
-    const badTrackCondition = calc.trackCondition === "重" || calc.trackCondition === "不良";
-    const heavyMismatch = badTrackCondition && calc.heavyMod <= -2;
-    if (calc.surfaceMod <= -10 || heavyMismatch) {
+    if (calc.surfaceMod <= -10) {
       return {
         reason: "surface_mismatch",
         issueState: "has_issue",
-        severity: Math.max(Math.abs(calc.surfaceMod || 0), Math.abs(calc.heavyMod || 0))
+        severity: Math.abs(calc.surfaceMod || 0)
+      };
+    }
+
+    const badTrackCondition = calc.trackCondition === "重" || calc.trackCondition === "不良";
+    if (badTrackCondition && calc.heavyMod <= -2) {
+      return {
+        reason: "heavy_mismatch",
+        issueState: "has_issue",
+        severity: Math.abs(calc.heavyMod || 0)
       };
     }
 

@@ -467,6 +467,36 @@ button.secondary {
   vertical-align: middle;
 }
 
+.history-race-name-line {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.history-comment-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  min-width: 24px;
+  padding: 0;
+  border: 1px solid #6bd3c2;
+  border-radius: 6px;
+  background: #10211f;
+  color: #9ee7dc;
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+.history-comment-toggle[aria-expanded="true"] {
+  background: #16302c;
+  color: #e4f7f3;
+}
+
 .history-cell-subtext {
   display: block;
   margin-top: 5px;
@@ -482,6 +512,32 @@ button.secondary {
 
 .history-record-expanded td {
   background: rgba(255, 255, 255, 0.015);
+}
+
+.history-comment-row td {
+  background: rgba(107, 211, 194, 0.045);
+}
+
+.history-comment-card {
+  border: 1px solid #6bd3c2;
+  border-left-width: 5px;
+  border-radius: 8px;
+  background: #10211f;
+  padding: 12px 14px;
+}
+
+.history-comment-card span {
+  display: block;
+  margin-bottom: 7px;
+  color: #9ee7dc;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.history-comment-card p {
+  margin: 0;
+  color: #e4f7f3;
+  line-height: 1.75;
 }
 
 .race-name-header,
@@ -721,6 +777,88 @@ button.secondary {
   display: none;
 }
 
+.adaptation-title-row {
+  align-items: flex-start;
+}
+
+.adaptation-title-row .muted {
+  margin: 6px 0 0;
+}
+
+.adaptation-board {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.adaptation-section {
+  border: 1px solid #30394e;
+  border-radius: 8px;
+  background: #0f131c;
+  padding: 13px;
+}
+
+.adaptation-section h3 {
+  margin: 0 0 10px;
+  color: #f5f7fb;
+  font-size: 15px;
+}
+
+.adaptation-list {
+  display: grid;
+  gap: 8px;
+}
+
+.adaptation-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 30px;
+}
+
+.adaptation-item span {
+  color: #ccd5e4;
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.adaptation-status {
+  flex: 0 0 auto;
+  min-width: 66px;
+  border: 1px solid #3d4960;
+  border-radius: 999px;
+  padding: 4px 8px;
+  text-align: center;
+  font-size: 12px;
+  line-height: 1;
+}
+
+.adaptation-status-fit {
+  border-color: #6fbf73;
+  background: #132417;
+  color: #a8e6ad;
+}
+
+.adaptation-status-possible {
+  border-color: #d6b45c;
+  background: #241f12;
+  color: #f2d88a;
+}
+
+.adaptation-status-unfit {
+  border-color: #ff9f80;
+  background: #241610;
+  color: #ffbf9f;
+}
+
+.adaptation-status-unknown {
+  border-color: #3d4960;
+  background: #151b27;
+  color: #91a0b8;
+}
+
 .post-race-comment-card {
   border: 1px solid #6bd3c2;
   border-left-width: 5px;
@@ -806,6 +944,15 @@ button.secondary {
   display: grid;
   gap: 10px;
   margin-top: 14px;
+}
+
+.trainer-comments[hidden] {
+  display: none;
+}
+
+.trainer-comments-toggle-row {
+  margin-top: 10px;
+  justify-content: flex-end;
 }
 
 .trainer-comment {
@@ -996,6 +1143,7 @@ th {
   .sire-help-list-grid,
   .trainer-help-content,
   .trainer-card-grid,
+  .adaptation-board,
   .stat-grid,
   .aptitude-grid {
     grid-template-columns: 1fr;

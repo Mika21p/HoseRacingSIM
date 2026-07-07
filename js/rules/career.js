@@ -8,7 +8,7 @@
       : "japan";
     horse.homeRegionId = horse.homeRegionId || regionId;
     horse.currentRegionId = horse.currentRegionId || horse.homeRegionId;
-    return {
+    const career = {
       horse,
       comments: comments || [],
       commentDetails: commentDetails || [],
@@ -44,6 +44,8 @@
       races: [],
       retired: false
     };
+    if (ns.AdaptationHintRules) ns.AdaptationHintRules.ensure(career);
+    return career;
   }
 
   function advanceToSchedule(career, schedule) {
@@ -176,6 +178,7 @@
       raceResult.public.postRaceCommentText = postRaceComment.text;
       raceResult.hidden.postRaceComment = postRaceComment;
       career.lastRaceComment = postRaceComment;
+      if (ns.AdaptationHintRules) ns.AdaptationHintRules.applyPostRace(career, raceResult, postRaceComment);
     }
     if (raceResult.hidden.expedition && raceResult.hidden.expedition.active) {
       career.expedition.history.push({

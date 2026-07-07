@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "admire-groove",
     "name": "アドマイヤグルーヴ",
-    "displayName": "爱慕织姬",
-    "displayNameZh": "爱慕织姬",
+    "displayName": "爱慕槽",
+    "displayNameZh": "爱慕槽",
     "displayNameEn": "Admire Groove",
     "profile": {
       "baseAbility": 77,

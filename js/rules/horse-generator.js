@@ -696,7 +696,7 @@
       ? horse.courseGrades[race.course] || horse.courseGrades["其他地方"] || "A"
       : "A";
     const distancePenalty = calcDistancePenalty(race.distance, horse.distMin, horse.distMax);
-    const surfaceMod = gradeMod(surfaceGrade, { S: 5, A: 0, B: -5, C: -10, G: -20 });
+    const surfaceMod = gradeMod(surfaceGrade, { S: 5, A: 0, B: -5, C: -10, G: -25 });
     const courseMod = gradeMod(courseGrade, { S: 4, A: 0, B: -4 });
     const trackCondition = opts.trackCondition || "良";
     const heavyMod = getHeavyMod(horse.heavyType, trackCondition);

@@ -245,6 +245,14 @@
     return hidden.scoreDiff < 0 ? `（${margin}）` : margin;
   }
 
+  function historyPostRaceCommentText(record) {
+    const item = record || {};
+    const publicResult = item.public || {};
+    const hiddenComment = item.hidden && item.hidden.postRaceComment;
+    const text = publicResult.postRaceCommentText || (hiddenComment && hiddenComment.text) || "";
+    return typeof text === "string" ? text : "";
+  }
+
   function raceOptionLabel(plan, mode) {
     const challengeLabel = plan.challenge ? "[格上] " : "";
     const expeditionLabel = plan.expedition && plan.expedition.active ? "[远征] " : "";
@@ -656,11 +664,13 @@
     `;
   }
 
-  function renderHorse(panel, career) {
+  function renderHorse(panel, career, options) {
     if (!career) {
       panel.innerHTML = `<p class="muted">生成后会显示出道前评语。</p>`;
       return;
     }
+    const opts = options || {};
+    const commentsCollapsed = !!opts.trainerCommentsCollapsed;
     const horse = career.horse;
     const trainer = career.trainer || (ns.CommentRules && ns.CommentRules.getTrainer(career.trainerId || horse.trainerId));
     const mainJockey = ns.JockeyRules.getJockey(career.mainJockeyId);
@@ -706,13 +716,16 @@
         </div>
       </div>
       ${transferText ? `<div class="race-row stable-action-row">${transferText}</div>` : ""}
-      <div class="trainer-comments">
+      <div class="trainer-comments" id="trainerComments" ${commentsCollapsed ? "hidden" : ""}>
         ${comments.map((comment, index) => `
           <div class="trainer-comment comment-tone-${(index % 5) + 1}">
             <span>${comment.label || comment.item || `评语 ${index + 1}`}</span>
             <p>${comment.text}</p>
           </div>
         `).join("")}
+      </div>
+      <div class="race-row trainer-comments-toggle-row">
+        <button class="secondary" id="trainerCommentsToggleBtn" type="button" aria-expanded="${commentsCollapsed ? "false" : "true"}" aria-controls="trainerComments">${commentsCollapsed ? "展开评语" : "收起评语"}</button>
       </div>
     `;
   }
@@ -750,6 +763,40 @@
       <div class="post-race-comment-card">
         <span>${career.lastRaceComment.label || "练马师回顾"}</span>
         <p>${career.lastRaceComment.text}</p>
+      </div>
+    `;
+  }
+
+  function renderAdaptationHints(panel, career) {
+    if (!panel) return;
+    if (!career || !ns.AdaptationHintRules) {
+      panel.hidden = true;
+      panel.innerHTML = "";
+      return;
+    }
+    const sections = ns.AdaptationHintRules.getSections(career);
+    panel.hidden = false;
+    panel.innerHTML = `
+      <div class="section-title-row adaptation-title-row">
+        <div>
+          <p class="eyebrow">适应性提示</p>
+          <p class="muted">基于练马师评语与赛后确定反馈整理，可能存在误判。</p>
+        </div>
+      </div>
+      <div class="adaptation-board">
+        ${sections.map((section) => `
+          <div class="adaptation-section adaptation-section-${section.id}">
+            <h3>${section.label}</h3>
+            <div class="adaptation-list">
+              ${section.items.map((item) => `
+                <div class="adaptation-item">
+                  <span>${item.label}</span>
+                  <b class="adaptation-status adaptation-status-${item.status}">${item.statusLabel}</b>
+                </div>
+              `).join("")}
+            </div>
+          </div>
+        `).join("")}
       </div>
     `;
   }
@@ -847,6 +894,7 @@
     const horseNameLanguage = normalizeHorseNameLanguage(options && options.horseNameLanguage);
     const raceNameMode = normalizeRaceNameMode(options && options.raceNameMode);
     const expandedRecords = (options && options.expandedRecords) || {};
+    const expandedComments = (options && options.expandedComments) || {};
     const orderedRecords = career.races
       .map((item, index) => ({ item, number: index + 1 }))
       .reverse();
@@ -869,16 +917,36 @@
       const raceDetail = isRecordExpanded ? historyRaceDetail(item) : "";
       const marginText = isRecordExpanded ? historyMarginText(item) : "";
       const toggleLabel = isRecordExpanded ? "收起比赛详情" : "展开比赛详情";
+      const commentText = historyPostRaceCommentText(item);
+      const isCommentExpanded = !!(commentText && expandedComments[recordKey]);
+      const commentToggleLabel = isCommentExpanded ? "收起历史评语" : "展开历史评语";
       const scoreLine = revealScores ? `<td>${(item.hidden && item.hidden.scoreLine) || ""}</td>` : "";
+      const rowClasses = [
+        isRecordExpanded ? "history-record-expanded" : "",
+        isCommentExpanded ? "history-comment-expanded" : ""
+      ].filter(Boolean).join(" ");
+      const commentToggle = commentText
+        ? `<button class="secondary history-comment-toggle" type="button" data-history-comment-toggle="${recordKey}" aria-expanded="${isCommentExpanded ? "true" : "false"}" aria-label="${commentToggleLabel}" title="${commentToggleLabel}">评</button>`
+        : "";
+      const commentRow = isCommentExpanded ? `
+        <tr class="history-comment-row">
+          <td colspan="${revealScores ? 8 : 7}">
+            <div class="history-comment-card">
+              <span>练马师评语</span>
+              <p>${commentText}</p>
+            </div>
+          </td>
+        </tr>
+      ` : "";
       return `
-        <tr class="${isRecordExpanded ? "history-record-expanded" : ""}">
+        <tr class="${rowClasses}">
           <td class="history-index-cell">
             <button class="secondary history-record-toggle" type="button" data-history-record-toggle="${recordKey}" aria-expanded="${isRecordExpanded ? "true" : "false"}" aria-label="${toggleLabel}" title="${toggleLabel}">${isRecordExpanded ? "▲" : "▼"}</button>
             <span>${number}</span>
           </td>
           <td>${item.public.timeLabel || ""}</td>
           <td>
-            <span>${raceName}</span>
+            <span class="history-race-name-line"><span>${raceName}</span>${commentToggle}</span>
             ${raceDetail ? `<span class="history-cell-subtext">${raceDetail}</span>` : ""}
           </td>
           <td>${trackCondition}</td>
@@ -893,6 +961,7 @@
           </td>
           ${scoreLine}
         </tr>
+        ${commentRow}
       `;
     }).join("");
 
@@ -960,5 +1029,5 @@
     `;
   }
 
-  ns.UI = { renderSetup, renderChangelog, renderHorse, renderLastRaceComment, renderRaceSelector, renderHistory };
+  ns.UI = { renderSetup, renderChangelog, renderHorse, renderLastRaceComment, renderAdaptationHints, renderRaceSelector, renderHistory };
 })();
