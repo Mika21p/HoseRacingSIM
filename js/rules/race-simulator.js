@@ -1,6 +1,7 @@
 (function () {
   const ns = (window.Keiba = window.Keiba || {});
   const R = ns.Random;
+  const SMALL_MARGIN_LABELS = ["头差", "颈差", "0.5马身"];
 
   function getGateResult(value) {
     if (value <= 1) return { label: "极好出", mod: 5 };
@@ -28,7 +29,7 @@
   }
 
   function getPointsPerLength(distance) {
-    return distance >= 2000 ? 3 : 2;
+    return distance >= 2000 ? 2 : 3;
   }
 
   function rollPlacementWhenBehind(lengthsBehind) {
@@ -37,6 +38,25 @@
     if (lengthsBehind < 5) return R.rollRange(3, 5);
     if (lengthsBehind <= 6) return R.roll(2) === 1 ? 5 : null;
     return null;
+  }
+
+  function rollTieOutcome() {
+    const value = R.roll(100);
+    if (value <= 49) return "player-win";
+    if (value <= 98) return "player-loss";
+    return "dead-heat";
+  }
+
+  function createMarginLabel(marginLengths, tieOutcome) {
+    if (tieOutcome === "dead-heat") return "";
+    if (tieOutcome === "player-win" || tieOutcome === "player-loss") return "鼻差";
+    if (typeof marginLengths !== "number" || !Number.isFinite(marginLengths)) return "";
+    if (marginLengths === 0) return "鼻差";
+    if (marginLengths > 0 && marginLengths < 1) return R.pickOne(SMALL_MARGIN_LABELS);
+
+    const integer = Math.floor(marginLengths);
+    if (marginLengths === integer) return `${integer}马身`;
+    return `${integer + 0.5}马身`;
   }
 
   function rankLabel(rank, retired) {
@@ -302,11 +322,12 @@
     const retirees = finalResults.filter((item) => item.retired);
     const ordered = finishers.concat(retirees);
     const playerRankInDuel = ordered.findIndex((item) => item.entry.key === "player") + 1;
-    const opponentRank = ordered.findIndex((item) => item.entry.key === "opponent") + 1;
+    let opponentRank = ordered.findIndex((item) => item.entry.key === "opponent") + 1;
     const pointsPerLength = getPointsPerLength(race.distance);
     let scoreDiff = null;
     let marginLengths = null;
     let playerRank = playerRankInDuel;
+    let tieOutcome = "";
 
     if (playerResult.retired) {
       playerRank = null;
@@ -315,10 +336,24 @@
     } else {
       scoreDiff = playerResult.total - competitiveOpponentResult.total;
       marginLengths = Math.abs(scoreDiff) / pointsPerLength;
-      if (scoreDiff >= 0) {
+      if (scoreDiff > 0) {
         playerRank = 1;
-      } else {
+        opponentRank = 2;
+      } else if (scoreDiff < 0) {
         playerRank = rollPlacementWhenBehind(marginLengths);
+        opponentRank = 1;
+      } else {
+        tieOutcome = rollTieOutcome();
+        if (tieOutcome === "player-win") {
+          playerRank = 1;
+          opponentRank = 2;
+        } else if (tieOutcome === "player-loss") {
+          playerRank = 2;
+          opponentRank = 1;
+        } else {
+          playerRank = 1;
+          opponentRank = 1;
+        }
       }
     }
     const injury = playerResult.retired && ns.InjuryRules
@@ -327,6 +362,7 @@
     const raceNameSource = ns.RaceNameRules && ns.RaceNameRules.findRaceById
       ? ns.RaceNameRules.findRaceById(race.id) || race
       : race;
+    const marginLabel = createMarginLabel(marginLengths, tieOutcome);
 
     return {
       public: {
@@ -346,6 +382,8 @@
         opponentJockeyName: opponent.jockeyName,
         replacementOpponentJockeyName: replacementOpponent ? replacementOpponent.jockeyName : "",
         opponentRank,
+        tieOutcome,
+        deadHeat: tieOutcome === "dead-heat",
         retired: playerResult.retired,
         retiredPhase: playerResult.retiredPhase,
         injury: injury ? {
@@ -362,6 +400,8 @@
         pointsPerLength,
         scoreDiff,
         marginLengths,
+        marginLabel,
+        tieOutcome,
         scoreLine: `${finalMark(playerResult)} - ${finalMark(competitiveOpponentResult)}`,
         injury,
         playerCalc,

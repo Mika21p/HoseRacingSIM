@@ -232,17 +232,25 @@
     ].filter(Boolean).join(" · ");
   }
 
-  function formatMarginLength(value) {
+  function formatMarginLength(value, tieOutcome) {
+    if (tieOutcome === "dead-heat") return "";
+    if (tieOutcome === "player-win" || tieOutcome === "player-loss") return "鼻差";
     if (typeof value !== "number" || !Number.isFinite(value)) return "";
-    const rounded = Math.round(value * 10) / 10;
-    return `${Number.isInteger(rounded) ? rounded : rounded.toFixed(1)}马身`;
+    if (value === 0) return "鼻差";
+    if (value > 0 && value < 1) return "0.5马身";
+
+    const integer = Math.floor(value);
+    if (value === integer) return `${integer}马身`;
+    return `${integer + 0.5}马身`;
   }
 
   function historyMarginText(record) {
     const hidden = record && record.hidden ? record.hidden : {};
-    const margin = formatMarginLength(hidden.marginLengths);
+    const publicResult = record && record.public ? record.public : {};
+    const tieOutcome = hidden.tieOutcome || publicResult.tieOutcome || "";
+    const margin = hidden.marginLabel || formatMarginLength(hidden.marginLengths, tieOutcome);
     if (!margin) return "";
-    return hidden.scoreDiff < 0 ? `（${margin}）` : margin;
+    return hidden.scoreDiff < 0 || tieOutcome === "player-loss" ? `（${margin}）` : margin;
   }
 
   function historyPostRaceCommentText(record) {
@@ -916,7 +924,11 @@
       const replacementNote = item.public.scheduledOpponentRetired ? " 退赛（随机对手递补）" : "";
       const retired = item.public.retired ? ` · ${item.public.retiredPhase}退赛` : "";
       const injuryText = item.public.injury && item.public.injury.label ? ` · ${item.public.injury.label}` : "";
-      const resultText = `${item.public.rankLabel || "着外"}${retired}${injuryText}`;
+      const isDeadHeat = item.public.deadHeat
+        || item.public.tieOutcome === "dead-heat"
+        || (item.hidden && item.hidden.tieOutcome === "dead-heat");
+      const rankText = isDeadHeat ? "一着同着" : (item.public.rankLabel || "着外");
+      const resultText = `${rankText}${retired}${injuryText}`;
       const trackCondition = item.public.trackCondition || (item.hidden && item.hidden.trackCondition) || "";
       const raceName = recordRaceName(item, raceNameMode);
       const raceDetail = isRecordExpanded ? historyRaceDetail(item) : "";
