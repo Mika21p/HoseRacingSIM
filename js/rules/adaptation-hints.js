@@ -69,7 +69,7 @@
         { id: "hongkong", label: "香港草地" },
         { id: "europe", label: "欧洲草地" },
         { id: "america", label: "美国草地" },
-        { id: "middleEast", label: "中东草地" }
+        { id: "other", label: "其他草地" }
       ]
     },
     {
@@ -83,12 +83,24 @@
     }
   ];
 
-  const REGION_LABEL_TO_ID = {
+  const GRASS_REGION_LABEL_TO_ID = {
     "日本": "japan",
     "香港": "hongkong",
     "欧洲": "europe",
     "美国": "america",
     "北美": "america",
+    "阿根廷": "america",
+    "澳洲": "other",
+    "澳大利亚": "other",
+    "中东": "other",
+    "其他": "other"
+  };
+
+  const DIRT_REGION_LABEL_TO_ID = {
+    "日本": "japan",
+    "美国": "america",
+    "北美": "america",
+    "阿根廷": "america",
     "中东": "middleEast"
   };
 
@@ -98,6 +110,12 @@
     age4: ["age4", "older"],
     age5plus: ["age5plus", "older"],
     decline: ["decline"]
+  };
+
+  const LEGACY_SECTION_IDS = {
+    grass: {
+      other: ["other", "middleEast"]
+    }
   };
 
   function emptyCell() {
@@ -162,6 +180,12 @@
     if (!sourceSection) return emptyCell();
     if (sectionId === "growth" && LEGACY_GROWTH_IDS[itemId]) {
       const candidates = LEGACY_GROWTH_IDS[itemId];
+      return candidates
+        .map((key) => normalizeCell(sourceSection[key]))
+        .sort((a, b) => cellRank(b) - cellRank(a))[0] || emptyCell();
+    }
+    if (LEGACY_SECTION_IDS[sectionId] && LEGACY_SECTION_IDS[sectionId][itemId]) {
+      const candidates = LEGACY_SECTION_IDS[sectionId][itemId];
       return candidates
         .map((key) => normalizeCell(sourceSection[key]))
         .sort((a, b) => cellRank(b) - cellRank(a))[0] || emptyCell();
@@ -264,8 +288,15 @@
     if (lock.distance) applyDistanceRange(hints, lock.distance);
   }
 
-  function surfaceRegionId(label) {
-    return Object.keys(REGION_LABEL_TO_ID).find((region) => label.indexOf(region) >= 0);
+  function surfaceRegionMap(sectionId) {
+    return sectionId === "dirt" ? DIRT_REGION_LABEL_TO_ID : GRASS_REGION_LABEL_TO_ID;
+  }
+
+  function surfaceItemId(sectionId, label) {
+    const map = surfaceRegionMap(sectionId);
+    const region = Object.keys(map).find((item) => String(label || "").indexOf(item) >= 0);
+    if (region) return map[region];
+    return sectionId === "grass" ? "other" : "japan";
   }
 
   function surfaceGroupId(label) {
@@ -289,9 +320,8 @@
 
   function applySurfaceGrade(hints, gradeInfo) {
     if (!gradeInfo || !gradeInfo.surface) return;
-    const regionLabel = surfaceRegionId(gradeInfo.surface);
     const sectionId = surfaceGroupId(gradeInfo.surface);
-    const itemId = REGION_LABEL_TO_ID[regionLabel];
+    const itemId = surfaceItemId(sectionId, gradeInfo.surface);
     if (!sectionId || !itemId || !hints[sectionId] || !Object.prototype.hasOwnProperty.call(hints[sectionId], itemId)) return;
     const status = gradeInfo.grade === "C" || gradeInfo.grade === "G" ? STATUS.unfit : STATUS.fit;
     setStatus(hints, sectionId, itemId, status, { confidence: CONFIDENCE.suspected });
@@ -348,7 +378,7 @@
   function raceSurfaceItem(race) {
     if (!race) return null;
     const sectionId = race.surface === "泥地" ? "dirt" : (race.surface === "草地" ? "grass" : "");
-    const itemId = REGION_LABEL_TO_ID[race.surfaceRegion || "日本"] || "japan";
+    const itemId = surfaceItemId(sectionId, race.surfaceRegion || "日本");
     return sectionId ? { sectionId, itemId } : null;
   }
 
@@ -389,11 +419,38 @@
     });
   }
 
+  function applyNoIssueEvidence(hints, raceResult, confidence) {
+    const hidden = raceResult.hidden || {};
+    const race = hidden.race || {};
+    const calc = hidden.playerCalc || {};
+    const maturity = calc.maturity || {};
+
+    if (Number.isFinite(calc.distancePenalty) && calc.distancePenalty <= 0 && Number.isFinite(race.distance)) {
+      const distanceType = distanceTypeForDistance(race.distance);
+      if (distanceType) setStatus(hints, "distance", distanceType.id, STATUS.fit, { confidence });
+    }
+
+    if (Number.isFinite(calc.surfaceMod) && calc.surfaceMod > -10) {
+      const surfaceItem = raceSurfaceItem(race);
+      if (surfaceItem) setStatus(hints, surfaceItem.sectionId, surfaceItem.itemId, STATUS.fit, { confidence });
+    }
+
+    if (maturity.status === "成熟期") {
+      const stage = timeToGrowthStage(hidden.schedule);
+      if (stage) setStatus(hints, "growth", stage, STATUS.fit, { confidence });
+    }
+  }
+
   function applyPostRace(career, raceResult, explicitComment) {
     if (!career || !raceResult) return null;
     const hints = ensureCurrent(career);
     const comment = postRaceComment(raceResult, explicitComment);
-    if (!comment || comment.mode !== "clear") return hints;
+    if (!comment) return hints;
+    if (comment.mode === "broad" && comment.issueState === "no_issue") {
+      applyNoIssueEvidence(hints, raceResult, CONFIDENCE.suspected);
+      return hints;
+    }
+    if (comment.mode !== "clear") return hints;
     const race = raceResult.hidden && raceResult.hidden.race;
     if (comment.reason === "distance_too_short") {
       if (race && Number.isFinite(race.distance)) applyDistanceTooShort(hints, race.distance);
@@ -409,6 +466,8 @@
       if (stage) setStatus(hints, "growth", stage, STATUS.unfit, { confidence: CONFIDENCE.suspected });
     } else if (comment.reason === "declining") {
       setStatus(hints, "growth", "decline", STATUS.unfit, { confidence: CONFIDENCE.certain });
+    } else if (comment.reason === "off_day" || comment.reason === "outclassed") {
+      applyNoIssueEvidence(hints, raceResult, CONFIDENCE.certain);
     }
     return hints;
   }
