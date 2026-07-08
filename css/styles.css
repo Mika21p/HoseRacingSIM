@@ -435,7 +435,40 @@ button.secondary {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
+  min-width: 0;
   gap: 10px;
+}
+
+.title-with-actions .eyebrow {
+  margin: 0;
+}
+
+.history-record-summary {
+  display: inline-flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  color: #dce5f4;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.history-record-summary span {
+  display: inline-flex;
+  align-items: center;
+  min-height: 26px;
+  border: 1px solid #3d4960;
+  border-radius: 999px;
+  background: #101722;
+  padding: 4px 9px;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.history-record-summary span:first-child {
+  border-color: #dd805f;
+  background: #2b170d;
+  color: #ffbf9f;
 }
 
 .history-toggle {

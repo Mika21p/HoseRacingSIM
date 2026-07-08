@@ -195,8 +195,78 @@
     });
   }
 
+  function recordPublic(record) {
+    return record && record.public ? record.public : {};
+  }
+
+  function recordRace(record) {
+    const hiddenRace = record && record.hidden && record.hidden.race;
+    if (hiddenRace) return hiddenRace;
+    const raceId = recordPublic(record).raceId;
+    return (ns.Races || []).find((race) => race && race.id === raceId) || null;
+  }
+
   function isWin(record) {
-    return (record.public.rank === 1 || record.public.rankLabel === "一着") && !record.public.retired;
+    const publicResult = recordPublic(record);
+    return (publicResult.rank === 1 || publicResult.rankLabel === "一着" || publicResult.deadHeat) && !publicResult.retired;
+  }
+
+  function raceClass(record) {
+    const race = recordRace(record);
+    return race && race.raceClass ? race.raceClass : "";
+  }
+
+  function isClassWin(record, classes) {
+    return isWin(record) && classes.includes(raceClass(record));
+  }
+
+  function resultBucket(record) {
+    const publicResult = recordPublic(record);
+    if (isWin(record)) return "firsts";
+    if (!publicResult.retired && (publicResult.rank === 2 || publicResult.rankLabel === "二着")) return "seconds";
+    if (!publicResult.retired && (publicResult.rank === 3 || publicResult.rankLabel === "三着")) return "thirds";
+    return "others";
+  }
+
+  function getRecordSummary(career) {
+    const records = career && Array.isArray(career.races) ? career.races : [];
+    const summary = {
+      starts: records.length,
+      wins: 0,
+      firsts: 0,
+      seconds: 0,
+      thirds: 0,
+      others: 0,
+      g1Wins: 0,
+      g2Wins: 0,
+      g3Wins: 0,
+      jpn1Wins: 0,
+      jpn2Wins: 0,
+      jpn3Wins: 0,
+      grade1Wins: 0,
+      grade2Wins: 0,
+      grade3Wins: 0,
+      winRate: 0
+    };
+
+    records.forEach((record) => {
+      const bucket = resultBucket(record);
+      summary[bucket] += 1;
+      if (!isWin(record)) return;
+      summary.wins += 1;
+      if (isClassWin(record, ["g1"])) summary.g1Wins += 1;
+      if (isClassWin(record, ["g2"])) summary.g2Wins += 1;
+      if (isClassWin(record, ["g3"])) summary.g3Wins += 1;
+      if (isClassWin(record, ["jpn1"])) summary.jpn1Wins += 1;
+      if (isClassWin(record, ["jpn2"])) summary.jpn2Wins += 1;
+      if (isClassWin(record, ["jpn3"])) summary.jpn3Wins += 1;
+      if (isClassWin(record, ["g1", "jpn1"])) summary.grade1Wins += 1;
+      if (isClassWin(record, ["g2", "jpn2"])) summary.grade2Wins += 1;
+      if (isClassWin(record, ["g3", "jpn3"])) summary.grade3Wins += 1;
+    });
+
+    summary.winRate = summary.starts ? Math.round((summary.wins / summary.starts) * 100) : 0;
+    return summary;
   }
 
   function ensureExpeditionState(career) {
@@ -208,16 +278,9 @@
   function retire(career, reason) {
     career.retired = true;
     if (reason) career.retirementReason = reason;
-    const starts = career.races.length;
-    const wins = career.races.filter(isWin).length;
-    const g1Wins = career.races.filter((item) => isWin(item) && item.hidden.race.grade === "G1").length;
-    const jpn1Wins = career.races.filter((item) => isWin(item) && item.hidden.race.raceClass === "jpn1").length;
+    const recordSummary = getRecordSummary(career);
     return {
-      starts,
-      wins,
-      g1Wins,
-      jpn1Wins,
-      winRate: starts ? Math.round((wins / starts) * 100) : 0,
+      ...recordSummary,
       maturityDecline: career.maturity.decline,
       retirementReason: career.retirementReason || "",
       horse: career.horse,
@@ -231,6 +294,7 @@
     advanceToTime,
     addRace,
     retire,
+    getRecordSummary,
     updateInjuryStatus,
     isResting,
     getRestStatus

@@ -459,6 +459,14 @@
       ]
     },
     {
+      id: "masaru-honda",
+      name: "本田優",
+      periods: [
+        { from: 1976, to: 1992, ability: 50 },
+        { from: 1993, to: 2007, ability: 60 }
+      ]
+    },
+    {
       id: "gohara-hiroyuki",
       name: "郷原洋行",
       periods: [
@@ -1606,6 +1614,23 @@
       ]
     },
     {
+      id: "masao-sato",
+      name: "佐藤正雄",
+      periods: [
+        { from: 1976, to: 1992, ability: 50 },
+        { from: 1993, to: 1996, ability: 40 }
+      ]
+    },
+    {
+      id: "mamoru-ishibashi",
+      name: "石橋守",
+      periods: [
+        { from: 1985, to: 2005, ability: 50 },
+        { from: 2006, to: 2007, ability: 60 },
+        { from: 2008, to: 2012, ability: 50 }
+      ]
+    },
+    {
       id: "shu-ishibashi",
       name: "石橋脩",
       periods: [
@@ -1861,6 +1886,7 @@
     "okabe-yukio": ["japan"],
     "shibata-masato": ["japan"],
     "kawachi-hiroshi": ["japan"],
+    "masaru-honda": ["japan"],
     "gohara-hiroyuki": ["japan"],
     "nohira-yuji": ["japan"],
     "yasuda-takayoshi": ["japan"],
@@ -2003,6 +2029,8 @@
     "hirofumi-shii": ["japan"],
     "masayoshi-ebina": ["japan"],
     "yoshitomi-shibata": ["japan"],
+    "masao-sato": ["japan"],
+    "mamoru-ishibashi": ["japan"],
     "shu-ishibashi": ["japan"],
     "yusuke-fujioka": ["japan"],
     "yuichi-kitamura": ["japan"],

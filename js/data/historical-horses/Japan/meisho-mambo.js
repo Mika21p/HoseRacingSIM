@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "meisho-mambo",
     "name": "メイショウマンボ",
-    "displayName": "名将森逊",
-    "displayNameZh": "名将森逊",
+    "displayName": "名将间风",
+    "displayNameZh": "名将间风",
     "displayNameEn": "Meisho Mambo",
     "profile": {
       "baseAbility": 77,

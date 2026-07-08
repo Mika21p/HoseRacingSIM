@@ -261,6 +261,21 @@
     return typeof text === "string" ? text : "";
   }
 
+  function renderHistoryRecordSummary(career) {
+    const summary = ns.CareerRules && ns.CareerRules.getRecordSummary
+      ? ns.CareerRules.getRecordSummary(career)
+      : { starts: 0, wins: 0, firsts: 0, seconds: 0, thirds: 0, others: 0, grade1Wins: 0, grade2Wins: 0, grade3Wins: 0 };
+    return `
+      <div class="history-record-summary" aria-label="当前战绩统计">
+        <span>${summary.starts}战${summary.wins}胜</span>
+        <span>[${summary.firsts}-${summary.seconds}-${summary.thirds}-${summary.others}]</span>
+        <span>G1 ${summary.grade1Wins}胜</span>
+        <span>G2 ${summary.grade2Wins}胜</span>
+        <span>G3 ${summary.grade3Wins}胜</span>
+      </div>
+    `;
+  }
+
   function raceOptionLabel(plan, mode) {
     const challengeLabel = plan.challenge ? "[格上] " : "";
     const expeditionLabel = plan.expedition && plan.expedition.active ? "[远征] " : "";
@@ -1032,6 +1047,7 @@
       <div class="section-title-row">
         <div class="title-with-actions">
           <p class="eyebrow">生涯记录</p>
+          ${renderHistoryRecordSummary(career)}
           ${career.horse.debugMode ? `<span class="badge debug-badge">调试模式</span>` : ""}
         </div>
         ${orderedRecords.length > 3 ? `<button class="secondary history-toggle" id="historyToggleBtn">${expanded ? "收起" : "展开全部"}</button>` : ""}
