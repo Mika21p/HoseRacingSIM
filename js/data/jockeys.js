@@ -85,6 +85,14 @@
       ]
     },
     {
+      id: "tetsuzo-sato",
+      name: "佐藤哲三",
+      periods: [
+        { from: 1989, to: 1998, ability: 50 },
+        { from: 1999, to: 2014, ability: 60 }
+      ]
+    },
+    {
       id: "olivier-peslier",
       name: "O. Peslier",
       periods: [
@@ -464,6 +472,55 @@
       periods: [
         { from: 1976, to: 1992, ability: 50 },
         { from: 1993, to: 2007, ability: 60 }
+      ]
+    },
+    {
+      id: "shigehiko-kishi",
+      name: "岸滋彦",
+      periods: [
+        { from: 1986, to: 1997, ability: 50 },
+        { from: 1998, to: 2004, ability: 40 }
+      ]
+    },
+    {
+      id: "masayuki-miyaura",
+      name: "宮浦正行",
+      periods: [
+        { from: 1978, to: 1992, ability: 50 },
+        { from: 1993, to: 2000, ability: 40 }
+      ]
+    },
+    {
+      id: "yasuhiko-yasuda",
+      name: "安田康彦",
+      periods: [
+        { from: 1991, to: 1999, ability: 50 },
+        { from: 2000, to: 2001, ability: 60 },
+        { from: 2002, to: 2006, ability: 50 }
+      ]
+    },
+    {
+      id: "taisei-yamada",
+      name: "山田泰誠",
+      periods: [
+        { from: 1990, to: 1995, ability: 50 },
+        { from: 1996, to: 2000, ability: 40 }
+      ]
+    },
+    {
+      id: "katsuichi-nishiura",
+      name: "西浦勝一",
+      periods: [
+        { from: 1975, to: 1988, ability: 60 },
+        { from: 1989, to: 1996, ability: 50 }
+      ]
+    },
+    {
+      id: "kunihiko-watanabe",
+      name: "渡辺薫彦",
+      periods: [
+        { from: 1994, to: 2002, ability: 50 },
+        { from: 2003, to: 2012, ability: 40 }
       ]
     },
     {
@@ -1841,6 +1898,7 @@
     "norihiro-yokoyama": ["japan"],
     "kazuo-yokoyama": ["japan"],
     "tetsuzo-wada": ["japan"],
+    "tetsuzo-sato": ["japan"],
     "olivier-peslier": ["europe"],
     "ryan-moore": ["europe"],
     "damian-lane": ["australia"],
@@ -1887,6 +1945,12 @@
     "shibata-masato": ["japan"],
     "kawachi-hiroshi": ["japan"],
     "masaru-honda": ["japan"],
+    "shigehiko-kishi": ["japan"],
+    "masayuki-miyaura": ["japan"],
+    "yasuhiko-yasuda": ["japan"],
+    "taisei-yamada": ["japan"],
+    "katsuichi-nishiura": ["japan"],
+    "kunihiko-watanabe": ["japan"],
     "gohara-hiroyuki": ["japan"],
     "nohira-yuji": ["japan"],
     "yasuda-takayoshi": ["japan"],

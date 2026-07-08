@@ -276,6 +276,48 @@
     `;
   }
 
+  function renderAchievements(career) {
+    const achievements = ns.AchievementRules && ns.AchievementRules.evaluate
+      ? ns.AchievementRules.evaluate(career)
+      : [];
+    if (!achievements.length) {
+      return `
+        <div class="achievement-section">
+          <p class="eyebrow">成就</p>
+          <p class="muted">暂无特殊成就。</p>
+        </div>
+      `;
+    }
+    const groups = achievements.reduce((items, achievement) => {
+      const key = achievement.category || "base";
+      if (!items[key]) {
+        items[key] = {
+          label: achievement.categoryLabel || "成就",
+          achievements: []
+        };
+      }
+      items[key].achievements.push(achievement);
+      return items;
+    }, {});
+    return `
+      <div class="achievement-section">
+        <p class="eyebrow">成就</p>
+        <div class="achievement-board">
+          ${Object.keys(groups).map((key) => `
+            <div class="achievement-group achievement-group-${key}">
+              <h3>${groups[key].label}</h3>
+              <div class="achievement-list">
+                ${groups[key].achievements.map((achievement) => `
+                  <span class="achievement-chip achievement-chip-${key}" title="${achievement.description || achievement.name}">${achievement.name}</span>
+                `).join("")}
+              </div>
+            </div>
+          `).join("")}
+        </div>
+      </div>
+    `;
+  }
+
   function raceOptionLabel(plan, mode) {
     const challengeLabel = plan.challenge ? "[格上] " : "";
     const expeditionLabel = plan.expedition && plan.expedition.active ? "[远征] " : "";
@@ -1011,6 +1053,7 @@
           <p class="eyebrow">退役揭晓</p>
           <h2>${h.name} 生涯 ${summary.starts}战 ${summary.wins}胜 · G1 ${summary.g1Wins}胜 · JpnI ${summary.jpn1Wins || 0}胜</h2>
           ${summary.retirementReason ? `<p class="muted">${summary.retirementReason}</p>` : ""}
+          ${renderAchievements(career)}
           <div class="stat-grid">
             <span>真实实力 <b>${h.strength}</b></span>
             <span>退役时实力 <b>${finalMaturity.adjustedStrength}</b></span>

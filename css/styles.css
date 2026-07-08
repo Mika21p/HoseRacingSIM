@@ -1084,6 +1084,70 @@ th {
   border-top: 1px solid #283042;
 }
 
+.achievement-section {
+  display: grid;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.achievement-board {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.achievement-group {
+  border: 1px solid #30394e;
+  border-radius: 8px;
+  background: #0f131c;
+  padding: 12px;
+}
+
+.achievement-group h3 {
+  margin: 0 0 9px;
+  color: #d9e2f2;
+  font-size: 14px;
+}
+
+.achievement-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.achievement-chip {
+  display: inline-flex;
+  align-items: center;
+  min-height: 27px;
+  border: 1px solid #3d4960;
+  border-radius: 999px;
+  background: #151b27;
+  color: #dce5f4;
+  padding: 5px 9px;
+  font-size: 12px;
+  font-weight: 900;
+  line-height: 1.2;
+  white-space: nowrap;
+}
+
+.achievement-chip-base {
+  border-color: #dd805f;
+  background: #2b170d;
+  color: #ffbf9f;
+}
+
+.achievement-chip-combo {
+  border-color: #d7a647;
+  background: #201a10;
+  color: #ffe09b;
+}
+
+.achievement-chip-repeat {
+  border-color: #6bd3c2;
+  background: #10211f;
+  color: #9ee7dc;
+}
+
 .stat-grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1186,6 +1250,7 @@ th {
   .trainer-help-content,
   .trainer-card-grid,
   .adaptation-board,
+  .achievement-board,
   .stat-grid,
   .aptitude-grid {
     grid-template-columns: 1fr;
