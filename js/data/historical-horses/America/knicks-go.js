@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "knicks-go",
     "name": "Knicks Go",
-    "displayName": "力胜高",
-    "displayNameZh": "力胜高",
+    "displayName": "韩国速配",
+    "displayNameZh": "韩国速配",
     "displayNameEn": "Knicks Go",
     "profile": {
       "baseAbility": 82,

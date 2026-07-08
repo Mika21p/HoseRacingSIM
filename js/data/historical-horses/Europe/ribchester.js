@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "ribchester",
     "name": "Ribchester",
-    "displayName": "里布切斯特",
-    "displayNameZh": "里布切斯特",
+    "displayName": "列卓斯特",
+    "displayNameZh": "列卓斯特",
     "displayNameEn": "Ribchester",
     "profile": {
       "baseAbility": 83,

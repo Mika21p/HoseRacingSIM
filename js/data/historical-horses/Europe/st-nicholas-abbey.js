@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "st-nicholas-abbey",
     "name": "St Nicholas Abbey",
-    "displayName": "圣尼古拉斯修道院",
-    "displayNameZh": "圣尼古拉斯修道院",
+    "displayName": "圣堂",
+    "displayNameZh": "圣堂",
     "displayNameEn": "St Nicholas Abbey",
     "profile": {
       "baseAbility": 85,

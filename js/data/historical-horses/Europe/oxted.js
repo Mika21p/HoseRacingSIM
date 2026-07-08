@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "oxted",
     "name": "Oxted",
-    "displayName": "奥克斯特德",
-    "displayNameZh": "奥克斯特德",
+    "displayName": "奥斯德镇",
+    "displayNameZh": "奥斯德镇",
     "displayNameEn": "Oxted",
     "profile": {
       "baseAbility": 81,

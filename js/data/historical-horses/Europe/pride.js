@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "pride",
     "name": "Pride",
-    "displayName": "骄傲",
-    "displayNameZh": "骄傲",
+    "displayName": "自豪",
+    "displayNameZh": "自豪",
     "displayNameEn": "Pride",
     "profile": {
       "baseAbility": 87,

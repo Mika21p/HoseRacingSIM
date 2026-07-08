@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "danedream",
     "name": "Danedream",
-    "displayName": "丹梦",
-    "displayNameZh": "丹梦",
+    "displayName": "丹山梦",
+    "displayNameZh": "丹山梦",
     "displayNameEn": "Danedream",
     "profile": {
       "baseAbility": 84,

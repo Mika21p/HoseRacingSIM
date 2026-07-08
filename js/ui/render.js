@@ -261,6 +261,18 @@
     return typeof text === "string" ? text : "";
   }
 
+  function renderHistoryBulkControls(disabled) {
+    return `
+      <span class="history-index-heading">
+        <span>#</span>
+        <span class="history-bulk-controls" aria-label="生涯记录批量操作">
+          <button class="secondary history-bulk-toggle" id="historyExpandAllBtn" type="button" aria-label="完全展开比赛记录" title="完全展开比赛记录" ${disabled ? "disabled" : ""}>+</button>
+          <button class="secondary history-bulk-toggle" id="historyCollapseAllBtn" type="button" aria-label="完全折叠比赛记录" title="完全折叠比赛记录" ${disabled ? "disabled" : ""}>-</button>
+        </span>
+      </span>
+    `;
+  }
+
   function renderHistoryRecordSummary(career) {
     const summary = ns.CareerRules && ns.CareerRules.getRecordSummary
       ? ns.CareerRules.getRecordSummary(career)
@@ -858,7 +870,10 @@
               ${section.items.map((item) => `
                 <div class="adaptation-item">
                   <span>${item.label}</span>
-                  <b class="adaptation-status adaptation-status-${item.status}">${item.statusLabel}</b>
+                  <b class="adaptation-status adaptation-status-${item.status}">
+                    <span>${item.statusLabel}</span>
+                    ${item.confidenceLabel ? `<em class="adaptation-confidence adaptation-confidence-${item.confidence}">${item.confidenceLabel}</em>` : ""}
+                  </b>
                 </div>
               `).join("")}
             </div>
@@ -1097,7 +1112,7 @@
       </div>
       <div class="history-table-wrap">
         <table>
-          <thead><tr><th>#</th><th>时间</th><th class="race-name-header"><span>比赛</span>${renderRaceNameModeToggle(raceNameMode)}</th><th>场地</th><th>结果</th><th>骑手</th><th class="opponent-name-header"><span>主要对手</span>${renderHorseNameLanguageToggle(horseNameLanguage)}</th>${revealScores ? "<th>出目</th>" : ""}</tr></thead>
+          <thead><tr><th class="history-index-header">${renderHistoryBulkControls(orderedRecords.length === 0)}</th><th>时间</th><th class="race-name-header"><span>比赛</span>${renderRaceNameModeToggle(raceNameMode)}</th><th>场地</th><th>结果</th><th>骑手</th><th class="opponent-name-header"><span>主要对手</span>${renderHorseNameLanguageToggle(horseNameLanguage)}</th>${revealScores ? "<th>出目</th>" : ""}</tr></thead>
           <tbody>${rows || `<tr><td colspan="${revealScores ? 8 : 7}">还没有出赛记录。</td></tr>`}</tbody>
         </table>
       </div>

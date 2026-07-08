@@ -741,6 +741,26 @@
     saveGame();
   }
 
+  function expandFullHistory() {
+    if (!state.career) return;
+    state.historyExpanded = true;
+    state.expandedRaceRecords = (state.career.races || []).reduce((records, _record, index) => {
+      records[`race-${index + 1}`] = true;
+      return records;
+    }, {});
+    refresh();
+    saveGame();
+  }
+
+  function collapseFullHistory() {
+    if (!state.career) return;
+    state.historyExpanded = false;
+    state.expandedRaceRecords = {};
+    state.expandedRaceComments = {};
+    refresh();
+    saveGame();
+  }
+
   function toggleTrainerComments() {
     if (!state.career) return;
     state.trainerCommentsCollapsed = !state.trainerCommentsCollapsed;
@@ -833,6 +853,8 @@
     const cancelRegistrationBtn = document.getElementById("cancelRegistrationBtn");
     const retireBtn = document.getElementById("retireBtn");
     const historyToggleBtn = document.getElementById("historyToggleBtn");
+    const historyExpandAllBtn = document.getElementById("historyExpandAllBtn");
+    const historyCollapseAllBtn = document.getElementById("historyCollapseAllBtn");
     const trainerCommentsToggleBtn = document.getElementById("trainerCommentsToggleBtn");
     const adaptationHintsToggleBtn = document.getElementById("adaptationHintsToggleBtn");
     const historyRecordButtons = Array.from(document.querySelectorAll("[data-history-record-toggle]"));
@@ -849,6 +871,8 @@
     if (cancelRegistrationBtn) cancelRegistrationBtn.addEventListener("click", cancelRegistration);
     if (retireBtn) retireBtn.addEventListener("click", retire);
     if (historyToggleBtn) historyToggleBtn.addEventListener("click", toggleHistory);
+    if (historyExpandAllBtn) historyExpandAllBtn.addEventListener("click", expandFullHistory);
+    if (historyCollapseAllBtn) historyCollapseAllBtn.addEventListener("click", collapseFullHistory);
     if (trainerCommentsToggleBtn) trainerCommentsToggleBtn.addEventListener("click", toggleTrainerComments);
     if (adaptationHintsToggleBtn) adaptationHintsToggleBtn.addEventListener("click", toggleAdaptationHints);
     historyRecordButtons.forEach((button) => {

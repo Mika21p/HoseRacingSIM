@@ -6,7 +6,7 @@
     {
       "id": "europe-g3-abernant-stakes",
       "nameOriginal": "Abernant Stakes",
-      "nameZh": "阿伯南特锦标",
+      "nameZh": "爱百灵锦标",
       "grade": "G3",
       "raceClass": "g3",
       "month": 4,

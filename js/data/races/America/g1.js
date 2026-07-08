@@ -153,7 +153,7 @@
     {
       "id": "haskell-stakes",
       "nameOriginal": "Haskell Stakes",
-      "nameZh": "哈斯凯尔锦标",
+      "nameZh": "赫斯基锦标",
       "grade": "G1",
       "raceClass": "g1",
       "month": 7,
@@ -563,7 +563,7 @@
     {
       "id": "cotillion-stakes",
       "nameOriginal": "Cotillion Stakes",
-      "nameZh": "科蒂利恩锦标",
+      "nameZh": "高廸倫錦標",
       "grade": "G1",
       "raceClass": "g1",
       "month": 9,

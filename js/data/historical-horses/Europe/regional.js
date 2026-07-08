@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "regional",
     "name": "Regional",
-    "displayName": "地区",
-    "displayNameZh": "地区",
+    "displayName": "一区霸主",
+    "displayNameZh": "一区霸主",
     "displayNameEn": "Regional",
     "profile": {
       "baseAbility": 81,

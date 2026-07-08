@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "victory-gallop",
     "name": "Victory Gallop",
-    "displayName": "胜利跃步",
-    "displayNameZh": "胜利跃步",
+    "displayName": "胜利奔驰",
+    "displayNameZh": "胜利奔驰",
     "displayNameEn": "Victory Gallop",
     "profile": {
       "baseAbility": 86,

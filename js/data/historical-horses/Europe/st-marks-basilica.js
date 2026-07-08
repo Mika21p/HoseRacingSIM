@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "st-marks-basilica",
     "name": "St Mark's Basilica",
-    "displayName": "圣马可大教堂",
-    "displayNameZh": "圣马可大教堂",
+    "displayName": "金教堂",
+    "displayNameZh": "金教堂",
     "displayNameEn": "St Mark's Basilica",
     "profile": {
       "baseAbility": 88,

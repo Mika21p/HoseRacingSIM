@@ -189,7 +189,7 @@
     {
       "id": "aj-moir-stakes",
       "nameOriginal": "A.J. Moir Stakes",
-      "nameZh": "A.J. 莫伊尔锦标",
+      "nameZh": "摩亞錦標",
       "grade": "G1",
       "raceClass": "g1",
       "month": 9,
@@ -202,7 +202,7 @@
     {
       "id": "manikato-stakes",
       "nameOriginal": "Manikato Stakes",
-      "nameZh": "马尼卡托锦标",
+      "nameZh": "万利嘉多锦标",
       "grade": "G1",
       "raceClass": "g1",
       "month": 9,

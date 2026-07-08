@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "harbinger",
     "name": "Harbinger",
-    "displayName": "先驱",
-    "displayNameZh": "先驱",
+    "displayName": "无敌先锋",
+    "displayNameZh": "无敌先锋",
     "displayNameEn": "Harbinger",
     "profile": {
       "baseAbility": 93,

@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "bluestocking",
     "name": "Bluestocking",
-    "displayName": "蓝袜",
-    "displayNameZh": "蓝袜",
+    "displayName": "才情丽骥",
+    "displayNameZh": "才情丽骥",
     "displayNameEn": "Bluestocking",
     "profile": {
       "baseAbility": 83,

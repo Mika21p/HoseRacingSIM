@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "conduit",
     "name": "Conduit",
-    "displayName": "康杜伊",
-    "displayNameZh": "康杜伊",
+    "displayName": "水到渠成",
+    "displayNameZh": "水到渠成",
     "displayNameEn": "Conduit",
     "profile": {
       "baseAbility": 83,

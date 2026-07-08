@@ -99,7 +99,7 @@
     {
       "id": "prix-du-cadran",
       "nameOriginal": "Prix du Cadran",
-      "nameZh": "卡德兰大奖赛",
+      "nameZh": "嘉登大賽",
       "grade": "G1",
       "raceClass": "g1",
       "month": 10,
@@ -285,8 +285,8 @@
     },
     {
       "id": "prix-du-moulin",
-      "nameOriginal": "Prix du Moulin",
-      "nameZh": "穆兰大赛",
+      "nameOriginal": "Prix Du Moulin De Longchamp",
+      "nameZh": "隆尚磨坊大賽",
       "grade": "G1",
       "raceClass": "g1",
       "month": 9,
@@ -339,7 +339,7 @@
     {
       "id": "prix-maurice-de-gheest",
       "nameOriginal": "Prix Maurice de Gheest",
-      "nameZh": "莫里斯德盖斯特大赛",
+      "nameZh": "紀爾斯大賽",
       "grade": "G1",
       "raceClass": "g1",
       "month": 8,
@@ -485,7 +485,7 @@
     {
       "id": "flying-five-stakes",
       "nameOriginal": "Flying Five Stakes",
-      "nameZh": "飞行五锦标",
+      "nameZh": "高利五股锦标",
       "grade": "G1",
       "raceClass": "g1",
       "month": 9,
@@ -632,7 +632,7 @@
     {
       "id": "matron-stakes",
       "nameOriginal": "Matron Stakes",
-      "nameZh": "马特朗锦标",
+      "nameZh": "马顿锦标",
       "grade": "G1",
       "raceClass": "g1",
       "month": 9,
@@ -660,7 +660,7 @@
     {
       "id": "prix-jean-prat",
       "nameOriginal": "Prix Jean Prat",
-      "nameZh": "让普拉特大赛",
+      "nameZh": "莊柏德大賽",
       "grade": "G1",
       "raceClass": "g1",
       "month": 7,

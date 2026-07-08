@@ -4,8 +4,8 @@
   ns.HistoricalHorseRegistry.register({
     "id": "alpha-centauri",
     "name": "Alpha Centauri",
-    "displayName": "南门二",
-    "displayNameZh": "南门二",
+    "displayName": "合体恒星",
+    "displayNameZh": "合体恒星",
     "displayNameEn": "Alpha Centauri",
     "profile": {
       "baseAbility": 83,
