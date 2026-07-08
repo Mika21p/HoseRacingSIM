@@ -44,6 +44,8 @@
   function refresh() {
     if (state.career && ns.RegionRules) ns.RegionRules.ensureCareerState(state.career);
     const didClearExpiredRegistration = clearExpiredRegistration();
+    const app = document.getElementById("app");
+    if (app) app.classList.toggle("app-has-career", !!state.career);
     ns.UI.renderHorse(document.getElementById("horsePanel"), state.career, {
       trainerCommentsCollapsed: state.trainerCommentsCollapsed
     });
@@ -491,14 +493,18 @@
     state.career = ns.CareerRules.createCareer(horse, comments, commentDetails, debutLock, trainer);
     state.retiredSummary = null;
     state.historyExpanded = false;
-    state.trainerCommentsCollapsed = false;
-    state.adaptationHintsCollapsed = false;
+    state.trainerCommentsCollapsed = true;
+    state.adaptationHintsCollapsed = true;
     state.expandedRaceRecords = {};
     state.expandedRaceComments = {};
     state.activeFilterGroup = "";
     state.filters = defaultFilters();
     refresh();
     saveGame();
+    if (window.matchMedia && window.matchMedia("(max-width: 760px)").matches) {
+      const racePanel = document.getElementById("racePanel");
+      if (racePanel) racePanel.scrollIntoView({ block: "start" });
+    }
   }
 
   function value(id) {
@@ -849,6 +855,7 @@
 
   function bindDynamicEvents() {
     const registerRaceBtn = document.getElementById("registerRaceBtn");
+    const raceSelect = document.getElementById("raceSelect");
     const nextTurnBtn = document.getElementById("nextTurnBtn");
     const cancelRegistrationBtn = document.getElementById("cancelRegistrationBtn");
     const retireBtn = document.getElementById("retireBtn");
@@ -864,9 +871,28 @@
     const raceFilterToggles = Array.from(document.querySelectorAll("[data-race-filter]"));
     const raceFilterPanels = Array.from(document.querySelectorAll("[data-race-filter-group]"));
     const raceFilterClearButtons = Array.from(document.querySelectorAll("[data-filter-clear]"));
+    const raceCardButtons = Array.from(document.querySelectorAll("[data-race-card]"));
     const transferStableBtn = document.getElementById("transferStableBtn");
     const clearAllRaceFiltersBtn = document.getElementById("clearAllRaceFiltersBtn");
+    const syncRaceCardSelection = () => {
+      if (!raceSelect || raceCardButtons.length === 0) return;
+      raceCardButtons.forEach((button) => {
+        const active = button.dataset.raceCard === raceSelect.value;
+        button.classList.toggle("is-active", active);
+        button.setAttribute("aria-pressed", active ? "true" : "false");
+      });
+    };
     if (registerRaceBtn) registerRaceBtn.addEventListener("click", registerRace);
+    if (raceSelect && raceCardButtons.length) {
+      raceSelect.addEventListener("change", syncRaceCardSelection);
+      raceCardButtons.forEach((button) => {
+        button.addEventListener("click", () => {
+          raceSelect.value = button.dataset.raceCard;
+          syncRaceCardSelection();
+        });
+      });
+      syncRaceCardSelection();
+    }
     if (nextTurnBtn) nextTurnBtn.addEventListener("click", advanceTurn);
     if (cancelRegistrationBtn) cancelRegistrationBtn.addEventListener("click", cancelRegistration);
     if (retireBtn) retireBtn.addEventListener("click", retire);

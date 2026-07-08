@@ -541,6 +541,22 @@
     `;
   }
 
+  function renderRacePlanCards(plans, mode) {
+    return `
+      <div class="race-card-list" role="listbox" aria-label="可报名赛事">
+        ${plans.map((plan, index) => `
+          <button class="secondary race-plan-card ${index === 0 ? "is-active" : ""}" type="button" data-race-card="${plan.race.id}" aria-pressed="${index === 0 ? "true" : "false"}">
+            <span class="race-card-meta">${plan.schedule.label} · ${plan.race.grade}</span>
+            <strong>${raceDisplayName(plan.race, mode)}</strong>
+            <span>${plan.race.ageRule}${raceRestrictionLabel(plan.race)} · ${raceSurfaceDistanceLabel(plan.race)} · ${raceVenueLabel(plan.race)}</span>
+            ${plan.challenge ? `<em>格上</em>` : ""}
+            ${plan.expedition && plan.expedition.active ? `<em>远征</em>` : ""}
+          </button>
+        `).join("")}
+      </div>
+    `;
+  }
+
   function renderSetup(root) {
     const sireBloodlines = currentSireBloodlines(ns.SireBloodlines || ns.Bloodlines || []);
     const damBloodlines = ns.DamBloodlines || ns.Bloodlines || [];
@@ -954,9 +970,10 @@
       <div id="jockeyNotice"></div>
       ${filteredPlans.length ? `
         <div class="race-row">
-          <select id="raceSelect">
+          <select class="race-select" id="raceSelect">
             ${filteredPlans.map((plan) => `<option value="${plan.race.id}">${raceOptionLabel(plan, raceNameMode)}</option>`).join("")}
           </select>
+          ${renderRacePlanCards(filteredPlans, raceNameMode)}
           <button id="registerRaceBtn">报名比赛</button>
           <button class="secondary" id="nextTurnBtn">下一回合</button>
           <button class="secondary" id="retireBtn">退役</button>
@@ -986,7 +1003,7 @@
     const visibleRecords = expanded ? orderedRecords : orderedRecords.slice(0, 3);
     const hasHiddenRows = orderedRecords.length > visibleRecords.length;
     const revealScores = !!summary;
-    const rows = visibleRecords.map(({ item, number }) => {
+    const renderedRecords = visibleRecords.map(({ item, number }) => {
       const recordKey = historyRecordKey(number);
       const isRecordExpanded = !!expandedRecords[recordKey];
       const opponentYear = item.public.opponentYear ? `${item.public.opponentYear} ` : "";
@@ -1027,7 +1044,22 @@
           </td>
         </tr>
       ` : "";
-      return `
+      const scoreLineText = (item.hidden && item.hidden.scoreLine) || "";
+      const cardDetail = isRecordExpanded && raceDetail
+        ? `<p class="history-card-detail">${raceDetail}</p>`
+        : "";
+      const cardMargin = marginText ? `<em>${marginText}</em>` : "";
+      const cardComment = isCommentExpanded ? `
+        <div class="history-comment-card history-card-comment">
+          <span>练马师评语</span>
+          <p>${commentText}</p>
+        </div>
+      ` : "";
+      const cardScore = revealScores && scoreLineText
+        ? `<p class="history-card-score">出目：${scoreLineText}</p>`
+        : "";
+      return {
+        row: `
         <tr class="${rowClasses}">
           <td class="history-index-cell">
             <button class="secondary history-record-toggle" type="button" data-history-record-toggle="${recordKey}" aria-expanded="${isRecordExpanded ? "true" : "false"}" aria-label="${toggleLabel}" title="${toggleLabel}">${isRecordExpanded ? "▲" : "▼"}</button>
@@ -1051,8 +1083,38 @@
           ${scoreLine}
         </tr>
         ${commentRow}
-      `;
-    }).join("");
+        `,
+        card: `
+          <article class="history-card ${rowClasses}">
+            <div class="history-card-head">
+              <div>
+                <span class="history-card-kicker">#${number} · ${item.public.timeLabel || ""}</span>
+                <h3>${raceName}</h3>
+              </div>
+              <div class="history-card-actions">
+                <button class="secondary history-record-toggle" type="button" data-history-record-toggle="${recordKey}" aria-expanded="${isRecordExpanded ? "true" : "false"}" aria-label="${toggleLabel}" title="${toggleLabel}">${isRecordExpanded ? "收起" : "详情"}</button>
+                ${commentText ? `<button class="secondary history-comment-toggle" type="button" data-history-comment-toggle="${recordKey}" aria-expanded="${isCommentExpanded ? "true" : "false"}" aria-label="${commentToggleLabel}" title="${commentToggleLabel}">评语</button>` : ""}
+              </div>
+            </div>
+            <div class="history-card-stats">
+              <span>${trackCondition || "场地未知"}</span>
+              <span>${resultText}${cardMargin}</span>
+              <span>${item.public.playerJockeyName || "骑手未定"}</span>
+            </div>
+            <div class="history-card-opponent">
+              <span>主要对手</span>
+              <strong>${opponent}${replacementNote}</strong>
+              ${isRecordExpanded && opponentJockey ? `<em>${opponentJockey}</em>` : ""}
+            </div>
+            ${cardDetail}
+            ${cardScore}
+            ${cardComment}
+          </article>
+        `
+      };
+    });
+    const rows = renderedRecords.map((record) => record.row).join("");
+    const cards = renderedRecords.map((record) => record.card).join("");
 
     let reveal = "";
     if (summary) {
@@ -1110,11 +1172,18 @@
         </div>
         ${orderedRecords.length > 3 ? `<button class="secondary history-toggle" id="historyToggleBtn">${expanded ? "收起" : "展开全部"}</button>` : ""}
       </div>
+      <div class="history-mobile-display-controls" aria-label="生涯记录显示设置">
+        <div><span>赛事名</span>${renderRaceNameModeToggle(raceNameMode)}</div>
+        <div><span>对手名</span>${renderHorseNameLanguageToggle(horseNameLanguage)}</div>
+      </div>
       <div class="history-table-wrap">
         <table>
           <thead><tr><th class="history-index-header">${renderHistoryBulkControls(orderedRecords.length === 0)}</th><th>时间</th><th class="race-name-header"><span>比赛</span>${renderRaceNameModeToggle(raceNameMode)}</th><th>场地</th><th>结果</th><th>骑手</th><th class="opponent-name-header"><span>主要对手</span>${renderHorseNameLanguageToggle(horseNameLanguage)}</th>${revealScores ? "<th>出目</th>" : ""}</tr></thead>
           <tbody>${rows || `<tr><td colspan="${revealScores ? 8 : 7}">还没有出赛记录。</td></tr>`}</tbody>
         </table>
+      </div>
+      <div class="history-card-list">
+        ${cards || `<div class="history-empty-card">还没有出赛记录。</div>`}
       </div>
       ${reveal}
     `;
