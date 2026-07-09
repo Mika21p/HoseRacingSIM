@@ -8,6 +8,7 @@
     trainerCommentsCollapsed: false,
     adaptationHintsCollapsed: false,
     expandedRaceRecords: {},
+    collapsedRaceRecords: {},
     expandedRaceComments: {},
     horseNameLanguage: "zh",
     raceNameMode: "zh",
@@ -58,8 +59,10 @@
       collapsed: state.adaptationHintsCollapsed
     });
     ns.UI.renderHistory(document.getElementById("historyPanel"), state.career, state.retiredSummary, {
+      mobile: isMobileLayout(),
       expanded: state.historyExpanded,
       expandedRecords: state.expandedRaceRecords,
+      collapsedRecords: state.collapsedRaceRecords,
       expandedComments: state.expandedRaceComments,
       horseNameLanguage: state.horseNameLanguage,
       raceNameMode: state.raceNameMode
@@ -79,6 +82,10 @@
 
   function defaultFilters() {
     return { grade: [], surface: [], distance: [], region: [], japanCourse: [] };
+  }
+
+  function isMobileLayout() {
+    return !!(window.matchMedia && window.matchMedia("(max-width: 760px)").matches);
   }
 
   const REGION_FILTER_VALUES = ["japan", "america", "europe", "other"];
@@ -228,6 +235,7 @@
         trainerCommentsCollapsed: !!state.trainerCommentsCollapsed,
         adaptationHintsCollapsed: !!state.adaptationHintsCollapsed,
         expandedRaceRecords: normalizeExpandedRaceRecords(state.expandedRaceRecords),
+        collapsedRaceRecords: normalizeExpandedRaceRecords(state.collapsedRaceRecords),
         expandedRaceComments: normalizeExpandedRaceRecords(state.expandedRaceComments),
         filters: normalizeFilters(state.filters)
       }
@@ -287,6 +295,7 @@
       state.trainerCommentsCollapsed = !!payload.state.trainerCommentsCollapsed;
       state.adaptationHintsCollapsed = !!payload.state.adaptationHintsCollapsed;
       state.expandedRaceRecords = normalizeExpandedRaceRecords(payload.state.expandedRaceRecords);
+      state.collapsedRaceRecords = normalizeExpandedRaceRecords(payload.state.collapsedRaceRecords);
       state.expandedRaceComments = normalizeExpandedRaceRecords(payload.state.expandedRaceComments);
       state.filters = normalizeFilters(payload.state.filters);
       saveStatus.storageAvailable = true;
@@ -496,14 +505,15 @@
     state.trainerCommentsCollapsed = true;
     state.adaptationHintsCollapsed = true;
     state.expandedRaceRecords = {};
+    state.collapsedRaceRecords = {};
     state.expandedRaceComments = {};
     state.activeFilterGroup = "";
     state.filters = defaultFilters();
     refresh();
     saveGame();
-    if (window.matchMedia && window.matchMedia("(max-width: 760px)").matches) {
-      const racePanel = document.getElementById("racePanel");
-      if (racePanel) racePanel.scrollIntoView({ block: "start" });
+    if (isMobileLayout()) {
+      const focusPanel = document.getElementById("feedbackPanel") || document.getElementById("racePanel");
+      if (focusPanel) focusPanel.scrollIntoView({ block: "start" });
     }
   }
 
@@ -750,6 +760,7 @@
   function expandFullHistory() {
     if (!state.career) return;
     state.historyExpanded = true;
+    state.collapsedRaceRecords = {};
     state.expandedRaceRecords = (state.career.races || []).reduce((records, _record, index) => {
       records[`race-${index + 1}`] = true;
       return records;
@@ -788,6 +799,18 @@
       delete state.expandedRaceRecords[recordKey];
     } else {
       state.expandedRaceRecords[recordKey] = true;
+    }
+    refresh();
+    saveGame();
+  }
+
+  function toggleHistoryCardRecord(recordKey) {
+    if (!state.career || !recordKey) return;
+    state.collapsedRaceRecords = normalizeExpandedRaceRecords(state.collapsedRaceRecords);
+    if (state.collapsedRaceRecords[recordKey]) {
+      delete state.collapsedRaceRecords[recordKey];
+    } else {
+      state.collapsedRaceRecords[recordKey] = true;
     }
     refresh();
     saveGame();
@@ -865,6 +888,7 @@
     const trainerCommentsToggleBtn = document.getElementById("trainerCommentsToggleBtn");
     const adaptationHintsToggleBtn = document.getElementById("adaptationHintsToggleBtn");
     const historyRecordButtons = Array.from(document.querySelectorAll("[data-history-record-toggle]"));
+    const historyCardRecordButtons = Array.from(document.querySelectorAll("[data-history-card-record-toggle]"));
     const historyCommentButtons = Array.from(document.querySelectorAll("[data-history-comment-toggle]"));
     const horseNameLanguageButtons = Array.from(document.querySelectorAll("[data-horse-name-language]"));
     const raceNameModeButtons = Array.from(document.querySelectorAll("[data-race-name-mode]"));
@@ -903,6 +927,9 @@
     if (adaptationHintsToggleBtn) adaptationHintsToggleBtn.addEventListener("click", toggleAdaptationHints);
     historyRecordButtons.forEach((button) => {
       button.addEventListener("click", () => toggleHistoryRecord(button.dataset.historyRecordToggle));
+    });
+    historyCardRecordButtons.forEach((button) => {
+      button.addEventListener("click", () => toggleHistoryCardRecord(button.dataset.historyCardRecordToggle));
     });
     historyCommentButtons.forEach((button) => {
       button.addEventListener("click", () => toggleHistoryComment(button.dataset.historyCommentToggle));

@@ -1465,11 +1465,11 @@ th {
     flex-direction: column;
   }
 
-  .app-shell.app-has-career #racePanel {
+  .app-shell.app-has-career #feedbackPanel {
     order: 1;
   }
 
-  .app-shell.app-has-career #feedbackPanel {
+  .app-shell.app-has-career #racePanel {
     order: 2;
   }
 

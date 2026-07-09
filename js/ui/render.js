@@ -992,16 +992,21 @@
       panel.innerHTML = "";
       return;
     }
-    const expanded = !!(options && options.expanded);
+    const opts = options || {};
+    const expanded = !!opts.expanded;
+    const mobile = !!opts.mobile;
+    const collapsedLimit = mobile ? 1 : 3;
     const horseNameLanguage = normalizeHorseNameLanguage(options && options.horseNameLanguage);
     const raceNameMode = normalizeRaceNameMode(options && options.raceNameMode);
     const expandedRecords = (options && options.expandedRecords) || {};
+    const collapsedRecords = (options && options.collapsedRecords) || {};
     const expandedComments = (options && options.expandedComments) || {};
     const orderedRecords = career.races
       .map((item, index) => ({ item, number: index + 1 }))
       .reverse();
-    const visibleRecords = expanded ? orderedRecords : orderedRecords.slice(0, 3);
+    const visibleRecords = expanded ? orderedRecords : orderedRecords.slice(0, collapsedLimit);
     const hasHiddenRows = orderedRecords.length > visibleRecords.length;
+    const canToggleHistory = orderedRecords.length > collapsedLimit;
     const revealScores = !!summary;
     const renderedRecords = visibleRecords.map(({ item, number }) => {
       const recordKey = historyRecordKey(number);
@@ -1020,8 +1025,10 @@
       const resultText = `${rankText}${retired}${injuryText}`;
       const trackCondition = item.public.trackCondition || (item.hidden && item.hidden.trackCondition) || "";
       const raceName = recordRaceName(item, raceNameMode);
-      const raceDetail = isRecordExpanded ? historyRaceDetail(item) : "";
-      const marginText = isRecordExpanded ? historyMarginText(item) : "";
+      const fullRaceDetail = historyRaceDetail(item);
+      const fullMarginText = historyMarginText(item);
+      const raceDetail = isRecordExpanded ? fullRaceDetail : "";
+      const marginText = isRecordExpanded ? fullMarginText : "";
       const toggleLabel = isRecordExpanded ? "收起比赛详情" : "展开比赛详情";
       const commentText = historyPostRaceCommentText(item);
       const isCommentExpanded = !!(commentText && expandedComments[recordKey]);
@@ -1045,10 +1052,12 @@
         </tr>
       ` : "";
       const scoreLineText = (item.hidden && item.hidden.scoreLine) || "";
-      const cardDetail = isRecordExpanded && raceDetail
-        ? `<p class="history-card-detail">${raceDetail}</p>`
+      const isCardExpanded = !collapsedRecords[recordKey];
+      const cardToggleLabel = isCardExpanded ? "收起比赛详情" : "展开比赛详情";
+      const cardDetail = isCardExpanded && fullRaceDetail
+        ? `<p class="history-card-detail">${fullRaceDetail}</p>`
         : "";
-      const cardMargin = marginText ? `<em>${marginText}</em>` : "";
+      const cardMargin = isCardExpanded && fullMarginText ? `<em>${fullMarginText}</em>` : "";
       const cardComment = isCommentExpanded ? `
         <div class="history-comment-card history-card-comment">
           <span>练马师评语</span>
@@ -1085,14 +1094,14 @@
         ${commentRow}
         `,
         card: `
-          <article class="history-card ${rowClasses}">
+          <article class="history-card ${rowClasses} ${isCardExpanded ? "history-card-expanded" : ""}">
             <div class="history-card-head">
               <div>
                 <span class="history-card-kicker">#${number} · ${item.public.timeLabel || ""}</span>
                 <h3>${raceName}</h3>
               </div>
               <div class="history-card-actions">
-                <button class="secondary history-record-toggle" type="button" data-history-record-toggle="${recordKey}" aria-expanded="${isRecordExpanded ? "true" : "false"}" aria-label="${toggleLabel}" title="${toggleLabel}">${isRecordExpanded ? "收起" : "详情"}</button>
+                <button class="secondary history-record-toggle" type="button" data-history-card-record-toggle="${recordKey}" aria-expanded="${isCardExpanded ? "true" : "false"}" aria-label="${cardToggleLabel}" title="${cardToggleLabel}">${isCardExpanded ? "收起详情" : "展开详情"}</button>
                 ${commentText ? `<button class="secondary history-comment-toggle" type="button" data-history-comment-toggle="${recordKey}" aria-expanded="${isCommentExpanded ? "true" : "false"}" aria-label="${commentToggleLabel}" title="${commentToggleLabel}">评语</button>` : ""}
               </div>
             </div>
@@ -1104,7 +1113,7 @@
             <div class="history-card-opponent">
               <span>主要对手</span>
               <strong>${opponent}${replacementNote}</strong>
-              ${isRecordExpanded && opponentJockey ? `<em>${opponentJockey}</em>` : ""}
+              ${isCardExpanded && opponentJockey ? `<em>${opponentJockey}</em>` : ""}
             </div>
             ${cardDetail}
             ${cardScore}
@@ -1170,7 +1179,7 @@
           ${renderHistoryRecordSummary(career)}
           ${career.horse.debugMode ? `<span class="badge debug-badge">调试模式</span>` : ""}
         </div>
-        ${orderedRecords.length > 3 ? `<button class="secondary history-toggle" id="historyToggleBtn">${expanded ? "收起" : "展开全部"}</button>` : ""}
+        ${canToggleHistory ? `<button class="secondary history-toggle" id="historyToggleBtn">${expanded ? "收起" : "展开全部"}</button>` : ""}
       </div>
       <div class="history-mobile-display-controls" aria-label="生涯记录显示设置">
         <div><span>赛事名</span>${renderRaceNameModeToggle(raceNameMode)}</div>
