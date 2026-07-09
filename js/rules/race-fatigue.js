@@ -13,6 +13,8 @@
     2: 0.18
   };
 
+  const CONDITION_CLASSES = ["new", "maiden", "one-win", "two-win", "three-win"];
+
   const CLASS_MOD = {
     new: -0.08,
     maiden: -0.08,
@@ -108,6 +110,10 @@
     return raceClass === "g1" || raceClass === "jpn1";
   }
 
+  function isConditionClass(raceClass) {
+    return CONDITION_CLASSES.includes(raceClass);
+  }
+
   function isTripleCrownPair(previousId, currentId) {
     return TRIPLE_CROWN_RACES.includes(previousId) && TRIPLE_CROWN_RACES.includes(currentId);
   }
@@ -120,20 +126,31 @@
   function probabilityFor(career, race, schedule) {
     const fatigue = ensureFatigueState(career);
     const gap = gapTurns(career, schedule);
+    const prevClass = previousRaceClass(career);
+    const prevId = previousRaceId(career);
     if (gap !== 1 && gap !== 2) {
       return {
         eligible: false,
         probability: 0,
         gapTurns: gap,
         pressureBefore: fatigue.pressure,
-        previousRaceClass: previousRaceClass(career),
-        previousRaceId: previousRaceId(career),
+        previousRaceClass: prevClass,
+        previousRaceId: prevId,
+        tripleCrownExemption: false
+      };
+    }
+    if (isConditionClass(prevClass) && gap !== 1) {
+      return {
+        eligible: false,
+        probability: 0,
+        gapTurns: gap,
+        pressureBefore: fatigue.pressure,
+        previousRaceClass: prevClass,
+        previousRaceId: prevId,
         tripleCrownExemption: false
       };
     }
 
-    const prevClass = previousRaceClass(career);
-    const prevId = previousRaceId(career);
     const currentId = race && race.id ? race.id : "";
     const tripleCrownExemption = isTripleCrownPair(prevId, currentId);
     let probability = (BASE_PROBABILITY[gap] || 0)

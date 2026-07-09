@@ -736,7 +736,7 @@ button.secondary {
 
 .filter-row {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr)) auto;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) minmax(170px, auto) auto;
   align-items: start;
   gap: 8px;
   margin-bottom: 12px;
@@ -818,6 +818,28 @@ button.secondary {
 
 .race-filter-option:hover {
   background: #182131;
+}
+
+.race-risk-filter {
+  display: flex;
+  grid-template-columns: none;
+  align-items: center;
+  gap: 8px;
+  min-height: 42px;
+  border: 1px solid #30394e;
+  border-radius: 6px;
+  background: #0f131c;
+  color: #f5f7fb;
+  padding: 9px 10px;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.race-risk-filter span {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .filter-clear-button {

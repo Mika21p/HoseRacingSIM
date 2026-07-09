@@ -433,7 +433,8 @@
       surface: filterValues(filters, "surface"),
       distance: filterValues(filters, "distance"),
       region,
-      japanCourse
+      japanCourse,
+      avoidFatigueRisk: !!(filters && filters.avoidFatigueRisk)
     };
   }
 
@@ -478,8 +479,15 @@
     return values.length === 0 || values.some(matcher);
   }
 
-  function raceMatchesFilters(plan, filters) {
+  function hasFatigueRisk(career, plan) {
+    if (!career || !plan || !ns.RaceFatigueRules || !ns.RaceFatigueRules.previewFatigueRisk) return false;
+    const risk = ns.RaceFatigueRules.previewFatigueRisk(career, plan.race, plan.schedule);
+    return !!(risk && risk.eligible && risk.probability > 0);
+  }
+
+  function raceMatchesFilters(plan, filters, career) {
     const currentFilters = normalizeRaceFilters(filters);
+    if (currentFilters.avoidFatigueRisk && hasFatigueRisk(career, plan)) return false;
     const raceClass = plan.race.raceClass;
     const raceDistance = plan.race.distance;
     const gradeMatched = groupMatches(currentFilters.grade, (value) => gradeMatches(raceClass, value));
@@ -524,7 +532,18 @@
   }
 
   function hasActiveRaceFilters(filters) {
-    return RACE_FILTER_GROUPS.some((group) => filterValues(filters, group.id).length > 0);
+    return RACE_FILTER_GROUPS.some((group) => filterValues(filters, group.id).length > 0)
+      || !!(filters && filters.avoidFatigueRisk);
+  }
+
+  function renderRiskFilter(filters) {
+    const checked = filters && filters.avoidFatigueRisk;
+    return `
+      <label class="race-risk-filter">
+        <input type="checkbox" data-race-filter-toggle="avoidFatigueRisk" ${checked ? "checked" : ""}>
+        <span>避开疲劳风险赛事</span>
+      </label>
+    `;
   }
 
   function renderRaceFilters(filters, activeFilterGroup) {
@@ -538,6 +557,7 @@
           activeFilterGroup,
           group.id === "japanCourse" && !currentFilters.region.includes("japan")
         )).join("")}
+        ${renderRiskFilter(currentFilters)}
         <button class="secondary filter-clear-all" id="clearAllRaceFiltersBtn" type="button" ${active ? "" : "disabled"}>清除筛选</button>
       </div>
     `;
@@ -985,7 +1005,7 @@
     }
     const currentFilters = normalizeRaceFilters(filters);
     const activeFilterGroup = options && options.activeFilterGroup;
-    const filteredPlans = plans.filter((plan) => raceMatchesFilters(plan, currentFilters));
+    const filteredPlans = plans.filter((plan) => raceMatchesFilters(plan, currentFilters, career));
     panel.innerHTML = `
       ${racePanelHeader(career, "下一场比赛")}
       ${renderRaceFilters(currentFilters, activeFilterGroup)}

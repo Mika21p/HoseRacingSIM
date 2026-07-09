@@ -20,6 +20,10 @@
       jpn2: 0.2,
       g1: 0.4,
       jpn1: 0.4
+    },
+    age3AutumnThreeWin: {
+      g1: 0.4,
+      jpn1: 0.4
     }
   };
 
@@ -47,10 +51,15 @@
     return schedule.age === 3 && schedule.month <= 6;
   }
 
+  function isAfterJuneThree(schedule) {
+    return !!schedule && schedule.age === 3 && schedule.month >= 7;
+  }
+
   function createChallengeState() {
     return {
       age2Used: 0,
       age3SpringUsed: 0,
+      age3AutumnThreeWinUsed: 0,
       exclusions: []
     };
   }
@@ -68,6 +77,7 @@
     }
     career.challenge.age2Used = normalizeChallengeUsed(career.challenge.age2Used);
     career.challenge.age3SpringUsed = normalizeChallengeUsed(career.challenge.age3SpringUsed);
+    career.challenge.age3AutumnThreeWinUsed = normalizeChallengeUsed(career.challenge.age3AutumnThreeWinUsed);
     if (!Array.isArray(career.challenge.exclusions)) career.challenge.exclusions = [];
     return career.challenge;
   }
@@ -80,7 +90,20 @@
   }
 
   function challengeUsedKey(windowId) {
-    return windowId === "age2" ? "age2Used" : "age3SpringUsed";
+    if (windowId === "age2") return "age2Used";
+    if (windowId === "age3AutumnThreeWin") return "age3AutumnThreeWinUsed";
+    return "age3SpringUsed";
+  }
+
+  function challengeWindowFor(career, race, schedule) {
+    const baseWindow = challengeWindow(schedule);
+    if (baseWindow) return baseWindow;
+    if (isAfterJuneThree(schedule)
+      && wonClass(career, "three-win")
+      && (race.raceClass === "g1" || race.raceClass === "jpn1")) {
+      return "age3AutumnThreeWin";
+    }
+    return "";
   }
 
   function challengeKey(race, schedule) {
@@ -134,7 +157,7 @@
     if (!career || !race || !schedule) return null;
     if (!hasAnyWin(career)) return null;
     if (isRaceAllowed(career, race, schedule)) return null;
-    const windowId = challengeWindow(schedule);
+    const windowId = challengeWindowFor(career, race, schedule);
     const probability = challengeProbability(race.raceClass, windowId);
     if (probability == null) return null;
     if (hasChallengeExclusion(career, race, schedule)) return null;

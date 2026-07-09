@@ -559,8 +559,7 @@
     const playerIndex = ordered.indexOf(playerResult);
     if (playerIndex < 0) return null;
     if (playerIndex === 0) return ordered.find((item) => item !== playerResult && !item.retired) || null;
-    if (playerIndex >= 5) return ordered[4] && !ordered[4].retired ? ordered[4] : ordered[playerIndex - 1];
-    return ordered[playerIndex - 1];
+    return ordered[0] && !ordered[0].retired ? ordered[0] : null;
   }
 
   function simulateFieldRace(horse, race, context) {

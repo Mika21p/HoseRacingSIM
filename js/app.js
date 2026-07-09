@@ -18,7 +18,8 @@
       surface: [],
       distance: [],
       region: [],
-      japanCourse: []
+      japanCourse: [],
+      avoidFatigueRisk: false
     }
   };
 
@@ -83,7 +84,7 @@
   }
 
   function defaultFilters() {
-    return { grade: [], surface: [], distance: [], region: [], japanCourse: [] };
+    return { grade: [], surface: [], distance: [], region: [], japanCourse: [], avoidFatigueRisk: false };
   }
 
   function isMobileLayout() {
@@ -131,7 +132,8 @@
       surface: normalizeFilterGroup(source.surface),
       distance: normalizeFilterGroup(source.distance),
       region,
-      japanCourse
+      japanCourse,
+      avoidFatigueRisk: !!source.avoidFatigueRisk
     };
   }
 
@@ -968,6 +970,14 @@
     saveGame();
   }
 
+  function setRaceFilterToggle(key, checked) {
+    state.filters = normalizeFilters(state.filters);
+    state.filters[key] = !!checked;
+    state.activeFilterGroup = "";
+    refresh();
+    saveGame();
+  }
+
   function clearRaceFilterGroup(group) {
     state.filters = normalizeFilters(state.filters);
     state.filters[group] = [];
@@ -1001,6 +1011,7 @@
     const horseNameLanguageButtons = Array.from(document.querySelectorAll("[data-horse-name-language]"));
     const raceNameModeButtons = Array.from(document.querySelectorAll("[data-race-name-mode]"));
     const raceFilterToggles = Array.from(document.querySelectorAll("[data-race-filter]"));
+    const raceFilterBooleanToggles = Array.from(document.querySelectorAll("[data-race-filter-toggle]"));
     const raceFilterPanels = Array.from(document.querySelectorAll("[data-race-filter-group]"));
     const raceFilterClearButtons = Array.from(document.querySelectorAll("[data-filter-clear]"));
     const raceCardButtons = Array.from(document.querySelectorAll("[data-race-card]"));
@@ -1051,6 +1062,11 @@
     raceFilterToggles.forEach((toggle) => {
       toggle.addEventListener("change", () => {
         setRaceFilterValue(toggle.dataset.raceFilter, toggle.value, toggle.checked);
+      });
+    });
+    raceFilterBooleanToggles.forEach((toggle) => {
+      toggle.addEventListener("change", () => {
+        setRaceFilterToggle(toggle.dataset.raceFilterToggle, toggle.checked);
       });
     });
     raceFilterPanels.forEach((panel) => {
