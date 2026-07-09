@@ -1145,8 +1145,8 @@
                 <h3>${raceName}</h3>
               </div>
               <div class="history-card-actions">
-                <button class="secondary history-record-toggle" type="button" data-history-card-record-toggle="${recordKey}" aria-expanded="${isCardExpanded ? "true" : "false"}" aria-label="${cardToggleLabel}" title="${cardToggleLabel}">${isCardExpanded ? "收起详情" : "展开详情"}</button>
-                ${commentText ? `<button class="secondary history-comment-toggle" type="button" data-history-comment-toggle="${recordKey}" aria-expanded="${isCommentExpanded ? "true" : "false"}" aria-label="${commentToggleLabel}" title="${commentToggleLabel}">评语</button>` : ""}
+                <button class="secondary history-record-toggle history-card-action" type="button" data-history-card-record-toggle="${recordKey}" aria-expanded="${isCardExpanded ? "true" : "false"}" aria-label="${cardToggleLabel}" title="${cardToggleLabel}">详</button>
+                ${commentText ? `<button class="secondary history-comment-toggle history-card-action" type="button" data-history-comment-toggle="${recordKey}" aria-expanded="${isCommentExpanded ? "true" : "false"}" aria-label="${commentToggleLabel}" title="${commentToggleLabel}">评</button>` : ""}
               </div>
             </div>
             <div class="history-card-stats">
