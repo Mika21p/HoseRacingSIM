@@ -897,9 +897,19 @@ button.secondary {
 }
 
 .current-time-block strong {
+  display: block;
   color: #fff4d6;
   font-size: 26px;
   line-height: 1.15;
+}
+
+.current-time-block em {
+  display: block;
+  margin-top: 4px;
+  color: #ffcfb7;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 800;
 }
 
 .feedback-panel[hidden] {

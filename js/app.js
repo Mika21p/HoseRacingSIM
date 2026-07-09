@@ -44,7 +44,9 @@
 
   function refresh() {
     if (state.career && ns.RegionRules) ns.RegionRules.ensureCareerState(state.career);
+    const didNormalizeScheduledRace = normalizeScheduledRacePayload(state.career);
     const didClearExpiredRegistration = clearExpiredRegistration();
+    const didMarkTravelPreparation = markScheduledTravelPreparation();
     const app = document.getElementById("app");
     if (app) app.classList.toggle("app-has-career", !!state.career);
     ns.UI.renderHorse(document.getElementById("horsePanel"), state.career, {
@@ -69,7 +71,7 @@
     });
     bindDynamicEvents();
     updateSaveStatus();
-    if (didClearExpiredRegistration) saveGame({ silent: true });
+    if (didNormalizeScheduledRace || didClearExpiredRegistration || didMarkTravelPreparation) saveGame({ silent: true });
   }
 
   function clearExpiredRegistration() {
@@ -205,10 +207,14 @@
     if (!career.currentTime && ns.TimeRules) career.currentTime = ns.TimeRules.startTime();
     if (!Array.isArray(career.races)) career.races = [];
     if (ns.RegionRules && ns.RegionRules.ensureCareerState) ns.RegionRules.ensureCareerState(career);
+    normalizeScheduledRacePayload(career);
     if (!career.injury) career.injury = { active: null, history: [] };
     if (!Array.isArray(career.injury.history)) career.injury.history = [];
     if (ns.RaceProgression && ns.RaceProgression.ensureChallengeState) {
       ns.RaceProgression.ensureChallengeState(career);
+    }
+    if (ns.RaceFatigueRules && ns.RaceFatigueRules.ensureFatigueState) {
+      ns.RaceFatigueRules.ensureFatigueState(career);
     }
     if (ns.AdaptationHintRules && ns.AdaptationHintRules.ensure) {
       ns.AdaptationHintRules.ensure(career);
@@ -571,10 +577,11 @@
     return true;
   }
 
-  function buildRacePayload(selectedRace, schedule, challenge, expedition) {
+  function buildRacePayload(selectedRace, schedule, challenge, expedition, travel) {
     const opponent = ns.RaceRules.chooseOpponent(selectedRace);
     const payload = { race: selectedRace, schedule, opponent, year: opponent.year || null };
     if (expedition) payload.expedition = expedition;
+    if (travel) payload.travel = { ...travel };
     if (challenge) {
       payload.challenge = {
         key: challenge.key,
@@ -619,8 +626,83 @@
     );
   }
 
+  function normalizeScheduledRacePayload(career) {
+    const payload = career && career.scheduledRace;
+    if (!payload || !payload.race || !payload.schedule || payload.travel) return false;
+    if (!ns.RegionRules || !ns.RegionRules.buildTravel || !ns.RegionRules.isTravelScheduleReachable) return false;
+    if (!ns.RegionRules.isTravelScheduleReachable(career, payload.race, payload.schedule)) return false;
+    const travel = ns.RegionRules.buildTravel(career, payload.race, payload.schedule);
+    if (!travel || !travel.active) return false;
+    payload.travel = travel;
+    return true;
+  }
+
+  function confirmFatigueRisk(plan) {
+    if (!state.career || !ns.RaceFatigueRules || !ns.RaceFatigueRules.previewFatigueRisk) return true;
+    const risk = ns.RaceFatigueRules.previewFatigueRisk(state.career, plan.race, plan.schedule);
+    if (!risk || !risk.eligible) return true;
+    const gapText = risk.gapTurns === 1 ? "仅半个月" : "约一个月";
+    return window.confirm(
+      `上一场距离本场${gapText}，存在疲劳作战风险。\n仍要报名这场比赛吗？`
+    );
+  }
+
+  function confirmTravelPreparation(plan) {
+    const travel = plan && plan.travel;
+    if (!travel || !travel.active) return true;
+    const prepText = travel.prepLabel ? `\n检疫预备回合：${travel.prepLabel}` : "";
+    return window.confirm(
+      `这场比赛需要从${travel.fromLabel}前往${travel.toLabel}，并提前 1 个回合进行远征+检疫。${prepText}\n进入检疫回合后将不能取消本场比赛。\n确定报名吗？`
+    );
+  }
+
+  function isScheduledTravelLocked(payload) {
+    if (!state.career || !payload || !ns.RegionRules || !ns.RegionRules.isTravelPreparationLocked) return false;
+    return ns.RegionRules.isTravelPreparationLocked(state.career, payload);
+  }
+
+  function markScheduledTravelPreparation() {
+    if (!state.career || !state.career.scheduledRace || !ns.RegionRules || !ns.RegionRules.markTravelPreparation) {
+      return false;
+    }
+    const payload = state.career.scheduledRace;
+    const travel = payload.travel;
+    const wasPrepared = !!(travel && travel.prepared);
+    const beforeLocation = state.career.travel && state.career.travel.currentRegionId;
+    const marked = ns.RegionRules.markTravelPreparation(state.career, payload);
+    const afterLocation = state.career.travel && state.career.travel.currentRegionId;
+    return !!(marked && marked.active && ((!wasPrepared && marked.prepared) || beforeLocation !== afterLocation));
+  }
+
+  function lockScheduledPreRaceCondition(payload) {
+    if (!state.career || !payload || !ns.RaceFatigueRules || !ns.RaceFatigueRules.lockPreRaceCondition) {
+      return payload ? payload.preRaceCondition || null : null;
+    }
+    return ns.RaceFatigueRules.lockPreRaceCondition(state.career, payload);
+  }
+
+  function hasTriggeredPreRaceFatigue(condition) {
+    return !!(condition && condition.fatigue && condition.fatigue.triggered);
+  }
+
+  function cancelScheduledRaceForPreRaceCondition(payload) {
+    ns.CareerRules.advanceToTime(state.career, payload.schedule);
+    if (ns.RaceFatigueRules && ns.RaceFatigueRules.recordPreRaceCancellation) {
+      ns.RaceFatigueRules.recordPreRaceCancellation(state.career, payload);
+    } else if (payload.schedule && Number.isFinite(payload.schedule.index)) {
+      state.career.lastRaceCancelIndex = payload.schedule.index;
+    }
+    state.career.scheduledRace = null;
+    refresh();
+    saveGame();
+  }
+
   function completeRace(payload, jockeyId) {
     const playerJockey = ns.JockeyRules.describePlayerJockey(jockeyId);
+    if (!payload.preRaceCondition) lockScheduledPreRaceCondition(payload);
+    if (payload.travel && payload.travel.active && ns.RegionRules && ns.RegionRules.markTravelPreparation) {
+      ns.RegionRules.markTravelPreparation(state.career, payload);
+    }
     ns.CareerRules.advanceToSchedule(state.career, payload.schedule);
     const maturity = ns.MaturityRules.evaluate(
       state.career.horse,
@@ -632,9 +714,11 @@
       playerJockey,
       currentTime: state.career.currentTime,
       maturityDecline: state.career.maturity.decline,
-      maturity
+      maturity,
+      preRaceCondition: payload.preRaceCondition || null
     });
     result.hidden.expedition = payload.expedition || null;
+    result.hidden.travel = payload.travel || null;
     ns.CareerRules.addRace(state.career, result, payload.schedule);
     state.career.scheduledRace = null;
     if (state.career.forcedRetirement) {
@@ -661,11 +745,13 @@
     if (ns.CareerRules.isResting(state.career)) return;
     const plan = selectedRacePlan();
     if (!plan) return;
-    if (!ns.TimeRules.isReachableSchedule(state.career, plan.schedule)) return;
+    if (!ns.TimeRules.isReachableSchedule(state.career, plan.schedule, plan.race)) return;
     const selectedRace = plan.race;
     const schedule = plan.schedule;
     const challenge = plan.challenge || null;
     if (challenge && !confirmChallengeRegistration(plan)) return;
+    if (!confirmTravelPreparation(plan)) return;
+    if (!confirmFatigueRisk(plan)) return;
     if (!shouldConfirmLongGap(schedule)) return;
     if (challenge) {
       const excluded = rollChallengeExclusion(challenge);
@@ -677,8 +763,9 @@
         return;
       }
     }
-    const payload = buildRacePayload(selectedRace, schedule, challenge, plan.expedition || null);
+    const payload = buildRacePayload(selectedRace, schedule, challenge, plan.expedition || null, plan.travel || null);
     state.career.scheduledRace = payload;
+    markScheduledTravelPreparation();
     refresh();
     saveGame();
   }
@@ -690,6 +777,16 @@
     if (state.career.currentTime.index > payload.schedule.index) {
       state.career.scheduledRace = null;
       return false;
+    }
+    const preRaceCondition = lockScheduledPreRaceCondition(payload);
+    if (hasTriggeredPreRaceFatigue(preRaceCondition)) {
+      saveGame({ silent: true });
+      if (isScheduledTravelLocked(payload)) {
+        window.alert("本场赛前状态不佳。\n由于已经进入远征检疫中，本场比赛不能取消。");
+      } else if (!window.confirm("本场赛前状态不佳。\n是否仍然出赛？")) {
+        cancelScheduledRaceForPreRaceCondition(payload);
+        return true;
+      }
     }
     completeRace(payload, state.career.mainJockeyId);
     return true;
@@ -707,6 +804,13 @@
     if (triggerScheduledRace()) return;
     const next = ns.TimeRules.nextTurn(state.career.currentTime);
     ns.CareerRules.advanceToTime(state.career, next);
+    if (markScheduledTravelPreparation()
+      && state.career.scheduledRace
+      && state.career.currentTime.index < state.career.scheduledRace.schedule.index) {
+      refresh();
+      saveGame();
+      return;
+    }
     if (triggerScheduledRace()) return;
     refresh();
     saveGame();
@@ -714,6 +818,10 @@
 
   function cancelRegistration() {
     if (!state.career || state.career.retired) return;
+    if (isScheduledTravelLocked(state.career.scheduledRace)) {
+      window.alert("当前已进入远征检疫中，不能取消本场比赛。");
+      return;
+    }
     state.career.scheduledRace = null;
     refresh();
     saveGame();

@@ -25,8 +25,26 @@
     }
   };
 
+  const TRAVEL_REGIONS = {
+    japan: { id: "japan", label: "日本", raceRegions: ["日本"] },
+    america: { id: "america", label: "美国", raceRegions: ["美国"] },
+    europe: { id: "europe", label: "欧洲", raceRegions: ["欧洲"] },
+    middleEast: { id: "middleEast", label: "中东", raceRegions: ["中东"] },
+    hongKong: { id: "hongKong", label: "香港", raceRegions: ["香港"] },
+    australia: { id: "australia", label: "澳洲", raceRegions: ["澳洲"] },
+    argentina: { id: "argentina", label: "阿根廷", raceRegions: ["阿根廷"] },
+    other: { id: "other", label: "其他地区", raceRegions: [] }
+  };
+
   const RACE_REGION_MAP = Object.keys(REGIONS).reduce((items, regionId) => {
     REGIONS[regionId].raceRegions.forEach((raceRegion) => {
+      items[raceRegion] = regionId;
+    });
+    return items;
+  }, {});
+
+  const TRAVEL_REGION_MAP = Object.keys(TRAVEL_REGIONS).reduce((items, regionId) => {
+    TRAVEL_REGIONS[regionId].raceRegions.forEach((raceRegion) => {
       items[raceRegion] = regionId;
     });
     return items;
@@ -47,6 +65,22 @@
     return REGIONS[regionId] ? regionId : "japan";
   }
 
+  function stableToTravelRegionId(regionId) {
+    if (regionId === "northAmerica") return "america";
+    if (regionId === "europe") return "europe";
+    return "japan";
+  }
+
+  function normalizeTravelRegionId(regionId) {
+    if (TRAVEL_REGIONS[regionId]) return regionId;
+    if (REGIONS[regionId]) return stableToTravelRegionId(regionId);
+    return "japan";
+  }
+
+  function getTravelRegion(regionId) {
+    return TRAVEL_REGIONS[normalizeTravelRegionId(regionId)] || TRAVEL_REGIONS.japan;
+  }
+
   function regionIdForTrainer(trainer) {
     if (!trainer) return "japan";
     if (trainer.regionId && REGIONS[trainer.regionId]) return trainer.regionId;
@@ -59,6 +93,16 @@
 
   function getRaceSurfaceRegion(race) {
     return (race && race.surfaceRegion) || "日本";
+  }
+
+  function getRaceTravelRegionId(race) {
+    return TRAVEL_REGION_MAP[getRaceSurfaceRegion(race)] || "other";
+  }
+
+  function getRaceTravelRegionLabel(race) {
+    const regionId = getRaceTravelRegionId(race);
+    if (TRAVEL_REGIONS[regionId] && regionId !== "other") return TRAVEL_REGIONS[regionId].label;
+    return getRaceSurfaceRegion(race);
   }
 
   function getRaceRegionId(race) {
@@ -79,6 +123,26 @@
 
   function getStableRegionLabel(career) {
     return getRegion(getStableRegionId(career)).label;
+  }
+
+  function lastRaceTravelRegionId(career) {
+    const records = career && Array.isArray(career.races) ? career.races : [];
+    for (let index = records.length - 1; index >= 0; index -= 1) {
+      const record = records[index];
+      const race = record && record.hidden && record.hidden.race;
+      if (race) return getRaceTravelRegionId(race);
+    }
+    return "";
+  }
+
+  function getCurrentLocationId(career) {
+    const travelRegionId = career && career.travel && career.travel.currentRegionId;
+    if (travelRegionId && TRAVEL_REGIONS[travelRegionId]) return travelRegionId;
+    return stableToTravelRegionId(getStableRegionId(career));
+  }
+
+  function getCurrentLocationLabel(career) {
+    return getTravelRegion(getCurrentLocationId(career)).label;
   }
 
   function getOriginalRegionId(career) {
@@ -167,11 +231,96 @@
     };
   }
 
+  function minTravelRaceIndex(career, race) {
+    const currentIndex = career && career.currentTime && Number.isFinite(career.currentTime.index)
+      ? career.currentTime.index
+      : 0;
+    const fromRegionId = getCurrentLocationId(career);
+    const toRegionId = getRaceTravelRegionId(race);
+    if (fromRegionId === toRegionId) return currentIndex;
+    const lastRaceMin = career && career.lastRaceIndex != null ? career.lastRaceIndex + 2 : currentIndex + 1;
+    return Math.max(currentIndex + 1, lastRaceMin);
+  }
+
+  function isTravelScheduleReachable(career, race, schedule) {
+    if (!schedule || !Number.isFinite(schedule.index)) return false;
+    return schedule.index >= minTravelRaceIndex(career, race);
+  }
+
+  function buildTravel(career, race, schedule) {
+    ensureCareerState(career);
+    const fromRegionId = getCurrentLocationId(career);
+    const toRegionId = getRaceTravelRegionId(race);
+    if (fromRegionId === toRegionId) return null;
+    const prepIndex = schedule && Number.isFinite(schedule.index) ? schedule.index - 1 : null;
+    const prepTime = prepIndex != null && ns.TimeRules && ns.TimeRules.fromIndex
+      ? ns.TimeRules.fromIndex(prepIndex)
+      : null;
+    return {
+      active: true,
+      fromRegionId,
+      toRegionId,
+      fromLabel: getTravelRegion(fromRegionId).label,
+      toLabel: getRaceTravelRegionLabel(race),
+      prepIndex,
+      prepLabel: prepTime && ns.TimeRules && ns.TimeRules.formatAgeMonth
+        ? ns.TimeRules.formatAgeMonth(prepTime)
+        : "",
+      prepared: false,
+      locked: false
+    };
+  }
+
   function decoratePlan(career, plan) {
     return {
       ...plan,
-      expedition: buildExpedition(career, plan.race)
+      expedition: buildExpedition(career, plan.race),
+      travel: buildTravel(career, plan.race, plan.schedule)
     };
+  }
+
+  function isTravelPreparationLocked(career, payload) {
+    const travel = payload && payload.travel;
+    if (!travel || !travel.active) return false;
+    if (travel.locked || travel.prepared) return true;
+    const currentIndex = career && career.currentTime && Number.isFinite(career.currentTime.index)
+      ? career.currentTime.index
+      : null;
+    return currentIndex != null && Number.isFinite(travel.prepIndex) && currentIndex >= travel.prepIndex;
+  }
+
+  function markTravelPreparation(career, payload) {
+    const travel = payload && payload.travel;
+    if (!travel || !travel.active) return null;
+    const currentIndex = career && career.currentTime && Number.isFinite(career.currentTime.index)
+      ? career.currentTime.index
+      : null;
+    if (currentIndex == null || !Number.isFinite(travel.prepIndex) || currentIndex < travel.prepIndex) {
+      return travel;
+    }
+    if (!travel.prepared) {
+      travel.prepared = true;
+      travel.locked = true;
+      travel.preparedAtIndex = currentIndex;
+      travel.preparedAtLabel = ns.TimeRules && ns.TimeRules.formatAgeMonth
+        ? ns.TimeRules.formatAgeMonth(career.currentTime)
+        : "";
+    }
+    ensureCareerState(career);
+    career.travel.currentRegionId = normalizeTravelRegionId(travel.toRegionId);
+    career.travel.currentLabel = getTravelRegion(career.travel.currentRegionId).label;
+    return travel;
+  }
+
+  function completeTravelAfterRace(career, race, payload) {
+    ensureCareerState(career);
+    const toRegionId = getRaceTravelRegionId(race);
+    career.travel.currentRegionId = normalizeTravelRegionId(toRegionId);
+    career.travel.currentLabel = getRaceTravelRegionLabel(race);
+    if (payload && payload.travel && payload.travel.active) {
+      payload.travel.completed = true;
+    }
+    return career.travel;
   }
 
   function transferTargetRegionId(career) {
@@ -229,6 +378,19 @@
       : {};
     if (!Array.isArray(career.expedition.history)) career.expedition.history = [];
 
+    const inferredTravelRegionId = lastRaceTravelRegionId(career)
+      || stableToTravelRegionId(currentRegionId);
+    const travelRegionId = normalizeTravelRegionId(
+      career.travel && career.travel.currentRegionId
+        || inferredTravelRegionId
+    );
+    career.travel = career.travel && typeof career.travel === "object"
+      ? career.travel
+      : {};
+    career.travel.currentRegionId = travelRegionId;
+    career.travel.currentLabel = getTravelRegion(travelRegionId).label;
+    if (!Array.isArray(career.travel.history)) career.travel.history = [];
+
     return career;
   }
 
@@ -256,19 +418,28 @@
       timeLabel
     });
     if (career.horse) career.horse.currentRegionId = resolvedTargetRegionId;
+    career.travel.currentRegionId = stableToTravelRegionId(resolvedTargetRegionId);
+    career.travel.currentLabel = getTravelRegion(career.travel.currentRegionId).label;
     return { ok: true, fromRegionId, toRegionId: resolvedTargetRegionId };
   }
 
   ns.RegionRules = {
     REGIONS,
+    TRAVEL_REGIONS,
     GRADED_CLASSES,
     getRegion,
     normalizeRegionId,
+    normalizeTravelRegionId,
+    getTravelRegion,
     regionIdForTrainer,
     getRaceRegionId,
     getRaceRegionLabel,
+    getRaceTravelRegionId,
+    getRaceTravelRegionLabel,
     getStableRegionId,
     getStableRegionLabel,
+    getCurrentLocationId,
+    getCurrentLocationLabel,
     getOriginalRegionId,
     getOriginalRegionLabel,
     isWesternCareer,
@@ -280,7 +451,13 @@
     isExpeditionRace,
     isExpeditionVisible,
     buildExpedition,
+    minTravelRaceIndex,
+    isTravelScheduleReachable,
+    buildTravel,
     decoratePlan,
+    isTravelPreparationLocked,
+    markTravelPreparation,
+    completeTravelAfterRace,
     transferTargetRegionId,
     canTransfer,
     ensureCareerState,

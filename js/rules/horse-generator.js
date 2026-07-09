@@ -701,7 +701,8 @@
     const trackCondition = opts.trackCondition || "良";
     const heavyMod = getHeavyMod(horse.heavyType, trackCondition);
     const temperamentMod = opts.temperamentMod || ns.TemperamentRules.rollRaceMod(horse.temperamentLabel);
-    const rawAbility = maturity.adjustedStrength + surfaceMod + courseMod + heavyMod + temperamentMod.mod - distancePenalty;
+    const racePenaltyMod = Number.isFinite(opts.racePenaltyMod) ? opts.racePenaltyMod : 0;
+    const rawAbility = maturity.adjustedStrength + surfaceMod + courseMod + heavyMod + temperamentMod.mod - distancePenalty + racePenaltyMod;
     const ability = Math.max(MIN_EFFECTIVE_RACE_ABILITY, rawAbility);
     return {
       ability,
@@ -717,7 +718,8 @@
       courseMod,
       distancePenalty,
       trackCondition,
-      heavyMod
+      heavyMod,
+      racePenaltyMod
     };
   }
 

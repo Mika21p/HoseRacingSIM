@@ -162,6 +162,7 @@
       "two-win": [64, 66],
       "three-win": [66, 68],
       op: [68, 72],
+      listed: [68, 72],
       g3: [70, 74],
       g2: [72, 76]
     };
@@ -256,9 +257,9 @@
     return createGeneratedOpponent(race, null, "fallback");
   }
 
-  function opponentEntry(opponent) {
+  function opponentEntry(opponent, key) {
     return {
-      key: "opponent",
+      key: key || "opponent",
       name: opponent.name || "随机对手",
       ability: opponent.ability,
       jockeyId: opponent.jockeyId,
@@ -268,18 +269,140 @@
     };
   }
 
-  function simulateRace(horse, race, options) {
+  const CONDITION_RACE_CLASSES = ["new", "maiden", "one-win", "two-win", "three-win"];
+  const FIELD_RACE_CLASSES = ["op", "listed", "g3", "jpn3", "g2", "jpn2", "g1", "jpn1"];
+  const FIELD_OPPONENT_RIDER_ABILITY = 60;
+  const LOWER_FIELD_OPPONENT_ABILITY = {
+    op: 66,
+    listed: 66,
+    g3: 68,
+    jpn3: 66,
+    g2: 70,
+    jpn2: 68,
+    g1: 72,
+    jpn1: 70
+  };
+
+  function usesFieldRanking(race) {
+    if (!race || CONDITION_RACE_CLASSES.includes(race.raceClass)) return false;
+    return FIELD_RACE_CLASSES.includes(race.raceClass);
+  }
+
+  function lowerFieldOpponentAbility(race) {
+    if (Object.prototype.hasOwnProperty.call(LOWER_FIELD_OPPONENT_ABILITY, race.raceClass)) {
+      return LOWER_FIELD_OPPONENT_ABILITY[race.raceClass];
+    }
+    return getBaseGeneratedOpponentRange(race)[0];
+  }
+
+  function createHiddenFieldOpponent(race, ability, group, index) {
+    return {
+      id: `${race.id}-hidden-${group}-${index}`,
+      name: "",
+      year: null,
+      ability,
+      jockeyId: "hidden-field-jockey",
+      jockeyName: "隐藏对手",
+      riderAbility: FIELD_OPPONENT_RIDER_ABILITY,
+      trackCondition: "",
+      historical: false,
+      hiddenFieldOpponent: true,
+      generatedReason: `hidden-${group}`,
+      generatedRange: [ability, ability],
+      generatedUpgraded: false
+    };
+  }
+
+  function createHiddenFieldOpponents(race) {
+    const currentAbility = getBaseGeneratedOpponentRange(race)[0];
+    const lowerAbility = lowerFieldOpponentAbility(race);
+    return [
+      createHiddenFieldOpponent(race, currentAbility, "current", 1),
+      createHiddenFieldOpponent(race, currentAbility, "current", 2),
+      createHiddenFieldOpponent(race, lowerAbility, "lower", 1),
+      createHiddenFieldOpponent(race, lowerAbility, "lower", 2)
+    ];
+  }
+
+  function orderedFieldResults(results) {
+    return results
+      .map((result, index) => ({ result, index, tieBreaker: R.rollRange(1, 1000000) }))
+      .sort((a, b) => {
+        if (a.result.retired !== b.result.retired) return a.result.retired ? 1 : -1;
+        if (a.result.retired && b.result.retired) return a.index - b.index;
+        if (a.result.total !== b.result.total) return b.result.total - a.result.total;
+        if (a.tieBreaker !== b.tieBreaker) return b.tieBreaker - a.tieBreaker;
+        return a.index - b.index;
+      })
+      .map((item, index) => {
+        item.result.fieldPosition = index + 1;
+        item.result.fieldTieBreaker = item.tieBreaker;
+        return item.result;
+      });
+  }
+
+  function raceNameSourceFor(race) {
+    return ns.RaceNameRules && ns.RaceNameRules.findRaceById
+      ? ns.RaceNameRules.findRaceById(race.id) || race
+      : race;
+  }
+
+  function raceDisplayNameFor(source, race, mode) {
+    return ns.RaceNameRules ? ns.RaceNameRules.displayName(source, mode) : race.name;
+  }
+
+  function preRaceFatigue(condition) {
+    return condition && condition.fatigue ? condition.fatigue : null;
+  }
+
+  function preRaceAbilityMod(condition) {
+    if (ns.RaceFatigueRules && ns.RaceFatigueRules.abilityMod) {
+      return ns.RaceFatigueRules.abilityMod(condition);
+    }
+    const fatigue = preRaceFatigue(condition);
+    return fatigue && fatigue.triggered ? fatigue.abilityMod || 0 : 0;
+  }
+
+  function preRaceAccidentInjury(condition) {
+    if (ns.RaceFatigueRules && ns.RaceFatigueRules.accidentInjury) {
+      return ns.RaceFatigueRules.accidentInjury(condition);
+    }
+    const fatigue = preRaceFatigue(condition);
+    return fatigue && fatigue.accident ? fatigue.accidentInjury : null;
+  }
+
+  function applyPreRaceAccident(result, condition) {
+    const fatigue = preRaceFatigue(condition);
+    if (!result || !fatigue || !fatigue.triggered || !fatigue.accident) return result;
+    result.retired = true;
+    result.retiredPhase = fatigue.accidentPhase || "末盘";
+    result.total = null;
+    result.fatigueAccident = true;
+    return result;
+  }
+
+  function retirementInjury(result, condition) {
+    if (!result || !result.retired) return null;
+    if (result.fatigueAccident) {
+      return preRaceAccidentInjury(condition);
+    }
+    return ns.InjuryRules ? ns.InjuryRules.rollInjury(result.retiredPhase) : null;
+  }
+
+  function buildRaceContext(horse, race, options) {
     const opts = options || {};
     const opponent = opts.opponent || chooseOpponent(race);
     const trackCondition = opts.trackCondition || opponent.trackCondition || rollTrackCondition();
     const playerJockey = opts.playerJockey || ns.JockeyRules.describePlayerJockey(opts.playerJockeyId || "generic-local");
     const playerRiderAbility = playerJockey.ability || opts.playerRiderAbility || 70;
+    const preRaceCondition = opts.preRaceCondition || null;
     const playerCalc = ns.HorseRules.calcRaceAbility(horse, race, {
       trackCondition,
       currentTime: opts.currentTime,
       maturityDecline: opts.maturityDecline || 0,
       maturity: opts.maturity,
-      temperamentMod: opts.temperamentMod
+      temperamentMod: opts.temperamentMod,
+      racePenaltyMod: preRaceAbilityMod(preRaceCondition)
     });
     const playerEntry = {
       key: "player",
@@ -290,6 +413,24 @@
       riderAbility: playerRiderAbility,
       specialSprint: false
     };
+    return {
+      opts,
+      opponent,
+      trackCondition,
+      playerJockey,
+      playerEntry,
+      playerCalc,
+      preRaceCondition
+    };
+  }
+
+  function simulateDuelRace(horse, race, context) {
+    const opts = context.opts;
+    const opponent = context.opponent;
+    const trackCondition = context.trackCondition;
+    const playerJockey = context.playerJockey;
+    const playerEntry = context.playerEntry;
+    const playerCalc = context.playerCalc;
     const entries = [
       playerEntry,
       opponentEntry(opponent)
@@ -298,6 +439,7 @@
     const initialResults = entries.map(runOneRunner);
     const playerResult = initialResults.find((item) => item.entry.key === "player");
     const initialOpponentResult = initialResults.find((item) => item.entry.key === "opponent");
+    applyPreRaceAccident(playerResult, context.preRaceCondition);
     let competitiveOpponent = opponent;
     let competitiveOpponentResult = initialOpponentResult;
     let replacementOpponent = null;
@@ -356,20 +498,16 @@
         }
       }
     }
-    const injury = playerResult.retired && ns.InjuryRules
-      ? ns.InjuryRules.rollInjury(playerResult.retiredPhase)
-      : null;
-    const raceNameSource = ns.RaceNameRules && ns.RaceNameRules.findRaceById
-      ? ns.RaceNameRules.findRaceById(race.id) || race
-      : race;
+    const injury = retirementInjury(playerResult, context.preRaceCondition);
+    const raceNameSource = raceNameSourceFor(race);
     const marginLabel = createMarginLabel(marginLengths, tieOutcome);
 
     return {
       public: {
         raceId: race.id,
-        raceName: ns.RaceNameRules ? ns.RaceNameRules.displayName(raceNameSource, "zh") : race.name,
-        raceNameZh: ns.RaceNameRules ? ns.RaceNameRules.displayName(raceNameSource, "zh") : race.name,
-        raceNameOriginal: ns.RaceNameRules ? ns.RaceNameRules.displayName(raceNameSource, "original") : race.name,
+        raceName: raceDisplayNameFor(raceNameSource, race, "zh"),
+        raceNameZh: raceDisplayNameFor(raceNameSource, race, "zh"),
+        raceNameOriginal: raceDisplayNameFor(raceNameSource, race, "original"),
         trackCondition,
         rank: playerRank,
         rankLabel: rankLabel(playerRank, playerResult.retired),
@@ -403,6 +541,7 @@
         marginLabel,
         tieOutcome,
         scoreLine: `${finalMark(playerResult)} - ${finalMark(competitiveOpponentResult)}`,
+        preRaceCondition: context.preRaceCondition,
         injury,
         playerCalc,
         opponent: competitiveOpponent,
@@ -413,6 +552,132 @@
         results: ordered
       }
     };
+  }
+
+  function marginReferenceForPlayer(ordered, playerResult) {
+    if (!playerResult || playerResult.retired) return null;
+    const playerIndex = ordered.indexOf(playerResult);
+    if (playerIndex < 0) return null;
+    if (playerIndex === 0) return ordered.find((item) => item !== playerResult && !item.retired) || null;
+    if (playerIndex >= 5) return ordered[4] && !ordered[4].retired ? ordered[4] : ordered[playerIndex - 1];
+    return ordered[playerIndex - 1];
+  }
+
+  function simulateFieldRace(horse, race, context) {
+    const opponent = context.opponent;
+    const trackCondition = context.trackCondition;
+    const playerJockey = context.playerJockey;
+    const playerEntry = context.playerEntry;
+    const playerCalc = context.playerCalc;
+    const fieldOpponents = createHiddenFieldOpponents(race);
+    const entries = [
+      playerEntry,
+      opponentEntry(opponent)
+    ].concat(fieldOpponents.map((fieldOpponent, index) => {
+      return opponentEntry(fieldOpponent, `field-${index + 1}`);
+    }));
+
+    const initialResults = entries.map(runOneRunner);
+    const playerResult = initialResults.find((item) => item.entry.key === "player");
+    const scheduledOpponentResult = initialResults.find((item) => item.entry.key === "opponent");
+    applyPreRaceAccident(playerResult, context.preRaceCondition);
+    const ordered = orderedFieldResults(initialResults);
+    const playerFieldPosition = ordered.indexOf(playerResult) + 1;
+    const opponentFieldPosition = ordered.indexOf(scheduledOpponentResult) + 1;
+    const playerRank = playerResult.retired
+      ? null
+      : (playerFieldPosition <= 5 ? playerFieldPosition : null);
+    const opponentRank = scheduledOpponentResult.retired
+      ? null
+      : (opponentFieldPosition <= 5 ? opponentFieldPosition : null);
+    const pointsPerLength = getPointsPerLength(race.distance);
+    const marginReferenceResult = marginReferenceForPlayer(ordered, playerResult);
+    let scoreDiff = null;
+    let marginLengths = null;
+    let tieOutcome = "";
+
+    if (playerResult && !playerResult.retired && marginReferenceResult && !marginReferenceResult.retired) {
+      scoreDiff = playerResult.total - marginReferenceResult.total;
+      marginLengths = Math.abs(scoreDiff) / pointsPerLength;
+      if (scoreDiff === 0) {
+        tieOutcome = playerFieldPosition === 1 ? "player-win" : "player-loss";
+      }
+    }
+
+    const scheduledScoreDiff = playerResult && scheduledOpponentResult
+      && !playerResult.retired && !scheduledOpponentResult.retired
+      ? playerResult.total - scheduledOpponentResult.total
+      : null;
+    const injury = retirementInjury(playerResult, context.preRaceCondition);
+    const raceNameSource = raceNameSourceFor(race);
+    const marginLabel = createMarginLabel(marginLengths, tieOutcome);
+
+    return {
+      public: {
+        raceId: race.id,
+        raceName: raceDisplayNameFor(raceNameSource, race, "zh"),
+        raceNameZh: raceDisplayNameFor(raceNameSource, race, "zh"),
+        raceNameOriginal: raceDisplayNameFor(raceNameSource, race, "original"),
+        trackCondition,
+        rank: playerRank,
+        rankLabel: rankLabel(playerRank, playerResult.retired),
+        opponentName: opponent.displayName || opponent.name || "",
+        opponentNameZh: opponent.displayNameZh || opponent.displayName || opponent.name || "",
+        opponentNameEn: opponent.displayNameEn || opponent.name || opponent.displayName || "",
+        opponentYear: opponent.year || "",
+        scheduledOpponentRetired: scheduledOpponentResult.retired,
+        playerJockeyName: playerJockey.name,
+        opponentJockeyName: opponent.jockeyName,
+        replacementOpponentJockeyName: "",
+        opponentRank,
+        tieOutcome,
+        deadHeat: false,
+        retired: playerResult.retired,
+        retiredPhase: playerResult.retiredPhase,
+        injury: injury ? {
+          phase: injury.phase,
+          reason: injury.reason,
+          severity: injury.severityLabel,
+          restMonths: injury.restMonths,
+          forcedRetirement: injury.forcedRetirement
+        } : null
+      },
+      hidden: {
+        race,
+        fieldRace: true,
+        fieldSize: ordered.length,
+        playerFieldPosition,
+        opponentFieldPosition,
+        fieldOpponents,
+        fieldResults: ordered,
+        marginReferenceResult,
+        trackCondition,
+        pointsPerLength,
+        scoreDiff,
+        marginLengths,
+        marginLabel,
+        tieOutcome,
+        scoreLine: `${finalMark(playerResult)} - ${finalMark(marginReferenceResult)}`,
+        scheduledScoreDiff,
+        scheduledScoreLine: `${finalMark(playerResult)} - ${finalMark(scheduledOpponentResult)}`,
+        preRaceCondition: context.preRaceCondition,
+        injury,
+        playerCalc,
+        opponent,
+        scheduledOpponent: opponent,
+        scheduledOpponentResult,
+        replacementOpponent: null,
+        replacementResult: null,
+        results: ordered
+      }
+    };
+  }
+
+  function simulateRace(horse, race, options) {
+    const context = buildRaceContext(horse, race, options);
+    return usesFieldRanking(race)
+      ? simulateFieldRace(horse, race, context)
+      : simulateDuelRace(horse, race, context);
   }
 
   ns.RaceRules = {
@@ -427,6 +692,8 @@
     rollTrackCondition,
     getPointsPerLength,
     rollPlacementWhenBehind,
+    usesFieldRanking,
+    createHiddenFieldOpponents,
     getGateResult,
     getPositionResult
   };

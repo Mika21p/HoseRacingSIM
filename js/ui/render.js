@@ -332,7 +332,9 @@
 
   function raceOptionLabel(plan, mode) {
     const challengeLabel = plan.challenge ? "[格上] " : "";
-    const expeditionLabel = plan.expedition && plan.expedition.active ? "[远征] " : "";
+    const expeditionLabel = plan.travel && plan.travel.active
+      ? "[远征+检疫] "
+      : (plan.expedition && plan.expedition.active ? "[远征] " : "");
     return `${expeditionLabel}${challengeLabel}${plan.schedule.label} · ${raceDisplayName(plan.race, mode)} · ${plan.race.grade} · ${plan.race.ageRule}${raceRestrictionLabel(plan.race)} · ${raceSurfaceDistanceLabel(plan.race)} · ${raceVenueLabel(plan.race)}`;
   }
 
@@ -549,8 +551,9 @@
             <span class="race-card-meta">${plan.schedule.label} · ${plan.race.grade}</span>
             <strong>${raceDisplayName(plan.race, mode)}</strong>
             <span>${plan.race.ageRule}${raceRestrictionLabel(plan.race)} · ${raceSurfaceDistanceLabel(plan.race)} · ${raceVenueLabel(plan.race)}</span>
+            ${plan.travel && plan.travel.active && plan.travel.prepLabel ? `<span>检疫预备：${plan.travel.prepLabel}</span>` : ""}
             ${plan.challenge ? `<em>格上</em>` : ""}
-            ${plan.expedition && plan.expedition.active ? `<em>远征</em>` : ""}
+            ${plan.travel && plan.travel.active ? `<em>远征+检疫</em>` : (plan.expedition && plan.expedition.active ? `<em>远征</em>` : "")}
           </button>
         `).join("")}
       </div>
@@ -769,6 +772,9 @@
     const mainJockey = ns.JockeyRules.getJockey(career.mainJockeyId);
     const originalRegionLabel = ns.RegionRules ? ns.RegionRules.getOriginalRegionLabel(career) : "日本";
     const stableRegionLabel = ns.RegionRules ? ns.RegionRules.getStableRegionLabel(career) : originalRegionLabel;
+    const currentLocationLabel = ns.RegionRules && ns.RegionRules.getCurrentLocationLabel
+      ? ns.RegionRules.getCurrentLocationLabel(career)
+      : stableRegionLabel;
     const transfer = ns.RegionRules ? ns.RegionRules.canTransfer(career) : { allowed: false };
     const transferText = transfer.allowed
       ? `<button class="secondary" id="transferStableBtn" type="button" data-transfer-region="${transfer.targetRegionId}">转厩至${transfer.targetLabel}</button>`
@@ -807,6 +813,10 @@
           <span>当前厩舍</span>
           <strong>${stableRegionLabel}</strong>
         </div>
+        <div class="trainer-card trainer-card-location">
+          <span>当前位置</span>
+          <strong>${currentLocationLabel}</strong>
+        </div>
       </div>
       ${transferText ? `<div class="race-row stable-action-row">${transferText}</div>` : ""}
       <div class="trainer-comments" id="trainerComments" ${commentsCollapsed ? "hidden" : ""}>
@@ -824,10 +834,14 @@
   }
 
   function currentTimeBlock(career) {
+    const locationLabel = ns.RegionRules && ns.RegionRules.getCurrentLocationLabel
+      ? ns.RegionRules.getCurrentLocationLabel(career)
+      : "";
     return `
       <div class="current-time-block">
         <span>当前时间</span>
         <strong>${ns.TimeRules.formatAgeMonth(career.currentTime)}</strong>
+        ${locationLabel ? `<em>（位于${locationLabel}）</em>` : ""}
       </div>
     `;
   }
@@ -930,21 +944,29 @@
     if (career.scheduledRace) {
       const payload = career.scheduledRace;
       const race = payload.race;
+      const travel = payload.travel;
+      const travelLocked = ns.RegionRules && ns.RegionRules.isTravelPreparationLocked
+        ? ns.RegionRules.isTravelPreparationLocked(career, payload)
+        : false;
+      const travelNote = travel && travel.active
+        ? `<p class="muted">${travel.fromLabel} → ${travel.toLabel}${travel.prepLabel ? ` · 检疫预备：${travel.prepLabel}` : ""}</p>`
+        : "";
       panel.innerHTML = `
         ${racePanelHeader(career, "下一场比赛")}
         <div class="scheduled-race">
           <span class="badge">已报名</span>
           ${payload.challenge ? `<span class="badge">格上通过</span>` : ""}
-          ${payload.expedition && payload.expedition.active ? `<span class="badge">远征</span>` : ""}
+          ${travel && travel.active ? `<span class="badge">${travelLocked ? "远征检疫中" : "需远征检疫"}</span>` : (payload.expedition && payload.expedition.active ? `<span class="badge">远征</span>` : "")}
           <h2>${payload.schedule.label} · ${raceDisplayName(race, raceNameMode)}</h2>
           <p>${race.grade} · ${race.ageRule}${raceRestrictionLabel(race)} · ${raceSurfaceDistanceLabel(race)} · ${raceVenueLabel(race)}</p>
+          ${travelNote}
         </div>
         <div class="race-row">
           <button id="nextTurnBtn">下一回合</button>
-          <button class="secondary" id="cancelRegistrationBtn">取消报名</button>
+          ${travelLocked ? "" : `<button class="secondary" id="cancelRegistrationBtn">取消报名</button>`}
           <button class="secondary" id="retireBtn">退役</button>
         </div>
-        <p class="muted">到达报名赛事回合时会自动进行比赛。</p>
+        <p class="muted">${travelLocked ? "正在远征检疫中，本场比赛不能取消。" : "到达报名赛事回合时会自动进行比赛。"}</p>
       `;
       return;
     }
@@ -1015,7 +1037,9 @@
       const opponentName = recordOpponentName(item, horseNameLanguage);
       const opponent = opponentName ? `${opponentYear}${opponentName}` : "随机对手";
       const opponentJockey = item.public.opponentJockeyName || "";
-      const replacementNote = item.public.scheduledOpponentRetired ? " 退赛（随机对手递补）" : "";
+      const replacementNote = item.public.scheduledOpponentRetired
+        ? ((item.hidden && item.hidden.fieldRace) ? " 退赛" : " 退赛（随机对手递补）")
+        : "";
       const retired = item.public.retired ? ` · ${item.public.retiredPhase}退赛` : "";
       const injuryText = item.public.injury && item.public.injury.label ? ` · ${item.public.injury.label}` : "";
       const isDeadHeat = item.public.deadHeat

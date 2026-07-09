@@ -73,11 +73,16 @@
   function minAvailableRaceIndex(career) {
     const currentIndex = career.currentTime ? career.currentTime.index : startTime().index;
     const raceCooldownIndex = career.lastRaceIndex == null ? currentIndex : career.lastRaceIndex + 1;
-    return Math.max(currentIndex, raceCooldownIndex);
+    const cancelCooldownIndex = career.lastRaceCancelIndex == null ? currentIndex : career.lastRaceCancelIndex + 1;
+    return Math.max(currentIndex, raceCooldownIndex, cancelCooldownIndex);
   }
 
-  function isReachableSchedule(career, schedule) {
-    return !!schedule && schedule.index >= minAvailableRaceIndex(career);
+  function isReachableSchedule(career, schedule, race) {
+    if (!schedule || schedule.index < minAvailableRaceIndex(career)) return false;
+    if (race && ns.RegionRules && ns.RegionRules.isTravelScheduleReachable) {
+      return ns.RegionRules.isTravelScheduleReachable(career, race, schedule);
+    }
+    return true;
   }
 
   function resolveNextRaceDate(career, race) {
@@ -91,6 +96,17 @@
       if (!isAgeEligible(age, race.ageRestriction)) continue;
       const index = toIndex(age, raceMonth, raceHalf);
       if (index < minIndex) continue;
+      const schedule = {
+        age,
+        month: raceMonth,
+        half: raceHalf,
+        index,
+        label: formatAgeHalf({ age, month: raceMonth, half: raceHalf })
+      };
+      if (ns.RegionRules && ns.RegionRules.isTravelScheduleReachable
+        && !ns.RegionRules.isTravelScheduleReachable(career, race, schedule)) {
+        continue;
+      }
       return {
         age,
         month: raceMonth,
@@ -119,7 +135,7 @@
       : (ns.RaceProgression ? ns.RaceProgression.filterPlans(career, plans) : plans);
     const locked = ns.DebutLockRules ? ns.DebutLockRules.filterPlans(career, progressed) : progressed;
     return locked
-      .filter((plan) => isReachableSchedule(career, plan.schedule))
+      .filter((plan) => isReachableSchedule(career, plan.schedule, plan.race))
       .map((plan) => (ns.RegionRules ? ns.RegionRules.decoratePlan(career, plan) : plan));
   }
 

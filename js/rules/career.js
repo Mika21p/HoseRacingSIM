@@ -19,6 +19,7 @@
       mainJockeyId: horse.mainJockeyId || "take-yutaka",
       currentTime: start,
       lastRaceIndex: null,
+      lastRaceCancelIndex: null,
       scheduledRace: null,
       injury: {
         active: null,
@@ -33,6 +34,15 @@
       expedition: {
         history: []
       },
+      travel: {
+        currentRegionId: ns.RegionRules && ns.RegionRules.getCurrentLocationId
+          ? ns.RegionRules.getCurrentLocationId({ stable: { regionId }, horse })
+          : regionId,
+        currentLabel: ns.RegionRules && ns.RegionRules.getTravelRegion
+          ? ns.RegionRules.getTravelRegion(regionId).label
+          : "日本",
+        history: []
+      },
       challenge: ns.RaceProgression && ns.RaceProgression.createChallengeState
         ? ns.RaceProgression.createChallengeState()
         : { age2Used: 0, age3SpringUsed: 0, exclusions: [] },
@@ -44,6 +54,8 @@
       races: [],
       retired: false
     };
+    if (ns.RegionRules) ns.RegionRules.ensureCareerState(career);
+    if (ns.RaceFatigueRules) ns.RaceFatigueRules.ensureFatigueState(career);
     if (ns.AdaptationHintRules) ns.AdaptationHintRules.ensure(career);
     return career;
   }
@@ -188,6 +200,19 @@
         timeLabel: raceResult.public.timeLabel || "",
         scheduleIndex: schedule ? schedule.index : null
       });
+    }
+    if (ns.RegionRules && ns.RegionRules.completeTravelAfterRace && raceResult.hidden && raceResult.hidden.race) {
+      const travel = raceResult.hidden.travel || null;
+      ns.RegionRules.completeTravelAfterRace(career, raceResult.hidden.race, raceResult.hidden);
+      if (travel && travel.active && career.travel && Array.isArray(career.travel.history)) {
+        career.travel.history.push({
+          ...travel,
+          raceId: raceResult.hidden.race.id || "",
+          raceName: raceResult.public.raceName || "",
+          timeLabel: raceResult.public.timeLabel || "",
+          scheduleIndex: schedule ? schedule.index : null
+        });
+      }
     }
     career.races.push({
       public: raceResult.public,
