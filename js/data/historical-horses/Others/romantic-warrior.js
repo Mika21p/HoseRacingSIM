@@ -49,23 +49,9 @@
         "finish": 1
       },
       {
-        "raceId": "jebel-hatta",
-        "year": 2024,
-        "ability": 91,
-        "jockeyId": "james-mcdonald",
-        "finish": 1
-      },
-      {
         "raceId": "hong-kong-gold-cup",
         "year": 2024,
         "ability": 88,
-        "jockeyId": "james-mcdonald",
-        "finish": 1
-      },
-      {
-        "raceId": "dubai-turf",
-        "year": 2024,
-        "ability": 91,
         "jockeyId": "james-mcdonald",
         "finish": 1
       },
@@ -87,6 +73,13 @@
         "raceId": "hong-kong-cup",
         "year": 2024,
         "ability": 89,
+        "jockeyId": "james-mcdonald",
+        "finish": 1
+      },
+      {
+        "raceId": "jebel-hatta",
+        "year": 2025,
+        "ability": 91,
         "jockeyId": "james-mcdonald",
         "finish": 1
       },
@@ -113,6 +106,13 @@
       },
       {
         "raceId": "hong-kong-queen-elizabeth-ii-cup",
+        "year": 2026,
+        "ability": 89,
+        "jockeyId": "james-mcdonald",
+        "finish": 1
+      },
+      {
+        "raceId": "champions-chater-cup",
         "year": 2026,
         "ability": 89,
         "jockeyId": "james-mcdonald",

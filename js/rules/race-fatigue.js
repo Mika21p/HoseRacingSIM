@@ -7,6 +7,7 @@
   const MAX_PROBABILITY = 0.85;
   const TRIPLE_CROWN_MULTIPLIER = 0.55;
   const TRIPLE_CROWN_MIN_PROBABILITY = 0.08;
+  const PRIORITY_ENTRY_REDUCTION_MULTIPLIER = 0.5;
 
   const BASE_PROBABILITY = {
     1: 0.35,
@@ -118,16 +119,28 @@
     return TRIPLE_CROWN_RACES.includes(previousId) && TRIPLE_CROWN_RACES.includes(currentId);
   }
 
+  function priorityEntryFromContext(context) {
+    return context && context.priorityEntry ? context.priorityEntry : null;
+  }
+
+  function matchesPriorityEntrySource(career, priorityEntry, previousId) {
+    if (!priorityEntry || !priorityEntry.sourceRaceId || priorityEntry.sourceRaceId !== previousId) return false;
+    if (priorityEntry.sourceScheduleIndex == null) return true;
+    return career && career.lastRaceIndex === priorityEntry.sourceScheduleIndex;
+  }
+
   function gapTurns(career, schedule) {
     if (!career || !schedule || career.lastRaceIndex == null) return null;
     return schedule.index - career.lastRaceIndex;
   }
 
-  function probabilityFor(career, race, schedule) {
+  function probabilityFor(career, race, schedule, context) {
     const fatigue = ensureFatigueState(career);
     const gap = gapTurns(career, schedule);
     const prevClass = previousRaceClass(career);
     const prevId = previousRaceId(career);
+    const priorityEntry = priorityEntryFromContext(context);
+    const priorityEntryMatchesPrevious = matchesPriorityEntrySource(career, priorityEntry, prevId);
     if (gap !== 1 && gap !== 2) {
       return {
         eligible: false,
@@ -136,7 +149,24 @@
         pressureBefore: fatigue.pressure,
         previousRaceClass: prevClass,
         previousRaceId: prevId,
-        tripleCrownExemption: false
+        tripleCrownExemption: false,
+        priorityEntryExemption: false,
+        priorityEntryReduction: false,
+        priorityEntrySourceRaceId: priorityEntry ? priorityEntry.sourceRaceId || "" : ""
+      };
+    }
+    if (priorityEntryMatchesPrevious && gap === 2) {
+      return {
+        eligible: false,
+        probability: 0,
+        gapTurns: gap,
+        pressureBefore: fatigue.pressure,
+        previousRaceClass: prevClass,
+        previousRaceId: prevId,
+        tripleCrownExemption: false,
+        priorityEntryExemption: true,
+        priorityEntryReduction: false,
+        priorityEntrySourceRaceId: priorityEntry.sourceRaceId || ""
       };
     }
     if (isConditionClass(prevClass) && gap !== 1) {
@@ -147,18 +177,25 @@
         pressureBefore: fatigue.pressure,
         previousRaceClass: prevClass,
         previousRaceId: prevId,
-        tripleCrownExemption: false
+        tripleCrownExemption: false,
+        priorityEntryExemption: false,
+        priorityEntryReduction: false,
+        priorityEntrySourceRaceId: priorityEntry ? priorityEntry.sourceRaceId || "" : ""
       };
     }
 
     const currentId = race && race.id ? race.id : "";
     const tripleCrownExemption = isTripleCrownPair(prevId, currentId);
+    const priorityEntryReduction = priorityEntryMatchesPrevious && gap === 1;
     let probability = (BASE_PROBABILITY[gap] || 0)
       + (CLASS_MOD[prevClass] || 0)
       + fatigue.pressure * 0.12;
     probability = clamp(probability, MIN_PROBABILITY, MAX_PROBABILITY);
     if (tripleCrownExemption) {
       probability = Math.max(TRIPLE_CROWN_MIN_PROBABILITY, probability * TRIPLE_CROWN_MULTIPLIER);
+    }
+    if (priorityEntryReduction) {
+      probability *= PRIORITY_ENTRY_REDUCTION_MULTIPLIER;
     }
 
     return {
@@ -168,12 +205,15 @@
       pressureBefore: fatigue.pressure,
       previousRaceClass: prevClass,
       previousRaceId: prevId,
-      tripleCrownExemption
+      tripleCrownExemption,
+      priorityEntryExemption: false,
+      priorityEntryReduction,
+      priorityEntrySourceRaceId: priorityEntry ? priorityEntry.sourceRaceId || "" : ""
     };
   }
 
-  function previewFatigueRisk(career, race, schedule) {
-    return probabilityFor(career, race, schedule);
+  function previewFatigueRisk(career, race, schedule, context) {
+    return probabilityFor(career, race, schedule, context);
   }
 
   function fatigueKey(career, race, schedule, info) {
@@ -253,7 +293,7 @@
     const race = payload && payload.race ? payload.race : null;
     const schedule = payload && payload.schedule ? payload.schedule : null;
     const fatigue = ensureFatigueState(career);
-    const info = probabilityFor(career, race, schedule);
+    const info = probabilityFor(career, race, schedule, payload);
     const key = fatigueKey(career, race, schedule, info);
     const roll = seededFloat(key, "trigger");
     const triggered = info.eligible && roll < info.probability;
@@ -292,7 +332,10 @@
         pressureAfter,
         previousRaceClass: info.previousRaceClass,
         previousRaceId: info.previousRaceId,
-        tripleCrownExemption: info.tripleCrownExemption
+        tripleCrownExemption: info.tripleCrownExemption,
+        priorityEntryExemption: info.priorityEntryExemption,
+        priorityEntryReduction: info.priorityEntryReduction,
+        priorityEntrySourceRaceId: info.priorityEntrySourceRaceId
       }
     };
 

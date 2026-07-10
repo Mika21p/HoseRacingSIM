@@ -332,10 +332,11 @@
 
   function raceOptionLabel(plan, mode) {
     const challengeLabel = plan.challenge ? "[格上] " : "";
+    const priorityLabel = plan.priorityEntry ? "[优先] " : "";
     const expeditionLabel = plan.travel && plan.travel.active
       ? "[远征+检疫] "
       : (plan.expedition && plan.expedition.active ? "[远征] " : "");
-    return `${expeditionLabel}${challengeLabel}${plan.schedule.label} · ${raceDisplayName(plan.race, mode)} · ${plan.race.grade} · ${plan.race.ageRule}${raceRestrictionLabel(plan.race)} · ${raceSurfaceDistanceLabel(plan.race)} · ${raceVenueLabel(plan.race)}`;
+    return `${expeditionLabel}${challengeLabel}${priorityLabel}${plan.schedule.label} · ${raceDisplayName(plan.race, mode)} · ${plan.race.grade} · ${plan.race.ageRule}${raceRestrictionLabel(plan.race)} · ${raceSurfaceDistanceLabel(plan.race)} · ${raceVenueLabel(plan.race)}`;
   }
 
   const FEATURED_COURSES = ["京都", "阪神", "中山", "东京"];
@@ -481,7 +482,9 @@
 
   function hasFatigueRisk(career, plan) {
     if (!career || !plan || !ns.RaceFatigueRules || !ns.RaceFatigueRules.previewFatigueRisk) return false;
-    const risk = ns.RaceFatigueRules.previewFatigueRisk(career, plan.race, plan.schedule);
+    const risk = ns.RaceFatigueRules.previewFatigueRisk(career, plan.race, plan.schedule, {
+      priorityEntry: plan.priorityEntry || null
+    });
     return !!(risk && risk.eligible && risk.probability > 0);
   }
 
@@ -573,6 +576,7 @@
             <span>${plan.race.ageRule}${raceRestrictionLabel(plan.race)} · ${raceSurfaceDistanceLabel(plan.race)} · ${raceVenueLabel(plan.race)}</span>
             ${plan.travel && plan.travel.active && plan.travel.prepLabel ? `<span>检疫预备：${plan.travel.prepLabel}</span>` : ""}
             ${plan.challenge ? `<em>格上</em>` : ""}
+            ${plan.priorityEntry ? `<em>优先</em>` : ""}
             ${plan.travel && plan.travel.active ? `<em>远征+检疫</em>` : (plan.expedition && plan.expedition.active ? `<em>远征</em>` : "")}
           </button>
         `).join("")}

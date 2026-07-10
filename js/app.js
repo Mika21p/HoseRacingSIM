@@ -579,11 +579,12 @@
     return true;
   }
 
-  function buildRacePayload(selectedRace, schedule, challenge, expedition, travel) {
+  function buildRacePayload(selectedRace, schedule, challenge, expedition, travel, priorityEntry) {
     const opponent = ns.RaceRules.chooseOpponent(selectedRace);
     const payload = { race: selectedRace, schedule, opponent, year: opponent.year || null };
     if (expedition) payload.expedition = expedition;
     if (travel) payload.travel = { ...travel };
+    if (priorityEntry) payload.priorityEntry = { ...priorityEntry };
     if (challenge) {
       payload.challenge = {
         key: challenge.key,
@@ -641,11 +642,14 @@
 
   function confirmFatigueRisk(plan) {
     if (!state.career || !ns.RaceFatigueRules || !ns.RaceFatigueRules.previewFatigueRisk) return true;
-    const risk = ns.RaceFatigueRules.previewFatigueRisk(state.career, plan.race, plan.schedule);
+    const risk = ns.RaceFatigueRules.previewFatigueRisk(state.career, plan.race, plan.schedule, {
+      priorityEntry: plan.priorityEntry || null
+    });
     if (!risk || !risk.eligible) return true;
     const gapText = risk.gapTurns === 1 ? "仅半个月" : "约一个月";
+    const priorityText = risk.priorityEntryReduction ? "\n本场为优先出走，疲劳风险已降低。" : "";
     return window.confirm(
-      `上一场距离本场${gapText}，存在疲劳作战风险。\n仍要报名这场比赛吗？`
+      `上一场距离本场${gapText}，存在疲劳作战风险。${priorityText}\n仍要报名这场比赛吗？`
     );
   }
 
@@ -751,6 +755,7 @@
     const selectedRace = plan.race;
     const schedule = plan.schedule;
     const challenge = plan.challenge || null;
+    const priorityEntry = plan.priorityEntry || null;
     if (challenge && !confirmChallengeRegistration(plan)) return;
     if (!confirmTravelPreparation(plan)) return;
     if (!confirmFatigueRisk(plan)) return;
@@ -765,7 +770,14 @@
         return;
       }
     }
-    const payload = buildRacePayload(selectedRace, schedule, challenge, plan.expedition || null, plan.travel || null);
+    const payload = buildRacePayload(
+      selectedRace,
+      schedule,
+      challenge,
+      plan.expedition || null,
+      plan.travel || null,
+      priorityEntry
+    );
     state.career.scheduledRace = payload;
     markScheduledTravelPreparation();
     refresh();

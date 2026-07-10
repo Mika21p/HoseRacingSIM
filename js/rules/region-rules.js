@@ -125,6 +125,37 @@
     return getRegion(getStableRegionId(career)).label;
   }
 
+  function getStableTravelRegionId(career) {
+    return stableToTravelRegionId(getStableRegionId(career));
+  }
+
+  function ensureTravelContainer(career) {
+    if (!career) return null;
+    career.travel = career.travel && typeof career.travel === "object"
+      ? career.travel
+      : {};
+    if (!Array.isArray(career.travel.history)) career.travel.history = [];
+    return career.travel;
+  }
+
+  function setCurrentTravelLocation(career, regionId, label) {
+    const travel = ensureTravelContainer(career);
+    if (!travel) return null;
+    const travelRegionId = normalizeTravelRegionId(regionId);
+    travel.currentRegionId = travelRegionId;
+    travel.currentLabel = label || getTravelRegion(travelRegionId).label;
+    return travel;
+  }
+
+  function hasActiveRestInjury(career) {
+    const active = career && career.injury && career.injury.active;
+    if (!active) return false;
+    const currentIndex = career.currentTime && Number.isFinite(career.currentTime.index)
+      ? career.currentTime.index
+      : null;
+    return currentIndex == null || active.restUntilIndex == null || active.restUntilIndex > currentIndex;
+  }
+
   function lastRaceTravelRegionId(career) {
     const records = career && Array.isArray(career.races) ? career.races : [];
     for (let index = records.length - 1; index >= 0; index -= 1) {
@@ -306,20 +337,26 @@
         ? ns.TimeRules.formatAgeMonth(career.currentTime)
         : "";
     }
-    ensureCareerState(career);
-    career.travel.currentRegionId = normalizeTravelRegionId(travel.toRegionId);
-    career.travel.currentLabel = getTravelRegion(career.travel.currentRegionId).label;
+    setCurrentTravelLocation(career, travel.toRegionId);
     return travel;
   }
 
   function completeTravelAfterRace(career, race, payload) {
     ensureCareerState(career);
     const toRegionId = getRaceTravelRegionId(race);
-    career.travel.currentRegionId = normalizeTravelRegionId(toRegionId);
-    career.travel.currentLabel = getRaceTravelRegionLabel(race);
+    const stableTravelRegionId = getStableTravelRegionId(career);
+    const returnForRest = hasActiveRestInjury(career) && toRegionId !== stableTravelRegionId;
+    const finalRegionId = returnForRest ? stableTravelRegionId : toRegionId;
+    const finalLabel = returnForRest ? getTravelRegion(finalRegionId).label : getRaceTravelRegionLabel(race);
     if (payload && payload.travel && payload.travel.active) {
       payload.travel.completed = true;
+      if (returnForRest) {
+        payload.travel.returnedForRest = true;
+        payload.travel.returnRegionId = finalRegionId;
+        payload.travel.returnLabel = finalLabel;
+      }
     }
+    setCurrentTravelLocation(career, finalRegionId, finalLabel);
     return career.travel;
   }
 
@@ -384,12 +421,12 @@
       career.travel && career.travel.currentRegionId
         || inferredTravelRegionId
     );
-    career.travel = career.travel && typeof career.travel === "object"
-      ? career.travel
-      : {};
+    ensureTravelContainer(career);
     career.travel.currentRegionId = travelRegionId;
     career.travel.currentLabel = getTravelRegion(travelRegionId).label;
-    if (!Array.isArray(career.travel.history)) career.travel.history = [];
+    if (hasActiveRestInjury(career)) {
+      setCurrentTravelLocation(career, stableToTravelRegionId(currentRegionId));
+    }
 
     return career;
   }
@@ -438,6 +475,7 @@
     getRaceTravelRegionLabel,
     getStableRegionId,
     getStableRegionLabel,
+    getStableTravelRegionId,
     getCurrentLocationId,
     getCurrentLocationLabel,
     getOriginalRegionId,

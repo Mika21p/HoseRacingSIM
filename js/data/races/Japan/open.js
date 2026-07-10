@@ -242,6 +242,20 @@
       "ageRule": "3岁"
     },
     {
+      "id": "sweetpea-stakes",
+      "nameOriginal": "スイートピーS",
+      "nameZh": "香豌豆锦标",
+      "grade": "L",
+      "raceClass": "op",
+      "month": 5,
+      "half": 1,
+      "surface": "草地",
+      "course": "东京",
+      "distance": 1800,
+      "ageRule": "3岁",
+      "sexRestriction": "牝马"
+    },
+    {
       "id": "principal-stakes",
       "nameOriginal": "プリンシパルS",
       "nameZh": "首席锦标",

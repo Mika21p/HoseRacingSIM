@@ -142,6 +142,7 @@
       "Japan/espoir-city.js",
       "Japan/believe.js",
       "Japan/logotype.js",
+      "Japan/soul-rush.js",
       "Europe/frankel.js",
       "Europe/sea-the-stars.js",
       "Europe/enable.js",

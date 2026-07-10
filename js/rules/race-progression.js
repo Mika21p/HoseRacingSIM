@@ -5,6 +5,84 @@
   const OPEN_OR_GRADED = ["op", "g3", "jpn3", "g2", "jpn2", "g1", "jpn1"];
   const GRADED_CLASSES = ["g3", "jpn3", "g2", "jpn2", "g1", "jpn1"];
   const CHALLENGE_LIMIT = 2;
+  const PRIORITY_ENTRY_RULES = {
+    "february-stakes": [
+      { raceId: "procyon-stakes", maxRank: 1 },
+      { raceId: "negishi-stakes", maxRank: 1 }
+    ],
+    "takamatsunomiya-kinen": [
+      { raceId: "hankyu-hai", maxRank: 1 },
+      { raceId: "ocean-stakes", maxRank: 1 }
+    ],
+    "osaka-hai": [
+      { raceId: "nakayama-kinen", maxRank: 1 },
+      { raceId: "kinko-sho", maxRank: 1 }
+    ],
+    "oka-sho": [
+      { raceId: "tulip-sho", maxRank: 3 },
+      { raceId: "anemone-stakes", maxRank: 2 },
+      { raceId: "fillies-revue", maxRank: 3 }
+    ],
+    "satsuki-sho": [
+      { raceId: "yayoi-sho", maxRank: 3 },
+      { raceId: "wakaba-stakes", maxRank: 2 },
+      { raceId: "spring-stakes", maxRank: 3 }
+    ],
+    "tenno-sho-haru": [
+      { raceId: "hanshin-daishoten", maxRank: 1 },
+      { raceId: "nikkei-sho", maxRank: 1 }
+    ],
+    "nhk-mile-cup": [
+      { raceId: "new-zealand-trophy", maxRank: 3 },
+      { raceId: "churchill-downs-cup", maxRank: 3 }
+    ],
+    "victoria-mile": [
+      { raceId: "hanshin-himba-stakes", maxRank: 1 },
+      { raceId: "fukushima-himba-stakes", maxRank: 1 }
+    ],
+    "tokyo-yushun": [
+      { raceId: "satsuki-sho", maxRank: 5 },
+      { raceId: "aoba-sho", maxRank: 2 },
+      { raceId: "principal-stakes", maxRank: 1 }
+    ],
+    "yushun-himba": [
+      { raceId: "oka-sho", maxRank: 5 },
+      { raceId: "flora-stakes", maxRank: 2 },
+      { raceId: "sweetpea-stakes", maxRank: 1 }
+    ],
+    "yasuda-kinen": [
+      { raceId: "yomiuri-milers-cup", maxRank: 1 },
+      { raceId: "keio-hai-spring-cup", maxRank: 1 }
+    ],
+    "sprinters-stakes": [
+      { raceId: "keeneland-cup", maxRank: 1 },
+      { raceId: "centaur-stakes", maxRank: 1 }
+    ],
+    "shuka-sho": [
+      { raceId: "shion-stakes", maxRank: 3 },
+      { raceId: "rose-stakes", maxRank: 3 }
+    ],
+    "kikka-sho": [
+      { raceId: "st-lite-kinen", maxRank: 3 },
+      { raceId: "kobe-shimbun-hai", maxRank: 3 }
+    ],
+    "tenno-sho-aki": [
+      { raceId: "sankei-sho-all-comers", maxRank: 1 },
+      { raceId: "mainichi-okan", maxRank: 1 },
+      { raceId: "kyoto-daishoten", maxRank: 1 }
+    ],
+    "queen-elizabeth-ii-cup": [
+      { raceId: "ireland-trophy", maxRank: 1 }
+    ],
+    "mile-championship": [
+      { raceId: "fuji-stakes", maxRank: 1 },
+      { raceId: "swan-stakes", maxRank: 1 }
+    ],
+    "champions-cup": [
+      { raceId: "miyako-stakes", maxRank: 1 },
+      { raceId: "musashino-stakes", maxRank: 1 }
+    ]
+  };
   const CHALLENGE_PROBABILITIES = {
     age2: {
       g2: 0.2,
@@ -31,6 +109,44 @@
     return (record.public.rank === 1 || record.public.rankLabel === "一着") && !record.public.retired;
   }
 
+  function rankValue(record) {
+    const publicResult = record && record.public ? record.public : {};
+    if (Number.isFinite(publicResult.rank)) return publicResult.rank;
+    const labels = {
+      "一着": 1,
+      "二着": 2,
+      "三着": 3,
+      "四着": 4,
+      "五着": 5
+    };
+    return labels[publicResult.rankLabel] || null;
+  }
+
+  function recordRace(record) {
+    const hiddenRace = record && record.hidden && record.hidden.race;
+    if (hiddenRace) return hiddenRace;
+    const raceId = record && record.public ? record.public.raceId : "";
+    return (ns.Races || []).find((race) => race && race.id === raceId) || null;
+  }
+
+  function isJapanCentralG1(race) {
+    if (!race || race.raceClass !== "g1") return false;
+    if (ns.RegionRules && ns.RegionRules.getRaceRegionId) {
+      return ns.RegionRules.getRaceRegionId(race) === "japan";
+    }
+    return race.surfaceRegion === "日本";
+  }
+
+  function hasJapanG1PromotionResult(career) {
+    return career.races.some((record) => {
+      const rank = rankValue(record);
+      return rank != null
+        && rank <= 2
+        && !(record.public && record.public.retired)
+        && isJapanCentralG1(recordRace(record));
+    });
+  }
+
   function wonClass(career, raceClass) {
     return career.races.some((record) => isWin(record) && record.hidden.race.raceClass === raceClass);
   }
@@ -45,6 +161,58 @@
 
   function isInitialWin(career) {
     return wonClass(career, "new") || wonClass(career, "maiden");
+  }
+
+  function hasKikkaThreeWinEntry(career, race, schedule) {
+    return !!race
+      && race.id === "kikka-sho"
+      && !!schedule
+      && schedule.age === 3
+      && wonClass(career, "three-win");
+  }
+
+  function recordScheduleIndex(record) {
+    const schedule = record && record.hidden ? record.hidden.schedule : null;
+    return schedule && Number.isFinite(schedule.index) ? schedule.index : null;
+  }
+
+  function getPriorityEntryInfo(career, race, schedule) {
+    if (!career || !race || !schedule) return null;
+    const rules = PRIORITY_ENTRY_RULES[race.id];
+    if (!rules) return null;
+    return career.races.reduce((best, record) => {
+      const sourceRace = recordRace(record);
+      const rule = rules.find((item) => sourceRace && sourceRace.id === item.raceId);
+      if (!rule) return best;
+      const sourceIndex = recordScheduleIndex(record);
+      const rank = rankValue(record);
+      const matched = rank != null
+        && rank <= rule.maxRank
+        && !(record.public && record.public.retired)
+        && (sourceIndex == null || sourceIndex < schedule.index);
+      if (!matched) return best;
+      if (best) {
+        if (sourceIndex == null) return best;
+        if (best.sourceScheduleIndex != null && best.sourceScheduleIndex > sourceIndex) return best;
+      }
+      return {
+        targetRaceId: race.id,
+        sourceRaceId: sourceRace.id,
+        sourceScheduleIndex: sourceIndex,
+        rank,
+        maxRank: rule.maxRank,
+        sourceRaceClass: sourceRace.raceClass || "",
+        sourceRaceNameZh: ns.RaceNameRules ? ns.RaceNameRules.displayName(sourceRace, "zh") : sourceRace.nameZh || sourceRace.name || "",
+        sourceRaceNameOriginal: ns.RaceNameRules
+          ? ns.RaceNameRules.displayName(sourceRace, "original")
+          : sourceRace.nameOriginal || sourceRace.name || "",
+        targetScheduleIndex: schedule.index
+      };
+    }, null);
+  }
+
+  function hasPriorityEntry(career, race, schedule) {
+    return !!getPriorityEntryInfo(career, race, schedule);
   }
 
   function isBeforeJulyThree(schedule) {
@@ -132,9 +300,10 @@
   }
 
   function allowedClasses(career, schedule) {
+    const hasJapanG1Promotion = hasJapanG1PromotionResult(career);
     if (career.races.length === 0) return ["new"];
-    if (!hasAnyWin(career)) return ["maiden"];
-    if (wonAny(career, ["op"].concat(GRADED_CLASSES))) return OPEN_OR_GRADED;
+    if (!hasAnyWin(career) && !hasJapanG1Promotion) return ["maiden"];
+    if (wonAny(career, ["op"].concat(GRADED_CLASSES)) || hasJapanG1Promotion) return OPEN_OR_GRADED;
     if (wonClass(career, "three-win")) return ["op", "g3", "jpn3"];
     if (wonClass(career, "two-win")) return ["three-win"];
     if (wonClass(career, "one-win")) {
@@ -150,6 +319,8 @@
   }
 
   function isRaceAllowed(career, race, schedule) {
+    if (hasPriorityEntry(career, race, schedule)) return true;
+    if (hasKikkaThreeWinEntry(career, race, schedule)) return true;
     return allowedClasses(career, schedule).includes(race.raceClass);
   }
 
@@ -225,8 +396,9 @@
   function filterPlans(career, plans) {
     return plans.reduce((items, plan) => {
       if (hasChallengeExclusion(career, plan.race, plan.schedule)) return items;
+      const priorityEntry = getPriorityEntryInfo(career, plan.race, plan.schedule);
       if (isRaceAllowed(career, plan.race, plan.schedule)) {
-        items.push({ ...plan, challenge: null });
+        items.push({ ...plan, challenge: null, priorityEntry });
         return items;
       }
       const challenge = getChallengeInfo(career, plan.race, plan.schedule);
@@ -238,8 +410,13 @@
   ns.RaceProgression = {
     CONDITION_CLASSES,
     OPEN_OR_GRADED,
+    PRIORITY_ENTRY_RULES,
     allowedClasses,
     isRaceAllowed,
+    hasPriorityEntry,
+    getPriorityEntryInfo,
+    hasJapanG1PromotionResult,
+    hasKikkaThreeWinEntry,
     createChallengeState,
     ensureChallengeState,
     challengeKey,

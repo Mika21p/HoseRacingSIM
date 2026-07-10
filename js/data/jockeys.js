@@ -138,6 +138,14 @@
       ]
     },
     {
+      id: "taisei-danno",
+      name: "団野大成",
+      periods: [
+        { from: 2019, to: 2022, ability: 50 },
+        { from: 2023, to: 2026, ability: 60 }
+      ]
+    },
+    {
       id: "yasunari-iwata",
       name: "岩田康誠",
       periods: [
@@ -1905,6 +1913,7 @@
     "takeshi-yokoyama": ["japan"],
     "ryusei-sakai": ["japan"],
     "kohei-matsuyama": ["japan"],
+    "taisei-danno": ["japan"],
     "yasunari-iwata": ["japan"],
     "hideaki-miyuki": ["japan"],
     "hitoshi-matoba": ["japan"],
