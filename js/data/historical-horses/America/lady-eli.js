@@ -14,6 +14,13 @@
     },
     "races": [
       {
+        "raceId": "america-g2-appalachian-stakes",
+        "year": 2015,
+        "ability": 80,
+        "jockeyId": "irad-ortiz-jr",
+        "finish": 1
+      },
+      {
         "raceId": "breeders-cup-juvenile-fillies-turf",
         "year": 2014,
         "ability": 82,

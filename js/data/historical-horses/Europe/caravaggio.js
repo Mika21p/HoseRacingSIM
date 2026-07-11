@@ -13,6 +13,7 @@
       "note": "2017年英联邦杯冠军，三岁短途天赋突出。"
     },
     "races": [
+      { "raceId": "europe-g2-coventry-stakes", "year": 2016, "ability": 82, "jockeyId": "ryan-moore", "finish": 1 },
       {
         "raceId": "phoenix-stakes",
         "year": 2016,

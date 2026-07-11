@@ -21,6 +21,13 @@
         "finish": 1
       },
       {
+        "raceId": "poule-dessai-des-poulains",
+        "year": 2005,
+        "ability": 86,
+        "jockeyId": "frankie-dettori",
+        "finish": 1
+      },
+      {
         "raceId": "prix-du-jockey-club",
         "year": 2005,
         "ability": 87,

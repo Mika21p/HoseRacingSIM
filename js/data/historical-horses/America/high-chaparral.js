@@ -14,6 +14,13 @@
     },
     "races": [
       {
+        "raceId": "europe-g3-ballysax-stakes",
+        "year": 2002,
+        "ability": 86,
+        "jockeyId": "johnny-murtagh",
+        "finish": 1
+      },
+      {
         "raceId": "futurity-trophy",
         "year": 2001,
         "ability": 86,

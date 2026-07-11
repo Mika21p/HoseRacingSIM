@@ -14,6 +14,13 @@
     },
     "races": [
       {
+        "raceId": "europe-g3-musidora-stakes",
+        "year": 2021,
+        "ability": 84,
+        "jockeyId": "ryan-moore",
+        "finish": 1
+      },
+      {
         "raceId": "epsom-oaks",
         "year": 2021,
         "ability": 86,

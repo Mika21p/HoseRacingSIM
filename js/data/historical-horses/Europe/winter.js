@@ -33,6 +33,13 @@
         "ability": 85,
         "jockeyId": "ryan-moore",
         "finish": 1
+      },
+      {
+        "raceId": "nassau-stakes",
+        "year": 2017,
+        "ability": 85,
+        "jockeyId": "ryan-moore",
+        "finish": 1
       }
     ]
   });

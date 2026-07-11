@@ -14,9 +14,30 @@
     },
     "races": [
       {
+        "raceId": "america-g3-sanford-stakes",
+        "year": 1972,
+        "ability": 97,
+        "jockeyId": "ron-turcotte",
+        "finish": 1
+      },
+      {
         "raceId": "hopeful-stakes-us",
         "year": 1972,
         "ability": 97,
+        "jockeyId": "ron-turcotte",
+        "finish": 1
+      },
+      {
+        "raceId": "america-listed-laurel-futurity-stakes",
+        "year": 1972,
+        "ability": 98,
+        "jockeyId": "ron-turcotte",
+        "finish": 1
+      },
+      {
+        "raceId": "america-g3-gotham-stakes",
+        "year": 1973,
+        "ability": 98,
         "jockeyId": "ron-turcotte",
         "finish": 1
       },

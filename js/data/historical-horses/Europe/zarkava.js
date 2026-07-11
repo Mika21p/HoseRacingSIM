@@ -14,6 +14,7 @@
     },
     races: [
       { raceId: "prix-marcel-boussac", year: 2007, ability: 89, jockeyId: "christophe-soumillon", finish: 1 },
+      { raceId: "poule-dessai-des-pouliches", year: 2008, ability: 90, jockeyId: "christophe-soumillon", finish: 1 },
       { raceId: "prix-de-diane", year: 2008, ability: 90, jockeyId: "christophe-soumillon", finish: 1 },
       { raceId: "prix-vermeille", year: 2008, ability: 90, jockeyId: "christophe-soumillon", finish: 1 },
       { raceId: "prix-de-larc", year: 2008, ability: 91, jockeyId: "christophe-soumillon", finish: 1 }

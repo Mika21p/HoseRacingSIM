@@ -13,6 +13,8 @@
       "note": "澳洲短途冠军，皇家雅士谷胜出后确立国际短途地位。"
     },
     "races": [
+      { "raceId": "aj-moir-stakes", "year": 2019, "ability": 88, "jockeyId": "james-mcdonald", "finish": 1 },
+      { "raceId": "black-caviar-lightning", "year": 2021, "ability": 88, "jockeyId": "jamie-kah", "finish": 1 },
       {
         "raceId": "tj-smith-stakes",
         "year": 2020,

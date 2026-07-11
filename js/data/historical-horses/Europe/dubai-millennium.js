@@ -14,6 +14,20 @@
     },
     "races": [
       {
+        "raceId": "europe-g2-prix-eugene-adam",
+        "year": 1999,
+        "ability": 96,
+        "jockeyId": "frankie-dettori",
+        "finish": 1
+      },
+      {
+        "raceId": "prix-jacques-le-marois",
+        "year": 1999,
+        "ability": 98,
+        "jockeyId": "frankie-dettori",
+        "finish": 1
+      },
+      {
         "raceId": "queen-elizabeth-ii-stakes",
         "year": 1999,
         "ability": 96,

@@ -13,6 +13,7 @@
       "note": "阿贝耶与南索普锦标冠军，欧洲雌马短途名将。"
     },
     "races": [
+      { "raceId": "europe-g3-palace-house-stakes", "year": 2017, "ability": 83, "jockeyId": "luke-morris", "finish": 1 },
       {
         "raceId": "prix-de-labbaye",
         "year": 2016,

@@ -28,6 +28,13 @@
         "finish": 1
       },
       {
+        "raceId": "tulip-sho",
+        "year": 2018,
+        "ability": 78,
+        "jockeyId": "shu-ishibashi",
+        "finish": 1
+      },
+      {
         "raceId": "queen-elizabeth-ii-cup",
         "year": 2019,
         "ability": 80,

@@ -19,6 +19,13 @@
         "ability": 83,
         "jockeyId": "pierre-charles-boudot",
         "finish": 1
+      },
+      {
+        "raceId": "nassau-stakes",
+        "year": 2020,
+        "ability": 83,
+        "jockeyId": "ryan-moore",
+        "finish": 1
       }
     ]
   });

@@ -14,6 +14,13 @@
     },
     "races": [
       {
+        "raceId": "america-g2-jim-dandy-stakes",
+        "year": 1997,
+        "ability": 90,
+        "jockeyId": "mike-smith",
+        "finish": 1
+      },
+      {
         "raceId": "stephen-foster-stakes",
         "year": 1998,
         "ability": 90,

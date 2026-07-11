@@ -21,6 +21,13 @@
         "finish": 1
       },
       {
+        "raceId": "america-listed-las-virgenes-stakes",
+        "year": 2013,
+        "ability": 84,
+        "jockeyId": "garrett-gomez",
+        "finish": 1
+      },
+      {
         "raceId": "breeders-cup-distaff",
         "year": 2013,
         "ability": 85,

@@ -14,6 +14,20 @@
     },
     "races": [
       {
+        "raceId": "america-g2-rachel-alexandra-stakes",
+        "year": 2018,
+        "ability": 79,
+        "jockeyId": "florent-geroux",
+        "finish": 1
+      },
+      {
+        "raceId": "ashland-stakes",
+        "year": 2018,
+        "ability": 80,
+        "jockeyId": "florent-geroux",
+        "finish": 1
+      },
+      {
         "raceId": "kentucky-oaks",
         "year": 2018,
         "ability": 80,
@@ -21,8 +35,29 @@
         "finish": 1
       },
       {
+        "raceId": "acorn-stakes",
+        "year": 2018,
+        "ability": 81,
+        "jockeyId": "florent-geroux",
+        "finish": 1
+      },
+      {
+        "raceId": "coaching-club-american-oaks",
+        "year": 2018,
+        "ability": 81,
+        "jockeyId": "florent-geroux",
+        "finish": 1
+      },
+      {
         "raceId": "breeders-cup-distaff",
         "year": 2018,
+        "ability": 81,
+        "jockeyId": "florent-geroux",
+        "finish": 1
+      },
+      {
+        "raceId": "la-troienne-stakes",
+        "year": 2020,
         "ability": 81,
         "jockeyId": "florent-geroux",
         "finish": 1

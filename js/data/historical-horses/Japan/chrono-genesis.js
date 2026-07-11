@@ -14,6 +14,20 @@
     },
     "races": [
       {
+        "raceId": "ivy-stakes",
+        "year": 2018,
+        "ability": 83,
+        "jockeyId": "yuichi-kitamura",
+        "finish": 1
+      },
+      {
+        "raceId": "queen-cup",
+        "year": 2019,
+        "ability": 83,
+        "jockeyId": "yuichi-kitamura",
+        "finish": 1
+      },
+      {
         "raceId": "shuka-sho",
         "year": 2019,
         "ability": 84,

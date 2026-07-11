@@ -14,6 +14,13 @@
     },
     "races": [
       {
+        "raceId": "fillies-revue",
+        "year": 2013,
+        "ability": 77,
+        "jockeyId": "koshiro-take",
+        "finish": 1
+      },
+      {
         "raceId": "yushun-himba",
         "year": 2013,
         "ability": 79,

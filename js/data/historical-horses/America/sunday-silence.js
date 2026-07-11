@@ -14,6 +14,13 @@
     },
     "races": [
       {
+        "raceId": "america-g2-san-felipe-stakes",
+        "year": 1989,
+        "ability": 92,
+        "jockeyId": "patrick-valenzuela",
+        "finish": 1
+      },
+      {
         "raceId": "santa-anita-derby",
         "year": 1989,
         "ability": 92,

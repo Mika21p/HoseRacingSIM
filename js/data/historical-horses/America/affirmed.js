@@ -14,9 +14,30 @@
     },
     "races": [
       {
+        "raceId": "america-g3-sanford-stakes",
+        "year": 1977,
+        "ability": 93,
+        "jockeyId": "steve-cauthen",
+        "finish": 1
+      },
+      {
         "raceId": "hopeful-stakes-us",
         "year": 1977,
         "ability": 93,
+        "jockeyId": "steve-cauthen",
+        "finish": 1
+      },
+      {
+        "raceId": "america-listed-laurel-futurity-stakes",
+        "year": 1977,
+        "ability": 94,
+        "jockeyId": "steve-cauthen",
+        "finish": 1
+      },
+      {
+        "raceId": "america-g2-san-felipe-stakes",
+        "year": 1978,
+        "ability": 94,
         "jockeyId": "steve-cauthen",
         "finish": 1
       },
@@ -45,6 +66,20 @@
         "raceId": "belmont-stakes",
         "year": 1978,
         "ability": 95,
+        "jockeyId": "steve-cauthen",
+        "finish": 1
+      },
+      {
+        "raceId": "hollywood-derby",
+        "year": 1978,
+        "ability": 95,
+        "jockeyId": "steve-cauthen",
+        "finish": 1
+      },
+      {
+        "raceId": "america-g2-jim-dandy-stakes",
+        "year": 1978,
+        "ability": 94,
         "jockeyId": "steve-cauthen",
         "finish": 1
       },

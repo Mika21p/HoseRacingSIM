@@ -14,6 +14,13 @@
     },
     "races": [
       {
+        "raceId": "haydock-sprint-cup",
+        "year": 2020,
+        "ability": 83,
+        "jockeyId": "oisin-murphy",
+        "finish": 1
+      },
+      {
         "raceId": "queen-elizabeth-ii-jubilee-stakes",
         "year": 2021,
         "ability": 83,

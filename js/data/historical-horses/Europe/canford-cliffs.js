@@ -13,6 +13,8 @@
       "note": "欧洲一哩G1多胜马，三四岁持续高水平。"
     },
     "races": [
+      { "raceId": "europe-g2-coventry-stakes", "year": 2009, "ability": 85, "jockeyId": "richard-hughes", "finish": 1 },
+      { "raceId": "irish-two-thousand-guineas", "year": 2010, "ability": 87, "jockeyId": "richard-hughes", "finish": 1 },
       {
         "raceId": "st-jamess-palace-stakes",
         "year": 2010,

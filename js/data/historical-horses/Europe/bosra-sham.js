@@ -40,6 +40,13 @@
         "ability": 91,
         "jockeyId": "kieren-fallon",
         "finish": 1
+      },
+      {
+        "raceId": "europe-g3-brigadier-gerard-stakes",
+        "year": 1997,
+        "ability": 83,
+        "jockeyId": "kieren-fallon",
+        "finish": 1
       }
     ]
   });

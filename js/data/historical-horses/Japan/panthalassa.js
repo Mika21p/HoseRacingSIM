@@ -14,6 +14,20 @@
     },
     "races": [
       {
+        "raceId": "fukushima-kinen",
+        "year": 2021,
+        "ability": 85,
+        "jockeyId": "yuji-hishida",
+        "finish": 1
+      },
+      {
+        "raceId": "nakayama-kinen",
+        "year": 2022,
+        "ability": 86,
+        "jockeyId": "yutaka-yoshida",
+        "finish": 1
+      },
+      {
         "raceId": "dubai-turf",
         "year": 2022,
         "ability": 86,

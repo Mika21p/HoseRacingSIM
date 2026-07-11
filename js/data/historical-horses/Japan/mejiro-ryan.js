@@ -13,9 +13,10 @@
       note: "目白 87 世代代表之一，1991 年宝冢纪念胜马。"
     },
     races: [
+      { raceId: "yayoi-sho", year: 1990, ability: 77, jockeyId: "norihiro-yokoyama", finish: 1 },
       { raceId: "kyoto-shimbun-hai", year: 1990, ability: 77, jockeyId: "norihiro-yokoyama", finish: 1 },
-      { raceId: "nikkei-sho", year: 1991, ability: 78, jockeyId: "norihiro-yokoyama", finish: 1 },
-      { raceId: "takarazuka-kinen", year: 1991, ability: 79, jockeyId: "norihiro-yokoyama", finish: 1 }
+      { raceId: "takarazuka-kinen", year: 1991, ability: 79, jockeyId: "norihiro-yokoyama", finish: 1 },
+      { raceId: "nikkei-sho", year: 1992, ability: 78, jockeyId: "norihiro-yokoyama", finish: 1 }
     ]
   });
 })();

@@ -14,6 +14,13 @@
     },
     "races": [
       {
+        "raceId": "europe-g3-musidora-stakes",
+        "year": 2012,
+        "ability": 88,
+        "jockeyId": "william-buick",
+        "finish": 1
+      },
+      {
         "raceId": "nassau-stakes",
         "year": 2012,
         "ability": 88,

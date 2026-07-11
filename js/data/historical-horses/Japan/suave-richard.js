@@ -14,6 +14,13 @@
     },
     "races": [
       {
+        "raceId": "tokinominoru-kinen",
+        "year": 2017,
+        "ability": 81,
+        "jockeyId": "hirofumi-shii",
+        "finish": 1
+      },
+      {
         "raceId": "copa-republica-argentina",
         "year": 2017,
         "ability": 81,

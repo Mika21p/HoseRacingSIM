@@ -14,6 +14,20 @@
     },
     "races": [
       {
+        "raceId": "america-listed-laurel-futurity-stakes",
+        "year": 2005,
+        "ability": 88,
+        "jockeyId": "jose-caraballo",
+        "finish": 1
+      },
+      {
+        "raceId": "america-g3-holy-bull-stakes",
+        "year": 2006,
+        "ability": 88,
+        "jockeyId": "edgar-prado",
+        "finish": 1
+      },
+      {
         "raceId": "florida-derby",
         "year": 2006,
         "ability": 88,

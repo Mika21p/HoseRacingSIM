@@ -14,6 +14,13 @@
     },
     "races": [
       {
+        "raceId": "europe-g2-coventry-stakes",
+        "year": 1970,
+        "ability": 97,
+        "jockeyId": "geoff-lewis",
+        "finish": 1
+      },
+      {
         "raceId": "dewhurst-stakes",
         "year": 1970,
         "ability": 97,

@@ -56,6 +56,8 @@
     europe: "northAmerica",
     northAmerica: "europe"
   };
+  const TRAVEL_KIND_EXPEDITION = "expedition";
+  const TRAVEL_KIND_RETURN = "return";
 
   function getRegion(regionId) {
     return REGIONS[regionId] || REGIONS.japan;
@@ -127,6 +129,18 @@
 
   function getStableTravelRegionId(career) {
     return stableToTravelRegionId(getStableRegionId(career));
+  }
+
+  function isReturnTravelToStable(career, fromRegionId, toRegionId) {
+    const stableTravelRegionId = getStableTravelRegionId(career);
+    return normalizeTravelRegionId(fromRegionId) !== stableTravelRegionId
+      && normalizeTravelRegionId(toRegionId) === stableTravelRegionId;
+  }
+
+  function isReturnTravel(career, travel) {
+    if (!travel || !travel.active) return false;
+    if (travel.kind === TRAVEL_KIND_RETURN || travel.returnToStable) return true;
+    return isReturnTravelToStable(career, travel.fromRegionId, travel.toRegionId);
   }
 
   function ensureTravelContainer(career) {
@@ -269,6 +283,10 @@
     const fromRegionId = getCurrentLocationId(career);
     const toRegionId = getRaceTravelRegionId(race);
     if (fromRegionId === toRegionId) return currentIndex;
+    if (isReturnTravelToStable(career, fromRegionId, toRegionId)) {
+      const lastRaceReturnMin = career && career.lastRaceIndex != null ? career.lastRaceIndex + 1 : currentIndex + 1;
+      return Math.max(currentIndex + 1, lastRaceReturnMin);
+    }
     const lastRaceMin = career && career.lastRaceIndex != null ? career.lastRaceIndex + 2 : currentIndex + 1;
     return Math.max(currentIndex + 1, lastRaceMin);
   }
@@ -283,16 +301,24 @@
     const fromRegionId = getCurrentLocationId(career);
     const toRegionId = getRaceTravelRegionId(race);
     if (fromRegionId === toRegionId) return null;
-    const prepIndex = schedule && Number.isFinite(schedule.index) ? schedule.index - 1 : null;
+    const currentIndex = career && career.currentTime && Number.isFinite(career.currentTime.index)
+      ? career.currentTime.index
+      : null;
+    const returnToStable = isReturnTravelToStable(career, fromRegionId, toRegionId);
+    const prepIndex = returnToStable
+      ? currentIndex
+      : (schedule && Number.isFinite(schedule.index) ? schedule.index - 1 : null);
     const prepTime = prepIndex != null && ns.TimeRules && ns.TimeRules.fromIndex
       ? ns.TimeRules.fromIndex(prepIndex)
       : null;
     return {
       active: true,
+      kind: returnToStable ? TRAVEL_KIND_RETURN : TRAVEL_KIND_EXPEDITION,
+      returnToStable,
       fromRegionId,
       toRegionId,
       fromLabel: getTravelRegion(fromRegionId).label,
-      toLabel: getRaceTravelRegionLabel(race),
+      toLabel: returnToStable ? getTravelRegion(toRegionId).label : getRaceTravelRegionLabel(race),
       prepIndex,
       prepLabel: prepTime && ns.TimeRules && ns.TimeRules.formatAgeMonth
         ? ns.TimeRules.formatAgeMonth(prepTime)
@@ -326,6 +352,20 @@
     const currentIndex = career && career.currentTime && Number.isFinite(career.currentTime.index)
       ? career.currentTime.index
       : null;
+    const returnTravel = isReturnTravel(career, travel);
+    if (returnTravel) {
+      travel.kind = TRAVEL_KIND_RETURN;
+      travel.returnToStable = true;
+      if (currentIndex != null && (!Number.isFinite(travel.prepIndex) || travel.prepIndex > currentIndex)) {
+        travel.prepIndex = currentIndex;
+        travel.prepLabel = ns.TimeRules && ns.TimeRules.formatAgeMonth
+          ? ns.TimeRules.formatAgeMonth(career.currentTime)
+          : "";
+      }
+    } else if (!travel.kind) {
+      travel.kind = TRAVEL_KIND_EXPEDITION;
+      travel.returnToStable = false;
+    }
     if (currentIndex == null || !Number.isFinite(travel.prepIndex) || currentIndex < travel.prepIndex) {
       return travel;
     }
@@ -476,6 +516,7 @@
     getStableRegionId,
     getStableRegionLabel,
     getStableTravelRegionId,
+    isReturnTravel,
     getCurrentLocationId,
     getCurrentLocationLabel,
     getOriginalRegionId,

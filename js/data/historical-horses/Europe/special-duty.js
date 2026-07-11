@@ -26,6 +26,13 @@
         "ability": 83,
         "jockeyId": "stephane-pasquier",
         "finish": 1
+      },
+      {
+        "raceId": "poule-dessai-des-pouliches",
+        "year": 2010,
+        "ability": 84,
+        "jockeyId": "stephane-pasquier",
+        "finish": 1
       }
     ]
   });

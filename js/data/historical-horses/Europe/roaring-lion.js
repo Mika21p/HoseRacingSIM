@@ -14,6 +14,20 @@
     },
     "races": [
       {
+        "raceId": "europe-g2-dante-stakes",
+        "year": 2018,
+        "ability": 88,
+        "jockeyId": "oisin-murphy",
+        "finish": 1
+      },
+      {
+        "raceId": "eclipse-stakes",
+        "year": 2018,
+        "ability": 89,
+        "jockeyId": "oisin-murphy",
+        "finish": 1
+      },
+      {
         "raceId": "international-stakes",
         "year": 2018,
         "ability": 89,

@@ -28,6 +28,13 @@
         "finish": 1
       },
       {
+        "raceId": "europe-g3-prix-du-palais-royal",
+        "year": 2011,
+        "ability": 84,
+        "jockeyId": "gregory-benoist",
+        "finish": 1
+      },
+      {
         "raceId": "sun-chariot-stakes",
         "year": 2011,
         "ability": 86,

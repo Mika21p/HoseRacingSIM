@@ -14,9 +14,23 @@
     },
     "races": [
       {
+        "raceId": "america-g2-remsen-stakes",
+        "year": 1963,
+        "ability": 94,
+        "jockeyId": "manuel-ycaza",
+        "finish": 1
+      },
+      {
         "raceId": "florida-derby",
         "year": 1964,
         "ability": 94,
+        "jockeyId": "bill-hartack",
+        "finish": 1
+      },
+      {
+        "raceId": "blue-grass-stakes",
+        "year": 1964,
+        "ability": 95,
         "jockeyId": "bill-hartack",
         "finish": 1
       },

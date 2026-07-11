@@ -13,6 +13,7 @@
       "note": "2020至2021年欧洲一哩顶级马，杰克莫华双胜。"
     },
     "races": [
+      { "raceId": "europe-g2-sandown-mile", "year": 2021, "ability": 88, "jockeyId": "frankie-dettori", "finish": 1 },
       {
         "raceId": "st-jamess-palace-stakes",
         "year": 2020,

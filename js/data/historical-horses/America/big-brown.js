@@ -40,6 +40,13 @@
         "ability": 89,
         "jockeyId": "kent-desormeaux",
         "finish": 1
+      },
+      {
+        "raceId": "america-listed-monmouth-stakes",
+        "year": 2008,
+        "ability": 88,
+        "jockeyId": "kent-desormeaux",
+        "finish": 1
       }
     ]
   });

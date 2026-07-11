@@ -14,6 +14,13 @@
     },
     "races": [
       {
+        "raceId": "uae-derby",
+        "year": 2021,
+        "ability": 80,
+        "jockeyId": "william-buick",
+        "finish": 1
+      },
+      {
         "raceId": "grosser-preis-von-berlin",
         "year": 2022,
         "ability": 82,
@@ -59,6 +66,34 @@
         "raceId": "breeders-cup-turf",
         "year": 2024,
         "ability": 82,
+        "jockeyId": "william-buick",
+        "finish": 1
+      },
+      {
+        "raceId": "grosser-preis-von-berlin",
+        "year": 2025,
+        "ability": 82,
+        "jockeyId": "william-buick",
+        "finish": 1
+      },
+      {
+        "raceId": "europe-g2-yorkshire-cup",
+        "year": 2025,
+        "ability": 81,
+        "jockeyId": "william-buick",
+        "finish": 1
+      },
+      {
+        "raceId": "turf-classic-stakes",
+        "year": 2025,
+        "ability": 82,
+        "jockeyId": "william-buick",
+        "finish": 1
+      },
+      {
+        "raceId": "dubai-city-of-gold",
+        "year": 2026,
+        "ability": 81,
         "jockeyId": "william-buick",
         "finish": 1
       }

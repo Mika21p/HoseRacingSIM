@@ -40,13 +40,6 @@
         "ability": 83,
         "jockeyId": "hirofumi-shii",
         "finish": 1
-      },
-      {
-        "raceId": "osaka-hai",
-        "year": 2009,
-        "ability": 83,
-        "jockeyId": "hirofumi-shii",
-        "finish": 1
       }
     ]
   });

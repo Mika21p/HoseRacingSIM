@@ -21,6 +21,13 @@
         "finish": 1
       },
       {
+        "raceId": "tokinominoru-kinen",
+        "year": 2006,
+        "ability": 83,
+        "jockeyId": "take-yutaka",
+        "finish": 1
+      },
+      {
         "raceId": "yayoi-sho",
         "year": 2006,
         "ability": 83,

@@ -13,6 +13,7 @@
       "note": "2021年欧洲三岁中距离核心，法国德比、日蚀与爱尔兰冠军连胜。"
     },
     "races": [
+      { "raceId": "poule-dessai-des-poulains", "year": 2021, "ability": 89, "jockeyId": "ioritz-mendizabal", "finish": 1 },
       {
         "raceId": "dewhurst-stakes",
         "year": 2020,

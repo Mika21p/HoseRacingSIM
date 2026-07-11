@@ -14,6 +14,13 @@
     },
     "races": [
       {
+        "raceId": "al-fahidi-fort",
+        "year": 2003,
+        "ability": 85,
+        "jockeyId": "kevin-shea",
+        "finish": 1
+      },
+      {
         "raceId": "jebel-hatta",
         "year": 2003,
         "ability": 85,

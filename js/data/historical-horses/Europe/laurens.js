@@ -13,6 +13,7 @@
       "note": "Laurens major race wins recorded for currently available project race IDs."
     },
     "races": [
+      { "raceId": "europe-g2-prix-saint-alary", "year": 2018, "ability": 86, "jockeyId": "pj-mcdonald", "finish": 1 },
       {
         "raceId": "fillies-mile",
         "year": 2017,

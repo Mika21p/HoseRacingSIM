@@ -10,7 +10,7 @@
     "profile": {
       "baseAbility": 83,
       "peakAbility": 85,
-      "note": "2022年短途爆发，南索普与阿贝耶大奖赛冠军。"
+      "note": "2022年短途爆发并赢下南索普，2023年再夺阿贝耶大奖赛。"
     },
     "races": [
       {
@@ -36,7 +36,7 @@
       },
       {
         "raceId": "prix-de-labbaye",
-        "year": 2022,
+        "year": 2023,
         "ability": 85,
         "jockeyId": "jason-hart",
         "finish": 1

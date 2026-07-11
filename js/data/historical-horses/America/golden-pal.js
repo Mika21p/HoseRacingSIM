@@ -26,6 +26,13 @@
         "ability": 80,
         "jockeyId": "irad-ortiz-jr",
         "finish": 1
+      },
+      {
+        "raceId": "america-g2-shakertown-stakes",
+        "year": 2022,
+        "ability": 79,
+        "jockeyId": "irad-ortiz-jr",
+        "finish": 1
       }
     ]
   });

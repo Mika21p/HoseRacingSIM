@@ -14,6 +14,13 @@
     },
     "races": [
       {
+        "raceId": "europe-g3-prix-de-fontainebleau",
+        "year": 2008,
+        "ability": 84,
+        "jockeyId": "davy-bonilla",
+        "finish": 1
+      },
+      {
         "raceId": "prix-jean-prat",
         "year": 2008,
         "ability": 84,

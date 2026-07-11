@@ -19,6 +19,34 @@
         "ability": 83,
         "jockeyId": "jay-ford",
         "finish": 1
+      },
+      {
+        "raceId": "newmarket-handicap",
+        "year": 2006,
+        "ability": 82,
+        "jockeyId": "jay-ford",
+        "finish": 1
+      },
+      {
+        "raceId": "sprinters-stakes",
+        "year": 2006,
+        "ability": 83,
+        "jockeyId": "jay-ford",
+        "finish": 1
+      },
+      {
+        "raceId": "tj-smith-stakes",
+        "year": 2009,
+        "ability": 82,
+        "jockeyId": "nash-rawiller",
+        "finish": 1
+      },
+      {
+        "raceId": "the-goodwood",
+        "year": 2009,
+        "ability": 82,
+        "jockeyId": "jay-ford",
+        "finish": 1
       }
     ]
   });

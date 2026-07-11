@@ -13,6 +13,8 @@
       "note": "2021年爱尔兰德比与圣烈治冠军，三岁长距离能力强。"
     },
     "races": [
+      { "raceId": "europe-g2-dante-stakes", "year": 2021, "ability": 84, "jockeyId": "william-buick", "finish": 1 },
+      { "raceId": "grand-prix-de-paris", "year": 2021, "ability": 85, "jockeyId": "william-buick", "finish": 1 },
       {
         "raceId": "irish-derby",
         "year": 2021,

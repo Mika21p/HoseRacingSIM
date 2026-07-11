@@ -14,6 +14,13 @@
     },
     "races": [
       {
+        "raceId": "america-listed-tremont-stakes",
+        "year": 1965,
+        "ability": 91,
+        "jockeyId": "braulio-baeza",
+        "finish": 1
+      },
+      {
         "raceId": "hopeful-stakes-us",
         "year": 1965,
         "ability": 92,

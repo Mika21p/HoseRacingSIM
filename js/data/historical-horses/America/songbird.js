@@ -14,6 +14,20 @@
     },
     "races": [
       {
+        "raceId": "america-listed-las-virgenes-stakes",
+        "year": 2016,
+        "ability": 89,
+        "jockeyId": "mike-smith",
+        "finish": 1
+      },
+      {
+        "raceId": "america-g3-santa-ysabel-stakes",
+        "year": 2016,
+        "ability": 89,
+        "jockeyId": "mike-smith",
+        "finish": 1
+      },
+      {
         "raceId": "del-mar-debutante",
         "year": 2015,
         "ability": 88,

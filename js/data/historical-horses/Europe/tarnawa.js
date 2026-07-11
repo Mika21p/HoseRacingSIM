@@ -13,6 +13,7 @@
       "note": "红宝锦标与育马者杯草地冠军，古马雌马中距离代表。"
     },
     "races": [
+      { "raceId": "prix-de-lopera", "year": 2020, "ability": 86, "jockeyId": "christophe-soumillon", "finish": 1 },
       {
         "raceId": "prix-vermeille",
         "year": 2020,

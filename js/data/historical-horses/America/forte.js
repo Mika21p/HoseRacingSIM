@@ -40,6 +40,20 @@
         "ability": 86,
         "jockeyId": "irad-ortiz-jr",
         "finish": 1
+      },
+      {
+        "raceId": "america-g2-fountain-of-youth-stakes",
+        "year": 2023,
+        "ability": 85,
+        "jockeyId": "irad-ortiz-jr",
+        "finish": 1
+      },
+      {
+        "raceId": "america-g2-jim-dandy-stakes",
+        "year": 2023,
+        "ability": 85,
+        "jockeyId": "irad-ortiz-jr",
+        "finish": 1
       }
     ]
   });

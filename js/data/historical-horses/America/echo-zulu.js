@@ -33,6 +33,13 @@
         "ability": 86,
         "jockeyId": "joel-rosario",
         "finish": 1
+      },
+      {
+        "raceId": "america-g2-fair-grounds-oaks",
+        "year": 2022,
+        "ability": 84,
+        "jockeyId": "joel-rosario",
+        "finish": 1
       }
     ]
   });

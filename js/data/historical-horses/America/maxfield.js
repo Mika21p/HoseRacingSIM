@@ -19,6 +19,27 @@
         "ability": 85,
         "jockeyId": "jose-ortiz",
         "finish": 1
+      },
+      {
+        "raceId": "america-g3-matt-winn-stakes",
+        "year": 2020,
+        "ability": 83,
+        "jockeyId": "jose-ortiz",
+        "finish": 1
+      },
+      {
+        "raceId": "america-g2-alysheba-stakes",
+        "year": 2021,
+        "ability": 84,
+        "jockeyId": "jose-ortiz",
+        "finish": 1
+      },
+      {
+        "raceId": "stephen-foster-stakes",
+        "year": 2021,
+        "ability": 85,
+        "jockeyId": "jose-ortiz",
+        "finish": 1
       }
     ]
   });

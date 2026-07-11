@@ -13,6 +13,7 @@
       note: "英国雌马国际远征代表，欧洲、美国与香港均有G1胜利。"
     },
     races: [
+      { raceId: "nassau-stakes", year: 2006, ability: 84, jockeyId: "frankie-dettori", finish: 1 },
       { raceId: "epsom-oaks", year: 2004, ability: 83, jockeyId: "kieren-fallon", finish: 1 },
       { raceId: "irish-oaks", year: 2004, ability: 83, jockeyId: "kieren-fallon", finish: 1 },
       { raceId: "breeders-cup-filly-mare-turf", year: 2004, ability: 84, jockeyId: "kieren-fallon", finish: 1 },

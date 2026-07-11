@@ -21,6 +21,13 @@
         "finish": 1
       },
       {
+        "raceId": "america-g2-wood-memorial-stakes",
+        "year": 1977,
+        "ability": 95,
+        "jockeyId": "jean-cruguet",
+        "finish": 1
+      },
+      {
         "raceId": "kentucky-derby",
         "year": 1977,
         "ability": 95,

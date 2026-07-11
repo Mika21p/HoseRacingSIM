@@ -42,6 +42,13 @@
         "finish": 1
       },
       {
+        "raceId": "irish-champion-stakes",
+        "year": 2011,
+        "ability": 90,
+        "jockeyId": "seamie-heffernan",
+        "finish": 1
+      },
+      {
         "raceId": "tattersalls-gold-cup",
         "year": 2012,
         "ability": 90,

@@ -21,6 +21,13 @@
         "finish": 1
       },
       {
+        "raceId": "alabama-stakes",
+        "year": 1994,
+        "ability": 89,
+        "jockeyId": "mike-smith",
+        "finish": 1
+      },
+      {
         "raceId": "apple-blossom-handicap",
         "year": 1995,
         "ability": 89,

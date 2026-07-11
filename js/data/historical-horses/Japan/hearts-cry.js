@@ -14,6 +14,13 @@
     },
     "races": [
       {
+        "raceId": "kyoto-shimbun-hai",
+        "year": 2004,
+        "ability": 86,
+        "jockeyId": "katsumi-ando",
+        "finish": 1
+      },
+      {
         "raceId": "arima-kinen",
         "year": 2005,
         "ability": 88,

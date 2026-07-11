@@ -13,6 +13,7 @@
       "note": "Ballingarry major race wins recorded for currently available project race IDs."
     },
     "races": [
+      { "raceId": "europe-g3-prix-noailles", "year": 2002, "ability": 83, "jockeyId": "jamie-spencer", "finish": 1 },
       {
         "raceId": "criterium-de-saint-cloud",
         "year": 2001,

@@ -13,6 +13,7 @@
       "note": "七月杯与皇家雅士谷短途冠军，成熟期短途表现稳定。"
     },
     "races": [
+      { "raceId": "europe-g3-abernant-stakes", "year": 2020, "ability": 81, "jockeyId": "cieren-fallon", "finish": 1 },
       {
         "raceId": "july-cup",
         "year": 2020,

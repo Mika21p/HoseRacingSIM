@@ -13,6 +13,11 @@
       "note": "由中长距离转向长途仍能夺G1，加冕杯与雅士谷金杯胜出。"
     },
     "races": [
+      { "raceId": "europe-g3-ballysax-stakes", "year": 2009, "ability": 84, "jockeyId": "johnny-murtagh", "finish": 1 },
+      { "raceId": "irish-derby", "year": 2009, "ability": 87, "jockeyId": "johnny-murtagh", "finish": 1 },
+      { "raceId": "europe-g2-mooresbridge-stakes", "year": 2010, "ability": 84, "jockeyId": "johnny-murtagh", "finish": 1 },
+      { "raceId": "tattersalls-gold-cup", "year": 2010, "ability": 87, "jockeyId": "johnny-murtagh", "finish": 1 },
+      { "raceId": "british-champions-long-distance-cup", "year": 2011, "ability": 85, "jockeyId": "jamie-spencer", "finish": 1 },
       {
         "raceId": "criterium-de-saint-cloud",
         "year": 2008,

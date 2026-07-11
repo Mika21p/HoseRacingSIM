@@ -14,6 +14,13 @@
       },
       "races": [
           {
+              "raceId": "tokinominoru-kinen",
+              "year": 1983,
+              "ability": 79,
+              "jockeyId": "masato-yoshinaga",
+              "finish": 1
+          },
+          {
               "raceId": "yayoi-sho",
               "year": 1983,
               "ability": 79,

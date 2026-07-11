@@ -14,6 +14,13 @@
     },
     "races": [
       {
+        "raceId": "america-g2-rebel-stakes",
+        "year": 1998,
+        "ability": 86,
+        "jockeyId": "eibar-coa",
+        "finish": 1
+      },
+      {
         "raceId": "arkansas-derby",
         "year": 1998,
         "ability": 86,

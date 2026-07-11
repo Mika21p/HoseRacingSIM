@@ -21,6 +21,13 @@
         "finish": 1
       },
       {
+        "raceId": "lord-derby-challenge-trophy",
+        "year": 1994,
+        "ability": 82,
+        "jockeyId": "futoshi-kojima",
+        "finish": 1
+      },
+      {
         "raceId": "swan-stakes",
         "year": 1994,
         "ability": 82,

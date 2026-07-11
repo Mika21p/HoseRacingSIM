@@ -40,6 +40,13 @@
         "ability": 84,
         "jockeyId": "mike-smith",
         "finish": 1
+      },
+      {
+        "raceId": "spinster-stakes",
+        "year": 2004,
+        "ability": 84,
+        "jockeyId": "mike-smith",
+        "finish": 1
       }
     ]
   });

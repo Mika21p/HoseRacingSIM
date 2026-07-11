@@ -21,9 +21,30 @@
         "finish": 1
       },
       {
+        "raceId": "uae-2000-guineas",
+        "year": 2017,
+        "ability": 89,
+        "jockeyId": "christophe-soumillon",
+        "finish": 1
+      },
+      {
+        "raceId": "uae-derby",
+        "year": 2017,
+        "ability": 89,
+        "jockeyId": "christophe-soumillon",
+        "finish": 1
+      },
+      {
         "raceId": "prix-jean-prat",
         "year": 2017,
         "ability": 89,
+        "jockeyId": "christophe-soumillon",
+        "finish": 1
+      },
+      {
+        "raceId": "al-maktoum-challenge",
+        "year": 2018,
+        "ability": 90,
         "jockeyId": "christophe-soumillon",
         "finish": 1
       },

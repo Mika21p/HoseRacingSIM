@@ -13,6 +13,7 @@
       "note": "Los Angeles major race wins recorded for currently available project race IDs."
     },
     "races": [
+      { "raceId": "europe-g2-great-voltigeur-stakes", "year": 2024, "ability": 86, "jockeyId": "ryan-moore", "finish": 1 },
       {
         "raceId": "criterium-de-saint-cloud",
         "year": 2023,

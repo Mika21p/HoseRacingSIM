@@ -14,6 +14,20 @@
     },
     "races": [
       {
+        "raceId": "america-g3-american-stakes",
+        "year": 1977,
+        "ability": 87,
+        "jockeyId": "jorge-velasquez",
+        "finish": 1
+      },
+      {
+        "raceId": "america-listed-tremont-stakes",
+        "year": 1977,
+        "ability": 88,
+        "jockeyId": "eddie-maple",
+        "finish": 1
+      },
+      {
         "raceId": "champagne-stakes-us",
         "year": 1977,
         "ability": 93,

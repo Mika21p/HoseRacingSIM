@@ -14,6 +14,13 @@
     },
     "races": [
       {
+        "raceId": "america-g3-sanford-stakes",
+        "year": 2004,
+        "ability": 87,
+        "jockeyId": "jeremy-rose",
+        "finish": 1
+      },
+      {
         "raceId": "hopeful-stakes-us",
         "year": 2004,
         "ability": 87,

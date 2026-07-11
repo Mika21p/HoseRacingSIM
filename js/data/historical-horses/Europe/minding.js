@@ -13,6 +13,7 @@
       "note": "2016 European Horse of the Year and multiple top-level filly."
     },
     "races": [
+      { "raceId": "europe-g2-mooresbridge-stakes", "year": 2017, "ability": 88, "jockeyId": "ryan-moore", "finish": 1 },
       {
         "raceId": "moyglare-stud-stakes",
         "year": 2015,

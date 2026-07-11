@@ -35,6 +35,13 @@
         "finish": 1
       },
       {
+        "raceId": "america-g2-san-vicente-stakes",
+        "year": 2016,
+        "ability": 86,
+        "jockeyId": "mario-gutierrez",
+        "finish": 1
+      },
+      {
         "raceId": "florida-derby",
         "year": 2016,
         "ability": 88,

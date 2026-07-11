@@ -14,6 +14,20 @@
     },
     "races": [
       {
+        "raceId": "america-g3-southwest-stakes",
+        "year": 2004,
+        "ability": 88,
+        "jockeyId": "stewart-elliott",
+        "finish": 1
+      },
+      {
+        "raceId": "america-g2-rebel-stakes",
+        "year": 2004,
+        "ability": 89,
+        "jockeyId": "stewart-elliott",
+        "finish": 1
+      },
+      {
         "raceId": "arkansas-derby",
         "year": 2004,
         "ability": 88,

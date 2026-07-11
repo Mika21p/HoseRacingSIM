@@ -14,6 +14,27 @@
     },
     "races": [
       {
+        "raceId": "america-g2-risen-star-stakes",
+        "year": 2016,
+        "ability": 87,
+        "jockeyId": "florent-geroux",
+        "finish": 1
+      },
+      {
+        "raceId": "america-g2-louisiana-derby",
+        "year": 2016,
+        "ability": 88,
+        "jockeyId": "florent-geroux",
+        "finish": 1
+      },
+      {
+        "raceId": "america-g3-matt-winn-stakes",
+        "year": 2016,
+        "ability": 87,
+        "jockeyId": "florent-geroux",
+        "finish": 1
+      },
+      {
         "raceId": "stephen-foster-stakes",
         "year": 2017,
         "ability": 89,

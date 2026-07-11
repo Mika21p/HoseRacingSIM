@@ -14,7 +14,8 @@
     },
     races: [
       { raceId: "yayoi-sho", year: 2023, ability: 80, jockeyId: "kohei-matsuyama", finish: 1 },
-      { raceId: "tokyo-yushun", year: 2023, ability: 82, jockeyId: "damian-lane", finish: 1, trackCondition: "稍重" }
+      { raceId: "tokyo-yushun", year: 2023, ability: 82, jockeyId: "damian-lane", finish: 1, trackCondition: "稍重" },
+      { raceId: "hong-kong-queen-elizabeth-ii-cup", year: 2025, ability: 82, jockeyId: "damian-lane", finish: 1 }
     ]
   });
 })();

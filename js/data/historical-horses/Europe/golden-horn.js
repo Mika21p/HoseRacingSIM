@@ -13,6 +13,7 @@
       "note": "2015年欧洲马王，德比、日蚀、爱尔兰冠军与凯旋门连线。"
     },
     "races": [
+      { "raceId": "europe-g2-dante-stakes", "year": 2015, "ability": 89, "jockeyId": "william-buick", "finish": 1 },
       {
         "raceId": "epsom-derby",
         "year": 2015,

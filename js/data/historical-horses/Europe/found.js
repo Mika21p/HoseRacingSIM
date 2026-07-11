@@ -13,6 +13,7 @@
       "note": "High-class Galileo mare, Arc and Breeders' Cup Turf winner."
     },
     "races": [
+      { "raceId": "europe-g2-mooresbridge-stakes", "year": 2016, "ability": 88, "jockeyId": "ryan-moore", "finish": 1 },
       {
         "raceId": "prix-marcel-boussac",
         "year": 2014,

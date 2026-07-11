@@ -13,6 +13,7 @@
       "note": "2010年英皇锦标大胜，单场峰值极高。"
     },
     "races": [
+      { "raceId": "europe-g3-john-porter-stakes", "year": 2010, "ability": 93, "jockeyId": "ryan-moore", "finish": 1 },
       {
         "raceId": "king-george-vi-and-queen-elizabeth-stakes",
         "year": 2010,

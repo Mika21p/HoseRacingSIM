@@ -13,6 +13,7 @@
       note: "日本代表性逃马，1998 年连续赢下重赏并夺宝冢纪念。"
     },
     races: [
+      { raceId: "principal-stakes", year: 1997, ability: 81, jockeyId: "hiroyuki-uemura", finish: 1 },
       { raceId: "nakayama-kinen", year: 1998, ability: 82, jockeyId: "take-yutaka", finish: 1 },
       { raceId: "kokura-daishoten", year: 1998, ability: 82, jockeyId: "take-yutaka", finish: 1 },
       { raceId: "kinko-sho", year: 1998, ability: 83, jockeyId: "take-yutaka", finish: 1 },

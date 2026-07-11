@@ -35,6 +35,13 @@
         "finish": 1
       },
       {
+        "raceId": "poule-dessai-des-pouliches",
+        "year": 2005,
+        "ability": 85,
+        "jockeyId": "christophe-lemaire",
+        "finish": 1
+      },
+      {
         "raceId": "prix-de-diane",
         "year": 2005,
         "ability": 85,

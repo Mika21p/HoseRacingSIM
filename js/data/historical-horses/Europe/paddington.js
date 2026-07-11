@@ -13,6 +13,7 @@
       "note": "2023年夏季欧洲一哩至中距离连胜马。"
     },
     "races": [
+      { "raceId": "irish-two-thousand-guineas", "year": 2023, "ability": 85, "jockeyId": "ryan-moore", "finish": 1 },
       {
         "raceId": "st-jamess-palace-stakes",
         "year": 2023,

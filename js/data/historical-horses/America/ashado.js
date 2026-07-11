@@ -21,6 +21,13 @@
         "finish": 1
       },
       {
+        "raceId": "america-g2-fair-grounds-oaks",
+        "year": 2004,
+        "ability": 87,
+        "jockeyId": "cornelio-velasquez",
+        "finish": 1
+      },
+      {
         "raceId": "kentucky-oaks",
         "year": 2004,
         "ability": 87,

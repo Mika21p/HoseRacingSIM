@@ -14,6 +14,13 @@
     },
     "races": [
       {
+        "raceId": "america-g2-rebel-stakes",
+        "year": 2007,
+        "ability": 93,
+        "jockeyId": "robby-albarado",
+        "finish": 1
+      },
+      {
         "raceId": "arkansas-derby",
         "year": 2007,
         "ability": 93,

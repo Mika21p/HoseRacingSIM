@@ -14,6 +14,13 @@
     },
     "races": [
       {
+        "raceId": "elfin-stakes",
+        "year": 2020,
+        "ability": 80,
+        "jockeyId": "kohei-matsuyama",
+        "finish": 1
+      },
+      {
         "raceId": "oka-sho",
         "year": 2020,
         "ability": 81,

@@ -14,7 +14,21 @@
     },
     "races": [
       {
+        "raceId": "europe-g2-oaks-ditalia",
+        "year": 2011,
+        "ability": 84,
+        "jockeyId": "andrasch-starke",
+        "finish": 1
+      },
+      {
         "raceId": "grosser-preis-von-berlin",
+        "year": 2011,
+        "ability": 85,
+        "jockeyId": "andrasch-starke",
+        "finish": 1
+      },
+      {
+        "raceId": "grosser-preis-von-baden",
         "year": 2011,
         "ability": 85,
         "jockeyId": "andrasch-starke",
@@ -24,6 +38,13 @@
         "raceId": "prix-de-larc",
         "year": 2011,
         "ability": 86,
+        "jockeyId": "andrasch-starke",
+        "finish": 1
+      },
+      {
+        "raceId": "grosser-preis-von-baden",
+        "year": 2012,
+        "ability": 85,
         "jockeyId": "andrasch-starke",
         "finish": 1
       },

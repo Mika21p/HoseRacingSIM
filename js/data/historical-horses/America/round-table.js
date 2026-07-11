@@ -14,6 +14,13 @@
     },
     "races": [
       {
+        "raceId": "breeders-futurity-stakes",
+        "year": 1956,
+        "ability": 87,
+        "jockeyId": "steve-brooks",
+        "finish": 1
+      },
+      {
         "raceId": "blue-grass-stakes",
         "year": 1957,
         "ability": 88,

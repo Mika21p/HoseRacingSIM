@@ -13,6 +13,7 @@
       "note": "German-trained international middle-distance horse of 2013."
     },
     "races": [
+      { "raceId": "europe-g2-union-rennen", "year": 2012, "ability": 91, "jockeyId": "eduardo-pedroza", "finish": 1 },
       {
         "raceId": "grand-prix-de-saint-cloud",
         "year": 2013,

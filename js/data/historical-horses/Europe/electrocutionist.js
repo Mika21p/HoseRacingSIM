@@ -14,6 +14,13 @@
     },
     "races": [
       {
+        "raceId": "europe-listed-premio-carlo-dalessio",
+        "year": 2005,
+        "ability": 88,
+        "jockeyId": "edmondo-botti",
+        "finish": 1
+      },
+      {
         "raceId": "international-stakes",
         "year": 2005,
         "ability": 89,

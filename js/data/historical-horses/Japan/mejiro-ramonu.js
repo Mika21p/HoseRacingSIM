@@ -17,6 +17,7 @@
       { raceId: "oka-sho", year: 1986, ability: 82, jockeyId: "kawachi-hiroshi", finish: 1 },
       { raceId: "flora-stakes", year: 1986, ability: 80, jockeyId: "kawachi-hiroshi", finish: 1 },
       { raceId: "yushun-himba", year: 1986, ability: 82, jockeyId: "kawachi-hiroshi", finish: 1 },
+      { raceId: "rose-stakes", year: 1986, ability: 80, jockeyId: "kawachi-hiroshi", finish: 1 },
       { raceId: "queen-elizabeth-ii-cup", year: 1986, ability: 82, jockeyId: "kawachi-hiroshi", finish: 1 }
     ]
   });

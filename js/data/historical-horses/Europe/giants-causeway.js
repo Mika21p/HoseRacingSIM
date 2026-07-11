@@ -13,6 +13,7 @@
       "note": "铁马型欧洲中距离巨星，2000年夏秋多场G1连胜。"
     },
     "races": [
+      { "raceId": "europe-listed-gladness-stakes", "year": 2000, "ability": 90, "jockeyId": "mick-kinane", "finish": 1 },
       {
         "raceId": "st-jamess-palace-stakes",
         "year": 2000,

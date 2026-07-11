@@ -14,10 +14,24 @@
     },
     "races": [
       {
+        "raceId": "america-listed-tremont-stakes",
+        "year": 1919,
+        "ability": 95,
+        "jockeyId": "johnny-loftus",
+        "finish": 1
+      },
+      {
         "raceId": "hopeful-stakes-us",
         "year": 1919,
         "ability": 95,
         "jockeyId": "johnny-loftus",
+        "finish": 1
+      },
+      {
+        "raceId": "america-listed-withers-stakes",
+        "year": 1920,
+        "ability": 96,
+        "jockeyId": "clarence-kummer",
         "finish": 1
       },
       {

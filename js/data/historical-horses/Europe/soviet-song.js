@@ -35,6 +35,13 @@
         "finish": 1
       },
       {
+        "raceId": "matron-stakes",
+        "year": 2004,
+        "ability": 88,
+        "jockeyId": "johnny-murtagh",
+        "finish": 1
+      },
+      {
         "raceId": "falmouth-stakes",
         "year": 2005,
         "ability": 87,

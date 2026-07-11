@@ -33,6 +33,13 @@
         "ability": 80,
         "jockeyId": "christophe-lemaire",
         "finish": 1
+      },
+      {
+        "raceId": "kinko-sho",
+        "year": 2020,
+        "ability": 80,
+        "jockeyId": "christophe-lemaire",
+        "finish": 1
       }
     ]
   });

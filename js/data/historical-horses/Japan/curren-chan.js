@@ -14,6 +14,13 @@
     },
     "races": [
       {
+        "raceId": "hanshin-himba-stakes",
+        "year": 2011,
+        "ability": 77,
+        "jockeyId": "kenichi-ikezoe",
+        "finish": 1
+      },
+      {
         "raceId": "hakodate-sprint-stakes",
         "year": 2011,
         "ability": 77,

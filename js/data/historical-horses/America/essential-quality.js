@@ -28,6 +28,13 @@
         "finish": 1
       },
       {
+        "raceId": "america-g3-southwest-stakes",
+        "year": 2021,
+        "ability": 78,
+        "jockeyId": "luis-saez",
+        "finish": 1
+      },
+      {
         "raceId": "blue-grass-stakes",
         "year": 2021,
         "ability": 79,
@@ -38,6 +45,13 @@
         "raceId": "belmont-stakes",
         "year": 2021,
         "ability": 80,
+        "jockeyId": "luis-saez",
+        "finish": 1
+      },
+      {
+        "raceId": "america-g2-jim-dandy-stakes",
+        "year": 2021,
+        "ability": 79,
         "jockeyId": "luis-saez",
         "finish": 1
       },

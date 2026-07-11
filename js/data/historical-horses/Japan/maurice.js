@@ -14,6 +14,13 @@
     },
     "races": [
       {
+        "raceId": "lord-derby-challenge-trophy",
+        "year": 2015,
+        "ability": 87,
+        "jockeyId": "keita-tosaki",
+        "finish": 1
+      },
+      {
         "raceId": "yasuda-kinen",
         "year": 2015,
         "ability": 88,

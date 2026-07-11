@@ -54,6 +54,13 @@
         "ability": 86,
         "jockeyId": "hollie-doyle",
         "finish": 1
+      },
+      {
+        "raceId": "europe-g2-doncaster-cup",
+        "year": 2023,
+        "ability": 86,
+        "jockeyId": "hollie-doyle",
+        "finish": 1
       }
     ]
   });

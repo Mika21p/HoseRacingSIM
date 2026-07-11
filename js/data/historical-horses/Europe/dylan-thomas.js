@@ -14,6 +14,13 @@
     },
     "races": [
       {
+        "raceId": "prix-ganay",
+        "year": 2007,
+        "ability": 86,
+        "jockeyId": "kieren-fallon",
+        "finish": 1
+      },
+      {
         "raceId": "irish-derby",
         "year": 2006,
         "ability": 85,
@@ -38,14 +45,14 @@
         "raceId": "irish-champion-stakes",
         "year": 2007,
         "ability": 87,
-        "jockeyId": "johnny-murtagh",
+        "jockeyId": "kieren-fallon",
         "finish": 1
       },
       {
         "raceId": "prix-de-larc",
         "year": 2007,
         "ability": 87,
-        "jockeyId": "johnny-murtagh",
+        "jockeyId": "kieren-fallon",
         "finish": 1
       }
     ]

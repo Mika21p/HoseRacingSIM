@@ -28,6 +28,20 @@
         "finish": 1
       },
       {
+        "raceId": "europe-g3-palace-house-stakes",
+        "year": 2013,
+        "ability": 83,
+        "jockeyId": "johnny-murtagh",
+        "finish": 1
+      },
+      {
+        "raceId": "europe-g3-palace-house-stakes",
+        "year": 2014,
+        "ability": 83,
+        "jockeyId": "ryan-moore",
+        "finish": 1
+      },
+      {
         "raceId": "king-charles-iii-stakes",
         "year": 2014,
         "ability": 85,
@@ -38,6 +52,13 @@
         "raceId": "nunthorpe-stakes",
         "year": 2014,
         "ability": 85,
+        "jockeyId": "richard-hughes",
+        "finish": 1
+      },
+      {
+        "raceId": "al-quoz-sprint",
+        "year": 2015,
+        "ability": 84,
         "jockeyId": "richard-hughes",
         "finish": 1
       },

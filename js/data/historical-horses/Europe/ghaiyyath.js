@@ -14,9 +14,23 @@
     },
     "races": [
       {
+        "raceId": "europe-g2-prix-dharcourt",
+        "year": 2019,
+        "ability": 89,
+        "jockeyId": "william-buick",
+        "finish": 1
+      },
+      {
         "raceId": "grand-prix-de-saint-cloud",
         "year": 2019,
         "ability": 89,
+        "jockeyId": "william-buick",
+        "finish": 1
+      },
+      {
+        "raceId": "grosser-preis-von-baden",
+        "year": 2019,
+        "ability": 90,
         "jockeyId": "william-buick",
         "finish": 1
       },

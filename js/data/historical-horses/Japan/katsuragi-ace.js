@@ -13,6 +13,7 @@
       note: "日本调教马首次日本杯制霸，1984 年中距离代表。"
     },
     races: [
+      { raceId: "kyoto-shimbun-hai", year: 1983, ability: 80, jockeyId: "katsuichi-nishiura", finish: 1 },
       { raceId: "osaka-hai", year: 1984, ability: 80, jockeyId: "katsuichi-nishiura", finish: 1 },
       { raceId: "keihan-hai", year: 1984, ability: 80, jockeyId: "katsuichi-nishiura", finish: 1 },
       { raceId: "takarazuka-kinen", year: 1984, ability: 82, jockeyId: "katsuichi-nishiura", finish: 1 },

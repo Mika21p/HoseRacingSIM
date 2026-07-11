@@ -14,6 +14,13 @@
     },
     "races": [
       {
+        "raceId": "hakodate-sprint-stakes",
+        "year": 2008,
+        "ability": 78,
+        "jockeyId": "yasunari-iwata",
+        "finish": 1
+      },
+      {
         "raceId": "swan-stakes",
         "year": 2009,
         "ability": 78,

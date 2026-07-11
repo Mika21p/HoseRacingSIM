@@ -21,6 +21,13 @@
         "finish": 1
       },
       {
+        "raceId": "prix-dispahan",
+        "year": 2015,
+        "ability": 86,
+        "jockeyId": "maxime-guyon",
+        "finish": 1
+      },
+      {
         "raceId": "queen-anne-stakes",
         "year": 2015,
         "ability": 87,

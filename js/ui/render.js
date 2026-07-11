@@ -330,11 +330,28 @@
     `;
   }
 
+  function isReturnTravel(travel) {
+    return !!travel && !!travel.active && (travel.kind === "return" || travel.returnToStable);
+  }
+
+  function travelPlanLabel(travel) {
+    return isReturnTravel(travel) ? "返厩检疫" : "远征+检疫";
+  }
+
+  function travelBadgeLabel(travel, locked) {
+    if (isReturnTravel(travel)) return locked ? "返厩检疫中" : "需返厩检疫";
+    return locked ? "远征检疫中" : "需远征检疫";
+  }
+
+  function travelLockedText(travel) {
+    return isReturnTravel(travel) ? "正在返厩检疫中，本场比赛不能取消。" : "正在远征检疫中，本场比赛不能取消。";
+  }
+
   function raceOptionLabel(plan, mode) {
     const challengeLabel = plan.challenge ? "[格上] " : "";
     const priorityLabel = plan.priorityEntry ? "[优先] " : "";
     const expeditionLabel = plan.travel && plan.travel.active
-      ? "[远征+检疫] "
+      ? `[${travelPlanLabel(plan.travel)}] `
       : (plan.expedition && plan.expedition.active ? "[远征] " : "");
     return `${expeditionLabel}${challengeLabel}${priorityLabel}${plan.schedule.label} · ${raceDisplayName(plan.race, mode)} · ${plan.race.grade} · ${plan.race.ageRule}${raceRestrictionLabel(plan.race)} · ${raceSurfaceDistanceLabel(plan.race)} · ${raceVenueLabel(plan.race)}`;
   }
@@ -577,7 +594,7 @@
             ${plan.travel && plan.travel.active && plan.travel.prepLabel ? `<span>检疫预备：${plan.travel.prepLabel}</span>` : ""}
             ${plan.challenge ? `<em>格上</em>` : ""}
             ${plan.priorityEntry ? `<em>优先</em>` : ""}
-            ${plan.travel && plan.travel.active ? `<em>远征+检疫</em>` : (plan.expedition && plan.expedition.active ? `<em>远征</em>` : "")}
+            ${plan.travel && plan.travel.active ? `<em>${travelPlanLabel(plan.travel)}</em>` : (plan.expedition && plan.expedition.active ? `<em>远征</em>` : "")}
           </button>
         `).join("")}
       </div>
@@ -980,7 +997,7 @@
         <div class="scheduled-race">
           <span class="badge">已报名</span>
           ${payload.challenge ? `<span class="badge">格上通过</span>` : ""}
-          ${travel && travel.active ? `<span class="badge">${travelLocked ? "远征检疫中" : "需远征检疫"}</span>` : (payload.expedition && payload.expedition.active ? `<span class="badge">远征</span>` : "")}
+          ${travel && travel.active ? `<span class="badge">${travelBadgeLabel(travel, travelLocked)}</span>` : (payload.expedition && payload.expedition.active ? `<span class="badge">远征</span>` : "")}
           <h2>${payload.schedule.label} · ${raceDisplayName(race, raceNameMode)}</h2>
           <p>${race.grade} · ${race.ageRule}${raceRestrictionLabel(race)} · ${raceSurfaceDistanceLabel(race)} · ${raceVenueLabel(race)}</p>
           ${travelNote}
@@ -990,7 +1007,7 @@
           ${travelLocked ? "" : `<button class="secondary" id="cancelRegistrationBtn">取消报名</button>`}
           <button class="secondary" id="retireBtn">退役</button>
         </div>
-        <p class="muted">${travelLocked ? "正在远征检疫中，本场比赛不能取消。" : "到达报名赛事回合时会自动进行比赛。"}</p>
+        <p class="muted">${travelLocked ? travelLockedText(travel) : "到达报名赛事回合时会自动进行比赛。"}</p>
       `;
       return;
     }

@@ -13,6 +13,9 @@
       "note": "稳定耐战的欧洲中距离雌马，爱尔兰冠军锦标连胜。"
     },
     "races": [
+      { "raceId": "british-champions-fillies-mares-stakes", "year": 2018, "ability": 85, "jockeyId": "ryan-moore", "finish": 1 },
+      { "raceId": "europe-g2-mooresbridge-stakes", "year": 2019, "ability": 84, "jockeyId": "ryan-moore", "finish": 1 },
+      { "raceId": "champion-stakes", "year": 2019, "ability": 86, "jockeyId": "donnacha-obrien", "finish": 1 },
       {
         "raceId": "tattersalls-gold-cup",
         "year": 2019,

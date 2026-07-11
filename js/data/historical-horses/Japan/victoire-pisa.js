@@ -21,13 +21,6 @@
               "finish": 1
           },
           {
-              "raceId": "hopeful-stakes",
-              "year": 2009,
-              "ability": 84,
-              "jockeyId": "take-yutaka",
-              "finish": 1
-          },
-          {
               "raceId": "yayoi-sho",
               "year": 2010,
               "ability": 85,

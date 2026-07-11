@@ -21,9 +21,23 @@
         "finish": 1
       },
       {
+        "raceId": "ashland-stakes",
+        "year": 1983,
+        "ability": 89,
+        "jockeyId": "jeffrey-fell",
+        "finish": 1
+      },
+      {
         "raceId": "kentucky-oaks",
         "year": 1983,
         "ability": 89,
+        "jockeyId": "eddie-delahoussaye",
+        "finish": 1
+      },
+      {
+        "raceId": "spinster-stakes",
+        "year": 1984,
+        "ability": 90,
         "jockeyId": "eddie-delahoussaye",
         "finish": 1
       },

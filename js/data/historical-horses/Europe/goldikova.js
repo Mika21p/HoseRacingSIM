@@ -17,12 +17,15 @@
       { raceId: "prix-du-moulin", year: 2008, ability: 87, jockeyId: "olivier-peslier", finish: 1 },
       { raceId: "breeders-cup-mile", year: 2008, ability: 87, jockeyId: "olivier-peslier", finish: 1 },
       { raceId: "prix-jacques-le-marois", year: 2009, ability: 88, jockeyId: "olivier-peslier", finish: 1 },
+      { raceId: "falmouth-stakes", year: 2009, ability: 88, jockeyId: "olivier-peslier", finish: 1 },
       { raceId: "prix-rothschild", year: 2009, ability: 88, jockeyId: "olivier-peslier", finish: 1 },
       { raceId: "breeders-cup-mile", year: 2009, ability: 88, jockeyId: "olivier-peslier", finish: 1 },
+      { raceId: "prix-dispahan", year: 2010, ability: 88, jockeyId: "olivier-peslier", finish: 1 },
       { raceId: "queen-anne-stakes", year: 2010, ability: 88, jockeyId: "olivier-peslier", finish: 1 },
       { raceId: "prix-rothschild", year: 2010, ability: 88, jockeyId: "olivier-peslier", finish: 1 },
       { raceId: "prix-de-la-foret", year: 2010, ability: 88, jockeyId: "olivier-peslier", finish: 1 },
       { raceId: "breeders-cup-mile", year: 2010, ability: 88, jockeyId: "olivier-peslier", finish: 1 },
+      { raceId: "prix-dispahan", year: 2011, ability: 88, jockeyId: "olivier-peslier", finish: 1 },
       { raceId: "prix-rothschild", year: 2011, ability: 87, jockeyId: "olivier-peslier", finish: 1 }
     ]
   });

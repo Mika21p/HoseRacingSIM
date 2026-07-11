@@ -28,6 +28,13 @@
         "finish": 1
       },
       {
+        "raceId": "europe-g2-grand-prix-de-chantilly",
+        "year": 2018,
+        "ability": 90,
+        "jockeyId": "pierre-charles-boudot",
+        "finish": 1
+      },
+      {
         "raceId": "prix-ganay",
         "year": 2019,
         "ability": 91,

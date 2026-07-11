@@ -14,6 +14,13 @@
     },
     "races": [
       {
+        "raceId": "europe-g2-prix-saint-alary",
+        "year": 2009,
+        "ability": 87,
+        "jockeyId": "christophe-lemaire",
+        "finish": 1
+      },
+      {
         "raceId": "prix-de-diane",
         "year": 2009,
         "ability": 89,

@@ -13,6 +13,7 @@
       "note": "2015年皇家雅士谷短途与阿贝耶大奖赛冠军。"
     },
     "races": [
+      { "raceId": "europe-g3-palace-house-stakes", "year": 2015, "ability": 82, "jockeyId": "martin-harley", "finish": 1 },
       {
         "raceId": "king-charles-iii-stakes",
         "year": 2015,

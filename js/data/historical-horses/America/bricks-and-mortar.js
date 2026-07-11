@@ -14,6 +14,13 @@
     },
     "races": [
       {
+        "raceId": "america-listed-saranac-stakes",
+        "year": 2017,
+        "ability": 83,
+        "jockeyId": "joel-rosario",
+        "finish": 1
+      },
+      {
         "raceId": "pegasus-world-cup-turf",
         "year": 2019,
         "ability": 84,

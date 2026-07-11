@@ -14,6 +14,13 @@
     },
     "races": [
       {
+        "raceId": "silk-road-stakes",
+        "year": 2014,
+        "ability": 79,
+        "jockeyId": "yasunari-iwata",
+        "finish": 1
+      },
+      {
         "raceId": "victoria-mile",
         "year": 2015,
         "ability": 80,

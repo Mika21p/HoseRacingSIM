@@ -28,6 +28,13 @@
         "finish": 1
       },
       {
+        "raceId": "america-g2-rebel-stakes",
+        "year": 2015,
+        "ability": 91,
+        "jockeyId": "victor-espinoza",
+        "finish": 1
+      },
+      {
         "raceId": "arkansas-derby",
         "year": 2015,
         "ability": 91,

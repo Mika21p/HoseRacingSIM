@@ -14,8 +14,22 @@
     },
     "races": [
       {
+        "raceId": "del-mar-futurity",
+        "year": 2009,
+        "ability": 86,
+        "jockeyId": "garrett-gomez",
+        "finish": 1
+      },
+      {
         "raceId": "american-pharoah-stakes",
         "year": 2009,
+        "ability": 85,
+        "jockeyId": "garrett-gomez",
+        "finish": 1
+      },
+      {
+        "raceId": "america-g2-rebel-stakes",
+        "year": 2010,
         "ability": 85,
         "jockeyId": "garrett-gomez",
         "finish": 1
@@ -24,6 +38,13 @@
         "raceId": "preakness-stakes",
         "year": 2010,
         "ability": 87,
+        "jockeyId": "martin-garcia",
+        "finish": 1
+      },
+      {
+        "raceId": "america-g3-indiana-derby",
+        "year": 2010,
+        "ability": 86,
         "jockeyId": "martin-garcia",
         "finish": 1
       },

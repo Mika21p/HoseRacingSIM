@@ -21,6 +21,27 @@
         "finish": 1
       },
       {
+        "raceId": "america-listed-laurel-futurity-stakes",
+        "year": 1978,
+        "ability": 96,
+        "jockeyId": "ron-franklin",
+        "finish": 1
+      },
+      {
+        "raceId": "america-listed-hutcheson-stakes",
+        "year": 1979,
+        "ability": 95,
+        "jockeyId": "ron-franklin",
+        "finish": 1
+      },
+      {
+        "raceId": "america-g2-fountain-of-youth-stakes",
+        "year": 1979,
+        "ability": 95,
+        "jockeyId": "ron-franklin",
+        "finish": 1
+      },
+      {
         "raceId": "florida-derby",
         "year": 1979,
         "ability": 95,

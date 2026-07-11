@@ -28,6 +28,13 @@
         "finish": 1
       },
       {
+        "raceId": "nassau-stakes",
+        "year": 2003,
+        "ability": 85,
+        "jockeyId": "kieren-fallon",
+        "finish": 1
+      },
+      {
         "raceId": "lockinge-stakes",
         "year": 2004,
         "ability": 85,

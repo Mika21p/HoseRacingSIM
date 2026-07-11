@@ -14,6 +14,20 @@
     },
     "races": [
       {
+        "raceId": "america-listed-santa-ynez-stakes",
+        "year": 2018,
+        "ability": 86,
+        "jockeyId": "mike-smith",
+        "finish": 1
+      },
+      {
+        "raceId": "america-g3-santa-ysabel-stakes",
+        "year": 2018,
+        "ability": 86,
+        "jockeyId": "mike-smith",
+        "finish": 1
+      },
+      {
         "raceId": "cotillion-stakes",
         "year": 2018,
         "ability": 87,

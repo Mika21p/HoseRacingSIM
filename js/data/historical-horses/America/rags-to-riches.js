@@ -14,6 +14,13 @@
     },
     "races": [
       {
+        "raceId": "america-listed-las-virgenes-stakes",
+        "year": 2007,
+        "ability": 79,
+        "jockeyId": "garrett-gomez",
+        "finish": 1
+      },
+      {
         "raceId": "kentucky-oaks",
         "year": 2007,
         "ability": 80,

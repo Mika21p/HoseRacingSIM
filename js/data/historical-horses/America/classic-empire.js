@@ -14,6 +14,13 @@
     },
     "races": [
       {
+        "raceId": "america-listed-bashford-manor-stakes",
+        "year": 2016,
+        "ability": 84,
+        "jockeyId": "julien-leparoux",
+        "finish": 1
+      },
+      {
         "raceId": "breeders-futurity-stakes",
         "year": 2016,
         "ability": 84,

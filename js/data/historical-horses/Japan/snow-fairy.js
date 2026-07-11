@@ -35,10 +35,24 @@
         "finish": 1
       },
       {
+        "raceId": "hong-kong-cup",
+        "year": 2010,
+        "ability": 86,
+        "jockeyId": "ryan-moore",
+        "finish": 1
+      },
+      {
         "raceId": "queen-elizabeth-ii-cup",
         "year": 2011,
         "ability": 86,
         "jockeyId": "ryan-moore",
+        "finish": 1
+      },
+      {
+        "raceId": "irish-champion-stakes",
+        "year": 2012,
+        "ability": 86,
+        "jockeyId": "frankie-dettori",
         "finish": 1
       }
     ]

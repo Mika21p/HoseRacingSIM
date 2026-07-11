@@ -14,6 +14,13 @@
     },
     "races": [
       {
+        "raceId": "uae-2000-guineas",
+        "year": 2001,
+        "ability": 88,
+        "jockeyId": "frankie-dettori",
+        "finish": 1
+      },
+      {
         "raceId": "al-maktoum-challenge",
         "year": 2002,
         "ability": 88,

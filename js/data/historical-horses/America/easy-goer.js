@@ -28,6 +28,27 @@
         "finish": 1
       },
       {
+        "raceId": "america-listed-swale-stakes",
+        "year": 1989,
+        "ability": 92,
+        "jockeyId": "pat-day",
+        "finish": 1
+      },
+      {
+        "raceId": "america-g3-gotham-stakes",
+        "year": 1989,
+        "ability": 93,
+        "jockeyId": "pat-day",
+        "finish": 1
+      },
+      {
+        "raceId": "america-g2-wood-memorial-stakes",
+        "year": 1989,
+        "ability": 94,
+        "jockeyId": "pat-day",
+        "finish": 1
+      },
+      {
         "raceId": "belmont-stakes",
         "year": 1989,
         "ability": 94,

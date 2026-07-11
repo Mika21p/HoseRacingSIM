@@ -14,6 +14,13 @@
     },
     "races": [
       {
+        "raceId": "kyoto-nisai-stakes",
+        "year": 2023,
+        "ability": 83,
+        "jockeyId": "joao-moreira",
+        "finish": 1
+      },
+      {
         "raceId": "neom-turf-cup",
         "year": 2025,
         "ability": 85,

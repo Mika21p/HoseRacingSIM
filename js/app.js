@@ -656,6 +656,14 @@
   function confirmTravelPreparation(plan) {
     const travel = plan && plan.travel;
     if (!travel || !travel.active) return true;
+    const isReturnTravel = ns.RegionRules && ns.RegionRules.isReturnTravel
+      ? ns.RegionRules.isReturnTravel(state.career, travel)
+      : !!travel.returnToStable;
+    if (isReturnTravel) {
+      return window.confirm(
+        `当前位于${travel.fromLabel}。报名这场比赛将返回当前厩舍所在地${travel.toLabel}，并立即进入返厩检疫。\n进入检疫后将不能取消本场比赛。\n确定返回并报名吗？`
+      );
+    }
     const prepText = travel.prepLabel ? `\n检疫预备回合：${travel.prepLabel}` : "";
     return window.confirm(
       `这场比赛需要从${travel.fromLabel}前往${travel.toLabel}，并提前 1 个回合进行远征+检疫。${prepText}\n进入检疫回合后将不能取消本场比赛。\n确定报名吗？`
@@ -665,6 +673,18 @@
   function isScheduledTravelLocked(payload) {
     if (!state.career || !payload || !ns.RegionRules || !ns.RegionRules.isTravelPreparationLocked) return false;
     return ns.RegionRules.isTravelPreparationLocked(state.career, payload);
+  }
+
+  function isReturnTravelPayload(payload) {
+    const travel = payload && payload.travel;
+    if (!travel || !travel.active) return false;
+    return ns.RegionRules && ns.RegionRules.isReturnTravel
+      ? ns.RegionRules.isReturnTravel(state.career, travel)
+      : !!travel.returnToStable;
+  }
+
+  function travelLockedText(payload) {
+    return isReturnTravelPayload(payload) ? "返厩检疫中" : "远征检疫中";
   }
 
   function markScheduledTravelPreparation() {
@@ -796,7 +816,7 @@
     if (hasTriggeredPreRaceFatigue(preRaceCondition)) {
       saveGame({ silent: true });
       if (isScheduledTravelLocked(payload)) {
-        window.alert("本场赛前状态不佳。\n由于已经进入远征检疫中，本场比赛不能取消。");
+        window.alert(`本场赛前状态不佳。\n由于已经进入${travelLockedText(payload)}，本场比赛不能取消。`);
       } else if (!window.confirm("本场赛前状态不佳。\n是否仍然出赛？")) {
         cancelScheduledRaceForPreRaceCondition(payload);
         return true;
@@ -833,7 +853,7 @@
   function cancelRegistration() {
     if (!state.career || state.career.retired) return;
     if (isScheduledTravelLocked(state.career.scheduledRace)) {
-      window.alert("当前已进入远征检疫中，不能取消本场比赛。");
+      window.alert(`当前已进入${travelLockedText(state.career.scheduledRace)}，不能取消本场比赛。`);
       return;
     }
     state.career.scheduledRace = null;

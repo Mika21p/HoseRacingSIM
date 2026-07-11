@@ -28,6 +28,13 @@
         "finish": 1
       },
       {
+        "raceId": "poule-dessai-des-pouliches",
+        "year": 1987,
+        "ability": 89,
+        "jockeyId": "freddy-head",
+        "finish": 1
+      },
+      {
         "raceId": "prix-jacques-le-marois",
         "year": 1987,
         "ability": 89,
@@ -45,6 +52,13 @@
         "raceId": "breeders-cup-mile",
         "year": 1987,
         "ability": 90,
+        "jockeyId": "freddy-head",
+        "finish": 1
+      },
+      {
+        "raceId": "prix-dispahan",
+        "year": 1988,
+        "ability": 89,
         "jockeyId": "freddy-head",
         "finish": 1
       },

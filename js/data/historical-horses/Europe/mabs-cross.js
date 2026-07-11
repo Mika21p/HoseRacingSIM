@@ -14,10 +14,24 @@
     },
     "races": [
       {
+        "raceId": "europe-g3-palace-house-stakes",
+        "year": 2018,
+        "ability": 81,
+        "jockeyId": "paul-mulrennan",
+        "finish": 1
+      },
+      {
         "raceId": "prix-de-labbaye",
         "year": 2018,
         "ability": 83,
         "jockeyId": "gerald-mosse",
+        "finish": 1
+      },
+      {
+        "raceId": "europe-g3-palace-house-stakes",
+        "year": 2019,
+        "ability": 81,
+        "jockeyId": "paul-mulrennan",
         "finish": 1
       }
     ]

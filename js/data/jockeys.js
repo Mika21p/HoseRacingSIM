@@ -173,6 +173,21 @@
       ]
     },
     {
+      id: "hiroyuki-uemura",
+      name: "上村洋行",
+      periods: [
+        { from: 1992, to: 2014, ability: 60 }
+      ]
+    },
+    {
+      id: "yuji-hishida",
+      name: "菱田裕二",
+      periods: [
+        { from: 2012, to: 2023, ability: 60 },
+        { from: 2024, to: 2026, ability: 70 }
+      ]
+    },
+    {
       id: "hiroyuki-uchida",
       name: "内田博幸",
       periods: [
@@ -186,7 +201,7 @@
       id: "sueo-masuzawa",
       name: "増沢末夫",
       periods: [
-        { from: 1975, to: 1991, ability: 70 }
+        { from: 1973, to: 1991, ability: 70 }
       ]
     },
     {
@@ -379,14 +394,14 @@
       id: "masahiro-ikegami",
       name: "池上昌弘",
       periods: [
-        { from: 1966, to: 1974, ability: 50 }
+        { from: 1966, to: 1976, ability: 50 }
       ]
     },
     {
       id: "seiichi-nakanowatari",
       name: "中野渡清一",
       periods: [
-        { from: 1970, to: 1975, ability: 50 },
+        { from: 1967, to: 1975, ability: 50 },
         { from: 1976, to: 1978, ability: 60 },
         { from: 1979, to: 1985, ability: 50 }
       ]
@@ -447,6 +462,38 @@
       periods: [
         { from: 2005, to: 2008, ability: 80 },
         { from: 2009, to: 2026, ability: 90 }
+      ]
+    },
+    {
+      id: "edmondo-botti",
+      name: "E. Botti",
+      periods: [
+        { from: 1987, to: 1998, ability: 85 },
+        { from: 1999, to: 2007, ability: 87 }
+      ]
+    },
+    {
+      id: "donnacha-obrien",
+      name: "D. O'Brien",
+      periods: [
+        { from: 2014, to: 2017, ability: 84 },
+        { from: 2018, to: 2019, ability: 88 }
+      ]
+    },
+    {
+      id: "andrea-atzeni",
+      name: "A. Atzeni",
+      periods: [
+        { from: 2008, to: 2011, ability: 83 },
+        { from: 2012, to: 2026, ability: 87 }
+      ]
+    },
+    {
+      id: "jamie-kah",
+      name: "J. Kah",
+      periods: [
+        { from: 2011, to: 2018, ability: 83 },
+        { from: 2019, to: 2026, ability: 87 }
       ]
     },
     {
@@ -1535,6 +1582,16 @@
       ]
     },
     {
+      id: "nash-rawiller",
+      name: "N. Rawiller",
+      periods: [
+        { from: 1992, to: 2006, ability: 85 },
+        { from: 2007, to: 2014, ability: 89 },
+        { from: 2015, to: 2017, ability: 87 },
+        { from: 2019, to: 2026, ability: 88 }
+      ]
+    },
+    {
       id: "luke-nolen",
       name: "L. Nolen",
       periods: [
@@ -1579,6 +1636,14 @@
       periods: [
         { from: 2002, to: 2014, ability: 80 },
         { from: 2015, to: 2026, ability: 84 }
+      ]
+    },
+    {
+      id: "gregory-benoist",
+      name: "G. Benoist",
+      periods: [
+        { from: 1999, to: 2012, ability: 82 },
+        { from: 2013, to: 2022, ability: 87 }
       ]
     },
     {
@@ -1778,6 +1843,52 @@
       ]
     },
     {
+      id: "eddie-maple",
+      name: "E. Maple",
+      periods: [
+        { from: 1965, to: 1970, ability: 82 },
+        { from: 1971, to: 1998, ability: 87 }
+      ]
+    },
+    {
+      id: "steve-brooks",
+      name: "S. Brooks",
+      periods: [
+        { from: 1938, to: 1963, ability: 89 }
+      ]
+    },
+    {
+      id: "jose-caraballo",
+      name: "J. Caraballo",
+      periods: [
+        { from: 1984, to: 2018, ability: 82 }
+      ]
+    },
+    {
+      id: "manuel-ycaza",
+      name: "M. Ycaza",
+      periods: [
+        { from: 1956, to: 1971, ability: 89 },
+        { from: 1983, to: 1983, ability: 84 }
+      ]
+    },
+    {
+      id: "cornelio-velasquez",
+      name: "C. Velasquez",
+      periods: [
+        { from: 1990, to: 1995, ability: 82 },
+        { from: 1996, to: 2016, ability: 85 }
+      ]
+    },
+    {
+      id: "eibar-coa",
+      name: "E. Coa",
+      periods: [
+        { from: 1992, to: 2005, ability: 83 },
+        { from: 2006, to: 2011, ability: 86 }
+      ]
+    },
+    {
       id: "jorge-velasquez",
       name: "J. Velasquez",
       periods: [
@@ -1917,6 +2028,8 @@
     "yasunari-iwata": ["japan"],
     "hideaki-miyuki": ["japan"],
     "hitoshi-matoba": ["japan"],
+    "hiroyuki-uemura": ["japan"],
+    "yuji-hishida": ["japan"],
     "hiroyuki-uchida": ["japan"],
     "sueo-masuzawa": ["japan"],
     "suguru-hamanaka": ["japan"],
@@ -1950,6 +2063,10 @@
     "yutaka-yoshida": ["japan"],
     "joao-moreira": ["hongkong"],
     "umberto-rispoli": ["europe", "usa"],
+    "edmondo-botti": ["europe"],
+    "donnacha-obrien": ["europe"],
+    "andrea-atzeni": ["europe", "hongkong"],
+    "jamie-kah": ["australia"],
     "okabe-yukio": ["japan"],
     "shibata-masato": ["japan"],
     "kawachi-hiroshi": ["japan"],
@@ -2084,12 +2201,14 @@
     "wayne-d-wright": ["usa"],
     "armando-c-glades": ["usa"],
     "jay-ford": ["australia"],
+    "nash-rawiller": ["australia"],
     "luke-nolen": ["australia"],
     "adam-kirby": ["europe"],
     "cieren-fallon": ["europe"],
     "jason-hart": ["europe"],
     "willie-carson": ["europe"],
     "paul-mulrennan": ["europe"],
+    "gregory-benoist": ["europe"],
     "kevin-stott": ["europe"],
     "callum-rodriguez": ["europe"],
     "tom-eaves": ["europe"],
@@ -2115,6 +2234,12 @@
     "eric-guerin": ["usa"],
     "braulio-baeza": ["usa"],
     "heliodoro-gustines": ["usa"],
+    "eddie-maple": ["usa"],
+    "steve-brooks": ["usa"],
+    "jose-caraballo": ["usa"],
+    "manuel-ycaza": ["usa"],
+    "cornelio-velasquez": ["usa"],
+    "eibar-coa": ["usa"],
     "jorge-velasquez": ["usa"],
     "red-pollard": ["usa"],
     "flavien-prat": ["usa", "europe"],

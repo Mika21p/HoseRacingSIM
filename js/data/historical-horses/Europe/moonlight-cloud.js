@@ -21,6 +21,13 @@
         "finish": 1
       },
       {
+        "raceId": "europe-g3-prix-du-palais-royal",
+        "year": 2012,
+        "ability": 90,
+        "jockeyId": "thierry-jarnet",
+        "finish": 1
+      },
+      {
         "raceId": "prix-maurice-de-gheest",
         "year": 2012,
         "ability": 91,

@@ -21,6 +21,34 @@
         "finish": 1
       },
       {
+        "raceId": "kobe-shimbun-hai",
+        "year": 2007,
+        "ability": 80,
+        "jockeyId": "take-yutaka",
+        "finish": 1
+      },
+      {
+        "raceId": "kokura-kinen",
+        "year": 2008,
+        "ability": 80,
+        "jockeyId": "kenichi-ikezoe",
+        "finish": 1
+      },
+      {
+        "raceId": "challenge-cup",
+        "year": 2008,
+        "ability": 80,
+        "jockeyId": "kenichi-ikezoe",
+        "finish": 1
+      },
+      {
+        "raceId": "osaka-hai",
+        "year": 2009,
+        "ability": 81,
+        "jockeyId": "kenichi-ikezoe",
+        "finish": 1
+      },
+      {
         "raceId": "takarazuka-kinen",
         "year": 2009,
         "ability": 82,

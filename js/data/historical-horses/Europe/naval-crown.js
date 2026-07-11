@@ -13,6 +13,7 @@
       "note": "2022年女王伊丽莎白二世禧年锦标冠军。"
     },
     "races": [
+      { "raceId": "al-fahidi-fort", "year": 2022, "ability": 82, "jockeyId": "william-buick", "finish": 1 },
       {
         "raceId": "queen-elizabeth-ii-jubilee-stakes",
         "year": 2022,

@@ -13,6 +13,7 @@
       "note": "2010年法国德比冠军，法国经典赛代表。"
     },
     "races": [
+      { "raceId": "poule-dessai-des-poulains", "year": 2010, "ability": 85, "jockeyId": "maxime-guyon", "finish": 1 },
       {
         "raceId": "prix-du-jockey-club",
         "year": 2010,

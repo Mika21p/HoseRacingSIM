@@ -14,6 +14,13 @@
     },
     "races": [
       {
+        "raceId": "america-g2-saratoga-special-stakes",
+        "year": 2020,
+        "ability": 86,
+        "jockeyId": "joel-rosario",
+        "finish": 1
+      },
+      {
         "raceId": "hopeful-stakes-us",
         "year": 2020,
         "ability": 86,
@@ -24,6 +31,13 @@
         "raceId": "champagne-stakes-us",
         "year": 2020,
         "ability": 86,
+        "jockeyId": "joel-rosario",
+        "finish": 1
+      },
+      {
+        "raceId": "america-g2-pat-day-mile-stakes",
+        "year": 2021,
+        "ability": 87,
         "jockeyId": "joel-rosario",
         "finish": 1
       },
