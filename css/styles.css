@@ -77,6 +77,43 @@ select {
   font-size: 12px;
 }
 
+.data-load-notice {
+  position: fixed;
+  top: 14px;
+  right: 14px;
+  z-index: 30;
+  display: grid;
+  width: min(460px, calc(100vw - 28px));
+  gap: 14px;
+  border: 1px solid #9d5a36;
+  border-radius: 8px;
+  background: #251913;
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.42);
+  padding: 16px;
+}
+
+.data-load-notice[hidden] {
+  display: none;
+}
+
+.data-load-notice strong {
+  color: #ffd4b8;
+  font-size: 16px;
+}
+
+.data-load-notice p {
+  margin: 6px 0 0;
+  color: #e8c8b4;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.data-load-notice-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
 #changelogContent,
 .changelog-section {
   display: grid;
@@ -1498,6 +1535,13 @@ th {
 }
 
 @media (max-width: 760px) {
+  .data-load-notice {
+    top: 76px;
+    right: 16px;
+    left: 16px;
+    width: auto;
+  }
+
   .app-shell {
     display: flex;
     flex-direction: column;

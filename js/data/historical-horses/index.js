@@ -411,20 +411,29 @@
     return new Promise((resolve, reject) => {
       const script = document.createElement("script");
       script.src = `${basePath}${file}`;
-      script.onload = resolve;
+      script.onload = () => resolve(file);
       script.onerror = () => reject(new Error(`Failed to load ${file}`));
       document.head.appendChild(script);
     });
   }
 
   ns.HistoricalHorseFiles = files.slice();
-  ns.HistoricalHorsesReady = Promise.all(files.map(loadScript))
-    .then(() => {
-      ns.HistoricalHorses = ns.HistoricalHorseRegistry.all();
-      return ns.HistoricalHorses;
-    })
-    .catch((error) => {
-      console.error(error);
+  ns.HistoricalHorseLoadReport = null;
+  ns.HistoricalHorsesReady = Promise.allSettled(files.map(loadScript))
+    .then((results) => {
+      const failedFiles = results.reduce((items, result, index) => {
+        if (result.status === "rejected") items.push(files[index]);
+        return items;
+      }, []);
+      ns.HistoricalHorseLoadReport = {
+        total: files.length,
+        loaded: files.length - failedFiles.length,
+        failed: failedFiles.length,
+        failedFiles
+      };
+      if (failedFiles.length > 0) {
+        console.error("Historical horse files failed to load:", failedFiles);
+      }
       ns.HistoricalHorses = ns.HistoricalHorseRegistry.all();
       return ns.HistoricalHorses;
     });

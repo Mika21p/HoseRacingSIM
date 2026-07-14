@@ -10,7 +10,7 @@
   <div class="changelog-widget">
     <div>
       <button class="secondary changelog-toggle" id="changelogToggleBtn" type="button" aria-expanded="false">更新日志</button>
-      <small>上次更新时间 7月12日 1点 · 反馈群：1050162087</small>
+      <small>上次更新时间 7月14日 8点 · 反馈群：1050162087</small>
     </div>
     <section class="changelog-panel" id="changelogPanel" hidden>
       <div class="changelog-header">
@@ -20,6 +20,16 @@
       <div id="changelogContent"></div>
     </section>
   </div>
+  <aside class="data-load-notice" id="historicalDataLoadNotice" role="alert" aria-live="assertive" hidden>
+    <div>
+      <strong>史实对手资料加载不完整</strong>
+      <p id="historicalDataLoadNoticeText">部分资料加载失败，继续游戏可能出现随机对手，建议刷新页面重新加载。</p>
+    </div>
+    <div class="data-load-notice-actions">
+      <button id="historicalDataReloadBtn" type="button">刷新页面</button>
+      <button class="secondary" id="historicalDataNoticeCloseBtn" type="button">关闭</button>
+    </div>
+  </aside>
   <main class="app-shell" id="app"></main>
 
   <script src="js/utils/random.js"></script>

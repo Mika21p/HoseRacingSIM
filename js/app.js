@@ -1204,6 +1204,23 @@
     }
   }
 
+  function bindHistoricalDataLoadNotice() {
+    const notice = document.getElementById("historicalDataLoadNotice");
+    const text = document.getElementById("historicalDataLoadNoticeText");
+    const reloadButton = document.getElementById("historicalDataReloadBtn");
+    const closeButton = document.getElementById("historicalDataNoticeCloseBtn");
+    const report = ns.HistoricalHorseLoadReport;
+    if (!notice || !report || report.failed <= 0) return;
+    if (text) {
+      text.textContent = `${report.failed} 个史实对手资料文件加载失败，继续游戏可能出现随机对手，建议刷新页面重新加载。`;
+    }
+    notice.hidden = false;
+    if (reloadButton) reloadButton.addEventListener("click", () => window.location.reload());
+    if (closeButton) closeButton.addEventListener("click", () => {
+      notice.hidden = true;
+    });
+  }
+
   function bindSaveLifecycleEvents() {
     document.addEventListener("visibilitychange", () => {
       if (document.visibilityState === "hidden") saveGame({ silent: true });
@@ -1221,6 +1238,7 @@
         ns.HistoricalOpponentRules.validate();
       }
     }
+    bindHistoricalDataLoadNotice();
     loadSavedGame();
     loadHorseNameLanguage();
     loadRaceNameMode();
