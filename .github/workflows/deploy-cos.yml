@@ -36,6 +36,19 @@ jobs:
           COS_BUCKET: ${{ secrets.COS_BUCKET }}
           COS_REGION: ${{ secrets.COS_REGION }}
         run: |
+          # COSCLI's first run is interactive. Seed its configuration file so
+          # the following commands receive the GitHub Secrets non-interactively.
+          printf '%s\n' \
+            'cos:' \
+            '  base:' \
+            '    secretid: ""' \
+            '    secretkey: ""' \
+            '    sessiontoken: ""' \
+            '    mode: SecretKey' \
+            '    protocol: https' \
+            '  buckets: []' \
+            > "$HOME/.cos.yaml"
+
           ./coscli config set \
             --secret_id "$TENCENT_SECRET_ID" \
             --secret_key "$TENCENT_SECRET_KEY"
