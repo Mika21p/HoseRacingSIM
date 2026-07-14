@@ -14,6 +14,15 @@
   ns.Changelog.entries = [
     {
       date: "2026.7.14",
+      version: "v0.11h",
+      title: "备案信息与自动部署",
+      items: [
+        "页面底部新增备案信息入口，方便查看网站备案资料。",
+        "新增 GitHub Actions 自动部署流程，main 分支的网站页面、样式或脚本更新后会同步发布至腾讯云 COS。"
+      ]
+    },
+    {
+      date: "2026.7.14",
       version: "v0.11g",
       title: "史实对手资料加载提示",
       items: [

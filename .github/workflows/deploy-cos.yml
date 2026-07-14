@@ -1,0 +1,50 @@
+name: Deploy website to Tencent COS
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - index.html
+      - css/**
+      - js/**
+      - .github/workflows/deploy-cos.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get website source
+        uses: actions/checkout@v4
+
+      - name: Install COSCLI
+        run: |
+          curl --fail --location --silent --show-error \
+            https://github.com/tencentyun/coscli/releases/download/v1.0.8/coscli-v1.0.8-linux-amd64 \
+            --output coscli
+          chmod +x coscli
+
+      - name: Upload website files
+        env:
+          TENCENT_SECRET_ID: ${{ secrets.TENCENT_SECRET_ID }}
+          TENCENT_SECRET_KEY: ${{ secrets.TENCENT_SECRET_KEY }}
+          COS_BUCKET: ${{ secrets.COS_BUCKET }}
+          COS_REGION: ${{ secrets.COS_REGION }}
+        run: |
+          ./coscli config set \
+            --secret_id "$TENCENT_SECRET_ID" \
+            --secret_key "$TENCENT_SECRET_KEY"
+          ./coscli config add \
+            --alias website \
+            --bucket "$COS_BUCKET" \
+            --region "$COS_REGION"
+
+          mkdir deploy
+          cp index.html deploy/
+          cp -R css js deploy/
+          ./coscli sync deploy/ cos://website/ --recursive --force
