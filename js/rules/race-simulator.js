@@ -313,9 +313,21 @@
     };
   }
 
-  function createHiddenFieldOpponents(race) {
-    const currentAbility = getBaseGeneratedOpponentRange(race)[0];
-    const lowerAbility = lowerFieldOpponentAbility(race);
+  function highAbilityHistoricalG1FieldStrength(race, opponent) {
+    if (!race || race.raceClass !== "g1" || !opponent || !opponent.historical) return null;
+    if (!Number.isFinite(opponent.ability) || opponent.ability < 88) return null;
+    if (opponent.ability >= 90) return { current: 82, lower: 76 };
+    return { current: 80, lower: 74 };
+  }
+
+  function createHiddenFieldOpponents(race, opponent) {
+    const boostedStrength = highAbilityHistoricalG1FieldStrength(race, opponent);
+    const currentAbility = boostedStrength
+      ? boostedStrength.current
+      : getBaseGeneratedOpponentRange(race)[0];
+    const lowerAbility = boostedStrength
+      ? boostedStrength.lower
+      : lowerFieldOpponentAbility(race);
     return [
       createHiddenFieldOpponent(race, currentAbility, "current", 1),
       createHiddenFieldOpponent(race, currentAbility, "current", 2),
@@ -568,7 +580,7 @@
     const playerJockey = context.playerJockey;
     const playerEntry = context.playerEntry;
     const playerCalc = context.playerCalc;
-    const fieldOpponents = createHiddenFieldOpponents(race);
+    const fieldOpponents = createHiddenFieldOpponents(race, opponent);
     const entries = [
       playerEntry,
       opponentEntry(opponent)

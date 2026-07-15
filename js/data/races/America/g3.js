@@ -283,6 +283,32 @@
       "sexRestriction": "牝马"
     },
     {
+      "id": "america-g3-dueling-grounds-derby",
+      "nameOriginal": "Dueling Grounds Derby",
+      "nameZh": "决斗场地德比",
+      "grade": "G3",
+      "raceClass": "g3",
+      "month": 9,
+      "half": 1,
+      "surface": "草地",
+      "course": "美国",
+      "distance": 2100,
+      "ageRule": "3岁"
+    },
+    {
+      "id": "america-g3-jockey-club-derby-invitational",
+      "nameOriginal": "Jockey Club Derby Invitational",
+      "nameZh": "骑师俱乐部德比赛",
+      "grade": "G3",
+      "raceClass": "g3",
+      "month": 10,
+      "half": 1,
+      "surface": "草地",
+      "course": "美国",
+      "distance": 2200,
+      "ageRule": "3岁"
+    },
+    {
       "id": "america-g3-los-alamitos-futurity",
       "nameOriginal": "Los Alamitos Futurity",
       "nameZh": "洛斯阿拉米托斯未来锦标",

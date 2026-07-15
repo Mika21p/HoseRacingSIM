@@ -506,6 +506,15 @@
       ]
     },
     {
+      id: "azuma-shinji",
+      name: "東信二",
+      periods: [
+        { from: 1970, to: 1985, ability: 50 },
+        { from: 1986, to: 1989, ability: 60 },
+        { from: 1990, to: 1998, ability: 50 }
+      ]
+    },
+    {
       id: "shibata-masato",
       name: "柴田政人",
       periods: [
@@ -2068,6 +2077,7 @@
     "andrea-atzeni": ["europe", "hongkong"],
     "jamie-kah": ["australia"],
     "okabe-yukio": ["japan"],
+    "azuma-shinji": ["japan"],
     "shibata-masato": ["japan"],
     "kawachi-hiroshi": ["japan"],
     "masaru-honda": ["japan"],

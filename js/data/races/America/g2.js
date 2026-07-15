@@ -203,6 +203,32 @@
       "ageRule": "3岁以上"
     },
     {
+      "id": "america-g2-bowling-green-stakes",
+      "nameOriginal": "Bowling Green Stakes",
+      "nameZh": "保龄绿锦标",
+      "grade": "G2",
+      "raceClass": "g2",
+      "month": 7,
+      "half": 1,
+      "surface": "草地",
+      "course": "美国",
+      "distance": 2200,
+      "ageRule": "4岁以上"
+    },
+    {
+      "id": "america-g2-united-nations-stakes",
+      "nameOriginal": "United Nations Stakes",
+      "nameZh": "联合国锦标",
+      "grade": "G2",
+      "raceClass": "g2",
+      "month": 7,
+      "half": 2,
+      "surface": "草地",
+      "course": "美国",
+      "distance": 2200,
+      "ageRule": "3岁以上"
+    },
+    {
       "id": "america-g2-jim-dandy-stakes",
       "nameOriginal": "Jim Dandy Stakes",
       "nameZh": "吉姆丹迪锦标",
@@ -254,6 +280,19 @@
       "distance": 1400,
       "ageRule": "3岁",
       "sexRestriction": "牝马"
+    },
+    {
+      "id": "america-g2-red-smith-stakes",
+      "nameOriginal": "Red Smith Stakes",
+      "nameZh": "红史密斯锦标",
+      "grade": "G2",
+      "raceClass": "g2",
+      "month": 11,
+      "half": 2,
+      "surface": "草地",
+      "course": "美国",
+      "distance": 2200,
+      "ageRule": "3岁以上"
     },
     {
       "id": "america-g2-remsen-stakes",
