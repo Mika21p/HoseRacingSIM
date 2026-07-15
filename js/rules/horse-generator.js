@@ -539,11 +539,14 @@
 
   function generateHorse(options) {
     const opts = options || {};
+    const gameMode = opts.gameMode === "legend" ? "legend" : "normal";
     const sire = getSireBloodline(opts.sireId || "random");
     const dam = getDamBloodline(opts.damId || "random");
     const effects = mergeBloodlineEffects(sire, dam);
-    const rawStrength = R.rollMulti(2, 20) + 60;
-    const strength = R.clamp(applyStrengthType(rawStrength, effects.strengthType), 62, 100);
+    const rawStrength = gameMode === "legend" ? R.roll(20) + 80 : R.rollMulti(2, 20) + 60;
+    const strength = gameMode === "legend"
+      ? rawStrength
+      : R.clamp(applyStrengthType(rawStrength, effects.strengthType), 62, 100);
     const coat = pickCoat();
     const gender = opts.gender || (R.roll(2) === 1 ? "牡马" : "牝马");
     const weightMod = R.rollRange(effects.weight[0], effects.weight[1]);
@@ -589,8 +592,11 @@
       damId: dam.id,
       sireName: sire.name,
       damName: dam.name,
+      gameMode,
       strength,
-      strengthLabel: "2d20+60+血统分布修正(62-100)",
+      strengthLabel: gameMode === "legend"
+        ? "传奇模式 1d20+80(81-100)"
+        : "2d20+60+血统分布修正(62-100)",
       coat: coat.name,
       coatEn: coat.en,
       gender,

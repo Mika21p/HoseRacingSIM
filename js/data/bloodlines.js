@@ -580,7 +580,7 @@
     },
     {
       id: "urban-sea",
-      name: "Urban Sea - 都市海（欧洲中长耐力）",
+      name: "Urban Sea - 海都市（欧洲中长耐力）",
       strengthType: "standard",
       surfaceWeights: { 草地: 10, 泥地: -4 },
       distanceMods: { 1200: -4, 2000: 8, 2400: 10, 3000: 6 },

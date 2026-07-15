@@ -10,6 +10,7 @@
     expandedRaceRecords: {},
     collapsedRaceRecords: {},
     expandedRaceComments: {},
+    expandedOpponentRosters: {},
     horseNameLanguage: "zh",
     raceNameMode: "zh",
     activeFilterGroup: "",
@@ -26,7 +27,7 @@
   const SAVE_KEY = "keiba-career-save-v1";
   const HORSE_NAME_LANGUAGE_KEY = "keiba-horse-name-language-v1";
   const RACE_NAME_MODE_KEY = "keiba-race-name-mode-v1";
-  const SAVE_VERSION = 1;
+  const SAVE_VERSION = 2;
   const saveStatus = {
     storageAvailable: true,
     savedAt: null,
@@ -67,6 +68,7 @@
       expandedRecords: state.expandedRaceRecords,
       collapsedRecords: state.collapsedRaceRecords,
       expandedComments: state.expandedRaceComments,
+      expandedOpponentRosters: state.expandedOpponentRosters,
       horseNameLanguage: state.horseNameLanguage,
       raceNameMode: state.raceNameMode
     });
@@ -204,8 +206,12 @@
     }
   }
 
-  function normalizeRestoredCareer(career) {
+  function normalizeRestoredCareer(career, saveVersion) {
     if (!career || typeof career !== "object") return null;
+    career.gameMode = saveVersion === 1
+      ? "normal"
+      : (career.gameMode === "legend" ? "legend" : "normal");
+    if (career.horse) career.horse.gameMode = career.gameMode;
     if (!career.currentTime && ns.TimeRules) career.currentTime = ns.TimeRules.startTime();
     if (!Array.isArray(career.races)) career.races = [];
     if (ns.RegionRules && ns.RegionRules.ensureCareerState) ns.RegionRules.ensureCareerState(career);
@@ -245,6 +251,7 @@
         expandedRaceRecords: normalizeExpandedRaceRecords(state.expandedRaceRecords),
         collapsedRaceRecords: normalizeExpandedRaceRecords(state.collapsedRaceRecords),
         expandedRaceComments: normalizeExpandedRaceRecords(state.expandedRaceComments),
+        expandedOpponentRosters: normalizeExpandedRaceRecords(state.expandedOpponentRosters),
         filters: normalizeFilters(state.filters)
       }
     };
@@ -292,10 +299,10 @@
     }
     try {
       const payload = JSON.parse(raw);
-      if (!payload || payload.version !== SAVE_VERSION || !payload.state) {
+      if (!payload || ![1, SAVE_VERSION].includes(payload.version) || !payload.state) {
         throw new Error("Unsupported save payload.");
       }
-      const restoredCareer = normalizeRestoredCareer(payload.state.career);
+      const restoredCareer = normalizeRestoredCareer(payload.state.career, payload.version);
       if (!restoredCareer) throw new Error("Save payload has no career.");
       state.career = restoredCareer;
       state.retiredSummary = payload.state.retiredSummary || null;
@@ -305,6 +312,7 @@
       state.expandedRaceRecords = normalizeExpandedRaceRecords(payload.state.expandedRaceRecords);
       state.collapsedRaceRecords = normalizeExpandedRaceRecords(payload.state.collapsedRaceRecords);
       state.expandedRaceComments = normalizeExpandedRaceRecords(payload.state.expandedRaceComments);
+      state.expandedOpponentRosters = normalizeExpandedRaceRecords(payload.state.expandedOpponentRosters);
       state.filters = normalizeFilters(payload.state.filters);
       saveStatus.storageAvailable = true;
       saveStatus.savedAt = payload.savedAt || null;
@@ -489,11 +497,12 @@
     const name = document.getElementById("horseNameInput").value || "未命名小马";
     const sireId = document.getElementById("sireSelect").value;
     const damId = document.getElementById("damSelect").value;
+    const gameMode = value("gameModeSelect") === "legend" ? "legend" : "normal";
     const trainerId = document.getElementById("trainerSelect").value;
     const mainJockeyId = document.getElementById("mainJockeySelect").value;
     const debugOptions = collectDebugOptions();
     if (debugOptions && !validateDebugOptions(debugOptions)) return;
-    const horse = ns.HorseRules.generateHorse({ name, sireId, damId });
+    const horse = ns.HorseRules.generateHorse({ name, sireId, damId, gameMode });
     if (debugOptions) ns.HorseRules.applyDebugOverrides(horse, debugOptions);
     const trainer = ns.CommentRules.getTrainer(trainerId);
     const regionId = ns.RegionRules && ns.RegionRules.regionIdForTrainer
@@ -515,6 +524,7 @@
     state.expandedRaceRecords = {};
     state.collapsedRaceRecords = {};
     state.expandedRaceComments = {};
+    state.expandedOpponentRosters = {};
     state.activeFilterGroup = "";
     state.filters = defaultFilters();
     refresh();
@@ -580,8 +590,13 @@
   }
 
   function buildRacePayload(selectedRace, schedule, challenge, expedition, travel, priorityEntry) {
-    const opponent = ns.RaceRules.chooseOpponent(selectedRace);
+    const legendMode = state.career && state.career.gameMode === "legend";
+    const opponents = legendMode
+      ? ns.RaceRules.chooseOpponentField(selectedRace, { career: state.career })
+      : [];
+    const opponent = legendMode ? opponents[0] : ns.RaceRules.chooseOpponent(selectedRace);
     const payload = { race: selectedRace, schedule, opponent, year: opponent.year || null };
+    if (legendMode) payload.opponents = opponents;
     if (expedition) payload.expedition = expedition;
     if (travel) payload.travel = { ...travel };
     if (priorityEntry) payload.priorityEntry = { ...priorityEntry };
@@ -737,6 +752,8 @@
     );
     const result = ns.RaceRules.simulateRace(state.career.horse, payload.race, {
       opponent: payload.opponent,
+      opponents: payload.opponents || [],
+      gameMode: state.career.gameMode,
       playerJockey,
       currentTime: state.career.currentTime,
       maturityDecline: state.career.maturity.decline,
@@ -780,6 +797,21 @@
     if (!confirmTravelPreparation(plan)) return;
     if (!confirmFatigueRisk(plan)) return;
     if (!shouldConfirmLongGap(schedule)) return;
+    let payload;
+    try {
+      payload = buildRacePayload(
+        selectedRace,
+        schedule,
+        challenge,
+        plan.expedition || null,
+        plan.travel || null,
+        priorityEntry
+      );
+    } catch (error) {
+      console.warn("Failed to build race opponents.", error);
+      window.alert(error && error.message ? error.message : "无法生成符合条件的史实对手阵容。");
+      return;
+    }
     if (challenge) {
       const excluded = rollChallengeExclusion(challenge);
       ns.RaceProgression.applyChallengeOutcome(state.career, plan, excluded);
@@ -790,14 +822,6 @@
         return;
       }
     }
-    const payload = buildRacePayload(
-      selectedRace,
-      schedule,
-      challenge,
-      plan.expedition || null,
-      plan.travel || null,
-      priorityEntry
-    );
     state.career.scheduledRace = payload;
     markScheduledTravelPreparation();
     refresh();
@@ -916,6 +940,7 @@
     state.historyExpanded = false;
     state.expandedRaceRecords = {};
     state.expandedRaceComments = {};
+    state.expandedOpponentRosters = {};
     refresh();
     saveGame();
   }
@@ -965,6 +990,18 @@
       delete state.expandedRaceComments[recordKey];
     } else {
       state.expandedRaceComments[recordKey] = true;
+    }
+    refresh();
+    saveGame();
+  }
+
+  function toggleOpponentRoster(recordKey) {
+    if (!state.career || !recordKey) return;
+    state.expandedOpponentRosters = normalizeExpandedRaceRecords(state.expandedOpponentRosters);
+    if (state.expandedOpponentRosters[recordKey]) {
+      delete state.expandedOpponentRosters[recordKey];
+    } else {
+      state.expandedOpponentRosters[recordKey] = true;
     }
     refresh();
     saveGame();
@@ -1040,6 +1077,7 @@
     const historyRecordButtons = Array.from(document.querySelectorAll("[data-history-record-toggle]"));
     const historyCardRecordButtons = Array.from(document.querySelectorAll("[data-history-card-record-toggle]"));
     const historyCommentButtons = Array.from(document.querySelectorAll("[data-history-comment-toggle]"));
+    const opponentRosterButtons = Array.from(document.querySelectorAll("[data-opponent-roster-toggle]"));
     const horseNameLanguageButtons = Array.from(document.querySelectorAll("[data-horse-name-language]"));
     const raceNameModeButtons = Array.from(document.querySelectorAll("[data-race-name-mode]"));
     const raceFilterToggles = Array.from(document.querySelectorAll("[data-race-filter]"));
@@ -1084,6 +1122,9 @@
     });
     historyCommentButtons.forEach((button) => {
       button.addEventListener("click", () => toggleHistoryComment(button.dataset.historyCommentToggle));
+    });
+    opponentRosterButtons.forEach((button) => {
+      button.addEventListener("click", () => toggleOpponentRoster(button.dataset.opponentRosterToggle));
     });
     horseNameLanguageButtons.forEach((button) => {
       button.addEventListener("click", () => setHorseNameLanguage(button.dataset.horseNameLanguage));

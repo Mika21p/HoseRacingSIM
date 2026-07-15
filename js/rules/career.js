@@ -8,8 +8,10 @@
       : "japan";
     horse.homeRegionId = horse.homeRegionId || regionId;
     horse.currentRegionId = horse.currentRegionId || horse.homeRegionId;
+    horse.gameMode = horse.gameMode === "legend" ? "legend" : "normal";
     const career = {
       horse,
+      gameMode: horse.gameMode,
       comments: comments || [],
       commentDetails: commentDetails || [],
       debutLock: debutLock || null,

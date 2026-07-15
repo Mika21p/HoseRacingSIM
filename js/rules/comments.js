@@ -11,20 +11,38 @@
   };
 
   const ACCURACY_PROFILES = {
-    base: [
-      { id: "precise", weight: 10 },
-      { id: "close", weight: 20 },
-      { id: "fuzzy", weight: 40 },
-      { id: "unknown", weight: 20 },
-      { id: "wrong", weight: 10 }
-    ],
-    sharper: [
-      { id: "precise", weight: 15 },
-      { id: "close", weight: 25 },
-      { id: "fuzzy", weight: 40 },
-      { id: "unknown", weight: 15 },
-      { id: "wrong", weight: 5 }
-    ]
+    normal: {
+      base: [
+        { id: "precise", weight: 10 },
+        { id: "close", weight: 20 },
+        { id: "fuzzy", weight: 40 },
+        { id: "unknown", weight: 20 },
+        { id: "wrong", weight: 10 }
+      ],
+      sharper: [
+        { id: "precise", weight: 15 },
+        { id: "close", weight: 25 },
+        { id: "fuzzy", weight: 40 },
+        { id: "unknown", weight: 15 },
+        { id: "wrong", weight: 5 }
+      ]
+    },
+    legend: {
+      base: [
+        { id: "precise", weight: 20 },
+        { id: "close", weight: 30 },
+        { id: "fuzzy", weight: 35 },
+        { id: "unknown", weight: 10 },
+        { id: "wrong", weight: 5 }
+      ],
+      sharper: [
+        { id: "precise", weight: 25 },
+        { id: "close", weight: 35 },
+        { id: "fuzzy", weight: 30 },
+        { id: "unknown", weight: 8 },
+        { id: "wrong", weight: 2 }
+      ]
+    }
   };
 
   const TRAINERS = [
@@ -102,10 +120,13 @@
     return TRAINERS.slice();
   }
 
-  function chooseAccuracy(trainer, itemId) {
+  function chooseAccuracy(trainer, itemId, gameMode) {
+    const profiles = gameMode === "legend"
+      ? ACCURACY_PROFILES.legend
+      : ACCURACY_PROFILES.normal;
     const profile = trainer.sharperItems.includes(itemId)
-      ? ACCURACY_PROFILES.sharper
-      : ACCURACY_PROFILES.base;
+      ? profiles.sharper
+      : profiles.base;
     return R.weightedPick(profile, (item) => item.weight).id;
   }
 
@@ -172,7 +193,7 @@
   }
 
   function strengthComment(horse, trainer) {
-    const accuracy = chooseAccuracy(trainer, "strength");
+    const accuracy = chooseAccuracy(trainer, "strength", horse.gameMode);
     const current = tierIndexByStrength(horse.strength);
     const currentTier = STRENGTH_TIERS[current];
 
@@ -275,7 +296,7 @@
   }
 
   function surfaceComment(horse, trainer) {
-    const accuracy = chooseAccuracy(trainer, "surface");
+    const accuracy = chooseAccuracy(trainer, "surface", horse.gameMode);
     const actualType = horse.surfacePref || "草地";
     const typeText = surfaceTypeLabel(actualType);
     const first = trainer.focusSurfaces[0];
@@ -422,7 +443,7 @@
   }
 
   function distanceComment(horse, trainer) {
-    const accuracy = chooseAccuracy(trainer, "distance");
+    const accuracy = chooseAccuracy(trainer, "distance", horse.gameMode);
     const types = distanceSpanTypes(horse.distMin, horse.distMax);
 
     if (accuracy === "precise") {
@@ -529,7 +550,7 @@
   }
 
   function growthComment(horse, trainer) {
-    const accuracy = chooseAccuracy(trainer, "growth");
+    const accuracy = chooseAccuracy(trainer, "growth", horse.gameMode);
 
     if (accuracy === "precise") {
       const text = textVariant([
@@ -624,7 +645,7 @@
   }
 
   function temperamentComment(horse, trainer) {
-    const accuracy = chooseAccuracy(trainer, "temperament");
+    const accuracy = chooseAccuracy(trainer, "temperament", horse.gameMode);
 
     if (accuracy === "precise") {
       const text = textVariant([

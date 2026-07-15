@@ -95,6 +95,32 @@
     return historicalOpponentName(source, language, fallback || "随机对手");
   }
 
+  function publicOpponentName(opponent, language) {
+    if (!opponent) return "史实对手";
+    const fallback = normalizeHorseNameLanguage(language) === "en"
+      ? opponent.displayNameEn || opponent.displayName
+      : opponent.displayNameZh || opponent.displayName;
+    return historicalOpponentName({ ...opponent, historical: true }, language, fallback || "史实对手");
+  }
+
+  function renderOpponentRoster(opponents, language) {
+    return `
+      <div class="opponent-roster" aria-label="其他同场史实马">
+        ${opponents.slice(1).map((opponent) => {
+          const year = opponent.year ? `${opponent.year} ` : "";
+          const status = opponent.retired ? "退赛" : (opponent.rankLabel || "着外");
+          return `
+            <div class="opponent-roster-item">
+              <strong>${year}${publicOpponentName(opponent, language)}</strong>
+              <span>${opponent.jockeyName || "骑手不详"}</span>
+              <em>${status}</em>
+            </div>
+          `;
+        }).join("")}
+      </div>
+    `;
+  }
+
   function renderHorseNameLanguageToggle(language) {
     const current = normalizeHorseNameLanguage(language);
     return `
@@ -648,6 +674,13 @@
           <label>马名
             <input id="horseNameInput" type="text" value="未命名小马">
           </label>
+          <label>游戏模式
+            <select id="gameModeSelect">
+              <option value="normal" selected>普通模式</option>
+              <option value="legend">传奇模式</option>
+            </select>
+            <small class="muted setup-mode-note">传奇模式：实力 1d20+80，每场迎战五匹适配的史实马。</small>
+          </label>
           <div class="field-block sire-field">
             <div class="field-label-row">
               <div class="field-label-title">
@@ -824,7 +857,10 @@
       ? career.commentDetails
       : career.comments.map((text, index) => ({ label: `评语 ${index + 1}`, text }));
     panel.innerHTML = `
-      <p class="eyebrow">出道前评语</p>
+      <div class="section-title-row">
+        <p class="eyebrow">出道前评语</p>
+        ${career.gameMode === "legend" ? `<span class="badge legend-badge">传奇模式</span>` : ""}
+      </div>
       <div class="trainer-card-grid">
         <div class="trainer-card trainer-card-name">
           <span>马名</span>
@@ -1064,6 +1100,7 @@
     const expandedRecords = (options && options.expandedRecords) || {};
     const collapsedRecords = (options && options.collapsedRecords) || {};
     const expandedComments = (options && options.expandedComments) || {};
+    const expandedOpponentRosters = (options && options.expandedOpponentRosters) || {};
     const orderedRecords = career.races
       .map((item, index) => ({ item, number: index + 1 }))
       .reverse();
@@ -1080,6 +1117,17 @@
       const opponentJockey = item.public.opponentJockeyName || "";
       const replacementNote = item.public.scheduledOpponentRetired
         ? ((item.hidden && item.hidden.fieldRace) ? " 退赛" : " 退赛（随机对手递补）")
+        : "";
+      const opponentRoster = Array.isArray(item.public.opponents) ? item.public.opponents : [];
+      const hasOpponentRoster = opponentRoster.length > 1;
+      const showOpponentJockey = hasOpponentRoster || isRecordExpanded;
+      const isOpponentRosterExpanded = !!expandedOpponentRosters[recordKey];
+      const opponentToggleLabel = isOpponentRosterExpanded ? "收起其他同场对手" : "查看其他同场对手";
+      const opponentDisplay = hasOpponentRoster
+        ? `<button class="history-opponent-toggle" type="button" data-opponent-roster-toggle="${recordKey}" aria-expanded="${isOpponentRosterExpanded ? "true" : "false"}" aria-label="${opponentToggleLabel}">${opponent}${replacementNote}<span aria-hidden="true">${isOpponentRosterExpanded ? "▲" : "▼"}</span></button>`
+        : `<span>${opponent}${replacementNote}</span>`;
+      const opponentRosterHtml = hasOpponentRoster && isOpponentRosterExpanded
+        ? renderOpponentRoster(opponentRoster, horseNameLanguage)
         : "";
       const retired = item.public.retired ? ` · ${item.public.retiredPhase}退赛` : "";
       const injuryText = item.public.injury && item.public.injury.label ? ` · ${item.public.injury.label}` : "";
@@ -1114,6 +1162,11 @@
               <p>${commentText}</p>
             </div>
           </td>
+        </tr>
+      ` : "";
+      const opponentRosterRow = opponentRosterHtml ? `
+        <tr class="opponent-roster-row">
+          <td colspan="${revealScores ? 8 : 7}">${opponentRosterHtml}</td>
         </tr>
       ` : "";
       const scoreLineText = (item.hidden && item.hidden.scoreLine) || "";
@@ -1151,11 +1204,12 @@
           </td>
           <td>${item.public.playerJockeyName || ""}</td>
           <td>
-            <span>${opponent}${replacementNote}</span>
-            ${isRecordExpanded && opponentJockey ? `<span class="history-cell-subtext">${opponentJockey}</span>` : ""}
+            ${opponentDisplay}
+            ${showOpponentJockey && opponentJockey ? `<span class="history-cell-subtext">${opponentJockey}</span>` : ""}
           </td>
           ${scoreLine}
         </tr>
+        ${opponentRosterRow}
         ${commentRow}
         `,
         card: `
@@ -1177,9 +1231,10 @@
             </div>
             <div class="history-card-opponent">
               <span>主要对手</span>
-              <strong>${opponent}${replacementNote}</strong>
-              ${isCardExpanded && opponentJockey ? `<em>${opponentJockey}</em>` : ""}
+              ${opponentDisplay}
+              ${(hasOpponentRoster || isCardExpanded) && opponentJockey ? `<em>${opponentJockey}</em>` : ""}
             </div>
+            ${opponentRosterHtml}
             ${cardDetail}
             ${cardScore}
             ${cardComment}
@@ -1242,6 +1297,7 @@
         <div class="title-with-actions">
           <p class="eyebrow">生涯记录</p>
           ${renderHistoryRecordSummary(career)}
+          ${career.gameMode === "legend" ? `<span class="badge legend-badge">传奇模式</span>` : ""}
           ${career.horse.debugMode ? `<span class="badge debug-badge">调试模式</span>` : ""}
         </div>
         ${canToggleHistory ? `<button class="secondary history-toggle" id="historyToggleBtn">${expanded ? "收起" : "展开全部"}</button>` : ""}

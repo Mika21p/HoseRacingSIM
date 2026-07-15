@@ -721,6 +721,79 @@ button.secondary {
   color: #ffbf9f;
 }
 
+.legend-badge {
+  background: #4b3610;
+  color: #ffe08a;
+}
+
+.setup-mode-note {
+  display: block;
+  margin-top: 6px;
+  line-height: 1.45;
+}
+
+.history-opponent-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  padding: 0;
+  text-align: left;
+}
+
+.history-opponent-toggle:hover,
+.history-opponent-toggle:focus-visible,
+.history-opponent-toggle[aria-expanded="true"] {
+  background: transparent;
+  color: #9ee7dc;
+}
+
+.history-opponent-toggle span {
+  color: #6bd3c2;
+  font-size: 11px;
+}
+
+.opponent-roster-row td {
+  background: #0d1718;
+  padding: 10px 14px 14px;
+}
+
+.opponent-roster {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.opponent-roster-item {
+  display: grid;
+  gap: 5px;
+  border: 1px solid #31534f;
+  border-radius: 7px;
+  background: #10211f;
+  padding: 10px;
+}
+
+.opponent-roster-item strong {
+  color: #e4f7f3;
+  line-height: 1.4;
+}
+
+.opponent-roster-item span,
+.opponent-roster-item em {
+  color: #91a0b8;
+  font-size: 12px;
+  font-style: normal;
+  font-weight: 800;
+}
+
+.opponent-roster-item em {
+  color: #ffbf9f;
+}
+
 .horse-head,
 .race-row {
   display: flex;
@@ -1906,6 +1979,10 @@ th {
 
   .history-card-opponent {
     padding: 8px 10px;
+  }
+
+  .opponent-roster {
+    grid-template-columns: 1fr;
   }
 
   .history-card-detail,

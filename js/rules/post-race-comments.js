@@ -2,11 +2,18 @@
   const ns = (window.Keiba = window.Keiba || {});
   const R = ns.Random;
 
-  const MODE_WEIGHTS = [
-    { id: "clear", weight: 50 },
-    { id: "broad", weight: 30 },
-    { id: "empty", weight: 20 }
-  ];
+  const MODE_WEIGHTS = {
+    normal: [
+      { id: "clear", weight: 50 },
+      { id: "broad", weight: 30 },
+      { id: "empty", weight: 20 }
+    ],
+    legend: [
+      { id: "clear", weight: 70 },
+      { id: "broad", weight: 20 },
+      { id: "empty", weight: 10 }
+    ]
+  };
 
   const TEXTS = {
     clear: {
@@ -79,8 +86,9 @@
     return items[R.rollRange(0, items.length - 1)];
   }
 
-  function chooseMode() {
-    return R.weightedPick(MODE_WEIGHTS, (item) => item.weight).id;
+  function chooseMode(gameMode) {
+    const weights = gameMode === "legend" ? MODE_WEIGHTS.legend : MODE_WEIGHTS.normal;
+    return R.weightedPick(weights, (item) => item.weight).id;
   }
 
   function playerResult(raceResult) {
@@ -216,7 +224,7 @@
     }
 
     const diagnosis = diagnoseLoss(career, raceResult);
-    const mode = chooseMode();
+    const mode = chooseMode(career.gameMode);
 
     if (mode === "clear" && diagnosis.reason && TEXTS.clear[diagnosis.reason]) {
       return buildComment(

@@ -227,6 +227,226 @@
     return candidates.filter(isChampionOpponent);
   }
 
+  const LEGEND_FIELD_SIZE = 5;
+  const LEGEND_DISTANCE_TOLERANCE = 400;
+  const LEGEND_CONDITION_FALLBACK_TOLERANCE = 600;
+  const LEGEND_G1_MIN_ABILITY = 85;
+
+  function raceRegion(race) {
+    return (race && race.surfaceRegion) || "日本";
+  }
+
+  function isConditionRace(race) {
+    return !!race && CONDITION_RACE_CLASSES.includes(race.raceClass);
+  }
+
+  function isLegendG1(race) {
+    return !!race && (race.raceClass === "g1" || race.raceClass === "jpn1");
+  }
+
+  function historicalHorseProfiles() {
+    const raceById = new Map((ns.Races || []).map((race) => [race.id, race]));
+    return (ns.HistoricalHorses || []).map((horse) => {
+      const appearances = (horse.races || [])
+        .map((entry) => ({ entry, race: raceById.get(entry.raceId) }))
+        .filter((appearance) => !!appearance.race);
+      const profile = horse.profile || {};
+      const declaredSex = String(profile.sex || profile.gender || "").toLowerCase();
+      const profileNote = String(profile.note || "");
+      return {
+        horse,
+        appearances,
+        inferredFemale: declaredSex === "female"
+          || declaredSex === "mare"
+          || declaredSex === "filly"
+          || declaredSex === "牝"
+          || declaredSex === "雌"
+          || /牝马|雌马|母马|母馬|女王|\bmare\b|\bfilly\b/i.test(profileNote)
+          || appearances.some((appearance) => appearance.race.sexRestriction === "牝马")
+      };
+    });
+  }
+
+  function closestHistoricalAppearance(appearances, race) {
+    return appearances.slice().sort((left, right) => {
+      const score = (appearance) => {
+        const regionPenalty = raceRegion(appearance.race) === raceRegion(race) ? 0 : 10000;
+        const surfacePenalty = appearance.race.surface === race.surface ? 0 : 5000;
+        return regionPenalty + surfacePenalty + Math.abs(appearance.race.distance - race.distance);
+      };
+      return score(left) - score(right);
+    })[0] || null;
+  }
+
+  function legendCandidate(profile, race, options) {
+    const opts = options || {};
+    const tolerance = opts.distanceTolerance || LEGEND_DISTANCE_TOLERANCE;
+    const targetRegion = opts.region || raceRegion(race);
+    const targetSurface = opts.surface || race.surface;
+    const targetRaceClass = opts.raceClass || race.raceClass;
+    if (race.sexRestriction === "牝马" && !profile.inferredFemale) return null;
+
+    const compatibleAppearances = profile.appearances.filter((appearance) => {
+      if (appearance.race.surface !== targetSurface) return false;
+      if (Math.abs(appearance.race.distance - race.distance) > tolerance) return false;
+      return !opts.requireRegion || raceRegion(appearance.race) === targetRegion;
+    });
+    if (compatibleAppearances.length === 0) return null;
+
+    const exactEntries = (profile.horse.races || []).filter((entry) => entry.raceId === race.id);
+    const threshold = Number.isFinite(opts.minAbility) ? opts.minAbility : null;
+    let selectedEntry = null;
+    let rawAbility = Number(profile.horse.profile && profile.horse.profile.baseAbility);
+
+    if (exactEntries.length > 0) {
+      const eligibleEntries = threshold == null
+        ? exactEntries
+        : exactEntries.filter((entry) => Number(entry.ability) >= threshold);
+      if (eligibleEntries.length === 0) return null;
+      selectedEntry = R.pickOne(eligibleEntries);
+      rawAbility = Number(selectedEntry.ability);
+    }
+    if (!Number.isFinite(rawAbility)) return null;
+
+    const ability = CONDITION_RACE_CLASSES.includes(targetRaceClass)
+      ? Math.max(60, rawAbility - 4)
+      : rawAbility;
+    if (threshold != null && ability < threshold) return null;
+
+    const jockeyAppearance = selectedEntry
+      ? { entry: selectedEntry, race }
+      : closestHistoricalAppearance(compatibleAppearances, race);
+    const jockeyEntry = jockeyAppearance ? jockeyAppearance.entry : null;
+    const jockey = resolveJockey(
+      jockeyEntry && jockeyEntry.jockeyId,
+      jockeyEntry && jockeyEntry.year,
+      "generic-local"
+    );
+    const horse = profile.horse;
+    const regionMatch = compatibleAppearances.some((appearance) => raceRegion(appearance.race) === targetRegion);
+
+    return {
+      id: `${horse.id}-${race.id}-${selectedEntry ? selectedEntry.year : "projected"}`,
+      horseId: horse.id,
+      name: horse.name,
+      displayName: horse.displayName || horse.name,
+      displayNameZh: horse.displayNameZh || horse.displayName || horse.name,
+      displayNameEn: horse.displayNameEn || horse.name || horse.displayName,
+      year: selectedEntry ? selectedEntry.year : null,
+      ability,
+      peakAbility: Number(horse.profile && horse.profile.peakAbility) || ability,
+      jockeyId: jockey.id,
+      jockeyName: jockey.name,
+      riderAbility: jockey.ability || 70,
+      trackCondition: selectedEntry ? selectedEntry.trackCondition || "" : "",
+      finish: selectedEntry ? selectedEntry.finish || null : null,
+      historical: true,
+      exactCurrentRace: !!selectedEntry,
+      regionMatch,
+      distanceTolerance: tolerance,
+      source: selectedEntry ? "historical-race" : "historical-profile"
+    };
+  }
+
+  function legendEncounterState(career) {
+    const encountered = new Set();
+    let lastMainHorseId = "";
+    const records = career && Array.isArray(career.races) ? career.races : [];
+    records.forEach((record) => {
+      const opponents = record && record.public && Array.isArray(record.public.opponents)
+        ? record.public.opponents
+        : [];
+      opponents.forEach((opponent) => {
+        if (opponent && opponent.horseId) encountered.add(opponent.horseId);
+      });
+    });
+    const last = records[records.length - 1];
+    if (last && last.public) lastMainHorseId = last.public.mainOpponentHorseId || "";
+    return { encountered, lastMainHorseId };
+  }
+
+  function legendCandidateWeight(candidate, encounterState) {
+    let weight = candidate.exactCurrentRace ? 4 : 1;
+    if (encounterState.encountered.has(candidate.horseId)) weight *= 2;
+    if (encounterState.lastMainHorseId === candidate.horseId) weight *= 0.25;
+    return weight;
+  }
+
+  function weightedSampleWithoutReplacement(candidates, count, encounterState) {
+    const pool = candidates.slice();
+    const picked = [];
+    while (pool.length > 0 && picked.length < count) {
+      const candidate = R.weightedPick(pool, (item) => legendCandidateWeight(item, encounterState));
+      picked.push(candidate);
+      pool.splice(pool.indexOf(candidate), 1);
+    }
+    return picked;
+  }
+
+  function getLegendFieldCandidates(race, options) {
+    const opts = options || {};
+    const profiles = historicalHorseProfiles();
+    return profiles
+      .map((profile) => legendCandidate(profile, race, opts))
+      .filter(Boolean);
+  }
+
+  function chooseOpponentField(race, options) {
+    const opts = options || {};
+    const conditionRace = isConditionRace(race);
+    const minAbility = isLegendG1(race) ? LEGEND_G1_MIN_ABILITY : null;
+    let distanceTolerance = LEGEND_DISTANCE_TOLERANCE;
+    const candidateOptions = {
+      region: raceRegion(race),
+      surface: race.surface,
+      raceClass: race.raceClass,
+      distanceTolerance,
+      requireRegion: conditionRace,
+      minAbility
+    };
+    let candidates = getLegendFieldCandidates(race, candidateOptions);
+
+    if (conditionRace && candidates.length < LEGEND_FIELD_SIZE) {
+      distanceTolerance = LEGEND_CONDITION_FALLBACK_TOLERANCE;
+      candidates = getLegendFieldCandidates(race, {
+        region: candidateOptions.region,
+        surface: candidateOptions.surface,
+        raceClass: candidateOptions.raceClass,
+        distanceTolerance,
+        requireRegion: true,
+        minAbility
+      });
+    }
+    if (candidates.length < LEGEND_FIELD_SIZE) {
+      throw new Error(`传奇模式：${race.name || race.id}只有${candidates.length}匹符合地区、场地、距离和强度要求的史实马。`);
+    }
+
+    const encounterState = legendEncounterState(opts.career);
+    let picked;
+    if (conditionRace) {
+      picked = weightedSampleWithoutReplacement(candidates, LEGEND_FIELD_SIZE, encounterState);
+    } else {
+      const regional = candidates.filter((candidate) => candidate.regionMatch);
+      const otherRegions = candidates.filter((candidate) => !candidate.regionMatch);
+      if (regional.length >= LEGEND_FIELD_SIZE) {
+        picked = weightedSampleWithoutReplacement(regional, LEGEND_FIELD_SIZE, encounterState);
+      } else {
+        picked = regional.slice();
+        picked = picked.concat(weightedSampleWithoutReplacement(
+          otherRegions,
+          LEGEND_FIELD_SIZE - picked.length,
+          encounterState
+        ));
+      }
+    }
+
+    return picked.sort((left, right) => {
+      if (left.ability !== right.ability) return right.ability - left.ability;
+      if (left.peakAbility !== right.peakAbility) return right.peakAbility - left.peakAbility;
+      return String(left.horseId).localeCompare(String(right.horseId));
+    });
+  }
+
   function chooseOpponent(race, options) {
     const opts = options || {};
     const candidates = filterOpponentCandidates(
@@ -403,7 +623,8 @@
 
   function buildRaceContext(horse, race, options) {
     const opts = options || {};
-    const opponent = opts.opponent || chooseOpponent(race);
+    const opponents = Array.isArray(opts.opponents) ? opts.opponents.filter(Boolean) : [];
+    const opponent = opts.opponent || opponents[0] || chooseOpponent(race);
     const trackCondition = opts.trackCondition || opponent.trackCondition || rollTrackCondition();
     const playerJockey = opts.playerJockey || ns.JockeyRules.describePlayerJockey(opts.playerJockeyId || "generic-local");
     const playerRiderAbility = playerJockey.ability || opts.playerRiderAbility || 70;
@@ -428,6 +649,7 @@
     return {
       opts,
       opponent,
+      opponents,
       trackCondition,
       playerJockey,
       playerEntry,
@@ -580,7 +802,10 @@
     const playerJockey = context.playerJockey;
     const playerEntry = context.playerEntry;
     const playerCalc = context.playerCalc;
-    const fieldOpponents = createHiddenFieldOpponents(race, opponent);
+    const legendField = context.opponents.length === LEGEND_FIELD_SIZE;
+    const fieldOpponents = legendField
+      ? context.opponents.slice(1)
+      : createHiddenFieldOpponents(race, opponent);
     const entries = [
       playerEntry,
       opponentEntry(opponent)
@@ -622,6 +847,25 @@
     const injury = retirementInjury(playerResult, context.preRaceCondition);
     const raceNameSource = raceNameSourceFor(race);
     const marginLabel = createMarginLabel(marginLengths, tieOutcome);
+    const publicOpponents = legendField
+      ? context.opponents.map((fieldOpponent, index) => {
+        const key = index === 0 ? "opponent" : `field-${index}`;
+        const result = initialResults.find((item) => item.entry.key === key);
+        const fieldPosition = result ? ordered.indexOf(result) + 1 : null;
+        return {
+          horseId: fieldOpponent.horseId || "",
+          displayName: fieldOpponent.displayName || fieldOpponent.name || "",
+          displayNameZh: fieldOpponent.displayNameZh || fieldOpponent.displayName || fieldOpponent.name || "",
+          displayNameEn: fieldOpponent.displayNameEn || fieldOpponent.name || fieldOpponent.displayName || "",
+          year: fieldOpponent.year || "",
+          jockeyName: fieldOpponent.jockeyName || "",
+          rank: result && !result.retired ? fieldPosition : null,
+          rankLabel: rankLabel(fieldPosition, !!(result && result.retired)),
+          retired: !!(result && result.retired),
+          retiredPhase: result ? result.retiredPhase || "" : ""
+        };
+      })
+      : [];
 
     return {
       public: {
@@ -636,6 +880,8 @@
         opponentNameZh: opponent.displayNameZh || opponent.displayName || opponent.name || "",
         opponentNameEn: opponent.displayNameEn || opponent.name || opponent.displayName || "",
         opponentYear: opponent.year || "",
+        mainOpponentHorseId: legendField ? opponent.horseId || "" : "",
+        opponents: publicOpponents,
         scheduledOpponentRetired: scheduledOpponentResult.retired,
         playerJockeyName: playerJockey.name,
         opponentJockeyName: opponent.jockeyName,
@@ -656,10 +902,12 @@
       hidden: {
         race,
         fieldRace: true,
+        legendField,
         fieldSize: ordered.length,
         playerFieldPosition,
         opponentFieldPosition,
         fieldOpponents,
+        legendOpponents: legendField ? context.opponents : [],
         fieldResults: ordered,
         marginReferenceResult,
         trackCondition,
@@ -686,7 +934,7 @@
 
   function simulateRace(horse, race, options) {
     const context = buildRaceContext(horse, race, options);
-    return usesFieldRanking(race)
+    return context.opponents.length === LEGEND_FIELD_SIZE || usesFieldRanking(race)
       ? simulateFieldRace(horse, race, context)
       : simulateDuelRace(horse, race, context);
   }
@@ -694,6 +942,8 @@
   ns.RaceRules = {
     simulateRace,
     chooseOpponent,
+    chooseOpponentField,
+    getLegendFieldCandidates,
     createGeneratedOpponent,
     getHistoricalCandidates,
     isChampionOpponent,
