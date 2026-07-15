@@ -1,0 +1,13 @@
+#!/bin/sh
+
+echo "Running quick tests before push..."
+node --test tests/syntax.test.js tests/data-integrity.test.js tests/core-rules.test.js
+status=$?
+
+if [ "$status" -ne 0 ]; then
+  echo "Push stopped because the quick tests failed."
+  exit "$status"
+fi
+
+echo "Quick tests passed."
+exit 0

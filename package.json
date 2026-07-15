@@ -1,0 +1,14 @@
+{
+  "name": "keiba-simulator",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Local checks for the horse-racing simulator",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "test": "npm run test:quick",
+    "test:quick": "node --test tests/syntax.test.js tests/data-integrity.test.js tests/core-rules.test.js",
+    "hooks:install": "node scripts/install-hooks.js"
+  }
+}
