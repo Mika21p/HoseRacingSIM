@@ -58,3 +58,19 @@ test("data validation rejects unknown jockey references", () => {
   fixture.horses[0].races[0].jockeyId = "missing-jockey";
   assert.ok(validateProjectData(fixture).some((error) => error.includes("UNKNOWN_JOCKEY")));
 });
+
+test("data validation checks legend-only eligibility wins", () => {
+  const fixture = validFixture();
+  fixture.horses[0].legendEligibilityWins = [{
+    raceName: "Fixture Allowance",
+    year: 2020,
+    surfaceRegion: "未知赛区",
+    surface: "泥地",
+    distance: 0,
+    jockeyId: "missing-jockey"
+  }];
+  const errors = validateProjectData(fixture);
+  assert.ok(errors.some((error) => error.includes("INVALID_LEGEND_WIN_REGION")));
+  assert.ok(errors.some((error) => error.includes("INVALID_LEGEND_WIN_DISTANCE")));
+  assert.ok(errors.some((error) => error.includes("UNKNOWN_LEGEND_WIN_JOCKEY")));
+});

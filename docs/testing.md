@@ -26,6 +26,14 @@ npm run test:quick
 
 测试会检查 JavaScript 语法、赛事与史实马数据完整性，以及几组核心规则边界。整个过程离线运行，不会执行需要访问 Wikipedia 的史实胜场审计。
 
+传奇模式的严格候选池可以另外执行全量审计：
+
+```powershell
+npm run audit:legend
+```
+
+该命令会遍历全部赛事，按“同场地、单向认可赛区、一般距离 ±200 米、长途胜鞍归为 2601 米以上”规则列出不足五匹的比赛，并应用日本指定 G1/JpnI 的 85 分不足补充规则。审计只读取本地数据，不会修改存档。
+
 ## 故障排查
 
 - 如果 Git 没有自动运行测试，重新执行 `npm run hooks:install`，并用 `git config --get core.hooksPath` 确认结果为 `.githooks`。

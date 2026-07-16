@@ -24,6 +24,7 @@ function validateProjectData({ races, horses, jockeys }) {
   duplicateIds(jockeyList).forEach((id) => errors.push(`DUPLICATE_JOCKEY_ID ${id}`));
 
   const raceIds = new Set(raceList.map((race) => race && race.id).filter(hasText));
+  const raceRegions = new Set(raceList.map((race) => race && race.surfaceRegion).filter(hasText));
   const jockeyIds = new Set(jockeyList.map((jockey) => jockey && jockey.id).filter(hasText));
 
   raceList.forEach((race, index) => {
@@ -84,6 +85,34 @@ function validateProjectData({ races, horses, jockeys }) {
       if (entry && entry.finish != null && (!Number.isInteger(entry.finish) || entry.finish < 1)) {
         errors.push(`INVALID_HORSE_RACE_FINISH ${entryLabel}`);
       }
+    });
+
+    if (horse.legendEligibilityWins != null && !Array.isArray(horse.legendEligibilityWins)) {
+      errors.push(`INVALID_LEGEND_ELIGIBILITY_WINS ${label}`);
+      return;
+    }
+    const seenLegendWins = new Set();
+    (horse.legendEligibilityWins || []).forEach((win, winIndex) => {
+      const winLabel = `${label}#legend-${winIndex + 1}`;
+      if (!hasText(win && win.raceName)) errors.push(`INVALID_LEGEND_WIN_NAME ${winLabel}`);
+      if (!Number.isInteger(win && win.year) || win.year < 1800 || win.year > 2100) {
+        errors.push(`INVALID_LEGEND_WIN_YEAR ${winLabel}`);
+      }
+      if (!hasText(win && win.surfaceRegion) || !raceRegions.has(win.surfaceRegion)) {
+        errors.push(`INVALID_LEGEND_WIN_REGION ${winLabel} ${win && win.surfaceRegion}`);
+      }
+      if (!win || !["草地", "泥地"].includes(win.surface)) {
+        errors.push(`INVALID_LEGEND_WIN_SURFACE ${winLabel} ${win && win.surface}`);
+      }
+      if (!Number.isFinite(win && win.distance) || win.distance <= 0) {
+        errors.push(`INVALID_LEGEND_WIN_DISTANCE ${winLabel}`);
+      }
+      if (!hasText(win && win.jockeyId) || !jockeyIds.has(win.jockeyId)) {
+        errors.push(`UNKNOWN_LEGEND_WIN_JOCKEY ${winLabel} ${win && win.jockeyId}`);
+      }
+      const key = [win && win.raceName, win && win.year, win && win.surfaceRegion, win && win.surface, win && win.distance].join(":");
+      if (seenLegendWins.has(key)) errors.push(`DUPLICATE_LEGEND_WIN ${winLabel}`);
+      seenLegendWins.add(key);
     });
   });
 

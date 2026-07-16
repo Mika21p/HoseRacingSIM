@@ -69,10 +69,12 @@ function loadProjectData() {
 function loadCoreRules() {
   const project = loadProjectData();
   const { context } = project;
+  context.window.Keiba.HistoricalHorses = project.horses;
 
   runProjectFile(context, "js/utils/random.js");
   runProjectFile(context, "js/data/races.js");
   runProjectFile(context, "js/rules/jockey-rules.js");
+  runProjectFile(context, "js/rules/historical-opponents.js");
   runProjectFile(context, "js/rules/race-simulator.js");
   runProjectFile(context, "js/rules/career.js");
 

@@ -27,6 +27,7 @@
   const SAVE_KEY = "keiba-career-save-v1";
   const HORSE_NAME_LANGUAGE_KEY = "keiba-horse-name-language-v1";
   const RACE_NAME_MODE_KEY = "keiba-race-name-mode-v1";
+  const LEGEND_INTRO_DISMISSED_KEY = "keiba-legend-intro-dismissed-v1";
   const SAVE_VERSION = 2;
   const saveStatus = {
     storageAvailable: true,
@@ -34,6 +35,7 @@
     message: ""
   };
   let savePaused = false;
+  let legendIntroDismissedForSession = false;
 
   const SEASON_ORDER = [
     "二岁夏", "二岁秋", "二岁冬",
@@ -409,6 +411,30 @@
     return ns.RegionRules && ns.RegionRules.regionIdForTrainer
       ? ns.RegionRules.regionIdForTrainer(trainer)
       : "japan";
+  }
+
+  function isLegendIntroDismissed() {
+    if (legendIntroDismissedForSession) return true;
+    const storage = getStorage();
+    if (!storage) return false;
+    try {
+      return storage.getItem(LEGEND_INTRO_DISMISSED_KEY) === "1";
+    } catch (error) {
+      console.warn("Failed to load legend intro preference.", error);
+      return false;
+    }
+  }
+
+  function setLegendIntroDismissed(dismissed) {
+    legendIntroDismissedForSession = !!dismissed;
+    const storage = getStorage();
+    if (!storage) return;
+    try {
+      if (dismissed) storage.setItem(LEGEND_INTRO_DISMISSED_KEY, "1");
+      else storage.removeItem(LEGEND_INTRO_DISMISSED_KEY);
+    } catch (error) {
+      console.warn("Failed to save legend intro preference.", error);
+    }
   }
 
   function updateTrainerRegionText() {
@@ -1180,6 +1206,13 @@
     const classicSireToggle = document.getElementById("classicSireToggle");
     const trainerSelect = document.getElementById("trainerSelect");
     const clearSaveBtn = document.getElementById("clearSaveBtn");
+    const gameModeToggleBtn = document.getElementById("gameModeToggleBtn");
+    const gameModeSelect = document.getElementById("gameModeSelect");
+    const legendIntroDialog = document.getElementById("legendIntroDialog");
+    const legendIntroDismissCheckbox = document.getElementById("legendIntroDismissCheckbox");
+    const legendIntroCloseButtons = legendIntroDialog
+      ? Array.from(legendIntroDialog.querySelectorAll("[data-legend-intro-close]"))
+      : [];
     const bindInlineHelpPanel = (toggleBtn, panel) => {
       if (!toggleBtn || !panel) return;
       const setOpen = (open) => {
@@ -1191,6 +1224,57 @@
         button.addEventListener("click", () => setOpen(false));
       });
     };
+    const setGameMode = (mode) => {
+      if (!gameModeToggleBtn || !gameModeSelect) return;
+      const legendMode = mode === "legend";
+      gameModeSelect.value = legendMode ? "legend" : "normal";
+      gameModeToggleBtn.classList.toggle("is-active", legendMode);
+      gameModeToggleBtn.setAttribute("aria-pressed", legendMode ? "true" : "false");
+      const hint = legendMode
+        ? "当前为传奇模式，点击切换回普通模式"
+        : "当前为普通模式，点击开启传奇模式";
+      gameModeToggleBtn.setAttribute("aria-label", hint);
+      gameModeToggleBtn.title = hint;
+    };
+    const closeLegendIntro = () => {
+      if (!legendIntroDialog) return;
+      if (typeof legendIntroDialog.close === "function" && legendIntroDialog.open) {
+        legendIntroDialog.close();
+      } else {
+        legendIntroDialog.removeAttribute("open");
+        if (gameModeToggleBtn) gameModeToggleBtn.focus();
+      }
+    };
+    const openLegendIntro = () => {
+      if (!legendIntroDialog || isLegendIntroDismissed()) return;
+      if (legendIntroDismissCheckbox) legendIntroDismissCheckbox.checked = false;
+      if (typeof legendIntroDialog.showModal === "function") legendIntroDialog.showModal();
+      else legendIntroDialog.setAttribute("open", "");
+    };
+    if (gameModeToggleBtn && gameModeSelect) {
+      setGameMode("normal");
+      gameModeToggleBtn.addEventListener("click", () => {
+        const nextMode = gameModeSelect.value === "legend" ? "normal" : "legend";
+        setGameMode(nextMode);
+        if (nextMode === "legend") openLegendIntro();
+      });
+    }
+    if (legendIntroDismissCheckbox) {
+      legendIntroDismissCheckbox.addEventListener("change", () => {
+        setLegendIntroDismissed(legendIntroDismissCheckbox.checked);
+      });
+    }
+    legendIntroCloseButtons.forEach((button) => button.addEventListener("click", closeLegendIntro));
+    if (legendIntroDialog) {
+      legendIntroDialog.addEventListener("keydown", (event) => {
+        if (event.key !== "Escape") return;
+        event.preventDefault();
+        closeLegendIntro();
+      });
+      legendIntroDialog.addEventListener("close", () => {
+        if (gameModeToggleBtn) gameModeToggleBtn.focus();
+      });
+    }
     if (helpToggleBtn && helpPanel) {
       helpToggleBtn.addEventListener("click", () => {
         const shouldShow = helpPanel.hidden;

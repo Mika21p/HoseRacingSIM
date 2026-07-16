@@ -108,7 +108,9 @@
       <div class="opponent-roster" aria-label="其他同场史实马">
         ${opponents.slice(1).map((opponent) => {
           const year = opponent.year ? `${opponent.year} ` : "";
-          const status = opponent.retired ? "退赛" : (opponent.rankLabel || "着外");
+          const savedRankLabel = opponent.rankLabel || "着外";
+          const isOutsideTopFive = Number(opponent.rank) > 5 || /^[6-9]\d*着$/.test(savedRankLabel);
+          const status = opponent.retired ? "退赛" : (isOutsideTopFive ? "着外" : savedRankLabel);
           return `
             <div class="opponent-roster-item">
               <strong>${year}${publicOpponentName(opponent, language)}</strong>
@@ -656,12 +658,43 @@
     root.innerHTML = `
       <section class="panel setup-panel">
         <div class="setup-title-row">
-          <div>
+          <div class="setup-heading-group">
             <p class="eyebrow">出道准备</p>
-            <h1>赛马生涯模拟</h1>
+            <div class="setup-heading-line">
+              <h1>赛马生涯模拟</h1>
+              <button class="secondary legend-mode-toggle" id="gameModeToggleBtn" type="button" aria-pressed="false" aria-label="当前为普通模式，点击开启传奇模式" title="当前为普通模式，点击开启传奇模式">
+                <span class="legend-mode-toggle-indicator" aria-hidden="true"></span>
+                <span>传奇模式</span>
+              </button>
+            </div>
           </div>
           <button class="secondary help-toggle" id="helpToggleBtn" type="button" aria-expanded="false">帮助</button>
         </div>
+        <input id="gameModeSelect" type="hidden" value="normal">
+        <dialog class="legend-intro-dialog" id="legendIntroDialog" aria-labelledby="legendIntroTitle" aria-describedby="legendIntroSummary">
+          <div class="legend-intro-header">
+            <div>
+              <p class="eyebrow">高强度生涯挑战</p>
+              <h2 id="legendIntroTitle">传奇模式</h2>
+            </div>
+            <button class="secondary legend-intro-close" type="button" data-legend-intro-close aria-label="关闭传奇模式介绍" title="关闭">×</button>
+          </div>
+          <p id="legendIntroSummary">玩家马以更高实力出道，但每场比赛都要面对完整的史实强敌阵容。</p>
+          <ul class="legend-intro-list">
+            <li><strong>玩家实力 81～100</strong>：真实实力采用 1d20+80，血统仍影响适性、成长和气性。</li>
+            <li><strong>六马完整排名</strong>：玩家与五匹场地、距离合适的史实马共同计算比赛。</li>
+            <li><strong>严格筛选强敌</strong>：对手必须拥有同场地和认可赛区胜鞍；一般距离要求±200米，长途赛认可任意2601米以上胜鞍，日本部分G1在85+不足时补入最强低分马。</li>
+            <li><strong>报名即锁定阵容</strong>：刷新和读取存档不会重抽，也不会加入隐藏马、随机马或退赛递补。</li>
+            <li><strong>评语更加可靠</strong>：出道前判断和输赛后的原因诊断会比普通模式更准确。</li>
+          </ul>
+          <label class="legend-intro-preference">
+            <input id="legendIntroDismissCheckbox" type="checkbox">
+            <span>下次不再显示此介绍</span>
+          </label>
+          <div class="legend-intro-actions">
+            <button type="button" data-legend-intro-close>知道了</button>
+          </div>
+        </dialog>
         <div class="help-panel" id="helpPanel" hidden>${ns.Help ? ns.Help.attributeHelpHtml : ""}</div>
         <div class="save-panel" id="savePanel" aria-live="polite">
           <div>
@@ -673,13 +706,6 @@
         <div class="form-grid">
           <label>马名
             <input id="horseNameInput" type="text" value="未命名小马">
-          </label>
-          <label>游戏模式
-            <select id="gameModeSelect">
-              <option value="normal" selected>普通模式</option>
-              <option value="legend">传奇模式</option>
-            </select>
-            <small class="muted setup-mode-note">传奇模式：实力 1d20+80，每场迎战五匹适配的史实马。</small>
           </label>
           <div class="field-block sire-field">
             <div class="field-label-row">

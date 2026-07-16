@@ -79,3 +79,286 @@ test("career summary counts placings, retirements, dead heats and grade wins", (
     winRate: 40
   });
 });
+
+function withHistoricalFixtures(horses, races, callback) {
+  const originalHorses = rules.HistoricalHorses;
+  const originalRaces = rules.Races;
+  rules.HistoricalHorses = horses;
+  rules.Races = races;
+  rules.HistoricalOpponentRules.reset();
+  try {
+    return callback();
+  } finally {
+    rules.HistoricalHorses = originalHorses;
+    rules.Races = originalRaces;
+    rules.HistoricalOpponentRules.reset();
+  }
+}
+
+function legendHorse(id, ability, win) {
+  return {
+    id,
+    name: id,
+    profile: { sex: "female", baseAbility: ability, peakAbility: ability + 2 },
+    races: [],
+    legendEligibilityWins: [win]
+  };
+}
+
+function eligibilityWin(region, surface, distance) {
+  return {
+    raceName: `${region}-${surface}-${distance}`,
+    year: 2020,
+    surfaceRegion: region,
+    surface,
+    distance,
+    jockeyId: "generic-local"
+  };
+}
+
+test("legend eligibility accepts 200 metres and rejects 201 metres", () => {
+  const race = { id: "strict-distance", name: "strict-distance", raceClass: "op", surfaceRegion: "日本", surface: "泥地", distance: 1200 };
+  withHistoricalFixtures([
+    legendHorse("inside", 80, eligibilityWin("日本", "泥地", 1000)),
+    legendHorse("outside", 80, eligibilityWin("日本", "泥地", 999))
+  ], [race], () => {
+    assert.deepEqual(rules.RaceRules.getLegendFieldCandidates(race).map((item) => item.horseId), ["inside"]);
+  });
+});
+
+test("legend eligibility requires a victory on the same surface", () => {
+  const target = { id: "strict-win", name: "strict-win", raceClass: "op", surfaceRegion: "日本", surface: "泥地", distance: 1800 };
+  const horse = {
+    id: "placed-only",
+    name: "placed-only",
+    profile: { sex: "female", baseAbility: 80, peakAbility: 82 },
+    races: [{ raceId: target.id, year: 2020, ability: 80, jockeyId: "generic-local", finish: 2 }]
+  };
+  withHistoricalFixtures([horse], [target], () => {
+    assert.equal(rules.RaceRules.getLegendFieldCandidates(target).length, 0);
+    horse.races[0].champion = true;
+    assert.equal(rules.RaceRules.getLegendFieldCandidates(target).length, 0, "champion flags without finish 1 do not grant eligibility");
+    horse.legendEligibilityWins = [eligibilityWin("日本", "草地", 1800)];
+    assert.equal(rules.RaceRules.getLegendFieldCandidates(target).length, 0);
+    horse.legendEligibilityWins = [eligibilityWin("日本", "泥地", 1800)];
+    const candidate = rules.RaceRules.getLegendFieldCandidates(target)[0];
+    assert.equal(candidate.horseId, "placed-only");
+    assert.equal(candidate.year, 2020, "qualified horses may use a non-winning current-race version");
+  });
+});
+
+test("legend region recognition is directional", () => {
+  const argentina = { id: "argentina", raceClass: "g3", surfaceRegion: "阿根廷", surface: "草地", distance: 1600 };
+  const usa = { id: "usa", raceClass: "g3", surfaceRegion: "美国", surface: "草地", distance: 1600 };
+  const usaDirt = { id: "usa-dirt", raceClass: "g3", surfaceRegion: "美国", surface: "泥地", distance: 1600 };
+  const middleEastTurf = { id: "me-turf", raceClass: "g3", surfaceRegion: "中东", surface: "草地", distance: 1600 };
+  const middleEastDirt = { id: "me-dirt", raceClass: "g3", surfaceRegion: "中东", surface: "泥地", distance: 1600 };
+  const japanTurf = { id: "japan-turf", raceClass: "g3", surfaceRegion: "日本", surface: "草地", distance: 1600 };
+  const japanDirt = { id: "japan-dirt", raceClass: "g3", surfaceRegion: "日本", surface: "泥地", distance: 1600 };
+  const hongKong = { id: "hong-kong", raceClass: "g3", surfaceRegion: "香港", surface: "草地", distance: 1600 };
+  const australiaSprint = { id: "australia-sprint", raceClass: "g3", surfaceRegion: "澳洲", surface: "草地", distance: 1200 };
+  const australiaMile = { id: "australia-mile", raceClass: "g3", surfaceRegion: "澳洲", surface: "草地", distance: 1400 };
+  const horses = [
+    legendHorse("american-turf", 80, eligibilityWin("美国", "草地", 1600)),
+    legendHorse("argentine-turf", 80, eligibilityWin("阿根廷", "草地", 1600)),
+    legendHorse("japanese-turf", 80, eligibilityWin("日本", "草地", 1600)),
+    legendHorse("european-turf", 80, eligibilityWin("欧洲", "草地", 1600)),
+    legendHorse("hong-kong-turf", 80, eligibilityWin("香港", "草地", 1600)),
+    legendHorse("australian-turf", 80, eligibilityWin("澳洲", "草地", 1600)),
+    legendHorse("european-sprinter", 80, eligibilityWin("欧洲", "草地", 1200)),
+    legendHorse("american-dirt", 80, eligibilityWin("美国", "泥地", 1600)),
+    legendHorse("japanese-dirt", 80, eligibilityWin("日本", "泥地", 1600))
+  ];
+  const fixtureRaces = [
+    argentina, usa, usaDirt, middleEastTurf, middleEastDirt, japanTurf, japanDirt,
+    hongKong, australiaSprint, australiaMile
+  ];
+  withHistoricalFixtures(horses, fixtureRaces, () => {
+    assert.deepEqual(plain(rules.RaceRules.recognizedLegendWinRegions(argentina)), ["阿根廷", "美国"]);
+    assert.deepEqual(plain(rules.RaceRules.recognizedLegendWinRegions(japanTurf)), ["日本", "香港", "澳洲"]);
+    assert.deepEqual(plain(rules.RaceRules.recognizedLegendWinRegions(hongKong)), ["香港", "日本", "澳洲"]);
+    assert.deepEqual(plain(rules.RaceRules.recognizedLegendWinRegions(australiaSprint)), ["澳洲", "日本", "欧洲"]);
+    assert.deepEqual(plain(rules.RaceRules.recognizedLegendWinRegions(australiaMile)), ["澳洲", "日本"]);
+    assert.deepEqual(plain(rules.RaceRules.recognizedLegendWinRegions(usa)), ["美国", "欧洲"]);
+    assert.deepEqual(rules.RaceRules.getLegendFieldCandidates(argentina).map((item) => item.horseId).sort(), ["american-turf", "argentine-turf"]);
+    assert.deepEqual(rules.RaceRules.getLegendFieldCandidates(usa).map((item) => item.horseId).sort(), ["american-turf", "european-turf"]);
+    assert.deepEqual(rules.RaceRules.getLegendFieldCandidates(usaDirt).map((item) => item.horseId), ["american-dirt"]);
+    assert.deepEqual(rules.RaceRules.getLegendFieldCandidates(japanTurf).map((item) => item.horseId).sort(), ["australian-turf", "hong-kong-turf", "japanese-turf"]);
+    assert.deepEqual(rules.RaceRules.getLegendFieldCandidates(japanDirt).map((item) => item.horseId), ["japanese-dirt"]);
+    assert.deepEqual(rules.RaceRules.getLegendFieldCandidates(hongKong).map((item) => item.horseId).sort(), ["australian-turf", "hong-kong-turf", "japanese-turf"]);
+    assert.deepEqual(rules.RaceRules.getLegendFieldCandidates(australiaSprint).map((item) => item.horseId), ["european-sprinter"]);
+    assert.deepEqual(rules.RaceRules.getLegendFieldCandidates(australiaMile).map((item) => item.horseId).sort(), ["australian-turf", "japanese-turf"]);
+    assert.deepEqual(rules.RaceRules.getLegendFieldCandidates(middleEastTurf).map((item) => item.horseId).sort(), ["european-turf", "japanese-turf"]);
+    assert.deepEqual(rules.RaceRules.getLegendFieldCandidates(middleEastDirt).map((item) => item.horseId).sort(), ["american-dirt", "japanese-dirt"]);
+  });
+});
+
+test("legend G1 threshold and condition-race penalty remain strict", () => {
+  const g1 = { id: "strict-g1", raceClass: "g1", surfaceRegion: "美国", surface: "泥地", distance: 1800 };
+  const condition = { id: "strict-condition", raceClass: "one-win", surfaceRegion: "日本", surface: "泥地", distance: 1800 };
+  const horses = [
+    {
+      ...legendHorse("below", 84, eligibilityWin("美国", "泥地", 1800)),
+      legendEligibilityWins: [
+        eligibilityWin("美国", "泥地", 1800),
+        eligibilityWin("日本", "泥地", 1800)
+      ]
+    },
+    {
+      ...legendHorse("eligible", 85, eligibilityWin("美国", "泥地", 1800)),
+      legendEligibilityWins: [
+        eligibilityWin("美国", "泥地", 1800),
+        eligibilityWin("日本", "泥地", 1800)
+      ]
+    }
+  ];
+  withHistoricalFixtures(horses, [g1, condition], () => {
+    assert.deepEqual(rules.RaceRules.getLegendFieldCandidates(g1).map((item) => item.horseId), ["eligible"]);
+    const conditionCandidates = rules.RaceRules.getLegendFieldCandidates(condition);
+    assert.equal(conditionCandidates.find((item) => item.horseId === "below").ability, 80);
+    assert.equal(conditionCandidates.find((item) => item.horseId === "eligible").ability, 81);
+  });
+});
+
+test("legend long-distance races accept any qualifying win at 2601 metres or farther", () => {
+  const longRace = { id: "long-distance", raceClass: "op", surfaceRegion: "欧洲", surface: "草地", distance: 3600 };
+  const middleRace = { id: "middle-distance", raceClass: "op", surfaceRegion: "欧洲", surface: "草地", distance: 2600 };
+  const horses = [
+    legendHorse("long-2800", 80, eligibilityWin("欧洲", "草地", 2800)),
+    legendHorse("long-3000", 80, eligibilityWin("欧洲", "草地", 3000)),
+    legendHorse("boundary-2601", 80, eligibilityWin("欧洲", "草地", 2601)),
+    legendHorse("not-long-2600", 80, eligibilityWin("欧洲", "草地", 2600)),
+    legendHorse("wrong-surface", 80, eligibilityWin("欧洲", "泥地", 3600)),
+    legendHorse("wrong-region", 80, eligibilityWin("日本", "草地", 3600))
+  ];
+  withHistoricalFixtures(horses, [longRace, middleRace], () => {
+    assert.deepEqual(
+      rules.RaceRules.getLegendFieldCandidates(longRace).map((item) => item.horseId),
+      ["long-2800", "long-3000", "boundary-2601"]
+    );
+    assert.deepEqual(
+      rules.RaceRules.getLegendFieldCandidates(middleRace).map((item) => item.horseId),
+      ["long-2800", "boundary-2601", "not-long-2600"]
+    );
+  });
+});
+
+test("Japanese dirt G1 fields keep every 85-plus horse and fill with the strongest lower-rated horses", () => {
+  const race = { id: "japan-dirt-fallback", name: "japan-dirt-fallback", raceClass: "g1", surfaceRegion: "日本", surface: "泥地", distance: 1800 };
+  const horses = [
+    legendHorse("strong-88", 88, eligibilityWin("日本", "泥地", 1800)),
+    legendHorse("strong-85", 85, eligibilityWin("日本", "泥地", 1800)),
+    legendHorse("low-a", 84, eligibilityWin("日本", "泥地", 1800)),
+    legendHorse("low-b", 84, eligibilityWin("日本", "泥地", 1800)),
+    legendHorse("low-c", 84, eligibilityWin("日本", "泥地", 1800)),
+    legendHorse("low-d", 83, eligibilityWin("日本", "泥地", 1800))
+  ];
+  horses.find((horse) => horse.id === "low-a").profile.peakAbility = 86;
+  horses.find((horse) => horse.id === "low-b").profile.peakAbility = 87;
+  horses.find((horse) => horse.id === "low-c").profile.peakAbility = 87;
+  withHistoricalFixtures(horses, [race], () => {
+    const field = rules.RaceRules.chooseOpponentField(race, { career: { races: [] } });
+    assert.deepEqual(field.map((item) => item.horseId), ["strong-88", "strong-85", "low-b", "low-c", "low-a"]);
+  });
+});
+
+test("Japanese ability fallback is unused when five 85-plus horses qualify", () => {
+  const race = { id: "japan-female-turf", name: "japan-female-turf", raceClass: "g1", surfaceRegion: "日本", surface: "草地", distance: 1600, sexRestriction: "牝马" };
+  const horses = Array.from({ length: 6 }, (_, index) => (
+    legendHorse(`strong-${index + 1}`, 85 + index, eligibilityWin("日本", "草地", 1600))
+  )).concat([legendHorse("below-85", 84, eligibilityWin("日本", "草地", 1600))]);
+  withHistoricalFixtures(horses, [race], () => {
+    const field = rules.RaceRules.chooseOpponentField(race, { career: { races: [] } });
+    assert.equal(field.length, 5);
+    assert.equal(field.some((item) => item.horseId === "below-85"), false);
+    assert.ok(field.every((item) => item.ability >= 85));
+  });
+});
+
+test("Japanese G1 pools keep random historical versions within the correct ability tier", () => {
+  const race = { id: "japan-version-tier", name: "japan-version-tier", raceClass: "g1", surfaceRegion: "日本", surface: "泥地", distance: 1800 };
+  const highVersionHorse = legendHorse("versioned-high", 84, eligibilityWin("日本", "泥地", 1800));
+  highVersionHorse.races = [
+    { raceId: race.id, year: 2019, ability: 84, jockeyId: "generic-local", finish: 1 },
+    { raceId: race.id, year: 2020, ability: 86, jockeyId: "generic-local", finish: 1 }
+  ];
+  const lowVersionHorse = legendHorse("versioned-low", 83, eligibilityWin("日本", "泥地", 1800));
+  lowVersionHorse.races = [
+    { raceId: race.id, year: 2021, ability: 82, jockeyId: "generic-local", finish: 1 },
+    { raceId: race.id, year: 2022, ability: 84, jockeyId: "generic-local", finish: 1 }
+  ];
+  const originalPickOne = rules.Random.pickOne;
+  rules.Random.pickOne = (items) => items[items.length - 1];
+  try {
+    withHistoricalFixtures([highVersionHorse, lowVersionHorse], [race], () => {
+      const strong = rules.RaceRules.getLegendFieldCandidates(race, { minAbility: 85 });
+      assert.deepEqual(strong.map((item) => [item.horseId, item.year, item.ability]), [["versioned-high", 2020, 86]]);
+      const fallback = rules.RaceRules.getLegendFieldCandidates(race, { minAbility: null });
+      assert.deepEqual(fallback.map((item) => [item.horseId, item.year, item.ability]), [
+        ["versioned-high", 2020, 86],
+        ["versioned-low", 2022, 84]
+      ]);
+    });
+  } finally {
+    rules.Random.pickOne = originalPickOne;
+  }
+});
+
+test("legend registration requires five unique qualified historical horses", () => {
+  const race = { id: "strict-field-size", name: "strict-field-size", raceClass: "op", surfaceRegion: "日本", surface: "泥地", distance: 1800 };
+  const horses = Array.from({ length: 5 }, (_, index) => (
+    legendHorse(`qualified-${index + 1}`, 80 + index, eligibilityWin("日本", "泥地", 1800))
+  ));
+  withHistoricalFixtures(horses.slice(0, 4), [race], () => {
+    assert.throws(
+      () => rules.RaceRules.chooseOpponentField(race, { career: { races: [] } }),
+      /只有4匹/
+    );
+  });
+  withHistoricalFixtures(horses, [race], () => {
+    const field = rules.RaceRules.chooseOpponentField(race, { career: { races: [] } });
+    assert.equal(field.length, 5);
+    assert.equal(new Set(field.map((item) => item.horseId)).size, 5);
+    assert.ok(field.every((item) => item.historical));
+  });
+});
+
+test("legend-only additions never enter normal-mode condition-race indexes", () => {
+  const newHorseIds = new Set([
+    "love-michan", "corin-berry", "gabbys-sister", "kimon-ruby", "la-verita",
+    "grand-bridge", "shonan-nadeshiko", "acork-claw", "yorino-sapphire", "dakara-festive",
+    "imperatriz", "bella-nipotina", "sunlight", "miss-andretti", "winx", "sunline",
+    "super-impose", "mr-brightside", "lonhro", "might-and-power", "northerly",
+    "verry-elleegant", "incentivise", "ethereal", "makybe-diva", "saintly", "efficient",
+    "fiorente", "cogburn", "caravel", "stormy-liberal", "world-of-trouble", "belvoir-bay",
+    "lady-shipman", "twilight-gleaming", "mizdirection", "nobals"
+    ,"gold-allure", "meisei-opera", "cafe-pharoah", "chrysoberyl", "teo-keynes",
+    "chuwa-wizard", "meisho-hario", "peptide-nile", "sambista", "icon-tailor",
+    "white-fugue", "miracle-legend", "fashionista", "user-friendly", "dunfermline"
+  ]);
+  rules.HistoricalOpponentRules.reset();
+  rules.Races.filter((race) => ["new", "maiden", "one-win", "two-win", "three-win"].includes(race.raceClass))
+    .forEach((race) => {
+      const indexed = rules.HistoricalOpponentRules.getByRaceId(race.id);
+      assert.equal(indexed.some((opponent) => newHorseIds.has(opponent.horseId)), false, race.id);
+      assert.equal(newHorseIds.has(rules.RaceRules.chooseOpponent(race).horseId), false, race.id);
+    });
+  assert.ok(rules.HistoricalOpponentRules.getByRaceId("capella-stakes").some((opponent) => opponent.horseId === "gabbys-sister"));
+});
+
+test("full legend audit can field five historical opponents for every race", () => {
+  const goldRiver = rules.Races.find((race) => race.id === "europe-listed-prix-gold-river");
+  const royallieu = rules.Races.find((race) => race.id === "prix-de-royallieu");
+  assert.equal(rules.RaceRules.getLegendFieldCandidates(goldRiver).length, 6);
+  assert.equal(rules.RaceRules.getLegendFieldCandidates(royallieu).length, 5);
+
+  const failures = rules.Races.map((race) => ({
+    race,
+    candidates: rules.RaceRules.getLegendFieldCandidates(race).length
+  })).filter((item) => item.candidates < 5);
+
+  assert.deepEqual(plain(failures.map(({ race, candidates }) => ({
+    id: race.id,
+    candidates
+  }))), []);
+});

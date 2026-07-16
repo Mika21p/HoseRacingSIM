@@ -68,7 +68,7 @@
       5: "五着"
     };
     if (retired) return "退赛";
-    return rank ? labels[rank] || `${rank}着` : "着外";
+    return labels[rank] || "着外";
   }
 
   function finalMark(result) {
@@ -228,34 +228,99 @@
   }
 
   const LEGEND_FIELD_SIZE = 5;
-  const LEGEND_DISTANCE_TOLERANCE = 400;
-  const LEGEND_CONDITION_FALLBACK_TOLERANCE = 600;
+  const LEGEND_DISTANCE_TOLERANCE = 200;
   const LEGEND_G1_MIN_ABILITY = 85;
+  const LEGEND_LONG_DISTANCE_MIN = 2601;
+  const LEGEND_SPRINT_DISTANCE_MIN = 1000;
+  const LEGEND_SPRINT_DISTANCE_MAX = 1300;
 
   function raceRegion(race) {
     return (race && race.surfaceRegion) || "日本";
-  }
-
-  function isConditionRace(race) {
-    return !!race && CONDITION_RACE_CLASSES.includes(race.raceClass);
   }
 
   function isLegendG1(race) {
     return !!race && (race.raceClass === "g1" || race.raceClass === "jpn1");
   }
 
+  function usesLegendG1AbilityFallback(race) {
+    if (!isLegendG1(race) || raceRegion(race) !== "日本") return false;
+    if (race.surface === "泥地") return true;
+    return race.surface === "草地" && race.sexRestriction === "牝马";
+  }
+
+  function isLegendLongDistance(distance) {
+    return Number(distance) >= LEGEND_LONG_DISTANCE_MIN;
+  }
+
+  function isLegendDistanceCompatible(winDistance, targetDistance, tolerance) {
+    if (isLegendLongDistance(targetDistance)) return isLegendLongDistance(winDistance);
+    return Math.abs(Number(winDistance) - Number(targetDistance)) <= tolerance;
+  }
+
+  function recognizedLegendWinRegions(race) {
+    const region = raceRegion(race);
+    if (region === "中东") {
+      return race && race.surface === "草地"
+        ? ["中东", "日本", "欧洲"]
+        : ["中东", "美国", "日本"];
+    }
+    if (region === "阿根廷") return ["阿根廷", "美国"];
+    if (region === "日本" && race && race.surface === "草地") {
+      return ["日本", "香港", "澳洲"];
+    }
+    if (region === "香港") return ["香港", "日本", "澳洲"];
+    if (region === "澳洲") {
+      const regions = ["澳洲", "日本"];
+      if (race && Number(race.distance) >= LEGEND_SPRINT_DISTANCE_MIN
+        && Number(race.distance) <= LEGEND_SPRINT_DISTANCE_MAX) {
+        regions.push("欧洲");
+      }
+      return regions;
+    }
+    if (region === "美国" && race && race.surface === "草地") return ["美国", "欧洲"];
+    return [region];
+  }
+
+  function eligibilityWinAppearance(win) {
+    if (!win) return null;
+    return {
+      entry: {
+        year: win.year,
+        jockeyId: win.jockeyId,
+        trackCondition: win.trackCondition || "",
+        legendEligibilityOnly: true
+      },
+      race: {
+        id: "",
+        name: win.raceName || "传奇资格胜鞍",
+        surfaceRegion: win.surfaceRegion,
+        surface: win.surface,
+        distance: win.distance
+      },
+      qualificationWin: true
+    };
+  }
+
   function historicalHorseProfiles() {
     const raceById = new Map((ns.Races || []).map((race) => [race.id, race]));
     return (ns.HistoricalHorses || []).map((horse) => {
       const appearances = (horse.races || [])
-        .map((entry) => ({ entry, race: raceById.get(entry.raceId) }))
+        .map((entry) => ({
+          entry,
+          race: raceById.get(entry.raceId),
+          qualificationWin: entry.finish === 1
+        }))
         .filter((appearance) => !!appearance.race);
+      const eligibilityWins = (Array.isArray(horse.legendEligibilityWins) ? horse.legendEligibilityWins : [])
+        .map(eligibilityWinAppearance)
+        .filter(Boolean);
       const profile = horse.profile || {};
       const declaredSex = String(profile.sex || profile.gender || "").toLowerCase();
       const profileNote = String(profile.note || "");
       return {
         horse,
         appearances,
+        qualificationWins: appearances.filter((appearance) => appearance.qualificationWin).concat(eligibilityWins),
         inferredFemale: declaredSex === "female"
           || declaredSex === "mare"
           || declaredSex === "filly"
@@ -281,15 +346,15 @@
   function legendCandidate(profile, race, options) {
     const opts = options || {};
     const tolerance = opts.distanceTolerance || LEGEND_DISTANCE_TOLERANCE;
-    const targetRegion = opts.region || raceRegion(race);
     const targetSurface = opts.surface || race.surface;
     const targetRaceClass = opts.raceClass || race.raceClass;
+    const acceptedRegions = new Set(opts.acceptedRegions || recognizedLegendWinRegions(race));
     if (race.sexRestriction === "牝马" && !profile.inferredFemale) return null;
 
-    const compatibleAppearances = profile.appearances.filter((appearance) => {
+    const compatibleAppearances = profile.qualificationWins.filter((appearance) => {
       if (appearance.race.surface !== targetSurface) return false;
-      if (Math.abs(appearance.race.distance - race.distance) > tolerance) return false;
-      return !opts.requireRegion || raceRegion(appearance.race) === targetRegion;
+      if (!isLegendDistanceCompatible(appearance.race.distance, race.distance, tolerance)) return false;
+      return acceptedRegions.has(raceRegion(appearance.race));
     });
     if (compatibleAppearances.length === 0) return null;
 
@@ -323,7 +388,7 @@
       "generic-local"
     );
     const horse = profile.horse;
-    const regionMatch = compatibleAppearances.some((appearance) => raceRegion(appearance.race) === targetRegion);
+    const regionMatch = compatibleAppearances.some((appearance) => raceRegion(appearance.race) === raceRegion(race));
 
     return {
       id: `${horse.id}-${race.id}-${selectedEntry ? selectedEntry.year : "projected"}`,
@@ -384,67 +449,74 @@
   }
 
   function getLegendFieldCandidates(race, options) {
-    const opts = options || {};
+    const opts = {
+      surface: race && race.surface,
+      raceClass: race && race.raceClass,
+      distanceTolerance: LEGEND_DISTANCE_TOLERANCE,
+      acceptedRegions: recognizedLegendWinRegions(race),
+      minAbility: isLegendG1(race) && !usesLegendG1AbilityFallback(race)
+        ? LEGEND_G1_MIN_ABILITY
+        : null,
+      ...(options || {})
+    };
     const profiles = historicalHorseProfiles();
     return profiles
       .map((profile) => legendCandidate(profile, race, opts))
       .filter(Boolean);
   }
 
+  function compareLegendCandidates(left, right) {
+    if (left.ability !== right.ability) return right.ability - left.ability;
+    if (left.peakAbility !== right.peakAbility) return right.peakAbility - left.peakAbility;
+    return String(left.horseId).localeCompare(String(right.horseId));
+  }
+
   function chooseOpponentField(race, options) {
     const opts = options || {};
-    const conditionRace = isConditionRace(race);
-    const minAbility = isLegendG1(race) ? LEGEND_G1_MIN_ABILITY : null;
-    let distanceTolerance = LEGEND_DISTANCE_TOLERANCE;
     const candidateOptions = {
-      region: raceRegion(race),
       surface: race.surface,
       raceClass: race.raceClass,
-      distanceTolerance,
-      requireRegion: conditionRace,
-      minAbility
+      distanceTolerance: LEGEND_DISTANCE_TOLERANCE,
+      acceptedRegions: recognizedLegendWinRegions(race)
     };
-    let candidates = getLegendFieldCandidates(race, candidateOptions);
-
-    if (conditionRace && candidates.length < LEGEND_FIELD_SIZE) {
-      distanceTolerance = LEGEND_CONDITION_FALLBACK_TOLERANCE;
-      candidates = getLegendFieldCandidates(race, {
-        region: candidateOptions.region,
-        surface: candidateOptions.surface,
-        raceClass: candidateOptions.raceClass,
-        distanceTolerance,
-        requireRegion: true,
-        minAbility
-      });
-    }
-    if (candidates.length < LEGEND_FIELD_SIZE) {
-      throw new Error(`传奇模式：${race.name || race.id}只有${candidates.length}匹符合地区、场地、距离和强度要求的史实马。`);
-    }
-
     const encounterState = legendEncounterState(opts.career);
     let picked;
-    if (conditionRace) {
-      picked = weightedSampleWithoutReplacement(candidates, LEGEND_FIELD_SIZE, encounterState);
-    } else {
-      const regional = candidates.filter((candidate) => candidate.regionMatch);
-      const otherRegions = candidates.filter((candidate) => !candidate.regionMatch);
-      if (regional.length >= LEGEND_FIELD_SIZE) {
-        picked = weightedSampleWithoutReplacement(regional, LEGEND_FIELD_SIZE, encounterState);
+    let candidateCount;
+
+    if (usesLegendG1AbilityFallback(race)) {
+      const strongCandidates = getLegendFieldCandidates(race, {
+        ...candidateOptions,
+        minAbility: LEGEND_G1_MIN_ABILITY
+      });
+      if (strongCandidates.length >= LEGEND_FIELD_SIZE) {
+        candidateCount = strongCandidates.length;
+        picked = weightedSampleWithoutReplacement(strongCandidates, LEGEND_FIELD_SIZE, encounterState);
       } else {
-        picked = regional.slice();
-        picked = picked.concat(weightedSampleWithoutReplacement(
-          otherRegions,
-          LEGEND_FIELD_SIZE - picked.length,
-          encounterState
-        ));
+        const strongHorseIds = new Set(strongCandidates.map((candidate) => candidate.horseId));
+        const fallbackCandidates = getLegendFieldCandidates(race, {
+          ...candidateOptions,
+          minAbility: null
+        }).filter((candidate) => !strongHorseIds.has(candidate.horseId));
+        fallbackCandidates.sort(compareLegendCandidates);
+        candidateCount = strongCandidates.length + fallbackCandidates.length;
+        picked = strongCandidates.concat(
+          fallbackCandidates.slice(0, LEGEND_FIELD_SIZE - strongCandidates.length)
+        );
       }
+    } else {
+      const candidates = getLegendFieldCandidates(race, {
+        ...candidateOptions,
+        minAbility: isLegendG1(race) ? LEGEND_G1_MIN_ABILITY : null
+      });
+      candidateCount = candidates.length;
+      picked = weightedSampleWithoutReplacement(candidates, LEGEND_FIELD_SIZE, encounterState);
     }
 
-    return picked.sort((left, right) => {
-      if (left.ability !== right.ability) return right.ability - left.ability;
-      if (left.peakAbility !== right.peakAbility) return right.peakAbility - left.peakAbility;
-      return String(left.horseId).localeCompare(String(right.horseId));
-    });
+    if (picked.length < LEGEND_FIELD_SIZE) {
+      throw new Error(`传奇模式：${race.name || race.id}只有${candidateCount}匹符合认可赛区、同场地、距离资格、性别及赛事强度要求的史实马。`);
+    }
+
+    return picked.sort(compareLegendCandidates);
   }
 
   function chooseOpponent(race, options) {
@@ -944,6 +1016,7 @@
     chooseOpponent,
     chooseOpponentField,
     getLegendFieldCandidates,
+    recognizedLegendWinRegions,
     createGeneratedOpponent,
     getHistoricalCandidates,
     isChampionOpponent,

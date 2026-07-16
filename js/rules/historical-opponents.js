@@ -61,6 +61,24 @@
           warnings.push({ type: "invalid-ability", horseId: horse.id || "", raceId: entry.raceId || "", ability: entry.ability });
         }
       });
+      const seenLegendWins = new Set();
+      const legendWins = Array.isArray(horse.legendEligibilityWins) ? horse.legendEligibilityWins : [];
+      if (horse.legendEligibilityWins != null && !Array.isArray(horse.legendEligibilityWins)) {
+        warnings.push({ type: "invalid-legend-wins", horseId: horse.id || "" });
+      }
+      legendWins.forEach((win) => {
+        const key = `${win.raceName || ""}:${win.year || ""}:${win.surfaceRegion || ""}:${win.surface || ""}:${win.distance || ""}`;
+        if (seenLegendWins.has(key)) {
+          warnings.push({ type: "duplicate-legend-win", horseId: horse.id || "", raceName: win.raceName || "", year: win.year || "" });
+        }
+        seenLegendWins.add(key);
+        if (!win.raceName || !Number.isFinite(win.year) || !win.surfaceRegion || !["草地", "泥地"].includes(win.surface) || !Number.isFinite(win.distance)) {
+          warnings.push({ type: "invalid-legend-win", horseId: horse.id || "", win });
+        }
+        if (!win.jockeyId || !jockeyIds.has(win.jockeyId)) {
+          warnings.push({ type: "unknown-legend-win-jockey", horseId: horse.id || "", jockeyId: win.jockeyId || "" });
+        }
+      });
     });
 
     if (warnings.length > 0) {

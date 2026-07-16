@@ -1997,11 +1997,197 @@
       ]
     },
     {
+      id: "taito-mori",
+      name: "森泰斗",
+      periods: [
+        { from: 1998, to: 2023, ability: 60 }
+      ]
+    },
+    {
+      id: "norifumi-mikamoto",
+      name: "御神本訓史",
+      periods: [
+        { from: 1999, to: 2026, ability: 60 }
+      ]
+    },
+    {
+      id: "kosuke-maruta",
+      name: "丸田恭介",
+      periods: [
+        { from: 2007, to: 2026, ability: 50 }
+      ]
+    },
+    {
+      id: "nanako-fujita",
+      name: "藤田菜七子",
+      periods: [
+        { from: 2016, to: 2025, ability: 50 }
+      ]
+    },
+    {
       id: "generic-local",
       name: "默认骑手",
       mainSelectable: false,
       periods: [
         { from: 1980, to: 2035, ability: 40 }
+      ]
+    },
+    {
+      id: "opie-bosson",
+      name: "O. Bosson",
+      periods: [
+        { from: 1998, to: 2005, ability: 80 },
+        { from: 2006, to: 2026, ability: 90 }
+      ]
+    },
+    {
+      id: "barend-vorster",
+      name: "B. Vorster",
+      periods: [
+        { from: 2005, to: 2026, ability: 80 }
+      ]
+    },
+    {
+      id: "ben-melham",
+      name: "B. Melham",
+      periods: [
+        { from: 2006, to: 2026, ability: 80 }
+      ]
+    },
+    {
+      id: "greg-childs",
+      name: "G. Childs",
+      periods: [
+        { from: 1983, to: 1989, ability: 80 },
+        { from: 1990, to: 2004, ability: 90 },
+        { from: 2005, to: 2018, ability: 80 }
+      ]
+    },
+    {
+      id: "greg-hall",
+      name: "G. Hall",
+      periods: [
+        { from: 1982, to: 2012, ability: 80 }
+      ]
+    },
+    {
+      id: "darren-beadman",
+      name: "D. Beadman",
+      periods: [
+        { from: 1982, to: 1989, ability: 80 },
+        { from: 1990, to: 2005, ability: 90 },
+        { from: 2006, to: 2015, ability: 80 }
+      ]
+    },
+    {
+      id: "jim-cassidy",
+      name: "J. Cassidy",
+      periods: [
+        { from: 1976, to: 1984, ability: 80 },
+        { from: 1985, to: 2000, ability: 90 },
+        { from: 2001, to: 2018, ability: 80 }
+      ]
+    },
+    {
+      id: "mark-zahra",
+      name: "M. Zahra",
+      periods: [
+        { from: 1998, to: 2007, ability: 80 },
+        { from: 2008, to: 2026, ability: 90 }
+      ]
+    },
+    {
+      id: "michael-rodd",
+      name: "M. Rodd",
+      periods: [
+        { from: 1998, to: 2026, ability: 80 }
+      ]
+    },
+    {
+      id: "chris-munce",
+      name: "C. Munce",
+      periods: [
+        { from: 1983, to: 2008, ability: 80 }
+      ]
+    },
+    {
+      id: "craig-newitt",
+      name: "C. Newitt",
+      periods: [
+        { from: 1998, to: 2026, ability: 80 }
+      ]
+    },
+    {
+      id: "manuel-franco",
+      name: "M. Franco",
+      periods: [
+        { from: 2013, to: 2017, ability: 80 },
+        { from: 2018, to: 2026, ability: 90 }
+      ]
+    },
+    {
+      id: "eduardo-nunez",
+      name: "E. Nunez",
+      periods: [
+        { from: 2005, to: 2026, ability: 80 }
+      ]
+    },
+    {
+      id: "gerardo-corrales",
+      name: "G. Corrales",
+      periods: [
+        { from: 2011, to: 2026, ability: 80 }
+      ]
+    },
+    {
+      id: "luke-currie",
+      name: "L. Currie",
+      periods: [
+        { from: 2000, to: 2026, ability: 80 }
+      ]
+    },
+    {
+      id: "scott-seamer",
+      name: "S. Seamer",
+      periods: [
+        { from: 1995, to: 2010, ability: 80 }
+      ]
+    },
+    {
+      id: "larry-cassidy",
+      name: "L. Cassidy",
+      periods: [
+        { from: 1985, to: 2026, ability: 80 }
+      ]
+    },
+    {
+      id: "drayden-van-dyke",
+      name: "D. Van Dyke",
+      periods: [
+        { from: 2012, to: 2026, ability: 80 }
+      ]
+    },
+    {
+      id: "javier-castellano",
+      name: "J. Castellano",
+      periods: [
+        { from: 1997, to: 2003, ability: 80 },
+        { from: 2004, to: 2015, ability: 90 },
+        { from: 2016, to: 2026, ability: 80 }
+      ]
+    },
+    {
+      id: "isao-sugawara",
+      name: "菅原勲",
+      periods: [
+        { from: 1974, to: 2013, ability: 60 }
+      ]
+    },
+    {
+      id: "takuya-ono",
+      name: "大野拓弥",
+      periods: [
+        { from: 2002, to: 2026, ability: 60 }
       ]
     }
   ];
@@ -2263,7 +2449,32 @@
     "gary-stevens": ["usa"],
     "garrett-gomez": ["usa"],
     "jacinto-vasquez": ["usa"],
-    "generic-local": ["local", "japan"]
+    "taito-mori": ["japan"],
+    "norifumi-mikamoto": ["japan"],
+    "kosuke-maruta": ["japan"],
+    "nanako-fujita": ["japan"],
+    "generic-local": ["local", "japan"],
+    "opie-bosson": ["australia"],
+    "barend-vorster": ["australia"],
+    "ben-melham": ["australia"],
+    "greg-childs": ["australia"],
+    "greg-hall": ["australia"],
+    "darren-beadman": ["australia"],
+    "jim-cassidy": ["australia"],
+    "mark-zahra": ["australia"],
+    "michael-rodd": ["australia"],
+    "chris-munce": ["australia"],
+    "craig-newitt": ["australia"],
+    "manuel-franco": ["usa"],
+    "eduardo-nunez": ["usa"],
+    "gerardo-corrales": ["usa"]
+    ,"luke-currie": ["australia"]
+    ,"scott-seamer": ["australia"]
+    ,"larry-cassidy": ["australia"]
+    ,"drayden-van-dyke": ["usa"]
+    ,"javier-castellano": ["usa"]
+    ,"isao-sugawara": ["japan"]
+    ,"takuya-ono": ["japan"]
   };
 
   ns.Jockeys.forEach((jockey) => {

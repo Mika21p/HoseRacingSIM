@@ -22,6 +22,9 @@
     races: [
       { raceId: "satsuki-sho", year: 2020, ability: 84, jockeyId: "christophe-lemaire", finish: 1, trackCondition: "良" },
       { raceId: "tokyo-yushun", year: 2020, ability: 86, jockeyId: "christophe-lemaire", finish: 2, trackCondition: "稍重" }
+    ],
+    legendEligibilityWins: [
+      { raceName: "现实中未实装的条件赛", year: 2020, surfaceRegion: "日本", surface: "泥地", distance: 2400, jockeyId: "christophe-lemaire" }
     ]
   });
 })();
@@ -51,6 +54,9 @@ const files = [
 - `races[].finish`: 史实名次。默认比赛对手池只抽取 `finish: 1` 的史实冠军；其他名次会作为资料保留，不会默认成为对手。
 - `races[].featured`: 重要参赛标记，可选。当前默认规则不使用，预留给以后扩展“重要参赛马池”。
 - `races[].trackCondition`: 场地状态，可选，支持 `良`、`稍重`、`重`、`不良`。
+- `legendEligibilityWins`: 传奇模式专用的真实胜鞍列表，用于尚未实装或没有固定游戏赛事 ID 的比赛；普通模式对手索引不会读取。
+- `legendEligibilityWins[].raceName/year/surfaceRegion/surface/distance/jockeyId`: 分别记录胜鞍名称、年份、赛区、场地、距离和骑手。该数组只能登记冠军，因此不填写 `finish` 或 `ability`。
+- 不得为了登记现实条件赛胜鞍而伪造或借用游戏内条件赛 ID；应使用 `legendEligibilityWins`，以免普通模式条件赛误抽史实马。
 
 ## 日本公开赛与重赏赛事 ID
 
