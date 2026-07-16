@@ -4,6 +4,10 @@
   const state = {
     career: null,
     retiredSummary: null,
+    activeView: "action",
+    activeActionSection: "race",
+    setupOpen: false,
+    resultOpen: false,
     historyExpanded: false,
     trainerCommentsCollapsed: false,
     adaptationHintsCollapsed: false,
@@ -36,6 +40,9 @@
   };
   let savePaused = false;
   let legendIntroDismissedForSession = false;
+  let resultReturnFocus = null;
+  let resultWasVisible = false;
+  let actionScrollFrame = 0;
 
   const SEASON_ORDER = [
     "二岁夏", "二岁秋", "二岁冬",
@@ -52,7 +59,16 @@
     const didClearExpiredRegistration = clearExpiredRegistration();
     const didMarkTravelPreparation = markScheduledTravelPreparation();
     const app = document.getElementById("app");
-    if (app) app.classList.toggle("app-has-career", !!state.career);
+    const hasCareer = !!state.career;
+    if (app) app.classList.toggle("app-has-career", hasCareer);
+    document.body.classList.toggle("has-career", hasCareer);
+    const setupOverlay = document.getElementById("setupOverlay");
+    const setupCloseBtn = document.getElementById("setupCloseBtn");
+    const workspaceShell = document.getElementById("workspaceShell");
+    if (setupOverlay) setupOverlay.hidden = hasCareer && !state.setupOpen;
+    if (setupCloseBtn) setupCloseBtn.hidden = !hasCareer;
+    if (workspaceShell) workspaceShell.hidden = !hasCareer;
+    ns.UI.renderWorkspaceStatus(document.getElementById("workspaceStatus"), state.career);
     ns.UI.renderHorse(document.getElementById("horsePanel"), state.career, {
       trainerCommentsCollapsed: state.trainerCommentsCollapsed
     });
@@ -64,6 +80,9 @@
     ns.UI.renderAdaptationHints(document.getElementById("feedbackPanel"), state.career, {
       collapsed: state.adaptationHintsCollapsed
     });
+    ns.UI.renderHorseSummary(document.getElementById("horseSummaryPanel"), state.career);
+    ns.UI.renderLastRaceComment(document.getElementById("lastRacePanel"), state.career);
+    ns.UI.renderAdaptationSummary(document.getElementById("adaptationSummaryPanel"), state.career);
     ns.UI.renderHistory(document.getElementById("historyPanel"), state.career, state.retiredSummary, {
       mobile: isMobileLayout(),
       expanded: state.historyExpanded,
@@ -74,6 +93,12 @@
       horseNameLanguage: state.horseNameLanguage,
       raceNameMode: state.raceNameMode
     });
+    ns.UI.renderRaceResult(document.getElementById("raceResultContent"), state.career, {
+      horseNameLanguage: state.horseNameLanguage,
+      raceNameMode: state.raceNameMode
+    });
+    applyWorkspaceView();
+    applyRaceResultOverlay();
     bindDynamicEvents();
     updateSaveStatus();
     if (didNormalizeScheduledRace || didClearExpiredRegistration || didMarkTravelPreparation) saveGame({ silent: true });
@@ -93,6 +118,116 @@
 
   function isMobileLayout() {
     return !!(window.matchMedia && window.matchMedia("(max-width: 760px)").matches);
+  }
+
+  function applyWorkspaceView() {
+    const view = ["action", "horse", "more"].includes(state.activeView)
+      ? state.activeView
+      : "action";
+    const actionSection = ["race", "history"].includes(state.activeActionSection)
+      ? state.activeActionSection
+      : "race";
+    state.activeView = view;
+    state.activeActionSection = actionSection;
+    const shell = document.getElementById("workspaceShell");
+    if (!shell) return;
+    shell.dataset.activeView = view;
+    Array.from(shell.querySelectorAll("[data-workspace-panel]")).forEach((panel) => {
+      panel.hidden = panel.dataset.workspacePanel !== view;
+    });
+    Array.from(shell.querySelectorAll("[data-workspace-view], [data-workspace-section]")).forEach((button) => {
+      const active = button.dataset.workspaceSection
+        ? view === "action" && button.dataset.workspaceSection === actionSection
+        : button.dataset.workspaceView === view;
+      button.classList.toggle("is-active", active);
+      if (active) button.setAttribute("aria-current", "page");
+      else button.removeAttribute("aria-current");
+    });
+  }
+
+  function setWorkspaceView(view, options) {
+    if (!["action", "horse", "more"].includes(view)) return;
+    const opts = options || {};
+    state.activeView = view;
+    if (view === "action") {
+      state.activeActionSection = ["race", "history"].includes(opts.section) ? opts.section : "race";
+    }
+    state.setupOpen = false;
+    applyWorkspaceView();
+    const target = view === "action"
+      ? document.querySelector(`[data-action-anchor="${state.activeActionSection}"]`)
+      : document.querySelector(`[data-workspace-panel="${view}"]`);
+    if (target && opts.scroll) target.scrollIntoView({ block: "start", behavior: "smooth" });
+    if (target && opts.focus) {
+      target.setAttribute("tabindex", "-1");
+      target.focus({ preventScroll: true });
+    }
+  }
+
+  function openSetup() {
+    if (!state.career) return;
+    state.setupOpen = true;
+    const overlay = document.getElementById("setupOverlay");
+    if (overlay) overlay.hidden = false;
+    const title = document.getElementById("setupPageTitle");
+    if (title) title.focus({ preventScroll: true });
+  }
+
+  function closeSetup() {
+    if (!state.career) return;
+    state.setupOpen = false;
+    const overlay = document.getElementById("setupOverlay");
+    if (overlay) overlay.hidden = true;
+    const trigger = document.getElementById("newCareerBtn");
+    if (trigger) trigger.focus({ preventScroll: true });
+  }
+
+  function openHelp() {
+    const panel = document.getElementById("helpPanel");
+    if (!panel) return;
+    panel.hidden = false;
+    document.body.classList.add("drawer-open");
+    const toggle = document.getElementById("helpToggleBtn");
+    if (toggle) toggle.setAttribute("aria-expanded", "true");
+    const closeButton = panel.querySelector('[data-help-close="helpPanel"]');
+    if (closeButton) closeButton.focus({ preventScroll: true });
+  }
+
+  function closeHelp() {
+    const panel = document.getElementById("helpPanel");
+    if (!panel) return;
+    panel.hidden = true;
+    document.body.classList.remove("drawer-open");
+    const toggle = document.getElementById("helpToggleBtn");
+    if (toggle) toggle.setAttribute("aria-expanded", "false");
+  }
+
+  function applyRaceResultOverlay() {
+    const overlay = document.getElementById("raceResultDialog");
+    if (!overlay) return;
+    const shouldOpen = !!(state.career && state.resultOpen && state.career.races && state.career.races.length);
+    overlay.hidden = !shouldOpen;
+    document.body.classList.toggle("result-open", shouldOpen);
+    if (shouldOpen && !resultWasVisible) {
+      resultWasVisible = true;
+      const closeButton = document.getElementById("raceResultCloseBtn");
+      if (closeButton) closeButton.focus({ preventScroll: true });
+    } else if (!shouldOpen) {
+      resultWasVisible = false;
+    }
+  }
+
+  function closeRaceResult(options) {
+    const wasOpen = state.resultOpen;
+    state.resultOpen = false;
+    applyRaceResultOverlay();
+    const opts = options || {};
+    if (opts.section) setWorkspaceView("action", { section: opts.section, focus: true, scroll: true });
+    else if (opts.view) setWorkspaceView(opts.view, { focus: true, scroll: true });
+    else if (wasOpen && resultReturnFocus && typeof resultReturnFocus.focus === "function") {
+      resultReturnFocus.focus({ preventScroll: true });
+    }
+    resultReturnFocus = null;
   }
 
   const REGION_FILTER_VALUES = ["japan", "america", "europe", "other"];
@@ -344,25 +479,30 @@
 
   function updateSaveStatus() {
     const panel = document.getElementById("savePanel");
-    const text = document.getElementById("saveStatusText");
-    const clearButton = document.getElementById("clearSaveBtn");
-    if (!panel || !text) return;
     const savedAtText = formatSavedAt(saveStatus.savedAt);
-    panel.hidden = false;
+    let statusText = "暂无存档";
     if (!saveStatus.storageAvailable) {
-      text.textContent = saveStatus.message || "当前浏览器无法使用本机存档。";
+      statusText = saveStatus.message || "当前浏览器无法使用本机存档。";
     } else if (saveStatus.message === "暂无存档") {
-      text.textContent = "暂无存档";
+      statusText = "暂无存档";
     } else if (saveStatus.message && savedAtText) {
-      text.textContent = `${saveStatus.message} · ${savedAtText}`;
+      statusText = `${saveStatus.message} · ${savedAtText}`;
     } else if (saveStatus.message) {
-      text.textContent = saveStatus.message;
+      statusText = saveStatus.message;
     } else if (savedAtText) {
-      text.textContent = `已自动保存 · ${savedAtText}`;
-    } else {
-      text.textContent = "暂无存档";
+      statusText = `已自动保存 · ${savedAtText}`;
     }
-    if (clearButton) clearButton.hidden = !hasSavedGame();
+    if (panel) panel.hidden = false;
+    ["saveStatusText", "workspaceSaveStatusText", "workspaceStatusSave"].forEach((id) => {
+      const text = document.getElementById(id);
+      if (text) text.textContent = id === "workspaceStatusSave" && statusText.includes(" · ")
+        ? statusText.split(" · ")[0]
+        : statusText;
+    });
+    ["clearSaveBtn", "workspaceClearSaveBtn"].forEach((id) => {
+      const clearButton = document.getElementById(id);
+      if (clearButton) clearButton.hidden = !hasSavedGame();
+    });
   }
 
   function clearSavedGame() {
@@ -544,6 +684,10 @@
     const debutLock = ns.CommentRules.buildDebutLock(commentDetails);
     state.career = ns.CareerRules.createCareer(horse, comments, commentDetails, debutLock, trainer);
     state.retiredSummary = null;
+    state.activeView = "action";
+    state.activeActionSection = "race";
+    state.setupOpen = false;
+    state.resultOpen = false;
     state.historyExpanded = false;
     state.trainerCommentsCollapsed = true;
     state.adaptationHintsCollapsed = true;
@@ -555,10 +699,6 @@
     state.filters = defaultFilters();
     refresh();
     saveGame();
-    if (isMobileLayout()) {
-      const focusPanel = document.getElementById("feedbackPanel") || document.getElementById("racePanel");
-      if (focusPanel) focusPanel.scrollIntoView({ block: "start" });
-    }
   }
 
   function value(id) {
@@ -796,6 +936,10 @@
         state.career.forcedRetirementReason || "因重伤被迫退役"
       );
     }
+    state.activeView = "action";
+    state.activeActionSection = "race";
+    state.resultOpen = true;
+    resultReturnFocus = document.activeElement;
     refresh();
     saveGame();
   }
@@ -938,7 +1082,10 @@
       : "当前小马";
     if (!window.confirm(`确定让${horseName}退役吗？退役后会结束当前生涯并揭示隐藏能力。`)) return;
     state.retiredSummary = ns.CareerRules.retire(state.career);
+    state.activeView = "action";
+    state.activeActionSection = "history";
     refresh();
+    setWorkspaceView("action", { section: "history", focus: true, scroll: true });
     saveGame();
   }
 
@@ -953,10 +1100,7 @@
     if (!state.career) return;
     state.historyExpanded = true;
     state.collapsedRaceRecords = {};
-    state.expandedRaceRecords = (state.career.races || []).reduce((records, _record, index) => {
-      records[`race-${index + 1}`] = true;
-      return records;
-    }, {});
+    state.expandedRaceRecords = {};
     refresh();
     saveGame();
   }
@@ -965,6 +1109,10 @@
     if (!state.career) return;
     state.historyExpanded = false;
     state.expandedRaceRecords = {};
+    state.collapsedRaceRecords = (state.career.races || []).reduce((records, _record, index) => {
+      records[`race-${index + 1}`] = true;
+      return records;
+    }, {});
     state.expandedRaceComments = {};
     state.expandedOpponentRosters = {};
     refresh();
@@ -981,30 +1129,6 @@
   function toggleAdaptationHints() {
     if (!state.career) return;
     state.adaptationHintsCollapsed = !state.adaptationHintsCollapsed;
-    refresh();
-    saveGame();
-  }
-
-  function toggleHistoryRecord(recordKey) {
-    if (!state.career || !recordKey) return;
-    state.expandedRaceRecords = normalizeExpandedRaceRecords(state.expandedRaceRecords);
-    if (state.expandedRaceRecords[recordKey]) {
-      delete state.expandedRaceRecords[recordKey];
-    } else {
-      state.expandedRaceRecords[recordKey] = true;
-    }
-    refresh();
-    saveGame();
-  }
-
-  function toggleHistoryCardRecord(recordKey) {
-    if (!state.career || !recordKey) return;
-    state.collapsedRaceRecords = normalizeExpandedRaceRecords(state.collapsedRaceRecords);
-    if (state.collapsedRaceRecords[recordKey]) {
-      delete state.collapsedRaceRecords[recordKey];
-    } else {
-      state.collapsedRaceRecords[recordKey] = true;
-    }
     refresh();
     saveGame();
   }
@@ -1100,8 +1224,6 @@
     const historyCollapseAllBtn = document.getElementById("historyCollapseAllBtn");
     const trainerCommentsToggleBtn = document.getElementById("trainerCommentsToggleBtn");
     const adaptationHintsToggleBtn = document.getElementById("adaptationHintsToggleBtn");
-    const historyRecordButtons = Array.from(document.querySelectorAll("[data-history-record-toggle]"));
-    const historyCardRecordButtons = Array.from(document.querySelectorAll("[data-history-card-record-toggle]"));
     const historyCommentButtons = Array.from(document.querySelectorAll("[data-history-comment-toggle]"));
     const opponentRosterButtons = Array.from(document.querySelectorAll("[data-opponent-roster-toggle]"));
     const horseNameLanguageButtons = Array.from(document.querySelectorAll("[data-horse-name-language]"));
@@ -1140,12 +1262,6 @@
     if (historyCollapseAllBtn) historyCollapseAllBtn.addEventListener("click", collapseFullHistory);
     if (trainerCommentsToggleBtn) trainerCommentsToggleBtn.addEventListener("click", toggleTrainerComments);
     if (adaptationHintsToggleBtn) adaptationHintsToggleBtn.addEventListener("click", toggleAdaptationHints);
-    historyRecordButtons.forEach((button) => {
-      button.addEventListener("click", () => toggleHistoryRecord(button.dataset.historyRecordToggle));
-    });
-    historyCardRecordButtons.forEach((button) => {
-      button.addEventListener("click", () => toggleHistoryCardRecord(button.dataset.historyCardRecordToggle));
-    });
     historyCommentButtons.forEach((button) => {
       button.addEventListener("click", () => toggleHistoryComment(button.dataset.historyCommentToggle));
     });
@@ -1187,6 +1303,114 @@
       transferStableBtn.addEventListener("click", () => transferStable(transferStableBtn.dataset.transferRegion));
     }
     if (clearAllRaceFiltersBtn) clearAllRaceFiltersBtn.addEventListener("click", clearAllRaceFilters);
+  }
+
+  function bindWorkspaceEvents() {
+    const shell = document.getElementById("workspaceShell");
+    const setupCloseBtn = document.getElementById("setupCloseBtn");
+    const newCareerBtn = document.getElementById("newCareerBtn");
+    const workspaceHelpBtn = document.getElementById("workspaceHelpBtn");
+    const workspaceChangelogBtn = document.getElementById("workspaceChangelogBtn");
+    const workspaceClearSaveBtn = document.getElementById("workspaceClearSaveBtn");
+    const helpPanel = document.getElementById("helpPanel");
+    const resultOverlay = document.getElementById("raceResultDialog");
+    const primary = document.querySelector(".workspace-primary");
+    const syncActionSection = () => {
+      if (state.activeView !== "action") return;
+      const history = document.querySelector('[data-action-anchor="history"]');
+      if (!history) return;
+      const threshold = isMobileLayout() ? 150 : 140;
+      const mobileAtBottom = !!(primary
+        && primary.scrollTop > 20
+        && primary.scrollTop + primary.clientHeight >= primary.scrollHeight - 16);
+      const pageAtBottom = window.scrollY > 20
+        && window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 16;
+      const nextSection = history.getBoundingClientRect().top <= threshold || mobileAtBottom || pageAtBottom
+        ? "history"
+        : "race";
+      if (nextSection === state.activeActionSection) return;
+      state.activeActionSection = nextSection;
+      applyWorkspaceView();
+    };
+    const scheduleActionSectionSync = () => {
+      if (actionScrollFrame) return;
+      actionScrollFrame = window.requestAnimationFrame(() => {
+        actionScrollFrame = 0;
+        syncActionSection();
+      });
+    };
+    if (shell) {
+      shell.addEventListener("click", (event) => {
+        const target = event.target.closest("[data-workspace-view], [data-workspace-section], [data-workspace-jump]");
+        if (!target || !shell.contains(target)) return;
+        if (target.dataset.workspaceSection) {
+          setWorkspaceView("action", { section: target.dataset.workspaceSection, focus: true, scroll: true });
+        } else {
+          setWorkspaceView(target.dataset.workspaceView || target.dataset.workspaceJump, { focus: true, scroll: true });
+        }
+      });
+    }
+    window.addEventListener("scroll", scheduleActionSectionSync, { passive: true });
+    if (primary) primary.addEventListener("scroll", scheduleActionSectionSync, { passive: true });
+    if (setupCloseBtn) setupCloseBtn.addEventListener("click", closeSetup);
+    if (newCareerBtn) newCareerBtn.addEventListener("click", openSetup);
+    if (workspaceHelpBtn) workspaceHelpBtn.addEventListener("click", openHelp);
+    if (workspaceChangelogBtn) {
+      workspaceChangelogBtn.addEventListener("click", () => {
+        const toggle = document.getElementById("changelogToggleBtn");
+        if (toggle) toggle.click();
+      });
+    }
+    if (workspaceClearSaveBtn) workspaceClearSaveBtn.addEventListener("click", clearSavedGame);
+    if (helpPanel) {
+      Array.from(helpPanel.querySelectorAll('[data-help-close="helpPanel"]')).forEach((button) => {
+        button.addEventListener("click", closeHelp);
+      });
+    }
+    if (resultOverlay) {
+      resultOverlay.addEventListener("click", (event) => {
+        if (event.target === resultOverlay || event.target.closest("#raceResultCloseBtn, #raceResultReturnBtn")) {
+          closeRaceResult({ section: "race" });
+        } else if (event.target.closest("#raceResultHistoryBtn")) {
+          closeRaceResult({ section: "history" });
+        }
+      });
+    }
+    document.addEventListener("keydown", (event) => {
+      if (event.key === "Escape") {
+        if (state.resultOpen) {
+          event.preventDefault();
+          closeRaceResult({ section: "race" });
+          return;
+        }
+        if (helpPanel && !helpPanel.hidden) {
+          event.preventDefault();
+          closeHelp();
+          return;
+        }
+        if (state.setupOpen) {
+          event.preventDefault();
+          closeSetup();
+        }
+      }
+      if (event.key === "Tab" && state.resultOpen && resultOverlay && !resultOverlay.hidden) {
+        const focusable = Array.from(resultOverlay.querySelectorAll("button:not([disabled])"));
+        if (focusable.length === 0) return;
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      }
+    });
+    if (window.matchMedia) {
+      const layoutQuery = window.matchMedia("(max-width: 760px)");
+      if (layoutQuery.addEventListener) layoutQuery.addEventListener("change", refresh);
+    }
   }
 
   function bindSetupEvents() {
@@ -1278,8 +1502,8 @@
     if (helpToggleBtn && helpPanel) {
       helpToggleBtn.addEventListener("click", () => {
         const shouldShow = helpPanel.hidden;
-        helpPanel.hidden = !shouldShow;
-        helpToggleBtn.textContent = shouldShow ? "收起帮助" : "帮助";
+        if (shouldShow) openHelp();
+        else closeHelp();
         helpToggleBtn.setAttribute("aria-expanded", shouldShow ? "true" : "false");
       });
     }
@@ -1318,6 +1542,7 @@
       if (!changelogPanel || !changelogToggleBtn) return;
       changelogPanel.hidden = !open;
       changelogToggleBtn.setAttribute("aria-expanded", open ? "true" : "false");
+      document.body.classList.toggle("drawer-open", open);
     };
     if (changelogToggleBtn) {
       changelogToggleBtn.addEventListener("click", () => {
@@ -1373,6 +1598,7 @@
     ns.UI.renderSetup(root);
     document.getElementById("generateBtn").addEventListener("click", generate);
     bindSetupEvents();
+    bindWorkspaceEvents();
     bindSaveLifecycleEvents();
     refresh();
   }

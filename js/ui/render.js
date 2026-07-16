@@ -656,19 +656,23 @@
     ];
     const distances = [1000, 1200, 1400, 1600, 1800, 2000, 2200, 2400, 2600, 3000, 3200, 3600];
     root.innerHTML = `
-      <section class="panel setup-panel">
+      <div class="setup-overlay" id="setupOverlay">
+      <section class="panel setup-panel" aria-labelledby="setupPageTitle">
         <div class="setup-title-row">
           <div class="setup-heading-group">
             <p class="eyebrow">出道准备</p>
             <div class="setup-heading-line">
-              <h1>赛马生涯模拟</h1>
+              <h1 id="setupPageTitle" tabindex="-1">赛马生涯模拟</h1>
               <button class="secondary legend-mode-toggle" id="gameModeToggleBtn" type="button" aria-pressed="false" aria-label="当前为普通模式，点击开启传奇模式" title="当前为普通模式，点击开启传奇模式">
                 <span class="legend-mode-toggle-indicator" aria-hidden="true"></span>
                 <span>传奇模式</span>
               </button>
             </div>
           </div>
-          <button class="secondary help-toggle" id="helpToggleBtn" type="button" aria-expanded="false">帮助</button>
+          <div class="setup-title-actions">
+            <button class="secondary help-toggle" id="helpToggleBtn" type="button" aria-expanded="false">帮助</button>
+            <button class="secondary setup-close" id="setupCloseBtn" type="button" hidden>返回生涯</button>
+          </div>
         </div>
         <input id="gameModeSelect" type="hidden" value="normal">
         <dialog class="legend-intro-dialog" id="legendIntroDialog" aria-labelledby="legendIntroTitle" aria-describedby="legendIntroSummary">
@@ -679,11 +683,11 @@
             </div>
             <button class="secondary legend-intro-close" type="button" data-legend-intro-close aria-label="关闭传奇模式介绍" title="关闭">×</button>
           </div>
-          <p id="legendIntroSummary">玩家马以更高实力出道，但每场比赛都要面对完整的史实强敌阵容。</p>
+          <p id="legendIntroSummary">玩家马会以更高潜力出道，但每场比赛都要面对完整的史实强敌阵容。</p>
           <ul class="legend-intro-list">
-            <li><strong>玩家实力 81～100</strong>：真实实力采用 1d20+80，血统仍影响适性、成长和气性。</li>
-            <li><strong>六马完整排名</strong>：玩家与五匹场地、距离合适的史实马共同计算比赛。</li>
-            <li><strong>严格筛选强敌</strong>：对手必须拥有同场地和认可赛区胜鞍；一般距离要求±200米，长途赛认可任意2601米以上胜鞍，日本部分G1在85+不足时补入最强低分马。</li>
+            <li><strong>更高出道潜力</strong>：玩家马更容易拥有顶级实力，血统仍会影响适性、成长和气性。</li>
+            <li><strong>完整史实阵容</strong>：所有史实对手都会参与完整比赛计算，并留下实际名次。</li>
+            <li><strong>按胜鞍筛选强敌</strong>：对手必须在合适的场地、距离和认可赛区证明过自己，顶级赛事会优先安排强马。</li>
             <li><strong>报名即锁定阵容</strong>：刷新和读取存档不会重抽，也不会加入隐藏马、随机马或退赛递补。</li>
             <li><strong>评语更加可靠</strong>：出道前判断和输赛后的原因诊断会比普通模式更准确。</li>
           </ul>
@@ -695,7 +699,6 @@
             <button type="button" data-legend-intro-close>知道了</button>
           </div>
         </dialog>
-        <div class="help-panel" id="helpPanel" hidden>${ns.Help ? ns.Help.attributeHelpHtml : ""}</div>
         <div class="save-panel" id="savePanel" aria-live="polite">
           <div>
             <p class="eyebrow">本机存档</p>
@@ -853,10 +856,177 @@
         </div>
         <button class="primary" id="generateBtn">生成小马</button>
       </section>
-      <section class="panel" id="horsePanel"></section>
-      <section class="panel" id="racePanel"></section>
-      <section class="panel feedback-panel" id="feedbackPanel" hidden></section>
-      <section class="panel" id="historyPanel"></section>
+      </div>
+
+      <section class="workspace-shell" id="workspaceShell" hidden aria-label="生涯工作台">
+        <header class="workspace-status" id="workspaceStatus"></header>
+        <div class="workspace-layout">
+          <nav class="workspace-nav" aria-label="生涯页面">
+            <button class="workspace-nav-button is-active" type="button" data-workspace-view="action" data-workspace-section="race" aria-current="page">
+              <span class="workspace-nav-icon" aria-hidden="true">▶</span><span>行动</span>
+            </button>
+            <button class="workspace-nav-button" type="button" data-workspace-section="history">
+              <span class="workspace-nav-icon" aria-hidden="true">▤</span><span>记录</span>
+            </button>
+            <button class="workspace-nav-button" type="button" data-workspace-view="horse">
+              <span class="workspace-nav-icon" aria-hidden="true">◆</span><span>马匹</span>
+            </button>
+            <button class="workspace-nav-button" type="button" data-workspace-view="more">
+              <span class="workspace-nav-icon" aria-hidden="true">•••</span><span>更多</span>
+            </button>
+          </nav>
+          <div class="workspace-content">
+            <div class="workspace-primary">
+              <div class="workspace-view action-view" data-workspace-panel="action">
+                <div class="action-overview-grid">
+                  <div class="action-main-column">
+                    <section class="panel" id="racePanel" data-action-anchor="race"></section>
+                    <section class="panel" id="historyPanel" data-action-anchor="history"></section>
+                  </div>
+                  <aside class="workspace-aside" id="actionAside" aria-label="当前生涯摘要">
+                    <section class="panel summary-panel" id="horseSummaryPanel"></section>
+                    <section class="panel last-race-panel" id="lastRacePanel" hidden></section>
+                    <section class="panel compact-adaptation-panel" id="adaptationSummaryPanel"></section>
+                  </aside>
+                </div>
+              </div>
+              <div class="workspace-view horse-view" data-workspace-panel="horse" hidden>
+                <section class="panel" id="horsePanel"></section>
+                <section class="panel feedback-panel" id="feedbackPanel" hidden></section>
+              </div>
+              <section class="panel workspace-view more-panel" id="morePanel" data-workspace-panel="more" hidden>
+                <div class="section-title-row">
+                  <div>
+                    <p class="eyebrow">生涯管理</p>
+                    <h2>更多</h2>
+                  </div>
+                </div>
+                <div class="more-action-grid">
+                  <button class="secondary more-action" id="newCareerBtn" type="button"><strong>开始新生涯</strong><span>重新选择血统、练马师与模式</span></button>
+                  <button class="secondary more-action" id="workspaceHelpBtn" type="button"><strong>游戏帮助</strong><span>查看属性、规则与操作说明</span></button>
+                  <button class="secondary more-action" id="workspaceChangelogBtn" type="button"><strong>更新日志</strong><span>查看近期改动和后续计划</span></button>
+                </div>
+                <div class="workspace-save-card">
+                  <div><p class="eyebrow">本机存档</p><p class="muted" id="workspaceSaveStatusText">暂无存档</p></div>
+                  <button class="secondary" id="workspaceClearSaveBtn" type="button">清除存档</button>
+                </div>
+              </section>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="help-panel workspace-drawer" id="helpPanel" hidden aria-label="游戏帮助">
+        <div class="drawer-header"><div><p class="eyebrow">使用说明</p><h2>游戏帮助</h2></div><button class="secondary" type="button" data-help-close="helpPanel">关闭</button></div>
+        <div class="drawer-scroll">${ns.Help ? ns.Help.attributeHelpHtml : ""}</div>
+      </aside>
+      <div class="race-result-overlay" id="raceResultDialog" role="dialog" aria-modal="true" aria-labelledby="raceResultTitle" hidden>
+        <section class="race-result-dialog" id="raceResultContent"></section>
+      </div>
+    `;
+  }
+
+  function renderWorkspaceStatus(panel, career) {
+    if (!panel || !career) return;
+    const horse = career.horse || {};
+    const locationLabel = ns.RegionRules && ns.RegionRules.getCurrentLocationLabel
+      ? ns.RegionRules.getCurrentLocationLabel(career)
+      : "";
+    const timeLabel = career.currentTime && ns.TimeRules
+      ? ns.TimeRules.formatAgeMonth(career.currentTime)
+      : "生涯准备中";
+    const summary = ns.CareerRules && ns.CareerRules.getRecordSummary
+      ? ns.CareerRules.getRecordSummary(career)
+      : { starts: 0, wins: 0 };
+    panel.innerHTML = `
+      <div class="workspace-status-identity">
+        <span class="workspace-status-label">当前赛马</span>
+        <strong title="${horse.name || "未命名小马"}">${horse.name || "未命名小马"}</strong>
+        ${career.gameMode === "legend" ? `<span class="badge legend-badge">传奇</span>` : ""}
+      </div>
+      <div class="workspace-status-facts">
+        <span><small>当前时间</small><b>${timeLabel}</b></span>
+        <span><small>当前位置</small><b>${locationLabel || "未知"}</b></span>
+        <span><small>战绩</small><b>${summary.starts}战 ${summary.wins}胜</b></span>
+      </div>
+      <div class="workspace-status-save" id="workspaceStatusSave" aria-live="polite">自动存档</div>
+    `;
+  }
+
+  function renderHorseSummary(panel, career) {
+    if (!panel || !career) return;
+    const horse = career.horse || {};
+    const trainer = career.trainer || (ns.CommentRules && ns.CommentRules.getTrainer(career.trainerId || horse.trainerId));
+    const jockey = ns.JockeyRules && ns.JockeyRules.getJockey(career.mainJockeyId);
+    panel.innerHTML = `
+      <div class="summary-heading">
+        <div><p class="eyebrow">马匹摘要</p><h2>${horse.name || "未命名小马"}</h2></div>
+        <button class="secondary summary-link" type="button" data-workspace-jump="horse">完整资料</button>
+      </div>
+      <div class="summary-stat-grid">
+        <span><small>基础</small><b>${horse.gender || "-"} · ${horse.coat || "-"}</b></span>
+        <span><small>主战骑手</small><b>${jockey ? jockey.name : "未指定"}</b></span>
+        <span class="summary-stat-wide"><small>血统</small><b>${horse.sireName || "-"} × ${horse.damName || "-"}</b></span>
+        <span><small>练马师</small><b>${trainer ? trainer.name : "未指定"}</b></span>
+        <span><small>状态</small><b>${career.retired ? "已退役" : "现役"}</b></span>
+      </div>
+    `;
+  }
+
+  function renderAdaptationSummary(panel, career) {
+    if (!panel || !career || !ns.AdaptationHintRules) {
+      if (panel) panel.innerHTML = "";
+      return;
+    }
+    const sections = ns.AdaptationHintRules.getSections(career);
+    const knownItems = sections.flatMap((section) => section.items
+      .filter((item) => item.status !== "unknown")
+      .map((item) => ({ ...item, sectionLabel: section.label }))
+    ).slice(0, 8);
+    panel.innerHTML = `
+      <div class="summary-heading">
+        <div><p class="eyebrow">适应性摘要</p><h2>已知倾向</h2></div>
+        <button class="secondary summary-link" type="button" data-workspace-jump="horse">查看全部</button>
+      </div>
+      <div class="compact-adaptation-list">
+        ${knownItems.length ? knownItems.map((item) => `
+          <span><small>${item.label}</small><b class="adaptation-status adaptation-status-${item.status}">${item.statusLabel}${item.confidenceLabel ? ` · ${item.confidenceLabel}` : ""}</b></span>
+        `).join("") : `<p class="muted">完成比赛后会逐步确认适应性。</p>`}
+      </div>
+    `;
+  }
+
+  function renderRaceResult(panel, career, options) {
+    if (!panel || !career || !career.races || career.races.length === 0) {
+      if (panel) panel.innerHTML = "";
+      return;
+    }
+    const opts = options || {};
+    const record = career.races[career.races.length - 1];
+    const publicResult = record.public || {};
+    const hidden = record.hidden || {};
+    const isDeadHeat = publicResult.deadHeat || publicResult.tieOutcome === "dead-heat" || hidden.tieOutcome === "dead-heat";
+    const rankText = isDeadHeat ? "一着同着" : (publicResult.rankLabel || "着外");
+    const opponentName = recordOpponentName(record, opts.horseNameLanguage);
+    const commentText = historyPostRaceCommentText(record)
+      || (career.lastRaceComment && career.lastRaceComment.text)
+      || "练马师暂时没有补充评语。";
+    panel.innerHTML = `
+      <div class="race-result-header">
+        <div><p class="eyebrow">比赛结束</p><h2 id="raceResultTitle">${recordRaceName(record, opts.raceNameMode)}</h2></div>
+        <button class="secondary race-result-close" id="raceResultCloseBtn" type="button" aria-label="关闭赛果">×</button>
+      </div>
+      <div class="race-result-rank"><span>最终结果</span><strong>${rankText}</strong><em>${historyMarginText(record)}</em></div>
+      <div class="race-result-facts">
+        <span><small>时间</small><b>${publicResult.timeLabel || "-"}</b></span>
+        <span><small>场地</small><b>${publicResult.trackCondition || hidden.trackCondition || "-"}</b></span>
+        <span><small>主要对手</small><b>${opponentName || "随机对手"}</b></span>
+      </div>
+      <div class="post-race-comment-card race-result-comment"><span>${(career.lastRaceComment && career.lastRaceComment.label) || "练马师回顾"}</span><p>${commentText}</p></div>
+      <div class="race-result-actions">
+        <button class="secondary" id="raceResultReturnBtn" type="button">返回行动</button>
+        <button id="raceResultHistoryBtn" type="button">查看完整记录</button>
+      </div>
     `;
   }
 
@@ -1123,7 +1293,6 @@
     const collapsedLimit = mobile ? 1 : 3;
     const horseNameLanguage = normalizeHorseNameLanguage(options && options.horseNameLanguage);
     const raceNameMode = normalizeRaceNameMode(options && options.raceNameMode);
-    const expandedRecords = (options && options.expandedRecords) || {};
     const collapsedRecords = (options && options.collapsedRecords) || {};
     const expandedComments = (options && options.expandedComments) || {};
     const expandedOpponentRosters = (options && options.expandedOpponentRosters) || {};
@@ -1136,7 +1305,7 @@
     const revealScores = !!summary;
     const renderedRecords = visibleRecords.map(({ item, number }) => {
       const recordKey = historyRecordKey(number);
-      const isRecordExpanded = !!expandedRecords[recordKey];
+      const isRecordExpanded = !collapsedRecords[recordKey];
       const opponentYear = item.public.opponentYear ? `${item.public.opponentYear} ` : "";
       const opponentName = recordOpponentName(item, horseNameLanguage);
       const opponent = opponentName ? `${opponentYear}${opponentName}` : "随机对手";
@@ -1168,7 +1337,6 @@
       const fullMarginText = historyMarginText(item);
       const raceDetail = isRecordExpanded ? fullRaceDetail : "";
       const marginText = isRecordExpanded ? fullMarginText : "";
-      const toggleLabel = isRecordExpanded ? "收起比赛详情" : "展开比赛详情";
       const commentText = historyPostRaceCommentText(item);
       const isCommentExpanded = !!(commentText && expandedComments[recordKey]);
       const commentToggleLabel = isCommentExpanded ? "收起历史评语" : "展开历史评语";
@@ -1178,7 +1346,7 @@
         isCommentExpanded ? "history-comment-expanded" : ""
       ].filter(Boolean).join(" ");
       const commentToggle = commentText
-        ? `<button class="secondary history-comment-toggle" type="button" data-history-comment-toggle="${recordKey}" aria-expanded="${isCommentExpanded ? "true" : "false"}" aria-label="${commentToggleLabel}" title="${commentToggleLabel}">评</button>`
+        ? `<button class="secondary history-comment-toggle history-card-action" type="button" data-history-comment-toggle="${recordKey}" aria-expanded="${isCommentExpanded ? "true" : "false"}" aria-label="${commentToggleLabel}" title="${commentToggleLabel}">评</button>`
         : "";
       const commentRow = isCommentExpanded ? `
         <tr class="history-comment-row">
@@ -1196,8 +1364,7 @@
         </tr>
       ` : "";
       const scoreLineText = (item.hidden && item.hidden.scoreLine) || "";
-      const isCardExpanded = !collapsedRecords[recordKey];
-      const cardToggleLabel = isCardExpanded ? "收起比赛详情" : "展开比赛详情";
+      const isCardExpanded = isRecordExpanded;
       const cardDetail = isCardExpanded && fullRaceDetail
         ? `<p class="history-card-detail">${fullRaceDetail}</p>`
         : "";
@@ -1214,13 +1381,10 @@
       return {
         row: `
         <tr class="${rowClasses}">
-          <td class="history-index-cell">
-            <button class="secondary history-record-toggle" type="button" data-history-record-toggle="${recordKey}" aria-expanded="${isRecordExpanded ? "true" : "false"}" aria-label="${toggleLabel}" title="${toggleLabel}">${isRecordExpanded ? "▲" : "▼"}</button>
-            <span>${number}</span>
-          </td>
+          <td class="history-index-cell"><span class="history-index-number">${number}</span></td>
           <td>${item.public.timeLabel || ""}</td>
           <td>
-            <span class="history-race-name-line"><span>${raceName}</span>${commentToggle}</span>
+            <span class="history-race-name-line">${commentToggle}<span>${raceName}</span></span>
             ${raceDetail ? `<span class="history-cell-subtext">${raceDetail}</span>` : ""}
           </td>
           <td>${trackCondition}</td>
@@ -1243,11 +1407,7 @@
             <div class="history-card-head">
               <div>
                 <span class="history-card-kicker">#${number} · ${item.public.timeLabel || ""}</span>
-                <h3>${raceName}</h3>
-              </div>
-              <div class="history-card-actions">
-                <button class="secondary history-record-toggle history-card-action" type="button" data-history-card-record-toggle="${recordKey}" aria-expanded="${isCardExpanded ? "true" : "false"}" aria-label="${cardToggleLabel}" title="${cardToggleLabel}">详</button>
-                ${commentText ? `<button class="secondary history-comment-toggle history-card-action" type="button" data-history-comment-toggle="${recordKey}" aria-expanded="${isCommentExpanded ? "true" : "false"}" aria-label="${commentToggleLabel}" title="${commentToggleLabel}">评</button>` : ""}
+                <div class="history-card-title-line">${commentToggle}<h3>${raceName}</h3></div>
               </div>
             </div>
             <div class="history-card-stats">
@@ -1345,5 +1505,17 @@
     `;
   }
 
-  ns.UI = { renderSetup, renderChangelog, renderHorse, renderLastRaceComment, renderAdaptationHints, renderRaceSelector, renderHistory };
+  ns.UI = {
+    renderSetup,
+    renderChangelog,
+    renderWorkspaceStatus,
+    renderHorseSummary,
+    renderAdaptationSummary,
+    renderRaceResult,
+    renderHorse,
+    renderLastRaceComment,
+    renderAdaptationHints,
+    renderRaceSelector,
+    renderHistory
+  };
 })();
