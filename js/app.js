@@ -396,6 +396,9 @@
     if (career.horse) career.horse.gameMode = career.gameMode;
     if (!career.currentTime && ns.TimeRules) career.currentTime = ns.TimeRules.startTime();
     if (!Array.isArray(career.races)) career.races = [];
+    if (ns.RaceRules && ns.RaceRules.normalizeLegendOpponentYears) {
+      ns.RaceRules.normalizeLegendOpponentYears(career);
+    }
     if (ns.RegionRules && ns.RegionRules.ensureCareerState) ns.RegionRules.ensureCareerState(career);
     normalizeScheduledRacePayload(career);
     if (!career.injury) career.injury = { active: null, history: [] };

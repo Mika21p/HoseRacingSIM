@@ -31,6 +31,7 @@ test("workspace state remains UI-only and opens the result after a race", () => 
   assert.match(app, /setupReturnScreen: "home"/);
   assert.match(app, /resultOpen: false/);
   assert.match(app, /state\.resultOpen = true/);
+  assert.match(app, /normalizeLegendOpponentYears\(career\)/);
   assert.match(app, /renderLastRaceComment/);
   assert.match(app, /closeRaceResult\(\{ section: "history" \}\)/);
   assert.doesNotMatch(app, /SAVE_VERSION = 3/);
@@ -53,9 +54,9 @@ test("home, global metadata and mobile navigation are wired", () => {
   const styles = read("css/styles.css");
   assert.match(index, /styles\.css\?v=20260716-home2/);
   assert.match(index, /render\.js\?v=20260716-home2/);
-  assert.match(index, /app\.js\?v=20260716-home2/);
+  assert.match(index, /app\.js\?v=20260716-opponent-year/);
   assert.match(index, /id="appVersion"/);
-  assert.match(changelog, /version: "v0\.12d"/);
+  assert.match(changelog, /version: "v0\.12f"/);
   assert.match(render, /id="homeContinueBtn"/);
   assert.match(render, /id="homeStartBtn"/);
   assert.match(render, /id="homeLegendBtn"/);

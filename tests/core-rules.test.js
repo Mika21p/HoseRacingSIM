@@ -126,6 +126,75 @@ test("legend eligibility accepts 200 metres and rejects 201 metres", () => {
   });
 });
 
+test("projected legend candidates expose the closest qualifying win year", () => {
+  const race = { id: "representative-year", name: "representative-year", raceClass: "g2", surfaceRegion: "日本", surface: "草地", distance: 2000 };
+  const horse = legendHorse("projected", 84, eligibilityWin("日本", "草地", 1800));
+  horse.legendEligibilityWins = [
+    { ...eligibilityWin("日本", "草地", 1800), year: 2018 },
+    { ...eligibilityWin("澳洲", "草地", 2000), year: 2021 }
+  ];
+  withHistoricalFixtures([horse], [race], () => {
+    const candidate = rules.RaceRules.getLegendFieldCandidates(race)[0];
+    assert.equal(candidate.year, 2018);
+    assert.equal(candidate.exactCurrentRace, false);
+    assert.match(candidate.id, /projected$/);
+  });
+});
+
+test("legend save normalization backfills scheduled and completed opponent years once", () => {
+  const race = { id: "saved-representative-year", name: "saved-representative-year", raceClass: "g2", surfaceRegion: "日本", surface: "草地", distance: 2000 };
+  const horse = legendHorse("saved-projected", 84, { ...eligibilityWin("日本", "草地", 1800), year: 2017 });
+  const blankOpponent = () => ({ horseId: horse.id, year: null });
+  const career = {
+    gameMode: "legend",
+    scheduledRace: {
+      race,
+      opponent: blankOpponent(),
+      opponents: [blankOpponent(), { horseId: horse.id, year: "2016" }, { horseId: "missing-horse", year: null }],
+      year: null
+    },
+    races: [{
+      public: {
+        raceId: race.id,
+        mainOpponentHorseId: horse.id,
+        opponentYear: "",
+        opponents: [blankOpponent(), { horseId: horse.id, year: "2016" }, { horseId: "missing-horse", year: "" }]
+      },
+      hidden: {
+        race,
+        scheduledOpponent: blankOpponent(),
+        opponent: blankOpponent(),
+        legendOpponents: [blankOpponent()],
+        fieldOpponents: [blankOpponent()]
+      }
+    }]
+  };
+
+  withHistoricalFixtures([horse], [race], () => {
+    assert.equal(rules.RaceRules.normalizeLegendOpponentYears(career), true);
+    assert.equal(career.scheduledRace.year, 2017);
+    assert.equal(career.scheduledRace.opponent.year, 2017);
+    assert.equal(career.scheduledRace.opponents[0].year, 2017);
+    assert.equal(career.scheduledRace.opponents[1].year, "2016");
+    assert.equal(career.scheduledRace.opponents[2].year, null);
+    assert.equal(career.races[0].public.opponentYear, 2017);
+    assert.equal(career.races[0].public.opponents[0].year, 2017);
+    assert.equal(career.races[0].public.opponents[1].year, "2016");
+    assert.equal(career.races[0].public.opponents[2].year, "");
+    assert.equal(career.races[0].hidden.scheduledOpponent.year, 2017);
+    assert.equal(career.races[0].hidden.opponent.year, 2017);
+    assert.equal(career.races[0].hidden.legendOpponents[0].year, 2017);
+    assert.equal(career.races[0].hidden.fieldOpponents[0].year, 2017);
+    assert.equal(rules.RaceRules.normalizeLegendOpponentYears(career), false);
+  });
+});
+
+test("legend year normalization leaves normal careers unchanged", () => {
+  const career = { gameMode: "normal", scheduledRace: { year: null }, races: [] };
+  assert.equal(rules.RaceRules.normalizeLegendOpponentYears(career), false);
+  assert.equal(career.scheduledRace.year, null);
+});
+
 test("legend eligibility requires a victory on the same surface", () => {
   const target = { id: "strict-win", name: "strict-win", raceClass: "op", surfaceRegion: "日本", surface: "泥地", distance: 1800 };
   const horse = {
@@ -324,6 +393,7 @@ test("legend registration requires five unique qualified historical horses", () 
     assert.equal(field.length, 5);
     assert.equal(new Set(field.map((item) => item.horseId)).size, 5);
     assert.ok(field.every((item) => item.historical));
+    assert.ok(field.every((item) => Number.isFinite(item.year)));
   });
 });
 

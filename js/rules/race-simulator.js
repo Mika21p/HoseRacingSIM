@@ -344,19 +344,26 @@
     })[0] || null;
   }
 
-  function legendCandidate(profile, race, options) {
+  function compatibleLegendAppearances(profile, race, options) {
+    if (!profile || !race) return [];
     const opts = options || {};
     const tolerance = opts.distanceTolerance || LEGEND_DISTANCE_TOLERANCE;
     const targetSurface = opts.surface || race.surface;
-    const targetRaceClass = opts.raceClass || race.raceClass;
     const acceptedRegions = new Set(opts.acceptedRegions || recognizedLegendWinRegions(race));
-    if (race.sexRestriction === "牝马" && !profile.inferredFemale) return null;
-
-    const compatibleAppearances = profile.qualificationWins.filter((appearance) => {
+    return profile.qualificationWins.filter((appearance) => {
       if (appearance.race.surface !== targetSurface) return false;
       if (!isLegendDistanceCompatible(appearance.race.distance, race.distance, tolerance)) return false;
       return acceptedRegions.has(raceRegion(appearance.race));
     });
+  }
+
+  function legendCandidate(profile, race, options) {
+    const opts = options || {};
+    const tolerance = opts.distanceTolerance || LEGEND_DISTANCE_TOLERANCE;
+    const targetRaceClass = opts.raceClass || race.raceClass;
+    if (race.sexRestriction === "牝马" && !profile.inferredFemale) return null;
+
+    const compatibleAppearances = compatibleLegendAppearances(profile, race, opts);
     if (compatibleAppearances.length === 0) return null;
 
     const exactEntries = (profile.horse.races || []).filter((entry) => entry.raceId === race.id);
@@ -385,9 +392,12 @@
       ? { entry: selectedEntry, race }
       : closestHistoricalAppearance(compatibleAppearances, race);
     const jockeyEntry = jockeyAppearance ? jockeyAppearance.entry : null;
+    const representativeYear = jockeyEntry && Number.isFinite(jockeyEntry.year)
+      ? jockeyEntry.year
+      : null;
     const jockey = resolveJockey(
       jockeyEntry && jockeyEntry.jockeyId,
-      jockeyEntry && jockeyEntry.year,
+      representativeYear,
       "generic-local"
     );
     const horse = profile.horse;
@@ -400,7 +410,7 @@
       displayName: horse.displayName || horse.name,
       displayNameZh: horse.displayNameZh || horse.displayName || horse.name,
       displayNameEn: horse.displayNameEn || horse.name || horse.displayName,
-      year: selectedEntry ? selectedEntry.year : null,
+      year: representativeYear,
       ability,
       peakAbility: Number(horse.profile && horse.profile.peakAbility) || ability,
       jockeyId: jockey.id,
@@ -414,6 +424,90 @@
       distanceTolerance: tolerance,
       source: selectedEntry ? "historical-race" : "historical-profile"
     };
+  }
+
+  function validOpponentYear(year) {
+    const numericYear = Number(year);
+    return Number.isFinite(numericYear) && numericYear > 0;
+  }
+
+  function legendRepresentativeYear(profile, race) {
+    const appearance = closestHistoricalAppearance(
+      compatibleLegendAppearances(profile, race),
+      race
+    );
+    const year = appearance && appearance.entry ? appearance.entry.year : null;
+    return validOpponentYear(year) ? year : null;
+  }
+
+  function fillLegendOpponentYear(opponent, race, profilesByHorseId) {
+    if (!opponent || validOpponentYear(opponent.year) || !opponent.horseId || !race) return false;
+    const profile = profilesByHorseId.get(opponent.horseId);
+    const year = legendRepresentativeYear(profile, race);
+    if (!year) return false;
+    opponent.year = year;
+    return true;
+  }
+
+  function normalizeLegendOpponentYears(career) {
+    if (!career || career.gameMode !== "legend") return false;
+    const profilesByHorseId = new Map(
+      historicalHorseProfiles().map((profile) => [profile.horse.id, profile])
+    );
+    let changed = false;
+
+    const fillCollection = (items, race) => {
+      if (!Array.isArray(items)) return;
+      items.forEach((opponent) => {
+        if (fillLegendOpponentYear(opponent, race, profilesByHorseId)) changed = true;
+      });
+    };
+
+    const scheduled = career.scheduledRace;
+    if (scheduled && scheduled.race) {
+      if (fillLegendOpponentYear(scheduled.opponent, scheduled.race, profilesByHorseId)) changed = true;
+      fillCollection(scheduled.opponents, scheduled.race);
+      const scheduledMain = scheduled.opponent
+        || (Array.isArray(scheduled.opponents) ? scheduled.opponents[0] : null);
+      if (!validOpponentYear(scheduled.year) && scheduledMain && validOpponentYear(scheduledMain.year)) {
+        scheduled.year = scheduledMain.year;
+        changed = true;
+      }
+    }
+
+    (Array.isArray(career.races) ? career.races : []).forEach((record) => {
+      const publicResult = record && record.public ? record.public : {};
+      const hidden = record && record.hidden ? record.hidden : {};
+      const race = hidden.race
+        || (ns.Races || []).find((item) => item.id === publicResult.raceId)
+        || null;
+      if (!race) return;
+
+      fillCollection(publicResult.opponents, race);
+      fillCollection(hidden.legendOpponents, race);
+      fillCollection(hidden.fieldOpponents, race);
+      if (fillLegendOpponentYear(hidden.scheduledOpponent, race, profilesByHorseId)) changed = true;
+      if (fillLegendOpponentYear(hidden.opponent, race, profilesByHorseId)) changed = true;
+
+      const mainHorseId = publicResult.mainOpponentHorseId
+        || (hidden.scheduledOpponent && hidden.scheduledOpponent.horseId)
+        || (hidden.opponent && hidden.opponent.horseId)
+        || (Array.isArray(publicResult.opponents) && publicResult.opponents[0]
+          ? publicResult.opponents[0].horseId
+          : "");
+      const publicMain = Array.isArray(publicResult.opponents)
+        ? publicResult.opponents.find((opponent) => opponent && opponent.horseId === mainHorseId)
+        : null;
+      const mainYear = publicMain && validOpponentYear(publicMain.year)
+        ? publicMain.year
+        : legendRepresentativeYear(profilesByHorseId.get(mainHorseId), race);
+      if (!validOpponentYear(publicResult.opponentYear) && mainYear) {
+        publicResult.opponentYear = mainYear;
+        changed = true;
+      }
+    });
+
+    return changed;
   }
 
   function legendEncounterState(career) {
@@ -1019,6 +1113,7 @@
     chooseOpponent,
     chooseOpponentField,
     getLegendFieldCandidates,
+    normalizeLegendOpponentYears,
     recognizedLegendWinRegions,
     createGeneratedOpponent,
     getHistoricalCandidates,

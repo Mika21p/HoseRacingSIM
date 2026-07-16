@@ -3,9 +3,9 @@
 
   ns.Changelog = ns.Changelog || {};
   ns.Changelog.meta = {
-    version: "v0.12e",
-    updatedAt: "2026-07-16T20:20:00+08:00",
-    displayUpdatedAt: "2026.07.16 20:20"
+    version: "v0.12f",
+    updatedAt: "2026-07-16T22:08:00+08:00",
+    displayUpdatedAt: "2026.07.16 22:08"
   };
   ns.Changelog.roadmap = {
     title: "接下来会有什么",
@@ -17,6 +17,7 @@
   };
 
   ns.Changelog.entries = [
+    { date: "2026.7.16", version: "v0.12f", title: "传奇对手代表年", items: ["传奇模式的推演对手会显示最适配胜鞍年份，所有史实对手名称格式保持一致；旧存档也会自动补齐。"] },
     { date: "2026.7.16", version: "v0.12e", title: "低级赛对手平衡", items: ["传奇模式的低级条件赛已限制超强史实对手登场，出道阶段的挑战更贴合赛级。"] },
     { date: "2026.7.16", version: "v0.12d", title: "传奇模式介绍", items: ["主页新增传奇模式专题介绍，可直接以传奇模式开始出道准备。"] },
     { date: "2026.7.16", version: "v0.12c", title: "主页与全局信息", items: ["新增独立主页和简要玩法说明；游玩中可随时返回主页，版本号与更新时间会在所有页面持续显示。"] },
