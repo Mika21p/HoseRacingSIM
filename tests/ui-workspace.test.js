@@ -52,14 +52,17 @@ test("home, global metadata and mobile navigation are wired", () => {
   const render = read("js/ui/render.js");
   const changelog = read("js/data/changelog.js");
   const styles = read("css/styles.css");
-  assert.match(index, /styles\.css\?v=20260716-home2/);
-  assert.match(index, /render\.js\?v=20260716-home2/);
-  assert.match(index, /app\.js\?v=20260716-opponent-year/);
+  assert.match(index, /styles\.css\?v=20260716-feedback/);
+  assert.match(index, /render\.js\?v=20260716-feedback/);
+  assert.match(index, /app\.js\?v=20260716-feedback/);
   assert.match(index, /id="appVersion"/);
   assert.match(changelog, /version: "v0\.12f"/);
+  assert.match(changelog, /nonConditionRaces: 622/);
   assert.match(render, /id="homeContinueBtn"/);
   assert.match(render, /id="homeStartBtn"/);
   assert.match(render, /id="homeLegendBtn"/);
+  assert.match(render, /id="copyFeedbackGroupBtn"/);
+  assert.match(render, />1050162087<\/strong>/);
   assert.match(render, />NEW!<\/span>/);
   assert.match(render, /class="site-footer"/);
   assert.doesNotMatch(index, /class="site-footer"/);
@@ -67,4 +70,13 @@ test("home, global metadata and mobile navigation are wired", () => {
   assert.match(styles, /height: 100dvh/);
   assert.match(styles, /grid-template-columns: repeat\(5, minmax\(0, 1fr\)\)/);
   assert.match(styles, /\.action-main-column > \.panel/);
+});
+
+test("feedback group copy supports modern and fallback clipboard paths", () => {
+  const app = read("js/app.js");
+  assert.match(app, /navigator\.clipboard\.writeText\(groupNumber\)/);
+  assert.match(app, /document\.execCommand\("copy"\)/);
+  assert.match(app, /群号已复制到剪贴板/);
+  assert.match(app, /复制失败，请长按群号手动复制/);
+  assert.match(app, /window\.clearTimeout\(feedbackCopyResetTimer\)/);
 });

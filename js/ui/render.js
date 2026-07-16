@@ -710,7 +710,21 @@
           <button class="secondary" id="homeHelpBtn" type="button">游戏帮助</button>
           <button class="secondary" id="homeChangelogBtn" type="button">更新日志</button>
         </div>
-        <p class="home-feedback">交流与反馈群：1050162087</p>
+        <section class="home-feedback-card" aria-labelledby="homeFeedbackTitle">
+          <div class="home-feedback-copy">
+            <p class="eyebrow">交流与反馈</p>
+            <h2 id="homeFeedbackTitle">一起把赛马生涯做得更好</h2>
+            <p>发现问题、想补充赛事与名马资料，或有新的玩法建议？欢迎加入反馈群，和我们一起完善这段赛马生涯。</p>
+          </div>
+          <div class="home-feedback-number">
+            <div>
+              <span>QQ群</span>
+              <strong id="feedbackGroupNumber">1050162087</strong>
+              <small id="feedbackCopyStatus" aria-live="polite">点击按钮即可复制</small>
+            </div>
+            <button id="copyFeedbackGroupBtn" type="button" data-feedback-group-number="1050162087" aria-describedby="feedbackCopyStatus">复制群号</button>
+          </div>
+        </section>
         <footer class="site-footer">
           <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">沪ICP备2026032931号</a>
         </footer>

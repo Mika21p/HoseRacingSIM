@@ -45,6 +45,8 @@
   let resultWasVisible = false;
   let actionScrollFrame = 0;
   let helpReturnFocus = null;
+  let feedbackCopyResetTimer = 0;
+  let feedbackCopyRequest = 0;
 
   const SEASON_ORDER = [
     "二岁夏", "二岁秋", "二岁冬",
@@ -219,6 +221,69 @@
       status.setAttribute("tabindex", "-1");
       status.focus({ preventScroll: true });
     }
+  }
+
+  function copyTextFallback(text) {
+    const textarea = document.createElement("textarea");
+    textarea.value = text;
+    textarea.setAttribute("readonly", "");
+    textarea.style.position = "fixed";
+    textarea.style.opacity = "0";
+    document.body.appendChild(textarea);
+    textarea.select();
+    let copied = false;
+    try {
+      copied = !!(document.execCommand && document.execCommand("copy"));
+    } catch (error) {
+      copied = false;
+    }
+    textarea.remove();
+    return copied;
+  }
+
+  async function copyFeedbackGroupNumber(button) {
+    if (!button) return;
+    const groupNumber = button.dataset.feedbackGroupNumber || "1050162087";
+    const status = document.getElementById("feedbackCopyStatus");
+    const request = ++feedbackCopyRequest;
+    let copied = false;
+    window.clearTimeout(feedbackCopyResetTimer);
+    button.textContent = "复制中…";
+    if (status) status.textContent = "正在复制群号";
+    try {
+      if (navigator.clipboard && typeof navigator.clipboard.writeText === "function") {
+        const clipboardAttempt = navigator.clipboard.writeText(groupNumber);
+        copied = copyTextFallback(groupNumber);
+        if (copied) {
+          clipboardAttempt.catch(() => {});
+        } else {
+          await Promise.race([
+            clipboardAttempt,
+            new Promise((resolve, reject) => {
+              window.setTimeout(() => reject(new Error("clipboard-timeout")), 800);
+            })
+          ]);
+          copied = true;
+        }
+      } else {
+        copied = copyTextFallback(groupNumber);
+      }
+    } catch (error) {
+      copied = copyTextFallback(groupNumber);
+    }
+    if (request !== feedbackCopyRequest) return;
+    if (!copied) {
+      button.textContent = "复制群号";
+      if (status) status.textContent = "复制失败，请长按群号手动复制";
+      return;
+    }
+    button.textContent = "已复制";
+    if (status) status.textContent = "群号已复制到剪贴板";
+    feedbackCopyResetTimer = window.setTimeout(() => {
+      if (!button.isConnected) return;
+      button.textContent = "复制群号";
+      if (status) status.textContent = "点击按钮即可复制";
+    }, 2000);
   }
 
   function openHelp(trigger) {
@@ -1361,6 +1426,7 @@
     const homeLegendBtn = document.getElementById("homeLegendBtn");
     const homeHelpBtn = document.getElementById("homeHelpBtn");
     const homeChangelogBtn = document.getElementById("homeChangelogBtn");
+    const copyFeedbackGroupBtn = document.getElementById("copyFeedbackGroupBtn");
     const setupCloseBtn = document.getElementById("setupCloseBtn");
     const newCareerBtn = document.getElementById("newCareerBtn");
     const workspaceHelpBtn = document.getElementById("workspaceHelpBtn");
@@ -1424,6 +1490,9 @@
         const toggle = document.getElementById("changelogToggleBtn");
         if (toggle) toggle.click();
       });
+    }
+    if (copyFeedbackGroupBtn) {
+      copyFeedbackGroupBtn.addEventListener("click", () => copyFeedbackGroupNumber(copyFeedbackGroupBtn));
     }
     if (setupCloseBtn) setupCloseBtn.addEventListener("click", closeSetup);
     if (newCareerBtn) newCareerBtn.addEventListener("click", () => openSetup("career"));

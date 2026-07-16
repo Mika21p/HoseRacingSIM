@@ -7,12 +7,18 @@
     updatedAt: "2026-07-16T22:08:00+08:00",
     displayUpdatedAt: "2026.07.16 22:08"
   };
+  ns.Changelog.contentStats = Object.freeze({
+    nonConditionRaces: 622,
+    historicalHorses: 471,
+    jockeys: 273
+  });
+  const stats = ns.Changelog.contentStats;
   ns.Changelog.roadmap = {
     title: "接下来会有什么",
     items: [
       "继续补足各地区的低级赛事与生涯路线。",
       "继续打磨远征体验，让跨地区参赛更有取舍。",
-      "持续加入赛事、骑手和史实马。<br><small>目前已有比赛 637 场、史实马 471 匹、骑手 238 名</small>"
+      `持续加入赛事、骑手和史实马。<br><small>目前已有非条件赛 ${stats.nonConditionRaces} 场、史实马 ${stats.historicalHorses} 匹、骑手 ${stats.jockeys} 名</small>`
     ]
   };
 

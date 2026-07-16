@@ -1,7 +1,7 @@
 const test = require("node:test");
 const assert = require("node:assert/strict");
 
-const { loadProjectData } = require("./helpers/project-loader");
+const { loadProjectData, loadChangelogData } = require("./helpers/project-loader");
 const { validateProjectData } = require("./helpers/validate-data");
 
 function validFixture() {
@@ -39,6 +39,23 @@ test("all registered project data is internally consistent", () => {
     "each historical-horse data file must register exactly one horse"
   );
   assert.deepEqual(validateProjectData(project), []);
+});
+
+test("published content statistics match unique registered data", () => {
+  const project = loadProjectData();
+  const stats = loadChangelogData().contentStats;
+  const nonConditionGrades = new Set(["G1", "G2", "G3", "JpnI", "JpnII", "JpnIII", "OP/L", "L", "OP"]);
+  const nonConditionRaces = project.races.filter((race) => nonConditionGrades.has(race.grade));
+
+  assert.equal(new Set(project.races.map((race) => race.id)).size, project.races.length);
+  assert.equal(new Set(project.horses.map((horse) => horse.id)).size, project.horses.length);
+  assert.equal(new Set(project.jockeys.map((jockey) => jockey.id)).size, project.jockeys.length);
+  assert.equal(nonConditionRaces.length, 622);
+  assert.equal(project.horses.length, 471);
+  assert.equal(project.jockeys.length, 273);
+  assert.equal(stats.nonConditionRaces, nonConditionRaces.length);
+  assert.equal(stats.historicalHorses, project.horses.length);
+  assert.equal(stats.jockeys, project.jockeys.length);
 });
 
 test("data validation rejects duplicate race IDs", () => {

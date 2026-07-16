@@ -84,9 +84,16 @@ function loadCoreRules() {
   };
 }
 
+function loadChangelogData() {
+  const context = createBrowserContext();
+  runProjectFile(context, "js/data/changelog.js");
+  return context.window.Keiba.Changelog;
+}
+
 module.exports = {
   projectRoot,
   listJavaScriptFiles,
   loadProjectData,
-  loadCoreRules
+  loadCoreRules,
+  loadChangelogData
 };
