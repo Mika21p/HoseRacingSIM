@@ -17,6 +17,8 @@ test("career UI keeps history inside the action workspace and exposes overlays",
   assert.match(render, /id="historyPanel" data-action-anchor="history"/);
   assert.doesNotMatch(render, /data-workspace-panel="history"/);
   assert.match(render, /id="setupOverlay"/);
+  assert.match(render, /id="homeScreen"/);
+  assert.match(render, /data-return-home/);
   assert.match(render, /id="raceResultDialog"/);
   assert.match(render, /id="helpPanel"/);
 });
@@ -25,7 +27,8 @@ test("workspace state remains UI-only and opens the result after a race", () => 
   const app = read("js/app.js");
   assert.match(app, /activeView: "action"/);
   assert.match(app, /activeActionSection: "race"/);
-  assert.match(app, /setupOpen: false/);
+  assert.match(app, /activeScreen: "home"/);
+  assert.match(app, /setupReturnScreen: "home"/);
   assert.match(app, /resultOpen: false/);
   assert.match(app, /state\.resultOpen = true/);
   assert.match(app, /renderLastRaceComment/);
@@ -43,14 +46,24 @@ test("race details default open while comments use a name-leading toggle", () =>
   assert.match(render, /history-card-title-line">\$\{commentToggle\}<h3>\$\{raceName\}<\/h3>/);
 });
 
-test("workspace assets are cache-versioned and include mobile navigation", () => {
+test("home, global metadata and mobile navigation are wired", () => {
   const index = read("index.html");
+  const render = read("js/ui/render.js");
+  const changelog = read("js/data/changelog.js");
   const styles = read("css/styles.css");
-  assert.match(index, /styles\.css\?v=20260716-workspace5/);
-  assert.match(index, /render\.js\?v=20260716-workspace5/);
-  assert.match(index, /app\.js\?v=20260716-workspace5/);
+  assert.match(index, /styles\.css\?v=20260716-home2/);
+  assert.match(index, /render\.js\?v=20260716-home2/);
+  assert.match(index, /app\.js\?v=20260716-home2/);
+  assert.match(index, /id="appVersion"/);
+  assert.match(changelog, /version: "v0\.12d"/);
+  assert.match(render, /id="homeContinueBtn"/);
+  assert.match(render, /id="homeStartBtn"/);
+  assert.match(render, /id="homeLegendBtn"/);
+  assert.match(render, />NEW!<\/span>/);
+  assert.match(render, /class="site-footer"/);
+  assert.doesNotMatch(index, /class="site-footer"/);
   assert.match(styles, /\.workspace-nav/);
   assert.match(styles, /height: 100dvh/);
-  assert.match(styles, /grid-template-columns: repeat\(4, minmax\(0, 1fr\)\)/);
+  assert.match(styles, /grid-template-columns: repeat\(5, minmax\(0, 1fr\)\)/);
   assert.match(styles, /\.action-main-column > \.panel/);
 });

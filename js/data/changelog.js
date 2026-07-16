@@ -2,6 +2,11 @@
   const ns = (window.Keiba = window.Keiba || {});
 
   ns.Changelog = ns.Changelog || {};
+  ns.Changelog.meta = {
+    version: "v0.12d",
+    updatedAt: "2026-07-16T19:20:00+08:00",
+    displayUpdatedAt: "2026.07.16 19:20"
+  };
   ns.Changelog.roadmap = {
     title: "接下来会有什么",
     items: [
@@ -12,6 +17,8 @@
   };
 
   ns.Changelog.entries = [
+    { date: "2026.7.16", version: "v0.12d", title: "传奇模式介绍", items: ["主页新增传奇模式专题介绍，可直接以传奇模式开始出道准备。"] },
+    { date: "2026.7.16", version: "v0.12c", title: "主页与全局信息", items: ["新增独立主页和简要玩法说明；游玩中可随时返回主页，版本号与更新时间会在所有页面持续显示。"] },
     { date: "2026.7.16", version: "v0.12b", title: "生涯工作台", items: ["生涯界面改为工作台，提供桌面摘要和移动底部导航；赛后可在弹窗中查看结果并跳转记录。"] },
     { date: "2026.7.16", version: "v0.12a", title: "传奇对手池完善", items: ["传奇模式按真实胜鞍安排对手，补齐日本、澳洲、欧美阵容；所有现有赛事都能组成五匹史实马同场。"] },
     { date: "2026.7.15", version: "v0.12", title: "传奇模式", items: ["开局可选择传奇模式，以更高潜力出道，并在每场比赛面对五匹条件合适的史实马。"] },

@@ -656,7 +656,67 @@
     ];
     const distances = [1000, 1200, 1400, 1600, 1800, 2000, 2200, 2400, 2600, 3000, 3200, 3600];
     root.innerHTML = `
-      <div class="setup-overlay" id="setupOverlay">
+      <section class="home-screen" id="homeScreen" aria-labelledby="homeTitle">
+        <div class="home-hero">
+          <div class="home-hero-copy">
+            <p class="eyebrow">赛马生涯模拟</p>
+            <h1 id="homeTitle">培育你的赛马，规划一整个竞赛生涯</h1>
+            <p class="home-lead">选择血统、练马师与主战骑手，在成长、适性与赛程之间做出取舍，带领小马挑战各地重赏与史实强敌。</p>
+            <div class="home-primary-actions">
+              <button class="primary" id="homeContinueBtn" type="button" hidden>继续生涯</button>
+              <button class="secondary" id="homeStartBtn" type="button">开始生涯</button>
+            </div>
+            <p class="home-save-note" id="homeSaveStatus" aria-live="polite">暂无存档</p>
+          </div>
+          <div class="home-route-card" aria-label="生涯路线">
+            <p class="eyebrow">一匹马的一生</p>
+            <div class="home-route-step"><span>01</span><div><strong>2 岁出道</strong><small>从评语和首战认识小马</small></div></div>
+            <div class="home-route-step"><span>02</span><div><strong>规划路线</strong><small>选择合适场地、距离与地区</small></div></div>
+            <div class="home-route-step"><span>03</span><div><strong>冲击名誉</strong><small>挑战重赏并留下生涯记录</small></div></div>
+          </div>
+        </div>
+
+        <section class="home-legend-feature" aria-labelledby="homeLegendTitle">
+          <div class="home-legend-copy">
+            <div class="home-legend-kicker"><span>NEW!</span><p class="eyebrow">传奇模式</p></div>
+            <h2 id="homeLegendTitle">这一次，传奇会在终点线前等你</h2>
+            <p>你的赛马将以更高潜力出道，但每场比赛都要面对五匹符合场地、距离与赛区条件的史实名马。报名一经确认，阵容立即锁定——没有随机对手，也没有轻松的胜利。</p>
+            <div class="home-legend-facts" aria-label="传奇模式特点">
+              <span>更高出道潜力</span><span>完整史实阵容</span><span>报名即锁定</span>
+            </div>
+            <button class="home-legend-action" id="homeLegendBtn" type="button">以传奇模式开始</button>
+          </div>
+          <div class="home-legend-mark" aria-hidden="true">
+            <small>每场迎战</small>
+            <strong>5</strong>
+            <span>匹史实强敌</span>
+            <em>LEGEND</em>
+          </div>
+        </section>
+
+        <section class="home-how-to" aria-labelledby="homeHowToTitle">
+          <div class="home-section-heading">
+            <p class="eyebrow">简单玩法</p>
+            <h2 id="homeHowToTitle">三个步骤，开始一段赛马生涯</h2>
+          </div>
+          <div class="home-play-grid">
+            <article class="home-play-card"><span>01</span><h3>创建小马</h3><p>选择血统、练马师和主战骑手，生成独特的能力、成长与适性。</p></article>
+            <article class="home-play-card"><span>02</span><h3>规划赛程</h3><p>根据距离、场地和成长阶段报名比赛，再逐回合推进时间。</p></article>
+            <article class="home-play-card"><span>03</span><h3>冲击荣誉</h3><p>挑战各地重赏与史实名马，最终回顾完整战绩和生涯成就。</p></article>
+          </div>
+        </section>
+
+        <div class="home-secondary-actions">
+          <button class="secondary" id="homeHelpBtn" type="button">游戏帮助</button>
+          <button class="secondary" id="homeChangelogBtn" type="button">更新日志</button>
+        </div>
+        <p class="home-feedback">交流与反馈群：1050162087</p>
+        <footer class="site-footer">
+          <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">沪ICP备2026032931号</a>
+        </footer>
+      </section>
+
+      <div class="setup-overlay" id="setupOverlay" hidden>
       <section class="panel setup-panel" aria-labelledby="setupPageTitle">
         <div class="setup-title-row">
           <div class="setup-heading-group">
@@ -671,7 +731,7 @@
           </div>
           <div class="setup-title-actions">
             <button class="secondary help-toggle" id="helpToggleBtn" type="button" aria-expanded="false">帮助</button>
-            <button class="secondary setup-close" id="setupCloseBtn" type="button" hidden>返回生涯</button>
+            <button class="secondary setup-close" id="setupCloseBtn" type="button">返回主页</button>
           </div>
         </div>
         <input id="gameModeSelect" type="hidden" value="normal">
@@ -862,6 +922,9 @@
         <header class="workspace-status" id="workspaceStatus"></header>
         <div class="workspace-layout">
           <nav class="workspace-nav" aria-label="生涯页面">
+            <button class="workspace-nav-button" type="button" data-return-home>
+              <span class="workspace-nav-icon" aria-hidden="true">⌂</span><span>首页</span>
+            </button>
             <button class="workspace-nav-button is-active" type="button" data-workspace-view="action" data-workspace-section="race" aria-current="page">
               <span class="workspace-nav-icon" aria-hidden="true">▶</span><span>行动</span>
             </button>

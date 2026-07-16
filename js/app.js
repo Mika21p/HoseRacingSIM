@@ -4,9 +4,10 @@
   const state = {
     career: null,
     retiredSummary: null,
+    activeScreen: "home",
+    setupReturnScreen: "home",
     activeView: "action",
     activeActionSection: "race",
-    setupOpen: false,
     resultOpen: false,
     historyExpanded: false,
     trainerCommentsCollapsed: false,
@@ -43,6 +44,7 @@
   let resultReturnFocus = null;
   let resultWasVisible = false;
   let actionScrollFrame = 0;
+  let helpReturnFocus = null;
 
   const SEASON_ORDER = [
     "二岁夏", "二岁秋", "二岁冬",
@@ -60,14 +62,24 @@
     const didMarkTravelPreparation = markScheduledTravelPreparation();
     const app = document.getElementById("app");
     const hasCareer = !!state.career;
-    if (app) app.classList.toggle("app-has-career", hasCareer);
-    document.body.classList.toggle("has-career", hasCareer);
+    if (state.activeScreen === "career" && !hasCareer) state.activeScreen = "home";
+    const isCareerScreen = state.activeScreen === "career" && hasCareer;
+    if (app) app.classList.toggle("app-has-career", isCareerScreen);
+    document.body.classList.toggle("has-career", isCareerScreen);
+    const homeScreen = document.getElementById("homeScreen");
+    const homeContinueBtn = document.getElementById("homeContinueBtn");
+    const homeStartBtn = document.getElementById("homeStartBtn");
     const setupOverlay = document.getElementById("setupOverlay");
     const setupCloseBtn = document.getElementById("setupCloseBtn");
     const workspaceShell = document.getElementById("workspaceShell");
-    if (setupOverlay) setupOverlay.hidden = hasCareer && !state.setupOpen;
-    if (setupCloseBtn) setupCloseBtn.hidden = !hasCareer;
-    if (workspaceShell) workspaceShell.hidden = !hasCareer;
+    if (homeScreen) homeScreen.hidden = state.activeScreen !== "home";
+    if (homeContinueBtn) homeContinueBtn.hidden = !hasCareer;
+    if (homeStartBtn) homeStartBtn.textContent = hasCareer ? "开始新生涯" : "开始生涯";
+    if (setupOverlay) setupOverlay.hidden = state.activeScreen !== "setup";
+    if (setupCloseBtn) setupCloseBtn.textContent = state.setupReturnScreen === "career" && hasCareer
+      ? "返回生涯"
+      : "返回主页";
+    if (workspaceShell) workspaceShell.hidden = !isCareerScreen;
     ns.UI.renderWorkspaceStatus(document.getElementById("workspaceStatus"), state.career);
     ns.UI.renderHorse(document.getElementById("horsePanel"), state.career, {
       trainerCommentsCollapsed: state.trainerCommentsCollapsed
@@ -152,7 +164,7 @@
     if (view === "action") {
       state.activeActionSection = ["race", "history"].includes(opts.section) ? opts.section : "race";
     }
-    state.setupOpen = false;
+    state.activeScreen = "career";
     applyWorkspaceView();
     const target = view === "action"
       ? document.querySelector(`[data-action-anchor="${state.activeActionSection}"]`)
@@ -164,27 +176,55 @@
     }
   }
 
-  function openSetup() {
-    if (!state.career) return;
-    state.setupOpen = true;
-    const overlay = document.getElementById("setupOverlay");
-    if (overlay) overlay.hidden = false;
+  function openSetup(returnScreen) {
+    state.setupReturnScreen = returnScreen === "career" && state.career ? "career" : "home";
+    state.activeScreen = "setup";
+    state.resultOpen = false;
+    closeHelp({ restoreFocus: false });
+    refresh();
     const title = document.getElementById("setupPageTitle");
     if (title) title.focus({ preventScroll: true });
   }
 
   function closeSetup() {
-    if (!state.career) return;
-    state.setupOpen = false;
-    const overlay = document.getElementById("setupOverlay");
-    if (overlay) overlay.hidden = true;
-    const trigger = document.getElementById("newCareerBtn");
+    const returnToCareer = state.setupReturnScreen === "career" && !!state.career;
+    state.activeScreen = returnToCareer ? "career" : "home";
+    refresh();
+    const trigger = document.getElementById(returnToCareer ? "newCareerBtn" : "homeStartBtn");
     if (trigger) trigger.focus({ preventScroll: true });
   }
 
-  function openHelp() {
+  function showHome() {
+    if (state.career) saveGame({ silent: true });
+    state.activeScreen = "home";
+    state.setupReturnScreen = "home";
+    state.resultOpen = false;
+    closeHelp({ restoreFocus: false });
+    refresh();
+    const title = document.getElementById("homeTitle");
+    if (title) {
+      title.setAttribute("tabindex", "-1");
+      title.focus({ preventScroll: true });
+    }
+  }
+
+  function showCareer() {
+    if (!state.career) return;
+    state.activeScreen = "career";
+    state.resultOpen = false;
+    closeHelp({ restoreFocus: false });
+    refresh();
+    const status = document.getElementById("workspaceStatus");
+    if (status) {
+      status.setAttribute("tabindex", "-1");
+      status.focus({ preventScroll: true });
+    }
+  }
+
+  function openHelp(trigger) {
     const panel = document.getElementById("helpPanel");
     if (!panel) return;
+    helpReturnFocus = trigger || document.activeElement;
     panel.hidden = false;
     document.body.classList.add("drawer-open");
     const toggle = document.getElementById("helpToggleBtn");
@@ -193,19 +233,24 @@
     if (closeButton) closeButton.focus({ preventScroll: true });
   }
 
-  function closeHelp() {
+  function closeHelp(options) {
     const panel = document.getElementById("helpPanel");
     if (!panel) return;
     panel.hidden = true;
     document.body.classList.remove("drawer-open");
     const toggle = document.getElementById("helpToggleBtn");
     if (toggle) toggle.setAttribute("aria-expanded", "false");
+    const opts = options || {};
+    if (opts.restoreFocus !== false && helpReturnFocus && typeof helpReturnFocus.focus === "function") {
+      helpReturnFocus.focus({ preventScroll: true });
+    }
+    helpReturnFocus = null;
   }
 
   function applyRaceResultOverlay() {
     const overlay = document.getElementById("raceResultDialog");
     if (!overlay) return;
-    const shouldOpen = !!(state.career && state.resultOpen && state.career.races && state.career.races.length);
+    const shouldOpen = !!(state.activeScreen === "career" && state.career && state.resultOpen && state.career.races && state.career.races.length);
     overlay.hidden = !shouldOpen;
     document.body.classList.toggle("result-open", shouldOpen);
     if (shouldOpen && !resultWasVisible) {
@@ -493,7 +538,7 @@
       statusText = `已自动保存 · ${savedAtText}`;
     }
     if (panel) panel.hidden = false;
-    ["saveStatusText", "workspaceSaveStatusText", "workspaceStatusSave"].forEach((id) => {
+    ["homeSaveStatus", "saveStatusText", "workspaceSaveStatusText", "workspaceStatusSave"].forEach((id) => {
       const text = document.getElementById(id);
       if (text) text.textContent = id === "workspaceStatusSave" && statusText.includes(" · ")
         ? statusText.split(" · ")[0]
@@ -684,9 +729,10 @@
     const debutLock = ns.CommentRules.buildDebutLock(commentDetails);
     state.career = ns.CareerRules.createCareer(horse, comments, commentDetails, debutLock, trainer);
     state.retiredSummary = null;
+    state.activeScreen = "career";
+    state.setupReturnScreen = "home";
     state.activeView = "action";
     state.activeActionSection = "race";
-    state.setupOpen = false;
     state.resultOpen = false;
     state.historyExpanded = false;
     state.trainerCommentsCollapsed = true;
@@ -1307,6 +1353,11 @@
 
   function bindWorkspaceEvents() {
     const shell = document.getElementById("workspaceShell");
+    const homeContinueBtn = document.getElementById("homeContinueBtn");
+    const homeStartBtn = document.getElementById("homeStartBtn");
+    const homeLegendBtn = document.getElementById("homeLegendBtn");
+    const homeHelpBtn = document.getElementById("homeHelpBtn");
+    const homeChangelogBtn = document.getElementById("homeChangelogBtn");
     const setupCloseBtn = document.getElementById("setupCloseBtn");
     const newCareerBtn = document.getElementById("newCareerBtn");
     const workspaceHelpBtn = document.getElementById("workspaceHelpBtn");
@@ -1341,9 +1392,11 @@
     };
     if (shell) {
       shell.addEventListener("click", (event) => {
-        const target = event.target.closest("[data-workspace-view], [data-workspace-section], [data-workspace-jump]");
+        const target = event.target.closest("[data-return-home], [data-workspace-view], [data-workspace-section], [data-workspace-jump]");
         if (!target || !shell.contains(target)) return;
-        if (target.dataset.workspaceSection) {
+        if (target.hasAttribute("data-return-home")) {
+          showHome();
+        } else if (target.dataset.workspaceSection) {
           setWorkspaceView("action", { section: target.dataset.workspaceSection, focus: true, scroll: true });
         } else {
           setWorkspaceView(target.dataset.workspaceView || target.dataset.workspaceJump, { focus: true, scroll: true });
@@ -1352,9 +1405,26 @@
     }
     window.addEventListener("scroll", scheduleActionSectionSync, { passive: true });
     if (primary) primary.addEventListener("scroll", scheduleActionSectionSync, { passive: true });
+    if (homeContinueBtn) homeContinueBtn.addEventListener("click", showCareer);
+    if (homeStartBtn) homeStartBtn.addEventListener("click", () => openSetup("home"));
+    if (homeLegendBtn) {
+      homeLegendBtn.addEventListener("click", () => {
+        openSetup("home");
+        const gameModeSelect = document.getElementById("gameModeSelect");
+        const gameModeToggleBtn = document.getElementById("gameModeToggleBtn");
+        if (gameModeSelect && gameModeSelect.value !== "legend" && gameModeToggleBtn) gameModeToggleBtn.click();
+      });
+    }
+    if (homeHelpBtn) homeHelpBtn.addEventListener("click", () => openHelp(homeHelpBtn));
+    if (homeChangelogBtn) {
+      homeChangelogBtn.addEventListener("click", () => {
+        const toggle = document.getElementById("changelogToggleBtn");
+        if (toggle) toggle.click();
+      });
+    }
     if (setupCloseBtn) setupCloseBtn.addEventListener("click", closeSetup);
-    if (newCareerBtn) newCareerBtn.addEventListener("click", openSetup);
-    if (workspaceHelpBtn) workspaceHelpBtn.addEventListener("click", openHelp);
+    if (newCareerBtn) newCareerBtn.addEventListener("click", () => openSetup("career"));
+    if (workspaceHelpBtn) workspaceHelpBtn.addEventListener("click", () => openHelp(workspaceHelpBtn));
     if (workspaceChangelogBtn) {
       workspaceChangelogBtn.addEventListener("click", () => {
         const toggle = document.getElementById("changelogToggleBtn");
@@ -1388,7 +1458,7 @@
           closeHelp();
           return;
         }
-        if (state.setupOpen) {
+        if (state.activeScreen === "setup") {
           event.preventDefault();
           closeSetup();
         }
@@ -1502,7 +1572,7 @@
     if (helpToggleBtn && helpPanel) {
       helpToggleBtn.addEventListener("click", () => {
         const shouldShow = helpPanel.hidden;
-        if (shouldShow) openHelp();
+        if (shouldShow) openHelp(helpToggleBtn);
         else closeHelp();
         helpToggleBtn.setAttribute("aria-expanded", shouldShow ? "true" : "false");
       });
@@ -1554,6 +1624,17 @@
     }
   }
 
+  function renderAppMeta() {
+    const meta = ns.Changelog && ns.Changelog.meta;
+    if (!meta) return;
+    const version = document.getElementById("appVersion");
+    const updatedAt = document.getElementById("appUpdatedAt");
+    const toggle = document.getElementById("changelogToggleBtn");
+    if (version) version.textContent = meta.version;
+    if (updatedAt) updatedAt.textContent = `更新于 ${meta.displayUpdatedAt}`;
+    if (toggle) toggle.setAttribute("aria-label", `查看 ${meta.version} 更新日志`);
+  }
+
   function bindHistoricalDataLoadNotice() {
     const notice = document.getElementById("historicalDataLoadNotice");
     const text = document.getElementById("historicalDataLoadNoticeText");
@@ -1593,6 +1674,7 @@
     loadHorseNameLanguage();
     loadRaceNameMode();
     const root = document.getElementById("app");
+    renderAppMeta();
     ns.UI.renderChangelog(document.getElementById("changelogContent"));
     bindChangelogEvents();
     ns.UI.renderSetup(root);
