@@ -210,13 +210,17 @@ test("legend G1 threshold and condition-race penalty remain strict", () => {
         eligibilityWin("美国", "泥地", 1800),
         eligibilityWin("日本", "泥地", 1800)
       ]
-    }
+    },
+    legendHorse("condition-89", 93, eligibilityWin("日本", "泥地", 1800)),
+    legendHorse("condition-90", 94, eligibilityWin("日本", "泥地", 1800))
   ];
   withHistoricalFixtures(horses, [g1, condition], () => {
     assert.deepEqual(rules.RaceRules.getLegendFieldCandidates(g1).map((item) => item.horseId), ["eligible"]);
     const conditionCandidates = rules.RaceRules.getLegendFieldCandidates(condition);
     assert.equal(conditionCandidates.find((item) => item.horseId === "below").ability, 80);
     assert.equal(conditionCandidates.find((item) => item.horseId === "eligible").ability, 81);
+    assert.equal(conditionCandidates.find((item) => item.horseId === "condition-89").ability, 89);
+    assert.equal(conditionCandidates.some((item) => item.horseId === "condition-90"), false);
   });
 });
 
@@ -347,15 +351,19 @@ test("legend-only additions never enter normal-mode condition-race indexes", () 
 });
 
 test("full legend audit can field five historical opponents for every race", () => {
+  const conditionClasses = new Set(["new", "maiden", "one-win", "two-win", "three-win"]);
   const goldRiver = rules.Races.find((race) => race.id === "europe-listed-prix-gold-river");
   const royallieu = rules.Races.find((race) => race.id === "prix-de-royallieu");
   assert.equal(rules.RaceRules.getLegendFieldCandidates(goldRiver).length, 6);
   assert.equal(rules.RaceRules.getLegendFieldCandidates(royallieu).length, 5);
 
-  const failures = rules.Races.map((race) => ({
-    race,
-    candidates: rules.RaceRules.getLegendFieldCandidates(race).length
-  })).filter((item) => item.candidates < 5);
+  const failures = rules.Races.map((race) => {
+    const candidates = rules.RaceRules.getLegendFieldCandidates(race);
+    if (conditionClasses.has(race.raceClass)) {
+      assert.ok(candidates.every((candidate) => candidate.ability < 90), race.id);
+    }
+    return { race, candidates: candidates.length };
+  }).filter((item) => item.candidates < 5);
 
   assert.deepEqual(plain(failures.map(({ race, candidates }) => ({
     id: race.id,

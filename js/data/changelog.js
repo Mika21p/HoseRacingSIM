@@ -3,9 +3,9 @@
 
   ns.Changelog = ns.Changelog || {};
   ns.Changelog.meta = {
-    version: "v0.12d",
-    updatedAt: "2026-07-16T19:20:00+08:00",
-    displayUpdatedAt: "2026.07.16 19:20"
+    version: "v0.12e",
+    updatedAt: "2026-07-16T20:20:00+08:00",
+    displayUpdatedAt: "2026.07.16 20:20"
   };
   ns.Changelog.roadmap = {
     title: "接下来会有什么",
@@ -17,6 +17,7 @@
   };
 
   ns.Changelog.entries = [
+    { date: "2026.7.16", version: "v0.12e", title: "低级赛对手平衡", items: ["传奇模式的低级条件赛已限制超强史实对手登场，出道阶段的挑战更贴合赛级。"] },
     { date: "2026.7.16", version: "v0.12d", title: "传奇模式介绍", items: ["主页新增传奇模式专题介绍，可直接以传奇模式开始出道准备。"] },
     { date: "2026.7.16", version: "v0.12c", title: "主页与全局信息", items: ["新增独立主页和简要玩法说明；游玩中可随时返回主页，版本号与更新时间会在所有页面持续显示。"] },
     { date: "2026.7.16", version: "v0.12b", title: "生涯工作台", items: ["生涯界面改为工作台，提供桌面摘要和移动底部导航；赛后可在弹窗中查看结果并跳转记录。"] },

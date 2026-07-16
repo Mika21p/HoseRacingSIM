@@ -230,6 +230,7 @@
   const LEGEND_FIELD_SIZE = 5;
   const LEGEND_DISTANCE_TOLERANCE = 200;
   const LEGEND_G1_MIN_ABILITY = 85;
+  const LEGEND_CONDITION_MAX_ABILITY = 90;
   const LEGEND_LONG_DISTANCE_MIN = 2601;
   const LEGEND_SPRINT_DISTANCE_MIN = 1000;
   const LEGEND_SPRINT_DISTANCE_MAX = 1300;
@@ -376,6 +377,8 @@
     const ability = CONDITION_RACE_CLASSES.includes(targetRaceClass)
       ? Math.max(60, rawAbility - 4)
       : rawAbility;
+    if (CONDITION_RACE_CLASSES.includes(targetRaceClass)
+      && ability >= LEGEND_CONDITION_MAX_ABILITY) return null;
     if (threshold != null && ability < threshold) return null;
 
     const jockeyAppearance = selectedEntry
