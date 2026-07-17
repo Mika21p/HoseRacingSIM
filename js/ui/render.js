@@ -657,42 +657,38 @@
     const distances = [1000, 1200, 1400, 1600, 1800, 2000, 2200, 2400, 2600, 3000, 3200, 3600];
     root.innerHTML = `
       <section class="home-screen" id="homeScreen" aria-labelledby="homeTitle">
-        <div class="home-hero">
-          <div class="home-hero-copy">
-            <p class="eyebrow">赛马生涯模拟</p>
-            <h1 id="homeTitle">培育你的赛马，规划一整个竞赛生涯</h1>
-            <p class="home-lead">选择血统、练马师与主战骑手，在成长、适性与赛程之间做出取舍，带领小马挑战各地重赏与史实强敌。</p>
-            <div class="home-primary-actions">
-              <button class="primary" id="homeContinueBtn" type="button" hidden>继续生涯</button>
-              <button class="secondary" id="homeStartBtn" type="button">开始生涯</button>
+        <div class="home-mode-grid">
+          <div class="home-hero">
+            <div class="home-hero-copy">
+              <p class="eyebrow">赛马生涯模拟</p>
+              <h1 id="homeTitle">培育你的赛马，规划一整个竞赛生涯</h1>
+              <p class="home-lead">选择血统、练马师与主战骑手，在成长、适性与赛程之间做出取舍，带领小马挑战各地重赏与史实强敌。</p>
+              <div class="home-primary-actions">
+                <button class="primary" id="homeContinueBtn" type="button" hidden>继续生涯</button>
+                <button class="secondary" id="homeStartBtn" type="button">开始生涯</button>
+              </div>
+              <p class="home-save-note" id="homeSaveStatus" aria-live="polite">暂无存档</p>
             </div>
-            <p class="home-save-note" id="homeSaveStatus" aria-live="polite">暂无存档</p>
           </div>
-          <div class="home-route-card" aria-label="生涯路线">
-            <p class="eyebrow">一匹马的一生</p>
-            <div class="home-route-step"><span>01</span><div><strong>2 岁出道</strong><small>从评语和首战认识小马</small></div></div>
-            <div class="home-route-step"><span>02</span><div><strong>规划路线</strong><small>选择合适场地、距离与地区</small></div></div>
-            <div class="home-route-step"><span>03</span><div><strong>冲击名誉</strong><small>挑战重赏并留下生涯记录</small></div></div>
-          </div>
-        </div>
 
-        <section class="home-legend-feature" aria-labelledby="homeLegendTitle">
-          <div class="home-legend-copy">
-            <div class="home-legend-kicker"><span>NEW!</span><p class="eyebrow">传奇模式</p></div>
-            <h2 id="homeLegendTitle">这一次，传奇会在终点线前等你</h2>
-            <p>你的赛马将以更高潜力出道，但每场比赛都要面对五匹符合场地、距离与赛区条件的史实名马。报名一经确认，阵容立即锁定——没有随机对手，也没有轻松的胜利。</p>
-            <div class="home-legend-facts" aria-label="传奇模式特点">
-              <span>更高出道潜力</span><span>完整史实阵容</span><span>报名即锁定</span>
+          <section class="home-legend-feature" aria-labelledby="homeLegendTitle">
+            <div class="home-legend-copy">
+              <div class="home-legend-kicker"><span>NEW!</span><p class="eyebrow">传奇模式</p></div>
+              <h2 id="homeLegendTitle">这一次，传奇会在终点线前等你</h2>
+              <p>你的赛马将以更高潜力出道，但每场比赛都要面对五匹符合场地、距离与赛区条件的史实名马。报名一经确认，阵容立即锁定——没有随机对手，也没有轻松的胜利。</p>
+              <div class="home-legend-facts" aria-label="传奇模式特点">
+                <span>更高出道潜力</span><span>完整史实阵容</span><span>报名即锁定</span>
+              </div>
+              <button class="home-legend-action" id="homeLegendBtn" type="button">以传奇模式开始</button>
             </div>
-            <button class="home-legend-action" id="homeLegendBtn" type="button">以传奇模式开始</button>
-          </div>
-          <div class="home-legend-mark" aria-hidden="true">
-            <small>每场迎战</small>
-            <strong>5</strong>
-            <span>匹史实强敌</span>
-            <em>LEGEND</em>
-          </div>
-        </section>
+            <div class="home-legend-mark" aria-hidden="true">
+              <small>每场迎战</small>
+              <strong>5</strong>
+              <span>匹史实强敌</span>
+              <em>LEGEND</em>
+            </div>
+          </section>
+        </div>
 
         <section class="home-how-to" aria-labelledby="homeHowToTitle">
           <div class="home-section-heading">
@@ -706,25 +702,27 @@
           </div>
         </section>
 
-        <div class="home-secondary-actions">
-          <button class="secondary" id="homeHelpBtn" type="button">游戏帮助</button>
-          <button class="secondary" id="homeChangelogBtn" type="button">更新日志</button>
-        </div>
-        <section class="home-feedback-card" aria-labelledby="homeFeedbackTitle">
-          <div class="home-feedback-copy">
-            <p class="eyebrow">交流与反馈</p>
-            <h2 id="homeFeedbackTitle">一起把赛马生涯做得更好</h2>
-            <p>发现问题、想补充赛事与名马资料，或有新的玩法建议？欢迎加入反馈群，和我们一起完善这段赛马生涯。</p>
-          </div>
-          <div class="home-feedback-number">
-            <div>
-              <span>QQ群</span>
-              <strong id="feedbackGroupNumber">1050162087</strong>
-              <small id="feedbackCopyStatus" aria-live="polite">点击按钮即可复制</small>
+        <div class="home-support-row">
+          <section class="home-feedback-card" aria-labelledby="homeFeedbackTitle">
+            <div class="home-feedback-copy">
+              <p class="eyebrow">交流与反馈</p>
+              <h2 id="homeFeedbackTitle">一起把赛马生涯做得更好</h2>
+              <p>发现问题、想补充赛事与名马资料，或有新的玩法建议？欢迎加入反馈群，和我们一起完善这段赛马生涯。</p>
             </div>
-            <button id="copyFeedbackGroupBtn" type="button" data-feedback-group-number="1050162087" aria-describedby="feedbackCopyStatus">复制群号</button>
+            <div class="home-feedback-number">
+              <div>
+                <span>QQ群</span>
+                <strong id="feedbackGroupNumber">1050162087</strong>
+                <small id="feedbackCopyStatus" aria-live="polite">点击按钮即可复制</small>
+              </div>
+              <button id="copyFeedbackGroupBtn" type="button" data-feedback-group-number="1050162087" aria-describedby="feedbackCopyStatus">复制群号</button>
+            </div>
+          </section>
+          <div class="home-secondary-actions">
+            <button class="secondary" id="homeHelpBtn" type="button">游戏帮助</button>
+            <button class="secondary" id="homeChangelogBtn" type="button">更新日志</button>
           </div>
-        </section>
+        </div>
         <footer class="site-footer">
           <a href="https://beian.miit.gov.cn/" target="_blank" rel="noopener noreferrer">沪ICP备2026032931号</a>
         </footer>

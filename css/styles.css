@@ -2167,17 +2167,24 @@ th {
 
 .home-screen {
   display: grid;
-  width: min(1080px, 100%);
+  width: 100%;
   min-height: calc(100vh - 124px);
-  gap: 22px;
+  gap: 14px;
   margin: 0 auto;
+}
+
+.home-mode-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: stretch;
+  gap: 18px;
 }
 
 .home-hero {
   position: relative;
-  display: grid;
-  grid-template-columns: minmax(0, 1.35fr) minmax(280px, 0.65fr);
-  gap: 30px;
+  display: flex;
+  min-height: 390px;
+  align-items: stretch;
   overflow: hidden;
   border: 1px solid #3b465e;
   border-radius: 16px;
@@ -2185,7 +2192,7 @@ th {
     radial-gradient(circle at 78% 18%, rgba(230, 95, 47, 0.18), transparent 32%),
     linear-gradient(145deg, #1b2130, #121722 68%);
   box-shadow: 0 24px 70px rgba(0, 0, 0, 0.34);
-  padding: clamp(28px, 5vw, 58px);
+  padding: clamp(30px, 3vw, 42px);
 }
 
 .home-hero::after {
@@ -2200,17 +2207,20 @@ th {
   transform: rotate(-12deg);
 }
 
-.home-hero-copy,
-.home-route-card {
+.home-hero-copy {
   position: relative;
   z-index: 1;
+  display: flex;
+  width: 100%;
+  flex-direction: column;
+  justify-content: center;
 }
 
 .home-hero h1 {
-  max-width: 700px;
+  max-width: 620px;
   margin: 8px 0 16px;
   color: #fff4d6;
-  font-size: clamp(34px, 5vw, 58px);
+  font-size: clamp(38px, 3.15vw, 50px);
   line-height: 1.14;
   letter-spacing: -0.04em;
 }
@@ -2247,27 +2257,6 @@ th {
   font-weight: 800;
 }
 
-.home-route-card {
-  align-self: center;
-  display: grid;
-  gap: 10px;
-  border: 1px solid #3b465e;
-  border-radius: 12px;
-  background: rgba(15, 19, 28, 0.82);
-  padding: 18px;
-  backdrop-filter: blur(8px);
-}
-
-.home-route-step {
-  display: grid;
-  grid-template-columns: 36px minmax(0, 1fr);
-  align-items: center;
-  gap: 10px;
-  border-top: 1px solid #283042;
-  padding-top: 10px;
-}
-
-.home-route-step > span,
 .home-play-card > span {
   color: #ff9f80;
   font-size: 11px;
@@ -2275,27 +2264,12 @@ th {
   letter-spacing: 0.08em;
 }
 
-.home-route-step div {
-  display: grid;
-  gap: 3px;
-}
-
-.home-route-step strong {
-  color: #f5f7fb;
-  font-size: 14px;
-}
-
-.home-route-step small {
-  color: #91a0b8;
-  font-size: 11px;
-}
-
 .home-legend-feature {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 230px;
-  align-items: center;
-  gap: 30px;
+  grid-template-rows: minmax(0, 1fr) auto;
+  min-height: 390px;
+  gap: 18px;
   overflow: hidden;
   border: 1px solid #8e5138;
   border-radius: 14px;
@@ -2303,7 +2277,7 @@ th {
     radial-gradient(circle at 87% 18%, rgba(255, 185, 112, 0.22), transparent 30%),
     linear-gradient(135deg, #321a16, #1d171c 58%, #161a24);
   box-shadow: 0 18px 52px rgba(0, 0, 0, 0.28);
-  padding: 30px 34px;
+  padding: 28px 32px 24px;
 }
 
 .home-legend-feature::before {
@@ -2324,6 +2298,11 @@ th {
   z-index: 1;
 }
 
+.home-legend-copy {
+  display: flex;
+  flex-direction: column;
+}
+
 .home-legend-kicker {
   display: flex;
   align-items: center;
@@ -2341,10 +2320,10 @@ th {
 }
 
 .home-legend-feature h2 {
-  max-width: 700px;
+  max-width: 580px;
   margin: 10px 0 10px;
   color: #fff0cf;
-  font-size: clamp(25px, 3.3vw, 38px);
+  font-size: clamp(28px, 2.35vw, 36px);
   line-height: 1.22;
 }
 
@@ -2374,6 +2353,7 @@ th {
 }
 
 .home-legend-action {
+  align-self: flex-start;
   min-height: 43px;
   margin-top: 18px;
   background: #d56a39;
@@ -2388,12 +2368,13 @@ th {
 }
 
 .home-legend-mark {
-  display: grid;
-  justify-items: center;
-  border-left: 1px solid rgba(255, 191, 131, 0.24);
+  display: flex;
+  min-height: 64px;
+  align-items: center;
+  gap: 12px;
+  border-top: 1px solid rgba(255, 191, 131, 0.24);
   color: #fff0cf;
-  padding: 8px 0 8px 28px;
-  text-align: center;
+  padding-top: 14px;
 }
 
 .home-legend-mark small {
@@ -2404,10 +2385,10 @@ th {
 }
 
 .home-legend-mark strong {
-  margin: -5px 0 -13px;
+  margin: -4px 0 -7px;
   color: #ffbf83;
   font-family: Georgia, "Times New Roman", serif;
-  font-size: 96px;
+  font-size: 58px;
   line-height: 1;
 }
 
@@ -2417,7 +2398,7 @@ th {
 }
 
 .home-legend-mark em {
-  margin-top: 13px;
+  margin-left: auto;
   color: rgba(255, 240, 207, 0.34);
   font-family: Georgia, "Times New Roman", serif;
   font-size: 13px;
@@ -2428,7 +2409,9 @@ th {
 
 .home-how-to {
   display: grid;
-  gap: 14px;
+  grid-template-columns: minmax(210px, 0.7fr) minmax(0, 3fr);
+  align-items: center;
+  gap: 18px;
 }
 
 .home-section-heading h2 {
@@ -2444,40 +2427,60 @@ th {
 }
 
 .home-play-card {
-  min-height: 170px;
+  display: grid;
+  min-height: 104px;
+  grid-template-columns: 30px minmax(0, 1fr);
+  align-content: center;
+  gap: 4px 10px;
   border: 1px solid #283042;
   border-radius: 12px;
   background: #171c27;
-  padding: 20px;
+  padding: 14px 16px;
+}
+
+.home-play-card > span {
+  grid-row: 1 / 3;
+  padding-top: 3px;
 }
 
 .home-play-card h3 {
-  margin: 14px 0 8px;
+  margin: 0;
   color: #fff4d6;
-  font-size: 18px;
+  font-size: 16px;
 }
 
 .home-play-card p {
+  grid-column: 2;
   margin: 0;
   color: #9fb0cc;
-  font-size: 13px;
-  line-height: 1.7;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.home-support-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 190px;
+  align-items: stretch;
+  gap: 12px;
 }
 
 .home-secondary-actions {
-  justify-content: center;
+  display: grid;
+  grid-template-rows: repeat(2, minmax(0, 1fr));
 }
 
 .home-secondary-actions button {
-  min-width: 126px;
+  width: 100%;
+  min-width: 0;
+  min-height: 48px;
 }
 
 .home-feedback-card {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(360px, auto);
+  grid-template-columns: minmax(0, 1fr) minmax(350px, auto);
   align-items: center;
-  gap: 28px;
+  gap: 20px;
   overflow: hidden;
   border: 1px solid #496174;
   border-radius: 14px;
@@ -2485,7 +2488,7 @@ th {
     radial-gradient(circle at 90% 20%, rgba(111, 201, 218, 0.15), transparent 32%),
     linear-gradient(135deg, #17232d, #151a24 64%);
   box-shadow: 0 18px 48px rgba(0, 0, 0, 0.24);
-  padding: 26px 30px;
+  padding: 16px 20px;
 }
 
 .home-feedback-card::before {
@@ -2506,9 +2509,9 @@ th {
 }
 
 .home-feedback-copy h2 {
-  margin: 6px 0 8px;
+  margin: 4px 0 5px;
   color: #edfaff;
-  font-size: 24px;
+  font-size: 20px;
 }
 
 .home-feedback-copy > p:last-child {
@@ -2516,7 +2519,7 @@ th {
   margin: 0;
   color: #aebfd0;
   font-size: 13px;
-  line-height: 1.7;
+  line-height: 1.5;
 }
 
 .home-feedback-number {
@@ -2526,7 +2529,7 @@ th {
   border: 1px solid rgba(126, 211, 224, 0.24);
   border-radius: 12px;
   background: rgba(10, 18, 25, 0.68);
-  padding: 14px;
+  padding: 11px 12px;
 }
 
 .home-feedback-number > div {
@@ -2544,7 +2547,7 @@ th {
 
 .home-feedback-number strong {
   color: #9ee7ee;
-  font-size: 26px;
+  font-size: 24px;
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.06em;
   line-height: 1.2;
@@ -2568,7 +2571,25 @@ th {
 .home-screen .site-footer {
   align-self: end;
   border-top: 1px solid #283042;
-  padding: 18px 16px 6px;
+  padding: 10px 16px 0;
+}
+
+@media (max-width: 1080px) {
+  .home-mode-grid,
+  .home-how-to,
+  .home-support-row {
+    grid-template-columns: 1fr;
+  }
+
+  .home-hero,
+  .home-legend-feature {
+    min-height: 0;
+  }
+
+  .home-secondary-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: none;
+  }
 }
 
 .setup-overlay {
@@ -2607,18 +2628,21 @@ th {
   .home-screen {
     width: calc(100% - 20px);
     min-height: calc(100vh - 70px);
-    gap: 16px;
+    gap: 12px;
+  }
+
+  .home-mode-grid {
+    gap: 12px;
   }
 
   .home-hero {
-    grid-template-columns: 1fr;
-    gap: 22px;
+    min-height: 0;
     border-radius: 14px;
-    padding: 24px 18px;
+    padding: 22px 16px;
   }
 
   .home-hero h1 {
-    font-size: clamp(31px, 10vw, 43px);
+    font-size: clamp(30px, 9.6vw, 40px);
   }
 
   .home-lead {
@@ -2629,48 +2653,66 @@ th {
   .home-primary-actions {
     display: grid;
     grid-template-columns: 1fr;
+    margin-top: 20px;
   }
 
   .home-primary-actions button {
     width: 100%;
-  }
-
-  .home-route-card {
-    padding: 14px;
+    min-height: 44px;
   }
 
   .home-legend-feature {
-    grid-template-columns: 1fr;
-    gap: 20px;
-    padding: 22px 18px;
+    min-height: 0;
+    gap: 16px;
+    padding: 22px 16px 18px;
   }
 
   .home-legend-feature h2 {
     font-size: 26px;
   }
 
-  .home-legend-mark {
-    grid-template-columns: auto auto;
-    justify-content: center;
-    align-items: center;
-    gap: 0 12px;
-    border-top: 1px solid rgba(255, 191, 131, 0.24);
-    border-left: 0;
-    padding: 16px 0 0;
+  .home-legend-copy > p {
+    font-size: 13px;
+    line-height: 1.65;
   }
 
-  .home-legend-mark small,
-  .home-legend-mark em {
-    grid-column: 1 / -1;
+  .home-legend-facts {
+    margin-top: 12px;
+  }
+
+  .home-legend-mark {
+    display: flex;
+    min-height: 0;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 8px;
+    border-top: 1px solid rgba(255, 191, 131, 0.24);
+    padding-top: 12px;
   }
 
   .home-legend-mark strong {
-    margin: 0;
-    font-size: 64px;
+    margin: -3px 0 -5px;
+    font-size: 48px;
+  }
+
+  .home-legend-mark span {
+    font-size: 14px;
+  }
+
+  .home-legend-mark em {
+    margin-left: auto;
+    font-size: 10px;
+    letter-spacing: 0.2em;
   }
 
   .home-legend-action {
     width: 100%;
+    min-height: 44px;
+  }
+
+  .home-how-to {
+    grid-template-columns: 1fr;
+    gap: 10px;
   }
 
   .home-section-heading h2 {
@@ -2684,27 +2726,34 @@ th {
 
   .home-play-card {
     min-height: 0;
-    padding: 16px;
+    padding: 14px;
   }
 
   .home-play-card h3 {
-    margin: 8px 0 5px;
+    margin: 0;
+  }
+
+  .home-support-row {
+    grid-template-columns: 1fr;
+    gap: 10px;
   }
 
   .home-secondary-actions {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-template-rows: none;
   }
 
   .home-secondary-actions button {
     width: 100%;
     min-width: 0;
+    min-height: 44px;
   }
 
   .home-feedback-card {
     grid-template-columns: 1fr;
-    gap: 18px;
-    padding: 20px 18px;
+    gap: 14px;
+    padding: 18px 16px;
   }
 
   .home-feedback-copy h2 {
@@ -2721,11 +2770,17 @@ th {
   }
 
   .home-feedback-number strong {
-    font-size: clamp(24px, 8.5vw, 32px);
+    font-size: clamp(24px, 8vw, 30px);
+    letter-spacing: 0.04em;
   }
 
   .home-feedback-number button {
     width: 100%;
+    min-height: 44px;
+  }
+
+  .home-screen .site-footer {
+    padding: 12px 10px 2px;
   }
 
   .setup-overlay,
