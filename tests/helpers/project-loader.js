@@ -84,6 +84,25 @@ function loadCoreRules() {
   };
 }
 
+function loadRoguelikeRules() {
+  const project = loadProjectData();
+  const { context } = project;
+  context.window.Keiba.HistoricalHorses = project.horses;
+  [
+    "js/utils/random.js",
+    "js/data/bloodlines.js",
+    "js/data/races.js",
+    "js/rules/time.js",
+    "js/rules/region-rules.js",
+    "js/rules/horse-generator.js",
+    "js/rules/comments.js",
+    "js/rules/career.js",
+    "js/rules/achievements.js",
+    "js/rules/roguelike.js"
+  ].forEach((file) => runProjectFile(context, file));
+  return { ...project, rules: context.window.Keiba };
+}
+
 function loadChangelogData() {
   const context = createBrowserContext();
   runProjectFile(context, "js/data/changelog.js");
@@ -95,5 +114,6 @@ module.exports = {
   listJavaScriptFiles,
   loadProjectData,
   loadCoreRules,
+  loadRoguelikeRules,
   loadChangelogData
 };

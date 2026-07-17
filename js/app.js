@@ -3,6 +3,13 @@
 
   const state = {
     career: null,
+    careerSource: "standard",
+    rogueSave: null,
+    rogueShopNotice: "",
+    rogueShopCategory: "consumables",
+    rogueCandidateIndex: 0,
+    rogueInventoryExpanded: false,
+    rogueExpandedCommentGroups: {},
     retiredSummary: null,
     activeScreen: "home",
     setupReturnScreen: "home",
@@ -30,6 +37,7 @@
   };
 
   const SAVE_KEY = "keiba-career-save-v1";
+  const ROGUE_SAVE_KEY = "keiba-roguelike-save-v1";
   const HORSE_NAME_LANGUAGE_KEY = "keiba-horse-name-language-v1";
   const RACE_NAME_MODE_KEY = "keiba-race-name-mode-v1";
   const LEGEND_INTRO_DISMISSED_KEY = "keiba-legend-intro-dismissed-v1";
@@ -71,17 +79,33 @@
     const homeScreen = document.getElementById("homeScreen");
     const homeContinueBtn = document.getElementById("homeContinueBtn");
     const homeStartBtn = document.getElementById("homeStartBtn");
+    const homeRogueContinueBtn = document.getElementById("homeRogueContinueBtn");
+    const homeRogueStatus = document.getElementById("homeRogueStatus");
     const setupOverlay = document.getElementById("setupOverlay");
+    const rogueOverlay = document.getElementById("rogueOverlay");
     const setupCloseBtn = document.getElementById("setupCloseBtn");
     const workspaceShell = document.getElementById("workspaceShell");
+    const workspaceChallengeNav = document.getElementById("workspaceChallengeNav");
+    const isRogueCareer = !!(state.career && state.career.gameMode === "roguelike");
     if (homeScreen) homeScreen.hidden = state.activeScreen !== "home";
-    if (homeContinueBtn) homeContinueBtn.hidden = !hasCareer;
-    if (homeStartBtn) homeStartBtn.textContent = hasCareer ? "开始新生涯" : "开始生涯";
+    const hasStandardCareer = hasSavedGame();
+    if (homeContinueBtn) homeContinueBtn.hidden = !hasStandardCareer;
+    if (homeStartBtn) homeStartBtn.textContent = hasStandardCareer ? "开始新生涯" : "开始生涯";
     if (setupOverlay) setupOverlay.hidden = state.activeScreen !== "setup";
+    if (rogueOverlay) rogueOverlay.hidden = state.activeScreen !== "rogue";
+    if (homeRogueContinueBtn) homeRogueContinueBtn.hidden = !(state.rogueSave && state.rogueSave.run);
+    if (homeRogueStatus && state.rogueSave) {
+      const unlocked = state.rogueSave.profile.unlockedTrainerIds.length;
+      homeRogueStatus.textContent = `荣誉币 ${state.rogueSave.profile.honorCoins} · 已解锁 ${unlocked}/3 位练马师`;
+    }
     if (setupCloseBtn) setupCloseBtn.textContent = state.setupReturnScreen === "career" && hasCareer
       ? "返回生涯"
       : "返回主页";
-    if (workspaceShell) workspaceShell.hidden = !isCareerScreen;
+    if (workspaceShell) {
+      workspaceShell.hidden = !isCareerScreen;
+      workspaceShell.classList.toggle("is-rogue-career", isRogueCareer);
+    }
+    if (workspaceChallengeNav) workspaceChallengeNav.hidden = !isRogueCareer;
     ns.UI.renderWorkspaceStatus(document.getElementById("workspaceStatus"), state.career);
     ns.UI.renderHorse(document.getElementById("horsePanel"), state.career, {
       trainerCommentsCollapsed: state.trainerCommentsCollapsed
@@ -107,6 +131,8 @@
       horseNameLanguage: state.horseNameLanguage,
       raceNameMode: state.raceNameMode
     });
+    renderRogueCareerPanels();
+    if (state.activeScreen === "rogue") renderRogueScreen();
     ns.UI.renderRaceResult(document.getElementById("raceResultContent"), state.career, {
       horseNameLanguage: state.horseNameLanguage,
       raceNameMode: state.raceNameMode
@@ -135,7 +161,11 @@
   }
 
   function applyWorkspaceView() {
-    const view = ["action", "horse", "more"].includes(state.activeView)
+    const isRogueCareer = !!(state.career && state.career.gameMode === "roguelike");
+    const allowedViews = isRogueCareer
+      ? ["action", "horse", "challenge", "more"]
+      : ["action", "horse", "more"];
+    const view = allowedViews.includes(state.activeView)
       ? state.activeView
       : "action";
     const actionSection = ["race", "history"].includes(state.activeActionSection)
@@ -160,7 +190,11 @@
   }
 
   function setWorkspaceView(view, options) {
-    if (!["action", "horse", "more"].includes(view)) return;
+    const isRogueCareer = !!(state.career && state.career.gameMode === "roguelike");
+    const allowedViews = isRogueCareer
+      ? ["action", "horse", "challenge", "more"]
+      : ["action", "horse", "more"];
+    if (!allowedViews.includes(view)) return;
     const opts = options || {};
     state.activeView = view;
     if (view === "action") {
@@ -221,6 +255,669 @@
       status.setAttribute("tabindex", "-1");
       status.focus({ preventScroll: true });
     }
+  }
+
+  function escapeHtml(value) {
+    return String(value == null ? "" : value)
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  function openRogue() {
+    if (state.career) saveGame({ silent: true });
+    state.activeScreen = "rogue";
+    state.resultOpen = false;
+    closeHelp({ restoreFocus: false });
+    refresh();
+  }
+
+  function restoreStandardCareer() {
+    if (state.career) saveGame({ silent: true });
+    state.career = null;
+    state.retiredSummary = null;
+    state.careerSource = "standard";
+    return loadSavedGame();
+  }
+
+  function showStandardCareer() {
+    if (!restoreStandardCareer()) return;
+    showCareer();
+  }
+
+  function openStandardSetup(legend) {
+    restoreStandardCareer();
+    openSetup("home");
+    if (legend) {
+      const gameModeSelect = document.getElementById("gameModeSelect");
+      const gameModeToggleBtn = document.getElementById("gameModeToggleBtn");
+      if (gameModeSelect && gameModeSelect.value !== "legend" && gameModeToggleBtn) gameModeToggleBtn.click();
+    }
+  }
+
+  function continueRogue() {
+    const run = state.rogueSave && state.rogueSave.run;
+    if (!run) {
+      openRogue();
+      return;
+    }
+    if (["career", "settled"].includes(run.phase) && run.activeCareer) {
+      state.career = run.activeCareer;
+      state.careerSource = "rogue";
+      state.retiredSummary = run.retiredSummary || null;
+      showCareer();
+      return;
+    }
+    openRogue();
+  }
+
+  function rogueSaveAndRefresh() {
+    saveRogueGame();
+    refresh();
+  }
+
+  function startRogueRun() {
+    if (state.rogueSave.run) return;
+    state.rogueSave.run = ns.RoguelikeRules.createRun(state.rogueSave.profile);
+    state.rogueShopNotice = "";
+    state.rogueCandidateIndex = 0;
+    state.rogueInventoryExpanded = false;
+    state.rogueExpandedCommentGroups = {};
+    rogueSaveAndRefresh();
+  }
+
+  function permanentProductHtml(id, name, description) {
+    const rules = ns.RoguelikeRules;
+    const profile = state.rogueSave.profile;
+    const unlocked = id === "veterinarian"
+      ? profile.residentVeterinarian
+      : profile.unlockedTrainerIds.includes(id);
+    const price = rules.PERMANENT_PRICES[id];
+    return `
+      <article class="rogue-shop-card rogue-permanent-card ${unlocked ? "is-owned" : ""}">
+        <div class="rogue-product-heading"><span class="badge">永久解锁</span><strong>${unlocked ? "已解锁" : `${price}枚`}</strong></div>
+        <div><h3>${name}</h3><p class="rogue-product-description">${description}</p><details class="rogue-product-details"><summary>查看效果</summary><p>${description}</p></details></div>
+        <button type="button" data-rogue-permanent="${id}" ${unlocked || profile.honorCoins < price ? "disabled" : ""}>${unlocked ? "已解锁" : `${price}枚`}</button>
+      </article>
+    `;
+  }
+
+  function consumableProductHtml(product) {
+    const profile = state.rogueSave.profile;
+    const count = profile.consumables[product.id] || 0;
+    const categoryLabel = product.category === "refresh" ? "候选刷新" : (product.category === "review" ? "评语复核" : "选马后使用");
+    return `
+      <article class="rogue-shop-card rogue-consumable-card">
+        <div class="rogue-product-heading"><span class="badge rogue-stock-type">${categoryLabel}</span><strong>库存 ${count}</strong></div>
+        <div><h3>${escapeHtml(product.label)}</h3><p class="rogue-product-description">${escapeHtml(product.description)}</p><details class="rogue-product-details"><summary>查看效果</summary><p>${escapeHtml(product.description)}</p></details></div>
+        <button type="button" data-rogue-consumable="${product.id}" ${profile.honorCoins < product.price ? "disabled" : ""} aria-label="购买一件${escapeHtml(product.label)}，消耗 ${product.price} 枚荣誉币">购买一件 · ${product.price}枚</button>
+      </article>
+    `;
+  }
+
+  function consumableInventoryHtml(compact) {
+    const products = Object.values(ns.RoguelikeRules.CONSUMABLE_PRODUCTS);
+    const profile = state.rogueSave.profile;
+    const used = (state.rogueSave.run && state.rogueSave.run.consumablesUsed) || {};
+    return `
+      <div class="rogue-inventory-bar ${compact ? "is-compact" : ""}" aria-label="消耗品库存">
+        ${products.map((product) => `
+          <span class="${used[product.id] ? "is-used" : ""}">
+            <small>${escapeHtml(product.label)}</small><b>×${profile.consumables[product.id] || 0}</b>${used[product.id] ? "<em>本局已用</em>" : ""}
+          </span>
+        `).join("")}
+      </div>
+    `;
+  }
+
+  function renderRogueHub() {
+    const products = Object.values(ns.RoguelikeRules.CONSUMABLE_PRODUCTS);
+    const activeCategory = state.rogueShopCategory === "permanent" ? "permanent" : "consumables";
+    state.rogueShopCategory = activeCategory;
+    return `
+      <div class="rogue-store-shell">
+        <header class="rogue-store-header">
+          <div><p class="eyebrow">肉鸽挑战</p><h1 id="roguePageTitle">荣誉商店</h1><p>为下一次挑战准备库存，再进入三匹候选的评估阶段。</p></div>
+          <div class="rogue-store-header-actions"><div class="rogue-balance"><span>当前荣誉币</span><strong>${state.rogueSave.profile.honorCoins}</strong></div><button class="secondary" type="button" data-rogue-home>返回主页</button></div>
+        </header>
+        <ol class="rogue-store-steps" aria-label="肉鸽挑战流程"><li class="is-active"><b>1</b><span>商店备货</span></li><li><b>2</b><span>进入选马</span></li><li><b>3</b><span>开始生涯</span></li></ol>
+        <div class="rogue-store-tabs" role="tablist" aria-label="商店商品分类">
+          <button id="rogueShopConsumablesTab" type="button" role="tab" aria-controls="rogueConsumablesPanel" aria-selected="${activeCategory === "consumables"}" tabindex="${activeCategory === "consumables" ? "0" : "-1"}" data-rogue-shop-tab="consumables">消耗品</button>
+          <button id="rogueShopPermanentTab" type="button" role="tab" aria-controls="roguePermanentPanel" aria-selected="${activeCategory === "permanent"}" tabindex="${activeCategory === "permanent" ? "0" : "-1"}" data-rogue-shop-tab="permanent">永久解锁</button>
+        </div>
+        <section id="rogueConsumablesPanel" class="rogue-store-section is-primary ${activeCategory === "consumables" ? "is-mobile-active" : ""}" role="tabpanel" aria-labelledby="rogueShopConsumablesTab rogueConsumableTitle">
+          <div class="section-title-row"><div><p class="eyebrow">消耗品</p><h2 id="rogueConsumableTitle">为未来的挑战备货</h2></div><span class="muted">跨局保存 · 每次购买一件</span></div>
+          <div class="rogue-shop-grid rogue-consumable-grid">${products.map(consumableProductHtml).join("")}</div>
+        </section>
+        <section id="roguePermanentPanel" class="rogue-store-section ${activeCategory === "permanent" ? "is-mobile-active" : ""}" role="tabpanel" aria-labelledby="rogueShopPermanentTab roguePermanentTitle">
+          <div class="section-title-row"><div><p class="eyebrow">永久解锁</p><h2 id="roguePermanentTitle">扩展马房与长期能力</h2></div><span class="muted">购买后永久生效</span></div>
+        <div class="rogue-shop-grid">
+          ${permanentProductHtml("obrien", "欧洲练马师 · O'Brien", "解锁欧洲所属候选与欧洲赛事体系。")}
+          ${permanentProductHtml("pletcher", "北美练马师 · Pletcher", "解锁北美所属候选与北美赛事体系。")}
+          ${permanentProductHtml("veterinarian", "驻场兽医", "每局可将当前伤病休养缩短3个月，不能逆转强制退役。")}
+        </div>
+        </section>
+        <p class="rogue-shop-notice" role="status" aria-live="polite">${escapeHtml(state.rogueShopNotice)}</p>
+        <div class="rogue-start-card">
+          <div><p class="eyebrow">库存已准备好</p><h2>进入三匹候选的选马页面</h2><p>无需购买商品也能开始；进入后商店会锁定至本局结算。</p></div>
+          <span class="rogue-mobile-dock-balance">余额 <b>${state.rogueSave.profile.honorCoins}</b></span>
+          <button type="button" data-rogue-start>进入选马</button>
+        </div>
+      </div>
+    `;
+  }
+
+  function bloodlineNote(kind, id) {
+    const list = kind === "sire" ? ns.SireBloodlines : ns.DamBloodlines;
+    const found = (list || []).find((item) => item.id === id);
+    return found && found.note ? found.note : "没有额外倾向说明。";
+  }
+
+  function commentsHtml(comments) {
+    return (comments || []).map((comment) => `
+      <div class="rogue-comment"><span>${escapeHtml(comment.label || comment.item)}</span><p>${escapeHtml(comment.text)}</p></div>
+    `).join("");
+  }
+
+  function commentGroupHtml(comments, key, label, review) {
+    const expanded = !!state.rogueExpandedCommentGroups[key];
+    return `
+      <div class="rogue-comment-group ${review ? "is-review" : ""} ${expanded ? "is-expanded" : ""}" data-rogue-comment-group="${escapeHtml(key)}">
+        <div class="rogue-comment-group-heading"><p class="eyebrow">${escapeHtml(label)}</p><button class="secondary" type="button" data-rogue-comments="${escapeHtml(key)}" aria-expanded="${expanded}">${expanded ? "收起评语" : "展开完整评语"}</button></div>
+        <div class="rogue-comment-list">${commentsHtml(comments)}</div>
+      </div>
+    `;
+  }
+
+  function candidateCardHtml(candidate, index) {
+    const run = state.rogueSave.run;
+    const profile = state.rogueSave.profile;
+    const h = candidate.horse;
+    const products = Object.values(ns.RoguelikeRules.CONSUMABLE_PRODUCTS);
+    const itemControl = (category, label) => {
+      const categoryProducts = products.filter((product) => product.category === category);
+      const candidateBlocked = category === "review" && !!candidate.reviewComments;
+      const available = categoryProducts.some((product) => !run.consumablesUsed[product.id] && (profile.consumables[product.id] || 0) > 0);
+      const options = categoryProducts.map((product) => {
+        const count = profile.consumables[product.id] || 0;
+        const used = !!run.consumablesUsed[product.id];
+        const disabled = used || count < 1 || candidateBlocked;
+        const stateLabel = used ? "本局已用" : (count < 1 ? "无库存" : `库存 ${count}`);
+        return `<option value="${product.id}" ${disabled ? "disabled" : ""}>${escapeHtml(product.label)} · ${stateLabel}</option>`;
+      }).join("");
+      return `
+        <label class="rogue-item-use"><span>${label}</span><select data-rogue-item-select="${category}" aria-label="候选 ${index + 1} ${label}" ${!available || candidateBlocked ? "disabled" : ""}><option value="" selected>选择${label}</option>${options}</select><button class="secondary" type="button" data-rogue-use="${category}" data-candidate-id="${candidate.id}" disabled>使用</button></label>
+      `;
+    };
+    return `
+      <article id="rogueCandidatePanel-${index}" class="rogue-candidate-card ${state.rogueCandidateIndex === index ? "is-mobile-active" : ""}" role="tabpanel" aria-labelledby="rogueCandidateTab-${index}">
+        <div class="rogue-candidate-heading"><span>候选 ${index + 1}</span><strong id="rogueCandidateTitle-${index}" tabindex="-1">${escapeHtml(candidate.trainerName)}</strong><em>${escapeHtml(candidate.regionLabel)}所属</em></div>
+        <div class="rogue-candidate-facts">
+          <span><small>性别</small><b>${escapeHtml(h.gender)}</b></span>
+          <span><small>毛色</small><b>${escapeHtml(h.coat)}</b></span>
+          <span><small>体重</small><b>${h.weight}kg</b></span>
+        </div>
+        <div class="rogue-bloodline-row">
+          <details class="rogue-bloodline"><summary><span>父系</span><strong>${escapeHtml(h.sireName)}</strong></summary><p>${escapeHtml(bloodlineNote("sire", h.sireId))}</p></details>
+          <details class="rogue-bloodline"><summary><span>母系</span><strong>${escapeHtml(h.damName)}</strong></summary><p>${escapeHtml(bloodlineNote("dam", h.damId))}</p></details>
+        </div>
+        ${commentGroupHtml(candidate.initialComments, `${candidate.id}:initial`, "初次评估", false)}
+        ${candidate.reviewComments ? commentGroupHtml(candidate.reviewComments, `${candidate.id}:review`, candidate.reviewLabel, true) : ""}
+        <div class="rogue-service-groups">${itemControl("refresh", "刷新券")}${itemControl("review", "评语券")}</div>
+        <button class="rogue-select-candidate rogue-card-select" type="button" data-rogue-select="${candidate.id}">选择这匹赛马</button>
+      </article>
+    `;
+  }
+
+  function renderRogueCandidates(run) {
+    const candidates = run.candidates || [];
+    state.rogueCandidateIndex = Math.max(0, Math.min(state.rogueCandidateIndex, candidates.length - 1));
+    const activeCandidate = candidates[state.rogueCandidateIndex];
+    const usedCount = Object.values(run.consumablesUsed || {}).filter(Boolean).length;
+    const inventoryOpen = !isMobileLayout() || state.rogueInventoryExpanded;
+    return `
+      <div class="rogue-page-heading">
+        <div><p class="eyebrow">候选评估</p><h1 id="roguePageTitle">从血统与评语中寻找答案</h1></div>
+        <div class="rogue-heading-actions"><span class="rogue-coin-pill">商店已锁定</span><button class="secondary" type="button" data-rogue-home>返回主页</button></div>
+      </div>
+      <details class="rogue-inventory-disclosure" ${inventoryOpen ? "open" : ""}>
+        <summary><span>道具库存</span><strong>6 种 · 本局已用 ${usedCount} 种</strong></summary>
+        ${consumableInventoryHtml(true)}
+      </details>
+      <p class="rogue-candidate-note">每种道具每局限用一次；刷新已有复核评语的候选会一并丢失评语，道具不会返还。</p>
+      <div class="rogue-candidate-tabs" role="tablist" aria-label="选择候选赛马">
+        ${candidates.map((candidate, index) => `<button id="rogueCandidateTab-${index}" type="button" role="tab" aria-controls="rogueCandidatePanel-${index}" aria-selected="${state.rogueCandidateIndex === index}" tabindex="${state.rogueCandidateIndex === index ? "0" : "-1"}" data-rogue-candidate-tab="${index}"><span>候选 ${index + 1}</span><strong>${escapeHtml(candidate.trainerName)}</strong></button>`).join("")}
+      </div>
+      <div class="rogue-candidate-grid">${candidates.map(candidateCardHtml).join("")}</div>
+      ${activeCandidate ? `<div class="rogue-candidate-dock"><span>候选 <b>${state.rogueCandidateIndex + 1}</b> / ${candidates.length}</span><button type="button" data-rogue-select="${activeCandidate.id}">选择这匹赛马</button></div>` : ""}
+    `;
+  }
+
+  function challengeOptionsHtml(run) {
+    return run.challengeOptions.map((id) => {
+      const challenge = ns.RoguelikeRules.challengeById(id);
+      return `
+        <article class="rogue-challenge-option">
+          <span class="badge">${challenge.groupLabel}</span><h3>${challenge.name}</h3>
+          <ol><li><b>铜</b>${challenge.conditions.bronze}</li><li><b>银</b>${challenge.conditions.silver}</li><li><b>金</b>${challenge.conditions.gold}</li></ol>
+          <button type="button" data-rogue-challenge="${id}">选择此目标</button>
+        </article>
+      `;
+    }).join("");
+  }
+
+  function renderRogueHorseSetup(run) {
+    const selected = run.selectedCandidate;
+    const name = escapeHtml(run.pendingName || "未命名小马");
+    const directionButton = (id, label) => {
+      const eligible = ns.RoguelikeRules.eligibleAdaptationFields(selected.horse, id).length > 0;
+      const inventory = state.rogueSave.profile.consumables.adaptation || 0;
+      const used = !!run.consumablesUsed.adaptation;
+      const disabled = !eligible || inventory < 1 || used;
+      return `<button class="secondary" type="button" data-rogue-adaptation="${id}" ${disabled ? "disabled" : ""}>${label} · 调教券 ×${inventory}</button>`;
+    };
+    return `
+      <div class="rogue-page-heading">
+        <div><p class="eyebrow">选马完成</p><h1 id="roguePageTitle">锁定名字、调教与挑战</h1></div>
+        <span class="rogue-coin-pill">荣誉币 ${state.rogueSave.profile.honorCoins}</span>
+      </div>
+      <div class="rogue-selected-summary"><strong>${escapeHtml(selected.trainerName)}</strong><span>${escapeHtml(selected.regionLabel)} · ${escapeHtml(selected.horse.gender)} · ${escapeHtml(selected.horse.coat)}</span><span>${escapeHtml(selected.horse.sireName)} × ${escapeHtml(selected.horse.damName)}</span></div>
+      <label class="rogue-name-field">马名<input id="rogueHorseName" type="text" maxlength="30" value="${name}"></label>
+      <section class="rogue-section">
+        <div><p class="eyebrow">赛区适应调教</p><h2>使用一张赛区调教券，或直接跳过</h2><p class="muted">日本会在日本草地/泥地中随机提升一项，欧洲提升欧洲草地，北美会在美国草地/泥地中随机提升一项。只按G→C→B→A提升；前后等级保持隐藏，A不会提升为S。</p></div>
+        ${run.adaptationResolved
+          ? `<div class="rogue-resolved"><strong>${run.services.adaptation ? "赛区调教已完成" : "已跳过赛区调教"}</strong></div>`
+          : `<div class="rogue-adaptation-actions">${directionButton("japan", "日本适应")}${directionButton("europe", "欧洲适应")}${directionButton("northAmerica", "北美适应")}<button type="button" data-rogue-adaptation-skip>不购买并继续</button></div>`}
+      </section>
+      ${run.adaptationResolved ? `<section class="rogue-section"><div><p class="eyebrow">本局挑战</p><h2>选择后不可更换</h2></div><div class="rogue-challenge-grid">${challengeOptionsHtml(run)}</div></section>` : ""}
+    `;
+  }
+
+  function renderRogueJockey(run) {
+    const selected = run.selectedCandidate;
+    const affiliation = ns.RegionRules.getJockeyAffiliation(selected.regionId);
+    const jockeys = ns.JockeyRules.getPlayerSelectableJockeys(affiliation);
+    const challenge = ns.RoguelikeRules.challengeById(run.selectedChallengeId);
+    return `
+      <div class="rogue-page-heading"><div><p class="eyebrow">最终确认</p><h1 id="roguePageTitle">选择主战骑手</h1></div><span class="rogue-coin-pill">荣誉币 ${state.rogueSave.profile.honorCoins}</span></div>
+      <div class="rogue-final-grid">
+        <div><span>赛马</span><strong>${escapeHtml(run.pendingName || "未命名小马")}</strong></div>
+        <div><span>练马师／所属地</span><strong>${escapeHtml(selected.trainerName)}／${escapeHtml(selected.regionLabel)}</strong></div>
+        <div><span>挑战目标</span><strong>${escapeHtml(challenge.name)}</strong></div>
+      </div>
+      <label class="rogue-name-field">主战骑手<select id="rogueJockeySelect">${jockeys.map((jockey) => `<option value="${jockey.id}">${escapeHtml(jockey.name)}</option>`).join("")}</select></label>
+      <div class="rogue-final-actions"><button type="button" data-rogue-begin-career>正式进入生涯</button></div>
+    `;
+  }
+
+  function settlementHtml(settlement) {
+    if (!settlement) return "";
+    const progress = settlement.challengeProgress;
+    const challenge = progress.challenge;
+    const achievementRows = settlement.achievements.length
+      ? settlement.achievements.map((item) => `<li><span>${escapeHtml(item.name)} · ${item.first ? "首次" : "重复"}</span><strong>+${item.coins}</strong></li>`).join("")
+      : `<li><span>本局没有可结算成就</span><strong>+0</strong></li>`;
+    const suppressed = settlement.suppressedAchievements.length
+      ? `<div class="rogue-suppressed"><p class="eyebrow">重叠未重复结算</p>${settlement.suppressedAchievements.map((item) => `<span>${escapeHtml(item.name)}：${escapeHtml(item.reason)}</span>`).join("")}</div>`
+      : "";
+    return `
+      <div class="rogue-settlement-heading"><div><p class="eyebrow">本局结算</p><h2>${settlement.valid ? "有效生涯" : "无效生涯"}</h2></div><strong class="rogue-total-income">+${settlement.totalCoins}枚</strong></div>
+      ${settlement.valid ? `<div class="rogue-settlement-challenge"><span>挑战目标</span><strong>${challenge ? challenge.name : "未知挑战"} · ${ns.RoguelikeRules.STAGE_LABELS[progress.stage]}</strong><em>+${settlement.challengeCoins}</em></div>` : `<p class="rogue-invalid-note">未满足3战且推进至3岁夏的主动结算条件，本局不发放奖励。</p>`}
+      <ul class="rogue-achievement-payouts">${achievementRows}</ul>
+      ${suppressed}
+      <div class="rogue-settlement-totals"><span>挑战积分 ${settlement.challengeScore}</span><span>成就积分 ${settlement.achievementScore}</span><strong>生涯积分 ${settlement.totalScore}</strong><strong>结算后余额 ${settlement.balanceAfter}</strong></div>
+    `;
+  }
+
+  function renderRogueSettled(run) {
+    return `
+      <div class="rogue-page-heading"><div><p class="eyebrow">肉鸽挑战</p><h1 id="roguePageTitle">生涯已经结算</h1></div><button class="secondary" type="button" data-rogue-home>返回主页</button></div>
+      ${settlementHtml(run.settlement)}
+      <div class="rogue-final-actions"><button class="secondary" type="button" data-rogue-view-career>查看完整生涯</button><button type="button" data-rogue-next-run>返回商店，准备下一匹马</button></div>
+    `;
+  }
+
+  function renderRogueScreen() {
+    const content = document.getElementById("rogueContent");
+    if (!content || !state.rogueSave) return;
+    const run = state.rogueSave.run;
+    if (!run) content.innerHTML = renderRogueHub();
+    else if (run.phase === "candidates") content.innerHTML = renderRogueCandidates(run);
+    else if (run.phase === "horse-setup") content.innerHTML = renderRogueHorseSetup(run);
+    else if (run.phase === "jockey") content.innerHTML = renderRogueJockey(run);
+    else if (run.phase === "settled") content.innerHTML = renderRogueSettled(run);
+    else content.innerHTML = `<div class="rogue-page-heading"><h1 id="roguePageTitle">肉鸽生涯进行中</h1></div><button type="button" data-rogue-view-career>返回生涯</button>`;
+    bindRogueScreenEvents(content);
+  }
+
+  function rememberRogueName() {
+    const input = document.getElementById("rogueHorseName");
+    if (!input || !state.rogueSave.run) return;
+    state.rogueSave.run.pendingName = input.value.trim() || "未命名小马";
+    saveRogueGame();
+  }
+
+  function bindRogueScreenEvents(content) {
+    const one = (selector, handler) => {
+      const element = content.querySelector(selector);
+      if (element) element.addEventListener("click", handler);
+    };
+    content.querySelectorAll("[data-rogue-home]").forEach((button) => button.addEventListener("click", showHome));
+    one("[data-rogue-start]", startRogueRun);
+    const shopTabs = Array.from(content.querySelectorAll("[data-rogue-shop-tab]"));
+    const activateShopTab = (button, focus) => {
+      if (!button) return;
+      const category = button.dataset.rogueShopTab === "permanent" ? "permanent" : "consumables";
+      state.rogueShopCategory = category;
+      shopTabs.forEach((tab) => {
+        const active = tab === button;
+        tab.setAttribute("aria-selected", String(active));
+        tab.setAttribute("tabindex", active ? "0" : "-1");
+      });
+      const consumables = content.querySelector("#rogueConsumablesPanel");
+      const permanent = content.querySelector("#roguePermanentPanel");
+      if (consumables) consumables.classList.toggle("is-mobile-active", category === "consumables");
+      if (permanent) permanent.classList.toggle("is-mobile-active", category === "permanent");
+      if (focus) button.focus({ preventScroll: true });
+    };
+    shopTabs.forEach((button, index) => {
+      button.addEventListener("click", () => activateShopTab(button, false));
+      button.addEventListener("keydown", (event) => {
+        if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+        event.preventDefault();
+        const nextIndex = event.key === "Home"
+          ? 0
+          : (event.key === "End" ? shopTabs.length - 1 : (index + (event.key === "ArrowRight" ? 1 : -1) + shopTabs.length) % shopTabs.length);
+        activateShopTab(shopTabs[nextIndex], true);
+      });
+    });
+    const candidateTabs = Array.from(content.querySelectorAll("[data-rogue-candidate-tab]"));
+    const activateCandidateTab = (button, focus) => {
+      if (!button || !state.rogueSave.run) return;
+      const index = Number(button.dataset.rogueCandidateTab);
+      if (!Number.isInteger(index) || !state.rogueSave.run.candidates[index]) return;
+      state.rogueCandidateIndex = index;
+      candidateTabs.forEach((tab) => {
+        const active = tab === button;
+        tab.setAttribute("aria-selected", String(active));
+        tab.setAttribute("tabindex", active ? "0" : "-1");
+      });
+      content.querySelectorAll(".rogue-candidate-card").forEach((card, cardIndex) => card.classList.toggle("is-mobile-active", cardIndex === index));
+      const dock = content.querySelector(".rogue-candidate-dock");
+      if (dock) {
+        const label = dock.querySelector("span");
+        const select = dock.querySelector("[data-rogue-select]");
+        if (label) label.innerHTML = `候选 <b>${index + 1}</b> / ${candidateTabs.length}`;
+        if (select) select.dataset.rogueSelect = state.rogueSave.run.candidates[index].id;
+      }
+      if (focus) button.focus({ preventScroll: true });
+    };
+    candidateTabs.forEach((button, index) => {
+      button.addEventListener("click", () => activateCandidateTab(button, false));
+      button.addEventListener("keydown", (event) => {
+        if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+        event.preventDefault();
+        const nextIndex = event.key === "Home"
+          ? 0
+          : (event.key === "End" ? candidateTabs.length - 1 : (index + (event.key === "ArrowRight" ? 1 : -1) + candidateTabs.length) % candidateTabs.length);
+        activateCandidateTab(candidateTabs[nextIndex], true);
+      });
+    });
+    const inventoryDisclosure = content.querySelector(".rogue-inventory-disclosure");
+    if (inventoryDisclosure) inventoryDisclosure.addEventListener("toggle", () => {
+      if (isMobileLayout()) state.rogueInventoryExpanded = inventoryDisclosure.open;
+    });
+    content.querySelectorAll("[data-rogue-comments]").forEach((button) => button.addEventListener("click", () => {
+      const key = button.dataset.rogueComments;
+      const group = button.closest("[data-rogue-comment-group]");
+      const expanded = !state.rogueExpandedCommentGroups[key];
+      state.rogueExpandedCommentGroups[key] = expanded;
+      if (group) group.classList.toggle("is-expanded", expanded);
+      button.setAttribute("aria-expanded", String(expanded));
+      button.textContent = expanded ? "收起评语" : "展开完整评语";
+    }));
+    content.querySelectorAll("[data-rogue-permanent]").forEach((button) => button.addEventListener("click", () => {
+      const result = ns.RoguelikeRules.purchasePermanent(state.rogueSave, button.dataset.roguePermanent);
+      if (!result.ok) window.alert(result.reason);
+      else state.rogueShopNotice = `永久解锁购买成功，剩余荣誉币 ${state.rogueSave.profile.honorCoins}。`;
+      rogueSaveAndRefresh();
+    }));
+    content.querySelectorAll("[data-rogue-consumable]").forEach((button) => button.addEventListener("click", () => {
+      const itemId = button.dataset.rogueConsumable;
+      const result = ns.RoguelikeRules.purchaseConsumable(state.rogueSave, itemId);
+      if (!result.ok) window.alert(result.reason);
+      else {
+        const product = ns.RoguelikeRules.CONSUMABLE_PRODUCTS[itemId];
+        state.rogueShopNotice = `已购买${product.label}，当前库存 ${result.count}，剩余荣誉币 ${state.rogueSave.profile.honorCoins}。`;
+      }
+      rogueSaveAndRefresh();
+    }));
+    content.querySelectorAll("[data-rogue-item-select]").forEach((select) => select.addEventListener("change", () => {
+      const button = select.closest(".rogue-item-use").querySelector("[data-rogue-use]");
+      if (button) button.disabled = !select.value;
+    }));
+    content.querySelectorAll("[data-rogue-use]").forEach((button) => button.addEventListener("click", () => {
+      const control = button.closest(".rogue-item-use");
+      const select = control && control.querySelector("[data-rogue-item-select]");
+      const itemId = select && select.value;
+      const product = ns.RoguelikeRules.CONSUMABLE_PRODUCTS[itemId];
+      if (!itemId || !product) return;
+      const candidate = state.rogueSave.run.candidates.find((item) => item.id === button.dataset.candidateId);
+      const losesReview = button.dataset.rogueUse === "refresh" && candidate && candidate.reviewComments;
+      const message = losesReview
+        ? `使用${product.label}会替换这匹候选，并丢失已有复核评语；道具不会返还。确定使用吗？`
+        : `确定对这匹候选使用${product.label}吗？使用后道具不会返还。`;
+      if (!window.confirm(message)) return;
+      const result = button.dataset.rogueUse === "refresh"
+        ? ns.RoguelikeRules.useRefreshConsumable(state.rogueSave, button.dataset.candidateId, itemId)
+        : ns.RoguelikeRules.useReviewConsumable(state.rogueSave, button.dataset.candidateId, itemId);
+      if (!result.ok) window.alert(result.reason);
+      rogueSaveAndRefresh();
+    }));
+    content.querySelectorAll("[data-rogue-select]").forEach((button) => button.addEventListener("click", () => {
+      if (!window.confirm("选择赛马后，另外两匹候选会立即失效且不可恢复。确定吗？")) return;
+      const result = ns.RoguelikeRules.selectCandidate(state.rogueSave, button.dataset.rogueSelect);
+      if (!result.ok) window.alert(result.reason);
+      rogueSaveAndRefresh();
+    }));
+    const nameInput = content.querySelector("#rogueHorseName");
+    if (nameInput) {
+      nameInput.addEventListener("change", rememberRogueName);
+      nameInput.addEventListener("input", rememberRogueName);
+    }
+    content.querySelectorAll("[data-rogue-adaptation]").forEach((button) => button.addEventListener("click", () => {
+      rememberRogueName();
+      if (!window.confirm("将消耗一张赛区调教券，并随机提升对应方向的一项适性。确定使用吗？")) return;
+      const result = ns.RoguelikeRules.useAdaptationConsumable(state.rogueSave, button.dataset.rogueAdaptation);
+      if (!result.ok) window.alert(result.reason);
+      rogueSaveAndRefresh();
+    }));
+    one("[data-rogue-adaptation-skip]", () => {
+      rememberRogueName();
+      ns.RoguelikeRules.skipAdaptation(state.rogueSave);
+      rogueSaveAndRefresh();
+    });
+    content.querySelectorAll("[data-rogue-challenge]").forEach((button) => button.addEventListener("click", () => {
+      rememberRogueName();
+      if (!window.confirm("挑战目标选择后不可更换。确定选择吗？")) return;
+      const result = ns.RoguelikeRules.chooseChallenge(state.rogueSave, button.dataset.rogueChallenge);
+      if (!result.ok) window.alert(result.reason);
+      rogueSaveAndRefresh();
+    }));
+    one("[data-rogue-begin-career]", beginRogueCareer);
+    content.querySelectorAll("[data-rogue-view-career]").forEach((button) => button.addEventListener("click", continueRogue));
+    content.querySelectorAll("[data-rogue-next-run]").forEach((button) => button.addEventListener("click", nextRogueRun));
+  }
+
+  function beginRogueCareer() {
+    const run = state.rogueSave.run;
+    if (!run || run.phase !== "jockey") return;
+    const candidate = run.selectedCandidate;
+    const horse = candidate.horse;
+    horse.name = run.pendingName || "未命名小马";
+    const jockeySelect = document.getElementById("rogueJockeySelect");
+    horse.mainJockeyId = jockeySelect ? jockeySelect.value : "take-yutaka";
+    const trainer = ns.CommentRules.getTrainer(candidate.trainerId);
+    const effectiveComments = candidate.reviewComments || candidate.initialComments;
+    const debutLock = ns.CommentRules.buildDebutLock(effectiveComments);
+    const career = ns.CareerRules.createCareer(horse, effectiveComments.map((comment) => comment.text), effectiveComments, debutLock, trainer);
+    career.roguelike = {
+      runId: run.id,
+      challengeId: run.selectedChallengeId,
+      initialComments: candidate.initialComments,
+      reviewComments: candidate.reviewComments || [],
+      reviewLabel: candidate.reviewLabel || "",
+      honorCoins: state.rogueSave.profile.honorCoins,
+      veterinarianUnlocked: state.rogueSave.profile.residentVeterinarian,
+      veterinarianUsed: false
+    };
+    run.activeCareer = career;
+    run.phase = "career";
+    state.career = career;
+    state.careerSource = "rogue";
+    state.retiredSummary = null;
+    state.activeScreen = "career";
+    state.activeView = "action";
+    state.activeActionSection = "race";
+    state.resultOpen = false;
+    state.historyExpanded = false;
+    state.trainerCommentsCollapsed = true;
+    state.adaptationHintsCollapsed = true;
+    state.expandedRaceRecords = {};
+    state.collapsedRaceRecords = {};
+    state.expandedRaceComments = {};
+    state.expandedOpponentRosters = {};
+    state.activeFilterGroup = "";
+    state.filters = defaultFilters();
+    saveRogueGame();
+    refresh();
+  }
+
+  function nextRogueRun() {
+    state.rogueSave.run = null;
+    state.career = null;
+    state.retiredSummary = null;
+    state.careerSource = "rogue";
+    state.activeScreen = "rogue";
+    state.rogueShopCategory = "consumables";
+    state.rogueCandidateIndex = 0;
+    state.rogueInventoryExpanded = false;
+    state.rogueExpandedCommentGroups = {};
+    saveRogueGame();
+    refresh();
+  }
+
+  function challengeProgressHtml(progress) {
+    if (!progress || !progress.challenge) return "";
+    const conditions = ["bronze", "silver", "gold"].map((stage) => {
+      const complete = progress.flags[stage];
+      const failed = progress.failedStages.includes(stage);
+      return `<li class="${complete ? "is-complete" : (failed ? "is-failed" : "")}"><b>${ns.RoguelikeRules.STAGE_LABELS[stage]}</b><span>${escapeHtml(progress.challenge.conditions[stage])}</span><em>${complete ? "已完成" : (failed ? "已失败" : "进行中")}</em></li>`;
+    }).join("");
+    const metrics = progress.metrics;
+    const surfaceText = Object.keys(metrics.surfaces || {}).map((surface) => {
+      const item = metrics.surfaces[surface];
+      return `${surface}${item.wins}胜/顶级${item.top}`;
+    }).join(" · ") || "尚无草泥胜利";
+    return `
+      <div class="section-title-row"><div><p class="eyebrow">本局挑战</p><h2>${escapeHtml(progress.challenge.name)}</h2></div><span class="badge rogue-badge">当前 ${ns.RoguelikeRules.STAGE_LABELS[progress.stage]}</span></div>
+      <ol class="rogue-progress-stages">${conditions}</ol>
+      <div class="rogue-progress-metrics">
+        <span><small>战绩</small><b>${metrics.starts}战 ${metrics.wins}胜</b></span>
+        <span><small>顶级胜利</small><b>${metrics.topWins}</b></span>
+        <span><small>连续前二</small><b>当前${metrics.currentTopTwoStreak}／最佳${metrics.bestTopTwoStreak}</b></span>
+        <span><small>连胜</small><b>当前${metrics.currentWinStreak}／最佳${metrics.bestWinStreak}</b></span>
+        <span><small>距离类别</small><b>${escapeHtml(metrics.distanceCategories.join("、") || "暂无")}</b></span>
+        <span><small>草泥成绩</small><b>${escapeHtml(surfaceText)}</b></span>
+        <span><small>完成地区</small><b>${escapeHtml(metrics.regions.join("、") || "暂无")}</b></span>
+        <span><small>完成年龄</small><b>${escapeHtml(metrics.ages.map((age) => `${age}岁`).join("、") || "暂无")}</b></span>
+      </div>
+    `;
+  }
+
+  function challengeHintHtml(progress) {
+    if (!progress || !progress.challenge) return "";
+    const stageLabel = ns.RoguelikeRules.STAGE_LABELS[progress.stage] || "未完成";
+    return `
+      <button class="rogue-challenge-hint-button" type="button" data-workspace-jump="challenge" aria-label="查看本局挑战${escapeHtml(progress.challenge.name)}详情">
+        <span><small>本局挑战</small><strong>${escapeHtml(progress.challenge.name)}</strong></span>
+        <b>${escapeHtml(stageLabel)}</b>
+        <em>查看详情</em>
+      </button>
+    `;
+  }
+
+  function renderRogueCareerPanels() {
+    const challengePanel = document.getElementById("rogueChallengePanel");
+    const challengeHint = document.getElementById("rogueChallengeHint");
+    const veterinarianPanel = document.getElementById("rogueVeterinarianPanel");
+    const settlementPanel = document.getElementById("rogueSettlementPanel");
+    const isRogue = state.career && state.career.gameMode === "roguelike";
+    if (settlementPanel) settlementPanel.hidden = true;
+    if (challengeHint) challengeHint.hidden = true;
+    if (veterinarianPanel) veterinarianPanel.hidden = true;
+    if (!isRogue || !challengePanel) {
+      if (challengePanel) challengePanel.innerHTML = "";
+      if (challengeHint) challengeHint.innerHTML = "";
+      if (veterinarianPanel) veterinarianPanel.innerHTML = "";
+      return;
+    }
+    const progress = ns.RoguelikeRules.evaluateChallenge(state.career, state.career.roguelike && state.career.roguelike.challengeId);
+    const activeInjury = state.career.injury && state.career.injury.active;
+    const canUseVet = state.rogueSave
+      && state.rogueSave.profile.residentVeterinarian
+      && activeInjury
+      && !state.career.roguelike.veterinarianUsed
+      && !state.career.retired;
+    challengePanel.innerHTML = challengeProgressHtml(progress);
+    if (challengeHint && progress.challenge) {
+      challengeHint.hidden = false;
+      challengeHint.innerHTML = challengeHintHtml(progress);
+    }
+    if (veterinarianPanel && canUseVet) {
+      veterinarianPanel.hidden = false;
+      veterinarianPanel.innerHTML = `<div class="rogue-vet-action"><div><strong>驻场兽医</strong><span>将当前剩余休养缩短3个月，本局仅一次。</span></div><button type="button" id="rogueVeterinarianBtn">立即治疗</button></div>`;
+    }
+    const vetButton = document.getElementById("rogueVeterinarianBtn");
+    if (vetButton) vetButton.addEventListener("click", useRogueVeterinarian);
+    const run = state.rogueSave && state.rogueSave.run;
+    if (run && run.settlement && settlementPanel) {
+      settlementPanel.hidden = false;
+      settlementPanel.innerHTML = `${settlementHtml(run.settlement)}<div class="rogue-final-actions"><button class="secondary" type="button" id="rogueSettlementHomeBtn">返回主页</button><button type="button" id="rogueSettlementNextBtn">返回商店，准备下一匹马</button></div>`;
+      const nextButton = document.getElementById("rogueSettlementNextBtn");
+      const homeButton = document.getElementById("rogueSettlementHomeBtn");
+      if (nextButton) nextButton.addEventListener("click", nextRogueRun);
+      if (homeButton) homeButton.addEventListener("click", showHome);
+    }
+  }
+
+  function useRogueVeterinarian() {
+    if (!state.career || !state.rogueSave) return;
+    const result = ns.RoguelikeRules.useVeterinarian(state.career, state.rogueSave.profile);
+    if (!result.ok) {
+      window.alert(result.reason);
+      return;
+    }
+    window.alert(result.healed ? "治疗完成，赛马已经康复。" : "治疗完成，剩余休养时间已缩短3个月。");
+    saveGame();
+    refresh();
+  }
+
+  function settleRogueCareer(forced) {
+    const run = state.rogueSave && state.rogueSave.run;
+    if (!run || run.settled) return run && run.settlement;
+    const result = ns.RoguelikeRules.buildSettlement(state.rogueSave.profile, state.career, forced);
+    state.rogueSave.profile = result.profile;
+    run.settlement = result.settlement;
+    run.settled = true;
+    run.phase = "settled";
+    run.activeCareer = state.career;
+    run.retiredSummary = state.retiredSummary;
+    state.career.roguelike.honorCoins = state.rogueSave.profile.honorCoins;
+    saveRogueGame();
+    return result.settlement;
   }
 
   function copyTextFallback(text) {
@@ -509,6 +1206,15 @@
 
   function saveGame(options) {
     const opts = options || {};
+    if (state.careerSource === "rogue") {
+      if (state.rogueSave && state.rogueSave.run && state.career) {
+        state.career.roguelike = state.career.roguelike || {};
+        state.career.roguelike.honorCoins = state.rogueSave.profile.honorCoins;
+        state.rogueSave.run.activeCareer = state.career;
+        state.rogueSave.run.retiredSummary = state.retiredSummary;
+      }
+      return saveRogueGame();
+    }
     if (!state.career) return false;
     if (savePaused && opts.silent) return false;
     if (savePaused) savePaused = false;
@@ -555,6 +1261,7 @@
       const restoredCareer = normalizeRestoredCareer(payload.state.career, payload.version);
       if (!restoredCareer) throw new Error("Save payload has no career.");
       state.career = restoredCareer;
+      state.careerSource = "standard";
       state.retiredSummary = payload.state.retiredSummary || null;
       state.historyExpanded = !!payload.state.historyExpanded;
       state.trainerCommentsCollapsed = !!payload.state.trainerCommentsCollapsed;
@@ -592,6 +1299,7 @@
 
   function updateSaveStatus() {
     const panel = document.getElementById("savePanel");
+    const rogueCareerActive = state.activeScreen === "career" && state.careerSource === "rogue";
     const savedAtText = formatSavedAt(saveStatus.savedAt);
     let statusText = "暂无存档";
     if (!saveStatus.storageAvailable) {
@@ -608,14 +1316,48 @@
     if (panel) panel.hidden = false;
     ["homeSaveStatus", "saveStatusText", "workspaceSaveStatusText", "workspaceStatusSave"].forEach((id) => {
       const text = document.getElementById(id);
-      if (text) text.textContent = id === "workspaceStatusSave" && statusText.includes(" · ")
+      if (!text) return;
+      if (rogueCareerActive && id !== "homeSaveStatus") {
+        text.textContent = id === "workspaceStatusSave" ? "肉鸽存档已保存" : "肉鸽模式使用独立自动存档";
+        return;
+      }
+      text.textContent = id === "workspaceStatusSave" && statusText.includes(" · ")
         ? statusText.split(" · ")[0]
         : statusText;
     });
     ["clearSaveBtn", "workspaceClearSaveBtn"].forEach((id) => {
       const clearButton = document.getElementById(id);
-      if (clearButton) clearButton.hidden = !hasSavedGame();
+      if (clearButton) clearButton.hidden = rogueCareerActive || !hasSavedGame();
     });
+  }
+
+  function loadRogueGame() {
+    const storage = getStorage();
+    if (!storage || !ns.RoguelikeRules) {
+      state.rogueSave = ns.RoguelikeRules ? ns.RoguelikeRules.createSave() : null;
+      return false;
+    }
+    try {
+      const raw = storage.getItem(ROGUE_SAVE_KEY);
+      state.rogueSave = ns.RoguelikeRules.normalizeSave(raw ? JSON.parse(raw) : null);
+      return !!raw;
+    } catch (error) {
+      console.warn("Failed to load roguelike save.", error);
+      state.rogueSave = ns.RoguelikeRules.createSave();
+      return false;
+    }
+  }
+
+  function saveRogueGame() {
+    const storage = getStorage();
+    if (!storage || !state.rogueSave) return false;
+    try {
+      storage.setItem(ROGUE_SAVE_KEY, JSON.stringify(state.rogueSave));
+      return true;
+    } catch (error) {
+      console.warn("Failed to save roguelike game.", error);
+      return false;
+    }
   }
 
   function clearSavedGame() {
@@ -1049,6 +1791,7 @@
         state.career,
         state.career.forcedRetirementReason || "因重伤被迫退役"
       );
+      if (state.career.gameMode === "roguelike") settleRogueCareer(true);
     }
     state.activeView = "action";
     state.activeActionSection = "race";
@@ -1194,12 +1937,27 @@
     const horseName = state.career.horse && state.career.horse.name
       ? state.career.horse.name
       : "当前小马";
-    if (!window.confirm(`确定让${horseName}退役吗？退役后会结束当前生涯并揭示隐藏能力。`)) return;
+    const isRogue = state.career.gameMode === "roguelike";
+    const validRogue = !isRogue || ns.RoguelikeRules.isValidCareer(state.career, false);
+    const warning = isRogue && !validRogue
+      ? `当前生涯未满足至少3战且推进至3岁夏的有效条件，主动放弃不会获得任何荣誉币或成就记录。\n\n仍要让${horseName}退役吗？`
+      : `确定让${horseName}退役吗？退役后会结束当前生涯并揭示隐藏能力。`;
+    if (!window.confirm(warning)) return;
     state.retiredSummary = ns.CareerRules.retire(state.career);
+    if (isRogue) settleRogueCareer(false);
     state.activeView = "action";
-    state.activeActionSection = "history";
+    state.activeActionSection = isRogue ? "race" : "history";
     refresh();
-    setWorkspaceView("action", { section: "history", focus: true, scroll: true });
+    if (isRogue) {
+      const settlementPanel = document.getElementById("rogueSettlementPanel");
+      if (settlementPanel) {
+        settlementPanel.setAttribute("tabindex", "-1");
+        settlementPanel.focus({ preventScroll: true });
+        settlementPanel.scrollIntoView({ block: "start", behavior: "smooth" });
+      }
+    } else {
+      setWorkspaceView("action", { section: "history", focus: true, scroll: true });
+    }
     saveGame();
   }
 
@@ -1424,6 +2182,8 @@
     const homeContinueBtn = document.getElementById("homeContinueBtn");
     const homeStartBtn = document.getElementById("homeStartBtn");
     const homeLegendBtn = document.getElementById("homeLegendBtn");
+    const homeRogueBtn = document.getElementById("homeRogueBtn");
+    const homeRogueContinueBtn = document.getElementById("homeRogueContinueBtn");
     const homeHelpBtn = document.getElementById("homeHelpBtn");
     const homeChangelogBtn = document.getElementById("homeChangelogBtn");
     const copyFeedbackGroupBtn = document.getElementById("copyFeedbackGroupBtn");
@@ -1474,16 +2234,13 @@
     }
     window.addEventListener("scroll", scheduleActionSectionSync, { passive: true });
     if (primary) primary.addEventListener("scroll", scheduleActionSectionSync, { passive: true });
-    if (homeContinueBtn) homeContinueBtn.addEventListener("click", showCareer);
-    if (homeStartBtn) homeStartBtn.addEventListener("click", () => openSetup("home"));
+    if (homeContinueBtn) homeContinueBtn.addEventListener("click", showStandardCareer);
+    if (homeStartBtn) homeStartBtn.addEventListener("click", () => openStandardSetup(false));
     if (homeLegendBtn) {
-      homeLegendBtn.addEventListener("click", () => {
-        openSetup("home");
-        const gameModeSelect = document.getElementById("gameModeSelect");
-        const gameModeToggleBtn = document.getElementById("gameModeToggleBtn");
-        if (gameModeSelect && gameModeSelect.value !== "legend" && gameModeToggleBtn) gameModeToggleBtn.click();
-      });
+      homeLegendBtn.addEventListener("click", () => openStandardSetup(true));
     }
+    if (homeRogueBtn) homeRogueBtn.addEventListener("click", openRogue);
+    if (homeRogueContinueBtn) homeRogueContinueBtn.addEventListener("click", continueRogue);
     if (homeHelpBtn) homeHelpBtn.addEventListener("click", () => openHelp(homeHelpBtn));
     if (homeChangelogBtn) {
       homeChangelogBtn.addEventListener("click", () => {
@@ -1495,7 +2252,14 @@
       copyFeedbackGroupBtn.addEventListener("click", () => copyFeedbackGroupNumber(copyFeedbackGroupBtn));
     }
     if (setupCloseBtn) setupCloseBtn.addEventListener("click", closeSetup);
-    if (newCareerBtn) newCareerBtn.addEventListener("click", () => openSetup("career"));
+    if (newCareerBtn) newCareerBtn.addEventListener("click", () => {
+      if (state.career && state.career.gameMode === "roguelike") {
+        if (state.career.retired) nextRogueRun();
+        else window.alert("肉鸽生涯必须先退役或强制退役结算，不能直接覆盖当前赛马。");
+        return;
+      }
+      openSetup("career");
+    });
     if (workspaceHelpBtn) workspaceHelpBtn.addEventListener("click", () => openHelp(workspaceHelpBtn));
     if (workspaceChangelogBtn) {
       workspaceChangelogBtn.addEventListener("click", () => {
@@ -1743,6 +2507,7 @@
     }
     bindHistoricalDataLoadNotice();
     loadSavedGame();
+    loadRogueGame();
     loadHorseNameLanguage();
     loadRaceNameMode();
     const root = document.getElementById("app");

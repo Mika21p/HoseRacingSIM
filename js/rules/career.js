@@ -8,7 +8,9 @@
       : "japan";
     horse.homeRegionId = horse.homeRegionId || regionId;
     horse.currentRegionId = horse.currentRegionId || horse.homeRegionId;
-    horse.gameMode = horse.gameMode === "legend" ? "legend" : "normal";
+    horse.gameMode = horse.gameMode === "legend"
+      ? "legend"
+      : (horse.gameMode === "roguelike" ? "roguelike" : "normal");
     const career = {
       horse,
       gameMode: horse.gameMode,

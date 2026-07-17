@@ -537,22 +537,50 @@
     return "超长距离";
   }
 
+  function rollProfileStrength(profile, effects) {
+    const bounds = profile === "selected"
+      ? { min: 74, max: 94 }
+      : (profile === "champion" ? { min: 81, max: 100 } : { min: 62, max: 90 });
+    for (let attempt = 0; attempt < 1000; attempt += 1) {
+      const raw = profile === "normal"
+        ? R.rollMulti(2, 15) + 60
+        : Math.round((R.rollRange(bounds.min, bounds.max) + R.rollRange(bounds.min, bounds.max)) / 2);
+      const adjusted = applyStrengthType(raw, effects.strengthType);
+      if (adjusted >= bounds.min && adjusted <= bounds.max) return adjusted;
+    }
+    return Math.round((bounds.min + bounds.max) / 2);
+  }
+
   function generateHorse(options) {
     const opts = options || {};
-    const gameMode = opts.gameMode === "legend" ? "legend" : "normal";
+    const gameMode = opts.gameMode === "legend"
+      ? "legend"
+      : (opts.gameMode === "roguelike" ? "roguelike" : "normal");
+    const strengthProfile = gameMode === "roguelike"
+      ? (["normal", "selected", "champion"].includes(opts.strengthProfile) ? opts.strengthProfile : "normal")
+      : "";
     const sire = getSireBloodline(opts.sireId || "random");
     const dam = getDamBloodline(opts.damId || "random");
     const effects = mergeBloodlineEffects(sire, dam);
-    const rawStrength = gameMode === "legend" ? R.roll(20) + 80 : R.rollMulti(2, 20) + 60;
-    const strength = gameMode === "legend"
-      ? rawStrength
-      : R.clamp(applyStrengthType(rawStrength, effects.strengthType), 62, 100);
+    const rawStrength = gameMode === "roguelike"
+      ? null
+      : (gameMode === "legend" ? R.roll(20) + 80 : R.rollMulti(2, 20) + 60);
+    const strength = gameMode === "roguelike"
+      ? rollProfileStrength(strengthProfile, effects)
+      : (gameMode === "legend"
+        ? rawStrength
+        : R.clamp(applyStrengthType(rawStrength, effects.strengthType), 62, 100));
     const coat = pickCoat();
     const gender = opts.gender || (R.roll(2) === 1 ? "牡马" : "牝马");
     const weightMod = R.rollRange(effects.weight[0], effects.weight[1]);
     const baseWeight = gender === "牡马" ? R.rollMulti(3, 50) + 400 : R.rollMulti(3, 45) + 395;
     const weight = R.clamp(baseWeight + weightMod, 350, 620);
-    const temperamentLabel = pickTemperamentLabel(effects.temperament);
+    let temperamentLabel = pickTemperamentLabel(effects.temperament);
+    if (strengthProfile === "champion") {
+      for (let attempt = 0; temperamentLabel === "极端暴躁" && attempt < 100; attempt += 1) {
+        temperamentLabel = pickTemperamentLabel(effects.temperament);
+      }
+    }
     const temperament = temperamentValue(temperamentLabel);
     const surfacePref = pickSurface(effects);
     const surfaceGrades = generateSurfaceGrades(surfacePref, effects);
@@ -593,10 +621,11 @@
       sireName: sire.name,
       damName: dam.name,
       gameMode,
+      strengthProfile,
       strength,
-      strengthLabel: gameMode === "legend"
-        ? "传奇模式 1d20+80(81-100)"
-        : "2d20+60+血统分布修正(62-100)",
+      strengthLabel: gameMode === "roguelike"
+        ? (strengthProfile === "selected" ? "精选马驹(74-94)" : (strengthProfile === "champion" ? "拍买马王(81-100)" : "肉鸽普通候选 2d15+60(62-90)"))
+        : (gameMode === "legend" ? "传奇模式 1d20+80(81-100)" : "2d20+60+血统分布修正(62-100)"),
       coat: coat.name,
       coatEn: coat.en,
       gender,
@@ -733,6 +762,7 @@
     GRADES,
     COATS,
     generateHorse,
+    rollProfileStrength,
     applyDebugOverrides,
     calcDistancePenalty,
     calcRaceAbility,

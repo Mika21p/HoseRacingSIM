@@ -2122,6 +2122,1362 @@ th {
   }
 }
 
+/* Roguelike challenge mode */
+.home-rogue-feature {
+  position: relative;
+  display: grid;
+  min-height: 390px;
+  overflow: hidden;
+  border: 1px solid #52643f;
+  border-radius: 16px;
+  background:
+    radial-gradient(circle at 88% 18%, rgba(179, 208, 112, 0.17), transparent 34%),
+    linear-gradient(135deg, #1b241a, #171c27 62%);
+  box-shadow: 0 18px 52px rgba(0, 0, 0, 0.28);
+  padding: 28px;
+}
+
+.home-rogue-feature h2,
+.home-rogue-feature p {
+  max-width: none;
+}
+
+.home-rogue-copy {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+}
+
+.home-rogue-feature h2 {
+  margin: 10px 0;
+  color: #eef9d5;
+  font-size: clamp(28px, 2.15vw, 34px);
+  line-height: 1.22;
+}
+
+.home-rogue-copy > p:not(.home-save-note) {
+  margin: 0;
+  color: #bdc9b3;
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+.home-rogue-kicker,
+.home-rogue-actions,
+.rogue-page-heading,
+.rogue-heading-actions,
+.rogue-final-actions,
+.rogue-adaptation-actions,
+.rogue-settlement-heading,
+.rogue-settlement-challenge,
+.rogue-vet-action {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.home-rogue-kicker span {
+  border-radius: 999px;
+  background: #b7d56e;
+  color: #17200f;
+  padding: 3px 8px;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.home-rogue-kicker .eyebrow {
+  margin: 0;
+}
+
+.home-rogue-actions {
+  display: grid;
+  grid-template-columns: 1fr;
+  align-items: stretch;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 18px;
+}
+
+.home-rogue-actions button {
+  width: 100%;
+  min-height: 44px;
+}
+
+.home-rogue-action,
+.rogue-select-candidate {
+  background: #a7c861;
+  color: #14200c;
+}
+
+.rogue-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 75;
+  overflow-y: auto;
+  background: #10131b;
+  padding: 48px max(16px, calc((100vw - 1180px) / 2)) 32px;
+}
+
+.rogue-overlay[hidden] {
+  display: none;
+}
+
+.rogue-panel {
+  width: 100%;
+  min-height: calc(100dvh - 112px);
+}
+
+.rogue-page-heading {
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 20px;
+}
+
+.rogue-page-heading h1,
+.rogue-page-heading p,
+.rogue-section h2,
+.rogue-section p {
+  margin-top: 0;
+}
+
+.rogue-balance {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 12px;
+  border: 1px solid #53643f;
+  border-radius: 12px;
+  background: #1b241a;
+  padding: 12px 18px;
+}
+
+.rogue-balance strong {
+  color: #cce994;
+  font-size: 30px;
+}
+
+.rogue-store-shell {
+  display: grid;
+  gap: 14px;
+}
+
+.rogue-store-tabs,
+.rogue-product-details,
+.rogue-mobile-dock-balance,
+.rogue-candidate-tabs,
+.rogue-candidate-dock {
+  display: none;
+}
+
+.rogue-store-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  border: 1px solid #415137;
+  border-radius: 14px;
+  background:
+    radial-gradient(circle at 86% 20%, rgba(179, 208, 112, 0.14), transparent 34%),
+    linear-gradient(135deg, #1b241a, #171c27 62%);
+  padding: 14px 18px;
+}
+
+.rogue-store-header h1 {
+  margin: 4px 0 6px;
+}
+
+.rogue-store-header p {
+  margin: 0;
+}
+
+.rogue-store-header > div:first-child > p:last-child {
+  color: #aeb9ca;
+  font-size: 13px;
+}
+
+.rogue-store-header-actions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: stretch;
+  gap: 10px;
+}
+
+.rogue-store-header-actions > button {
+  min-height: 44px;
+}
+
+.rogue-store-steps {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rogue-store-steps li {
+  display: flex;
+  min-width: 0;
+  align-items: center;
+  gap: 9px;
+  border: 1px solid #30394e;
+  border-radius: 10px;
+  background: #151a24;
+  padding: 8px 11px;
+  color: #91a0b8;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.rogue-store-steps b {
+  display: grid;
+  width: 24px;
+  height: 24px;
+  flex: 0 0 auto;
+  place-items: center;
+  border-radius: 50%;
+  background: #252d3d;
+}
+
+.rogue-store-steps .is-active {
+  border-color: #53643f;
+  background: #1b241a;
+  color: #dff3b3;
+}
+
+.rogue-store-steps .is-active b {
+  background: #a7c861;
+  color: #14200c;
+}
+
+.rogue-store-section {
+  border: 1px solid #30394e;
+  border-radius: 14px;
+  background: rgba(19, 24, 34, 0.72);
+  padding: 16px;
+}
+
+.rogue-store-section.is-primary {
+  border-color: #46563a;
+  background: rgba(25, 33, 25, 0.7);
+}
+
+.rogue-store-section .section-title-row {
+  margin-bottom: 12px;
+}
+
+.rogue-store-section h2 {
+  margin: 3px 0 0;
+  font-size: 21px;
+}
+
+.rogue-section {
+  margin-top: 20px;
+  border-top: 1px solid #30394e;
+  padding-top: 20px;
+}
+
+.rogue-shop-grid,
+.rogue-candidate-grid,
+.rogue-challenge-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.rogue-shop-card,
+.rogue-candidate-card,
+.rogue-challenge-option,
+.rogue-start-card,
+.rogue-selected-summary,
+.rogue-final-grid > div {
+  border: 1px solid #30394e;
+  border-radius: 12px;
+  background: #171c27;
+  padding: 16px;
+}
+
+.rogue-shop-card {
+  display: grid;
+  min-height: 118px;
+  grid-template-columns: minmax(0, 1fr) 124px;
+  align-items: end;
+  gap: 6px;
+  padding: 12px;
+}
+
+.rogue-consumable-card .rogue-product-heading {
+  grid-column: 1 / -1;
+}
+
+.rogue-shop-card > div:not(.rogue-product-heading) {
+  align-self: center;
+}
+
+.rogue-shop-card.is-owned {
+  border-color: #53643f;
+  background: #1b241a;
+}
+
+.rogue-consumable-card {
+  border-color: #3f4d37;
+  background: linear-gradient(145deg, #1b241a, #171c27 72%);
+}
+
+.rogue-product-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.rogue-product-heading > strong {
+  color: #cce994;
+  font-size: 12px;
+}
+
+.rogue-product-details summary {
+  cursor: pointer;
+  color: #cce994;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.rogue-stock-type {
+  background: #34452b;
+  color: #dff3b3;
+}
+
+.rogue-shop-card p {
+  color: #aeb9ca;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.rogue-shop-card > button {
+  grid-column: 2;
+  width: 100%;
+  min-height: 42px;
+  padding: 8px;
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.rogue-start-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  border-color: #53643f;
+  background: linear-gradient(135deg, #1b241a, #171c27);
+}
+
+.rogue-start-card .eyebrow {
+  margin: 0;
+}
+
+.rogue-start-card > button {
+  min-width: 150px;
+  min-height: 46px;
+}
+
+.rogue-shop-notice {
+  min-height: 18px;
+  margin: -4px 2px;
+  color: #cce994;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.rogue-start-card h2,
+.rogue-start-card p,
+.rogue-shop-card h3,
+.rogue-shop-card p,
+.rogue-challenge-option h3 {
+  margin: 4px 0;
+}
+
+.rogue-coin-pill {
+  border: 1px solid #53643f;
+  border-radius: 999px;
+  background: #1b241a;
+  color: #cce994;
+  padding: 8px 12px;
+  font-weight: 800;
+}
+
+.rogue-inventory-bar {
+  display: grid;
+  grid-template-columns: repeat(6, minmax(0, 1fr));
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.rogue-inventory-bar > span {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 3px 7px;
+  border: 1px solid #36412f;
+  border-radius: 9px;
+  background: #171f18;
+  padding: 8px 9px;
+}
+
+.rogue-inventory-bar small {
+  overflow: hidden;
+  color: #aeb9ca;
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rogue-inventory-bar b {
+  color: #cce994;
+  font-size: 13px;
+}
+
+.rogue-inventory-bar em {
+  grid-column: 1 / -1;
+  color: #d6a963;
+  font-style: normal;
+  font-size: 9px;
+  font-weight: 900;
+}
+
+.rogue-inventory-bar .is-used {
+  border-color: #554632;
+  background: #211d18;
+}
+
+.rogue-inventory-disclosure > summary {
+  display: none;
+}
+
+.rogue-inventory-disclosure > .rogue-inventory-bar {
+  margin-bottom: 14px;
+}
+
+.rogue-candidate-note {
+  margin: -4px 0 14px;
+  color: #aeb9ca;
+  font-size: 12px;
+}
+
+.rogue-shop-warning {
+  display: grid;
+  gap: 3px;
+  margin-bottom: 16px;
+  border-left: 3px solid #d6a963;
+  background: #241f18;
+  padding: 12px 14px;
+}
+
+.rogue-shop-warning span,
+.rogue-candidate-heading em,
+.rogue-vet-action span {
+  color: #aeb9ca;
+  font-style: normal;
+  font-size: 12px;
+}
+
+.rogue-service-disclosure {
+  margin-bottom: 16px;
+  border: 1px solid #30394e;
+  border-radius: 10px;
+  background: #151b26;
+  padding: 11px 14px;
+}
+
+.rogue-service-disclosure summary {
+  cursor: pointer;
+  color: #cce994;
+  font-weight: 800;
+}
+
+.rogue-service-disclosure div {
+  display: grid;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.rogue-service-disclosure p {
+  margin: 0;
+  color: #aeb9ca;
+  font-size: 12px;
+  line-height: 1.65;
+}
+
+.rogue-candidate-card {
+  min-width: 0;
+}
+
+.rogue-candidate-heading {
+  display: grid;
+  gap: 3px;
+  margin-bottom: 12px;
+}
+
+.rogue-candidate-heading > span {
+  color: #a7c861;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.rogue-candidate-facts,
+.rogue-progress-metrics,
+.rogue-settlement-totals,
+.rogue-final-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.rogue-candidate-facts span,
+.rogue-progress-metrics span,
+.rogue-settlement-totals span,
+.rogue-settlement-totals strong {
+  display: grid;
+  gap: 3px;
+  border-radius: 8px;
+  background: #111620;
+  padding: 9px;
+}
+
+.rogue-candidate-facts small,
+.rogue-progress-metrics small,
+.rogue-final-grid span {
+  color: #91a0b8;
+  font-size: 11px;
+}
+
+.rogue-bloodline {
+  margin-top: 9px;
+  border: 1px solid #30394e;
+  border-radius: 8px;
+  padding: 9px 10px;
+}
+
+.rogue-bloodline-row {
+  display: grid;
+}
+
+.rogue-bloodline summary {
+  cursor: pointer;
+}
+
+.rogue-bloodline summary span {
+  margin-right: 7px;
+  color: #91a0b8;
+}
+
+.rogue-bloodline p {
+  margin: 8px 0 0;
+  color: #aeb9ca;
+  font-size: 12px;
+}
+
+.rogue-comment-group {
+  margin-top: 14px;
+}
+
+.rogue-comment-group.is-review {
+  border-top: 1px dashed #53643f;
+  padding-top: 12px;
+}
+
+.rogue-comment-group-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.rogue-comment-group-heading .eyebrow {
+  margin: 0;
+}
+
+.rogue-comment-group-heading button {
+  display: none;
+}
+
+.rogue-comment {
+  margin-top: 7px;
+  border-left: 2px solid #53643f;
+  background: #111620;
+  padding: 8px 10px;
+}
+
+.rogue-comment span {
+  color: #cce994;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.rogue-comment p {
+  margin: 3px 0 0;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.rogue-service-groups {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.rogue-item-use {
+  display: grid;
+  grid-template-columns: 62px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 7px;
+  border-radius: 9px;
+  background: #111620;
+  padding: 8px;
+}
+
+.rogue-item-use > span {
+  color: #91a0b8;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.rogue-item-use select {
+  width: 100%;
+  min-width: 0;
+  min-height: 38px;
+}
+
+.rogue-item-use button {
+  min-height: 38px;
+  padding: 8px 11px;
+}
+
+.rogue-select-candidate {
+  width: 100%;
+  margin-top: 14px;
+}
+
+.rogue-selected-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+  margin-bottom: 16px;
+}
+
+.rogue-name-field {
+  display: grid;
+  gap: 7px;
+  max-width: 520px;
+  margin-top: 16px;
+}
+
+.rogue-adaptation-actions,
+.rogue-final-actions {
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+
+.rogue-resolved {
+  border-left: 3px solid #a7c861;
+  background: #1b241a;
+  padding: 12px 14px;
+}
+
+.rogue-challenge-option ol,
+.rogue-progress-stages,
+.rogue-achievement-payouts {
+  display: grid;
+  gap: 7px;
+  margin: 12px 0;
+  padding: 0;
+  list-style: none;
+}
+
+.rogue-challenge-option li,
+.rogue-progress-stages li,
+.rogue-achievement-payouts li {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 8px;
+  align-items: start;
+  border-radius: 7px;
+  background: #111620;
+  padding: 8px;
+  font-size: 12px;
+}
+
+.rogue-challenge-option li b {
+  color: #d6a963;
+}
+
+.rogue-progress-stages li.is-complete {
+  background: #1b2a1b;
+}
+
+.rogue-progress-stages li.is-failed {
+  background: #2a1919;
+  color: #d9a4a4;
+}
+
+.rogue-progress-stages em {
+  color: #91a0b8;
+  font-style: normal;
+}
+
+.rogue-progress-metrics {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+
+.rogue-badge {
+  background: #40522c;
+  color: #dff5ad;
+}
+
+.rogue-vet-action {
+  justify-content: space-between;
+  margin-top: 14px;
+  border: 1px solid #53643f;
+  border-radius: 10px;
+  background: #1b241a;
+  padding: 12px;
+}
+
+.rogue-vet-action div {
+  display: grid;
+  gap: 3px;
+}
+
+.rogue-settlement-heading,
+.rogue-settlement-challenge {
+  justify-content: space-between;
+}
+
+.rogue-total-income {
+  color: #cce994;
+  font-size: 30px;
+}
+
+.rogue-settlement-challenge {
+  margin: 14px 0;
+  border: 1px solid #53643f;
+  border-radius: 10px;
+  background: #1b241a;
+  padding: 13px;
+}
+
+.rogue-settlement-challenge em {
+  color: #cce994;
+  font-style: normal;
+  font-weight: 900;
+}
+
+.rogue-suppressed,
+.rogue-invalid-note {
+  display: grid;
+  gap: 5px;
+  border-radius: 8px;
+  background: #241f18;
+  padding: 12px;
+  color: #d6c7ae;
+}
+
+.trainer-comment-group-title {
+  margin: 12px 0 6px;
+}
+
+@media (max-width: 900px) {
+  .rogue-shop-grid,
+  .rogue-candidate-grid,
+  .rogue-challenge-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .rogue-candidate-grid {
+    max-width: 720px;
+    margin-inline: auto;
+  }
+
+  .rogue-progress-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .rogue-inventory-bar {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 760px) {
+  .home-rogue-feature {
+    padding: 18px;
+  }
+
+  .rogue-overlay {
+    top: 48px;
+    padding: 10px;
+  }
+
+  .rogue-panel {
+    min-height: calc(100dvh - 68px);
+    padding: 14px;
+  }
+
+  .rogue-page-heading,
+  .rogue-store-header,
+  .rogue-store-header-actions,
+  .rogue-start-card,
+  .rogue-settlement-heading,
+  .rogue-settlement-challenge,
+  .rogue-vet-action {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .rogue-store-header-actions,
+  .rogue-store-header-actions > button,
+  .rogue-start-card > button {
+    width: 100%;
+  }
+
+  .rogue-store-header {
+    padding: 15px;
+  }
+
+  .rogue-store-section {
+    padding: 12px;
+  }
+
+  .rogue-store-section .section-title-row {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  .rogue-shop-card {
+    display: flex;
+    min-height: 0;
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .rogue-shop-card > button,
+  .rogue-item-use button,
+  .rogue-select-candidate,
+  .rogue-adaptation-actions button {
+    min-height: 44px;
+  }
+
+  .rogue-inventory-bar {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .rogue-item-use {
+    grid-template-columns: 1fr;
+  }
+
+  .rogue-item-use select,
+  .rogue-item-use button {
+    width: 100%;
+  }
+
+  .rogue-heading-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .rogue-candidate-facts,
+  .rogue-final-grid,
+  .rogue-settlement-totals {
+    grid-template-columns: 1fr;
+  }
+
+  .rogue-progress-metrics {
+    grid-template-columns: 1fr;
+  }
+
+  .rogue-challenge-option li,
+  .rogue-progress-stages li {
+    grid-template-columns: auto 1fr;
+  }
+
+  .rogue-progress-stages em {
+    grid-column: 2;
+  }
+
+  .rogue-store-shell,
+  .rogue-candidate-grid {
+    padding-bottom: calc(74px + env(safe-area-inset-bottom));
+  }
+
+  .rogue-store-shell {
+    gap: 9px;
+  }
+
+  .rogue-store-header {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 11px;
+  }
+
+  .rogue-store-header .eyebrow,
+  .rogue-store-header > div:first-child > p:last-child,
+  .rogue-start-card > div {
+    display: none;
+  }
+
+  .rogue-store-header h1 {
+    margin: 0;
+    font-size: 22px;
+  }
+
+  .rogue-store-header-actions {
+    display: grid;
+    width: auto;
+    grid-template-columns: auto auto;
+    align-items: stretch;
+    gap: 6px;
+  }
+
+  .rogue-store-header-actions > button {
+    width: auto;
+    min-height: 44px;
+    padding: 7px 10px;
+    font-size: 12px;
+  }
+
+  .rogue-balance {
+    display: grid;
+    min-width: 58px;
+    place-content: center;
+    gap: 0;
+    padding: 4px 8px;
+    text-align: center;
+  }
+
+  .rogue-balance span {
+    font-size: 9px;
+  }
+
+  .rogue-balance strong {
+    font-size: 18px;
+    line-height: 1;
+  }
+
+  .rogue-store-steps {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 4px;
+  }
+
+  .rogue-store-steps li {
+    justify-content: center;
+    gap: 5px;
+    padding: 6px 4px;
+    font-size: 10px;
+  }
+
+  .rogue-store-steps b {
+    width: 19px;
+    height: 19px;
+    font-size: 10px;
+  }
+
+  .rogue-store-tabs,
+  .rogue-candidate-tabs {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 5px;
+    border-radius: 10px;
+    background: #111620;
+    padding: 4px;
+  }
+
+  .rogue-store-tabs button,
+  .rogue-candidate-tabs button {
+    min-height: 44px;
+    border-color: transparent;
+    background: transparent;
+    color: #91a0b8;
+    padding: 7px 9px;
+  }
+
+  .rogue-store-tabs button[aria-selected="true"],
+  .rogue-candidate-tabs button[aria-selected="true"] {
+    border-color: #53643f;
+    background: #25311f;
+    color: #dff3b3;
+  }
+
+  .rogue-store-section:not(.is-mobile-active) {
+    display: none;
+  }
+
+  .rogue-store-section {
+    padding: 9px;
+  }
+
+  .rogue-store-section .section-title-row {
+    margin-bottom: 7px;
+  }
+
+  .rogue-store-section .section-title-row .eyebrow,
+  .rogue-store-section .section-title-row .muted {
+    display: none;
+  }
+
+  .rogue-store-section h2 {
+    margin: 0;
+    font-size: 17px;
+  }
+
+  .rogue-shop-grid {
+    gap: 7px;
+  }
+
+  .rogue-shop-card {
+    display: grid;
+    min-height: 0;
+    grid-template-columns: minmax(0, 1fr) 104px;
+    align-items: center;
+    gap: 4px 8px;
+    padding: 9px 10px;
+  }
+
+  .rogue-shop-card .rogue-product-heading {
+    grid-column: 1 / -1;
+  }
+
+  .rogue-shop-card h3 {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.3;
+  }
+
+  .rogue-product-description {
+    display: none;
+  }
+
+  .rogue-product-details {
+    display: block;
+    margin-top: 4px;
+  }
+
+  .rogue-product-details p {
+    margin: 5px 0 0;
+    font-size: 11px;
+  }
+
+  .rogue-shop-card > button {
+    grid-column: 2;
+    min-height: 44px;
+    padding: 6px;
+    font-size: 11px;
+  }
+
+  .rogue-start-card,
+  .rogue-candidate-dock {
+    position: fixed;
+    right: 10px;
+    bottom: calc(8px + env(safe-area-inset-bottom));
+    left: 10px;
+    z-index: 90;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    align-items: center;
+    gap: 10px;
+    border-color: #657c45;
+    border-radius: 12px;
+    background: rgba(23, 31, 24, 0.97);
+    box-shadow: 0 -10px 28px rgba(0, 0, 0, 0.4);
+    padding: 8px 10px;
+    backdrop-filter: blur(12px);
+  }
+
+  .rogue-mobile-dock-balance,
+  .rogue-candidate-dock > span {
+    display: inline-flex;
+    align-items: baseline;
+    gap: 4px;
+    color: #aeb9ca;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+
+  .rogue-mobile-dock-balance b,
+  .rogue-candidate-dock > span b {
+    color: #cce994;
+    font-size: 18px;
+  }
+
+  .rogue-start-card > button,
+  .rogue-candidate-dock > button {
+    width: 100%;
+    min-height: 44px;
+  }
+
+  .rogue-shop-notice {
+    margin: 0 2px;
+  }
+
+  .rogue-page-heading {
+    margin-bottom: 9px;
+    gap: 8px;
+  }
+
+  .rogue-page-heading .eyebrow {
+    margin-bottom: 3px;
+  }
+
+  .rogue-page-heading h1 {
+    margin-bottom: 0;
+    font-size: 21px;
+    line-height: 1.25;
+  }
+
+  .rogue-heading-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: stretch;
+    gap: 6px;
+  }
+
+  .rogue-heading-actions .rogue-coin-pill {
+    display: grid;
+    min-height: 44px;
+    place-items: center;
+    padding: 7px 10px;
+    font-size: 11px;
+  }
+
+  .rogue-heading-actions button {
+    min-height: 44px;
+    padding: 7px 10px;
+  }
+
+  .rogue-inventory-disclosure {
+    margin-bottom: 8px;
+    border: 1px solid #36412f;
+    border-radius: 9px;
+    background: #171f18;
+    padding: 0 9px;
+  }
+
+  .rogue-inventory-disclosure > summary {
+    display: flex;
+    min-height: 42px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    cursor: pointer;
+    color: #aeb9ca;
+    font-size: 11px;
+  }
+
+  .rogue-inventory-disclosure > summary strong {
+    color: #cce994;
+  }
+
+  .rogue-inventory-disclosure > .rogue-inventory-bar {
+    margin: 0 0 9px;
+  }
+
+  .rogue-candidate-note {
+    margin: 0 1px 8px;
+    font-size: 10px;
+    line-height: 1.45;
+  }
+
+  .rogue-candidate-tabs {
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    margin-bottom: 8px;
+  }
+
+  .rogue-candidate-tabs button {
+    display: grid;
+    gap: 1px;
+    min-width: 0;
+    padding-inline: 4px;
+    font-size: 10px;
+  }
+
+  .rogue-candidate-tabs button strong {
+    overflow: hidden;
+    font-size: 10px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .rogue-candidate-card:not(.is-mobile-active) {
+    display: none;
+  }
+
+  .rogue-candidate-card {
+    padding: 11px;
+  }
+
+  .rogue-candidate-heading {
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    align-items: baseline;
+    gap: 7px;
+    margin-bottom: 8px;
+  }
+
+  .rogue-candidate-heading strong {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .rogue-candidate-heading em {
+    white-space: nowrap;
+  }
+
+  .rogue-candidate-facts {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 5px;
+  }
+
+  .rogue-candidate-facts span {
+    grid-template-columns: auto 1fr;
+    align-items: baseline;
+    gap: 4px;
+    padding: 6px;
+  }
+
+  .rogue-candidate-facts b {
+    overflow: hidden;
+    font-size: 12px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .rogue-bloodline-row {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 5px;
+  }
+
+  .rogue-bloodline {
+    min-width: 0;
+    margin-top: 6px;
+    padding: 7px;
+  }
+
+  .rogue-bloodline summary {
+    display: grid;
+    gap: 2px;
+  }
+
+  .rogue-bloodline summary strong {
+    overflow: hidden;
+    font-size: 11px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .rogue-bloodline p {
+    margin-top: 5px;
+    font-size: 10px;
+    line-height: 1.45;
+  }
+
+  .rogue-comment-group {
+    margin-top: 9px;
+  }
+
+  .rogue-comment-group.is-review {
+    padding-top: 8px;
+  }
+
+  .rogue-comment-group-heading button {
+    display: block;
+    min-height: 36px;
+    padding: 5px 8px;
+    font-size: 10px;
+  }
+
+  .rogue-comment {
+    display: grid;
+    grid-template-columns: 58px minmax(0, 1fr);
+    align-items: baseline;
+    gap: 7px;
+    margin-top: 4px;
+    padding: 6px 8px;
+  }
+
+  .rogue-comment p {
+    overflow: hidden;
+    margin: 0;
+    font-size: 11px;
+    line-height: 1.4;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .rogue-comment-group.is-expanded .rogue-comment {
+    align-items: start;
+  }
+
+  .rogue-comment-group.is-expanded .rogue-comment p {
+    overflow: visible;
+    white-space: normal;
+  }
+
+  .rogue-service-groups {
+    gap: 6px;
+    margin-top: 9px;
+  }
+
+  .rogue-item-use {
+    grid-template-columns: 50px minmax(0, 1fr) 58px;
+    gap: 5px;
+    padding: 6px;
+  }
+
+  .rogue-item-use select,
+  .rogue-item-use button {
+    width: 100%;
+    min-height: 44px;
+    font-size: 11px;
+  }
+
+  .rogue-item-use button {
+    padding-inline: 5px;
+  }
+
+  .rogue-card-select {
+    display: none;
+  }
+}
+
+@media (max-width: 360px) {
+  .rogue-store-header {
+    grid-template-columns: 1fr;
+  }
+
+  .rogue-store-header-actions {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .rogue-store-header h1 {
+    font-size: 20px;
+  }
+
+  .rogue-shop-card {
+    grid-template-columns: minmax(0, 1fr) 94px;
+  }
+
+  .rogue-item-use {
+    grid-template-columns: 46px minmax(0, 1fr) 54px;
+  }
+}
+
 /* Home screen and global release metadata */
 .app-meta-widget {
   position: fixed;
@@ -2175,7 +3531,7 @@ th {
 
 .home-mode-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   align-items: stretch;
   gap: 18px;
 }
@@ -2192,7 +3548,7 @@ th {
     radial-gradient(circle at 78% 18%, rgba(230, 95, 47, 0.18), transparent 32%),
     linear-gradient(145deg, #1b2130, #121722 68%);
   box-shadow: 0 24px 70px rgba(0, 0, 0, 0.34);
-  padding: clamp(30px, 3vw, 42px);
+  padding: 28px;
 }
 
 .home-hero::after {
@@ -2213,14 +3569,14 @@ th {
   display: flex;
   width: 100%;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
 }
 
 .home-hero h1 {
   max-width: 620px;
   margin: 8px 0 16px;
   color: #fff4d6;
-  font-size: clamp(38px, 3.15vw, 50px);
+  font-size: clamp(30px, 2.15vw, 38px);
   line-height: 1.14;
   letter-spacing: -0.04em;
 }
@@ -2229,8 +3585,8 @@ th {
   max-width: 680px;
   margin: 0;
   color: #aebad0;
-  font-size: 15px;
-  line-height: 1.8;
+  font-size: 13px;
+  line-height: 1.65;
 }
 
 .home-primary-actions,
@@ -2241,7 +3597,8 @@ th {
 }
 
 .home-primary-actions {
-  margin-top: 26px;
+  margin-top: auto;
+  padding-top: 20px;
 }
 
 .home-primary-actions button {
@@ -2272,12 +3629,12 @@ th {
   gap: 18px;
   overflow: hidden;
   border: 1px solid #8e5138;
-  border-radius: 14px;
+  border-radius: 16px;
   background:
     radial-gradient(circle at 87% 18%, rgba(255, 185, 112, 0.22), transparent 30%),
     linear-gradient(135deg, #321a16, #1d171c 58%, #161a24);
   box-shadow: 0 18px 52px rgba(0, 0, 0, 0.28);
-  padding: 28px 32px 24px;
+  padding: 28px;
 }
 
 .home-legend-feature::before {
@@ -2323,7 +3680,7 @@ th {
   max-width: 580px;
   margin: 10px 0 10px;
   color: #fff0cf;
-  font-size: clamp(28px, 2.35vw, 36px);
+  font-size: clamp(28px, 2.15vw, 34px);
   line-height: 1.22;
 }
 
@@ -2331,15 +3688,15 @@ th {
   max-width: 730px;
   margin: 0;
   color: #d5bfb7;
-  font-size: 14px;
-  line-height: 1.75;
+  font-size: 13px;
+  line-height: 1.65;
 }
 
 .home-legend-facts {
   display: flex;
   flex-wrap: wrap;
   gap: 7px;
-  margin-top: 16px;
+  margin-top: 12px;
 }
 
 .home-legend-facts span {
@@ -2354,8 +3711,8 @@ th {
 
 .home-legend-action {
   align-self: flex-start;
-  min-height: 43px;
-  margin-top: 18px;
+  min-height: 44px;
+  margin-top: auto;
   background: #d56a39;
   color: #fff7e9;
   padding: 10px 18px;
@@ -2369,12 +3726,12 @@ th {
 
 .home-legend-mark {
   display: flex;
-  min-height: 64px;
+  min-height: 50px;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   border-top: 1px solid rgba(255, 191, 131, 0.24);
   color: #fff0cf;
-  padding-top: 14px;
+  padding-top: 10px;
 }
 
 .home-legend-mark small {
@@ -2385,26 +3742,16 @@ th {
 }
 
 .home-legend-mark strong {
-  margin: -4px 0 -7px;
+  margin: -3px 0 -5px;
   color: #ffbf83;
   font-family: Georgia, "Times New Roman", serif;
-  font-size: 58px;
+  font-size: 42px;
   line-height: 1;
 }
 
 .home-legend-mark span {
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 900;
-}
-
-.home-legend-mark em {
-  margin-left: auto;
-  color: rgba(255, 240, 207, 0.34);
-  font-family: Georgia, "Times New Roman", serif;
-  font-size: 13px;
-  font-style: normal;
-  font-weight: 900;
-  letter-spacing: 0.32em;
 }
 
 .home-how-to {
@@ -2575,14 +3922,22 @@ th {
 }
 
 @media (max-width: 1080px) {
-  .home-mode-grid,
+  .home-mode-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .home-hero {
+    grid-column: 1 / -1;
+  }
+
   .home-how-to,
   .home-support-row {
     grid-template-columns: 1fr;
   }
 
   .home-hero,
-  .home-legend-feature {
+  .home-legend-feature,
+  .home-rogue-feature {
     min-height: 0;
   }
 
@@ -2632,10 +3987,12 @@ th {
   }
 
   .home-mode-grid {
+    grid-template-columns: 1fr;
     gap: 12px;
   }
 
   .home-hero {
+    grid-column: auto;
     min-height: 0;
     border-radius: 14px;
     padding: 22px 16px;
@@ -2667,7 +4024,15 @@ th {
     padding: 22px 16px 18px;
   }
 
+  .home-rogue-feature {
+    padding: 22px 16px 18px;
+  }
+
   .home-legend-feature h2 {
+    font-size: 26px;
+  }
+
+  .home-rogue-feature h2 {
     font-size: 26px;
   }
 
@@ -2692,17 +4057,11 @@ th {
 
   .home-legend-mark strong {
     margin: -3px 0 -5px;
-    font-size: 48px;
+    font-size: 42px;
   }
 
   .home-legend-mark span {
     font-size: 14px;
-  }
-
-  .home-legend-mark em {
-    margin-left: auto;
-    font-size: 10px;
-    letter-spacing: 0.2em;
   }
 
   .home-legend-action {
@@ -3096,6 +4455,73 @@ th {
   justify-self: start;
   padding: 3px 6px;
   font-size: 10px;
+}
+
+.workspace-aside .rogue-challenge-hint {
+  overflow: hidden;
+  padding: 0;
+}
+
+.rogue-challenge-hint-button {
+  display: grid;
+  width: 100%;
+  min-height: 72px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-rows: auto auto;
+  align-items: center;
+  gap: 3px 10px;
+  border: 0;
+  border-radius: 0;
+  background: linear-gradient(135deg, #1b241a, #171c27);
+  padding: 12px 14px;
+  text-align: left;
+}
+
+.rogue-challenge-hint-button > span {
+  display: grid;
+  min-width: 0;
+  grid-row: 1 / 3;
+  gap: 4px;
+}
+
+.rogue-challenge-hint-button small {
+  color: #91a0b8;
+  font-size: 10px;
+  font-weight: 900;
+}
+
+.rogue-challenge-hint-button strong {
+  overflow: hidden;
+  color: #fff4d6;
+  font-size: 14px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rogue-challenge-hint-button > b {
+  border-radius: 999px;
+  background: #40522c;
+  color: #dff5ad;
+  padding: 4px 7px;
+  font-size: 10px;
+  white-space: nowrap;
+}
+
+.rogue-challenge-hint-button > em {
+  justify-self: end;
+  color: #aeb9ca;
+  font-style: normal;
+  font-size: 9px;
+  font-weight: 800;
+}
+
+.rogue-challenge-page {
+  width: min(900px, 100%);
+  margin-inline: auto;
+}
+
+.rogue-veterinarian-panel .rogue-vet-action {
+  margin-top: 0;
 }
 
 .last-race-panel .post-race-comment-card {
@@ -3806,7 +5232,47 @@ body.has-career .changelog-widget > div {
     grid-template-columns: repeat(5, minmax(0, 1fr));
   }
 
+  .workspace-shell.is-rogue-career .workspace-nav {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+  }
+
   .workspace-nav-button {
     font-size: 10px;
+  }
+
+  .rogue-challenge-hint {
+    display: none !important;
+  }
+
+  #rogueChallengePanel,
+  #rogueVeterinarianPanel {
+    padding: 12px;
+  }
+
+  #rogueChallengePanel .rogue-progress-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px;
+  }
+
+  #rogueChallengePanel .rogue-progress-metrics span {
+    min-width: 0;
+    padding: 8px;
+  }
+
+  #rogueChallengePanel .rogue-progress-metrics b {
+    overflow-wrap: anywhere;
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 360px) {
+  .workspace-shell.is-rogue-career .workspace-nav-button {
+    gap: 1px;
+    padding-inline: 2px;
+    font-size: 9px;
+  }
+
+  .workspace-shell.is-rogue-career .workspace-nav-icon {
+    font-size: 11px;
   }
 }

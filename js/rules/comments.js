@@ -192,8 +192,8 @@
     return "实力强";
   }
 
-  function strengthComment(horse, trainer) {
-    const accuracy = chooseAccuracy(trainer, "strength", horse.gameMode);
+  function strengthComment(horse, trainer, forcedAccuracy) {
+    const accuracy = forcedAccuracy || chooseAccuracy(trainer, "strength", horse.gameMode);
     const current = tierIndexByStrength(horse.strength);
     const currentTier = STRENGTH_TIERS[current];
 
@@ -295,8 +295,8 @@
     return nonMatchingValue(actual, SURFACE_TYPES);
   }
 
-  function surfaceComment(horse, trainer) {
-    const accuracy = chooseAccuracy(trainer, "surface", horse.gameMode);
+  function surfaceComment(horse, trainer, forcedAccuracy) {
+    const accuracy = forcedAccuracy || chooseAccuracy(trainer, "surface", horse.gameMode);
     const actualType = horse.surfacePref || "草地";
     const typeText = surfaceTypeLabel(actualType);
     const first = trainer.focusSurfaces[0];
@@ -442,8 +442,8 @@
       ]);
   }
 
-  function distanceComment(horse, trainer) {
-    const accuracy = chooseAccuracy(trainer, "distance", horse.gameMode);
+  function distanceComment(horse, trainer, forcedAccuracy) {
+    const accuracy = forcedAccuracy || chooseAccuracy(trainer, "distance", horse.gameMode);
     const types = distanceSpanTypes(horse.distMin, horse.distMax);
 
     if (accuracy === "precise") {
@@ -549,8 +549,8 @@
     return { label: "长得慢", types: ["普迟", "晚熟"] };
   }
 
-  function growthComment(horse, trainer) {
-    const accuracy = chooseAccuracy(trainer, "growth", horse.gameMode);
+  function growthComment(horse, trainer, forcedAccuracy) {
+    const accuracy = forcedAccuracy || chooseAccuracy(trainer, "growth", horse.gameMode);
 
     if (accuracy === "precise") {
       const text = textVariant([
@@ -644,8 +644,8 @@
     return nonMatchingValue(label, TEMPERAMENT_TYPES);
   }
 
-  function temperamentComment(horse, trainer) {
-    const accuracy = chooseAccuracy(trainer, "temperament", horse.gameMode);
+  function temperamentComment(horse, trainer, forcedAccuracy) {
+    const accuracy = forcedAccuracy || chooseAccuracy(trainer, "temperament", horse.gameMode);
 
     if (accuracy === "precise") {
       const text = textVariant([
@@ -717,14 +717,15 @@
     );
   }
 
-  function generateDebutCommentDetails(horse, trainerId) {
+  function generateDebutCommentDetails(horse, trainerId, options) {
     const trainer = getTrainer(trainerId || horse.trainerId);
+    const forced = options && options.accuracyById ? options.accuracyById : {};
     return [
-      strengthComment(horse, trainer),
-      surfaceComment(horse, trainer),
-      distanceComment(horse, trainer),
-      growthComment(horse, trainer),
-      temperamentComment(horse, trainer)
+      strengthComment(horse, trainer, forced.strength),
+      surfaceComment(horse, trainer, forced.surface),
+      distanceComment(horse, trainer, forced.distance),
+      growthComment(horse, trainer, forced.growth),
+      temperamentComment(horse, trainer, forced.temperament)
     ];
   }
 

@@ -661,8 +661,8 @@
           <div class="home-hero">
             <div class="home-hero-copy">
               <p class="eyebrow">赛马生涯模拟</p>
-              <h1 id="homeTitle">培育你的赛马，规划一整个竞赛生涯</h1>
-              <p class="home-lead">选择血统、练马师与主战骑手，在成长、适性与赛程之间做出取舍，带领小马挑战各地重赏与史实强敌。</p>
+              <h1 id="homeTitle">培育赛马，规划竞赛生涯</h1>
+              <p class="home-lead">选择血统、练马师与骑手，规划赛程并挑战各地重赏。</p>
               <div class="home-primary-actions">
                 <button class="primary" id="homeContinueBtn" type="button" hidden>继续生涯</button>
                 <button class="secondary" id="homeStartBtn" type="button">开始生涯</button>
@@ -674,18 +674,33 @@
           <section class="home-legend-feature" aria-labelledby="homeLegendTitle">
             <div class="home-legend-copy">
               <div class="home-legend-kicker"><span>NEW!</span><p class="eyebrow">传奇模式</p></div>
-              <h2 id="homeLegendTitle">这一次，传奇会在终点线前等你</h2>
-              <p>你的赛马将以更高潜力出道，但每场比赛都要面对五匹符合场地、距离与赛区条件的史实名马。报名一经确认，阵容立即锁定——没有随机对手，也没有轻松的胜利。</p>
+              <h2 id="homeLegendTitle">迎战五匹史实强敌</h2>
+              <p>以更高潜力出道，报名后立即锁定符合条件的史实名马阵容。</p>
               <div class="home-legend-facts" aria-label="传奇模式特点">
-                <span>更高出道潜力</span><span>完整史实阵容</span><span>报名即锁定</span>
+                <span>史实阵容</span><span>报名锁定</span>
               </div>
-              <button class="home-legend-action" id="homeLegendBtn" type="button">以传奇模式开始</button>
+              <button class="home-legend-action" id="homeLegendBtn" type="button">开始传奇模式</button>
             </div>
             <div class="home-legend-mark" aria-hidden="true">
-              <small>每场迎战</small>
+              <small>每场</small>
               <strong>5</strong>
-              <span>匹史实强敌</span>
-              <em>LEGEND</em>
+              <span>匹强敌</span>
+            </div>
+          </section>
+
+          <section class="home-rogue-feature" aria-labelledby="homeRogueTitle">
+            <div class="home-rogue-copy">
+              <div class="home-rogue-kicker"><span>NEW!</span><p class="eyebrow">肉鸽挑战</p></div>
+              <h2 id="homeRogueTitle">从未知候选中押注传奇</h2>
+              <p>挑选随机小马并锁定挑战，用荣誉币扩展下一段生涯。</p>
+              <div class="home-legend-facts" aria-label="肉鸽模式特点">
+                <span>随机候选</span><span>荣誉币循环</span>
+              </div>
+              <div class="home-rogue-actions">
+                <button class="home-rogue-action" id="homeRogueBtn" type="button">进入肉鸽挑战</button>
+                <button class="secondary" id="homeRogueContinueBtn" type="button" hidden>继续肉鸽进度</button>
+              </div>
+              <p class="home-save-note" id="homeRogueStatus">荣誉币 0 · 仅佐藤悠太已解锁</p>
             </div>
           </section>
         </div>
@@ -930,6 +945,12 @@
       </section>
       </div>
 
+      <div class="rogue-overlay" id="rogueOverlay" hidden>
+        <section class="panel rogue-panel" aria-labelledby="roguePageTitle">
+          <div id="rogueContent"></div>
+        </section>
+      </div>
+
       <section class="workspace-shell" id="workspaceShell" hidden aria-label="生涯工作台">
         <header class="workspace-status" id="workspaceStatus"></header>
         <div class="workspace-layout">
@@ -946,6 +967,9 @@
             <button class="workspace-nav-button" type="button" data-workspace-view="horse">
               <span class="workspace-nav-icon" aria-hidden="true">◆</span><span>马匹</span>
             </button>
+            <button class="workspace-nav-button" id="workspaceChallengeNav" type="button" data-workspace-view="challenge" hidden>
+              <span class="workspace-nav-icon" aria-hidden="true">★</span><span>挑战</span>
+            </button>
             <button class="workspace-nav-button" type="button" data-workspace-view="more">
               <span class="workspace-nav-icon" aria-hidden="true">•••</span><span>更多</span>
             </button>
@@ -955,6 +979,7 @@
               <div class="workspace-view action-view" data-workspace-panel="action">
                 <div class="action-overview-grid">
                   <div class="action-main-column">
+                    <section class="panel rogue-settlement-panel" id="rogueSettlementPanel" hidden></section>
                     <section class="panel" id="racePanel" data-action-anchor="race"></section>
                     <section class="panel" id="historyPanel" data-action-anchor="history"></section>
                   </div>
@@ -962,13 +987,16 @@
                     <section class="panel summary-panel" id="horseSummaryPanel"></section>
                     <section class="panel last-race-panel" id="lastRacePanel" hidden></section>
                     <section class="panel compact-adaptation-panel" id="adaptationSummaryPanel"></section>
+                    <section class="panel rogue-challenge-hint" id="rogueChallengeHint" hidden></section>
                   </aside>
                 </div>
               </div>
               <div class="workspace-view horse-view" data-workspace-panel="horse" hidden>
                 <section class="panel" id="horsePanel"></section>
+                <section class="panel rogue-veterinarian-panel" id="rogueVeterinarianPanel" hidden></section>
                 <section class="panel feedback-panel" id="feedbackPanel" hidden></section>
               </div>
+              <section class="panel workspace-view rogue-challenge-page" id="rogueChallengePanel" data-workspace-panel="challenge" hidden></section>
               <section class="panel workspace-view more-panel" id="morePanel" data-workspace-panel="more" hidden>
                 <div class="section-title-row">
                   <div>
@@ -1018,11 +1046,13 @@
         <span class="workspace-status-label">当前赛马</span>
         <strong title="${horse.name || "未命名小马"}">${horse.name || "未命名小马"}</strong>
         ${career.gameMode === "legend" ? `<span class="badge legend-badge">传奇</span>` : ""}
+        ${career.gameMode === "roguelike" ? `<span class="badge rogue-badge">肉鸽挑战</span>` : ""}
       </div>
       <div class="workspace-status-facts">
         <span><small>当前时间</small><b>${timeLabel}</b></span>
         <span><small>当前位置</small><b>${locationLabel || "未知"}</b></span>
         <span><small>战绩</small><b>${summary.starts}战 ${summary.wins}胜</b></span>
+        ${career.gameMode === "roguelike" ? `<span><small>荣誉币</small><b>${(career.roguelike && career.roguelike.honorCoins) || 0}</b></span>` : ""}
       </div>
       <div class="workspace-status-save" id="workspaceStatusSave" aria-live="polite">自动存档</div>
     `;
@@ -1127,10 +1157,17 @@
     const comments = career.commentDetails && career.commentDetails.length
       ? career.commentDetails
       : career.comments.map((text, index) => ({ label: `评语 ${index + 1}`, text }));
+    const rogueInitialComments = career.gameMode === "roguelike" && career.roguelike
+      ? career.roguelike.initialComments || []
+      : [];
+    const rogueReviewComments = career.gameMode === "roguelike" && career.roguelike
+      ? career.roguelike.reviewComments || []
+      : [];
     panel.innerHTML = `
       <div class="section-title-row">
         <p class="eyebrow">出道前评语</p>
         ${career.gameMode === "legend" ? `<span class="badge legend-badge">传奇模式</span>` : ""}
+        ${career.gameMode === "roguelike" ? `<span class="badge rogue-badge">肉鸽挑战</span>` : ""}
       </div>
       <div class="trainer-card-grid">
         <div class="trainer-card trainer-card-name">
@@ -1168,12 +1205,22 @@
       </div>
       ${transferText ? `<div class="race-row stable-action-row">${transferText}</div>` : ""}
       <div class="trainer-comments" id="trainerComments" ${commentsCollapsed ? "hidden" : ""}>
-        ${comments.map((comment, index) => `
+        ${rogueInitialComments.length ? `<p class="eyebrow trainer-comment-group-title">初次评估</p>` : ""}
+        ${(rogueInitialComments.length ? rogueInitialComments : comments).map((comment, index) => `
           <div class="trainer-comment comment-tone-${(index % 5) + 1}">
             <span>${comment.label || comment.item || `评语 ${index + 1}`}</span>
             <p>${comment.text}</p>
           </div>
         `).join("")}
+        ${rogueReviewComments.length ? `
+          <p class="eyebrow trainer-comment-group-title">${career.roguelike.reviewLabel || "复核评估"}</p>
+          ${rogueReviewComments.map((comment, index) => `
+            <div class="trainer-comment comment-tone-${(index % 5) + 1}">
+              <span>${comment.label || comment.item || `评语 ${index + 1}`}</span>
+              <p>${comment.text}</p>
+            </div>
+          `).join("")}
+        ` : ""}
       </div>
       <div class="race-row trainer-comments-toggle-row">
         <button class="secondary" id="trainerCommentsToggleBtn" type="button" aria-expanded="${commentsCollapsed ? "false" : "true"}" aria-controls="trainerComments">${commentsCollapsed ? "展开评语" : "收起评语"}</button>
@@ -1559,6 +1606,7 @@
           <p class="eyebrow">生涯记录</p>
           ${renderHistoryRecordSummary(career)}
           ${career.gameMode === "legend" ? `<span class="badge legend-badge">传奇模式</span>` : ""}
+          ${career.gameMode === "roguelike" ? `<span class="badge rogue-badge">肉鸽挑战</span>` : ""}
           ${career.horse.debugMode ? `<span class="badge debug-badge">调试模式</span>` : ""}
         </div>
         ${canToggleHistory ? `<button class="secondary history-toggle" id="historyToggleBtn">${expanded ? "收起" : "展开全部"}</button>` : ""}

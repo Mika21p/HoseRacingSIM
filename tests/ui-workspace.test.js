@@ -8,12 +8,18 @@ const read = (file) => fs.readFileSync(path.join(root, file), "utf8");
 
 test("career UI keeps history inside the action workspace and exposes overlays", () => {
   const render = read("js/ui/render.js");
-  ["action", "horse", "more"].forEach((view) => {
+  ["action", "horse", "challenge", "more"].forEach((view) => {
     assert.match(render, new RegExp(`data-workspace-view="${view}"`));
     assert.match(render, new RegExp(`data-workspace-panel="${view}"`));
   });
+  const actionMain = render.match(/<div class="action-main-column">([\s\S]*?)<\/div>\s*<aside/);
+  assert.ok(actionMain);
+  assert.doesNotMatch(actionMain[1], /rogueChallengePanel/);
   assert.match(render, /data-workspace-section="history"/);
   assert.match(render, /class="action-main-column"[\s\S]*id="racePanel"[\s\S]*id="historyPanel"[\s\S]*id="actionAside"/);
+  assert.match(render, /id="adaptationSummaryPanel"[\s\S]*id="rogueChallengeHint"/);
+  assert.match(render, /id="horsePanel"[\s\S]*id="rogueVeterinarianPanel"[\s\S]*id="feedbackPanel"/);
+  assert.match(render, /id="rogueChallengePanel" data-workspace-panel="challenge"/);
   assert.match(render, /id="historyPanel" data-action-anchor="history"/);
   assert.doesNotMatch(render, /data-workspace-panel="history"/);
   assert.match(render, /id="setupOverlay"/);
@@ -52,11 +58,11 @@ test("home, global metadata and mobile navigation are wired", () => {
   const render = read("js/ui/render.js");
   const changelog = read("js/data/changelog.js");
   const styles = read("css/styles.css");
-  assert.match(index, /styles\.css\?v=20260717-home-compact/);
-  assert.match(index, /render\.js\?v=20260717-home-compact/);
-  assert.match(index, /app\.js\?v=20260717-home-compact/);
+  assert.match(index, /styles\.css\?v=20260717-rogue-challenge-view/);
+  assert.match(index, /render\.js\?v=20260717-rogue-challenge-view/);
+  assert.match(index, /app\.js\?v=20260717-rogue-challenge-view/);
   assert.match(index, /id="appVersion"/);
-  assert.match(changelog, /version: "v0\.12g"/);
+  assert.match(changelog, /version: "v0\.13d"/);
   assert.match(changelog, /nonConditionRaces: 622/);
   assert.match(render, /class="home-mode-grid"/);
   assert.match(render, /class="home-support-row"/);
@@ -64,6 +70,15 @@ test("home, global metadata and mobile navigation are wired", () => {
   assert.match(render, /id="homeContinueBtn"/);
   assert.match(render, /id="homeStartBtn"/);
   assert.match(render, /id="homeLegendBtn"/);
+  assert.match(render, /id="homeRogueBtn"/);
+  assert.match(render, /id="homeRogueContinueBtn"/);
+  assert.match(render, /id="homeRogueStatus"/);
+  assert.match(render, /培育赛马，规划竞赛生涯/);
+  assert.match(render, /迎战五匹史实强敌/);
+  assert.match(render, /从未知候选中押注传奇/);
+  assert.doesNotMatch(render, />LEGEND<\/em>/);
+  assert.match(render, /id="rogueOverlay"/);
+  assert.match(render, /id="rogueChallengePanel"/);
   assert.match(render, /id="copyFeedbackGroupBtn"/);
   assert.match(render, />1050162087<\/strong>/);
   assert.match(render, />NEW!<\/span>/);
@@ -72,6 +87,9 @@ test("home, global metadata and mobile navigation are wired", () => {
   assert.match(styles, /\.workspace-nav/);
   assert.match(styles, /height: 100dvh/);
   assert.match(styles, /grid-template-columns: repeat\(5, minmax\(0, 1fr\)\)/);
+  assert.match(styles, /grid-template-columns: repeat\(6, minmax\(0, 1fr\)\)/);
+  assert.match(styles, /grid-template-columns: repeat\(3, minmax\(0, 1fr\)\)/);
+  assert.doesNotMatch(styles, /\.home-rogue-feature\s*\{[^}]*grid-column/);
   assert.match(styles, /\.action-main-column > \.panel/);
 });
 
@@ -82,4 +100,51 @@ test("feedback group copy supports modern and fallback clipboard paths", () => {
   assert.match(app, /群号已复制到剪贴板/);
   assert.match(app, /复制失败，请长按群号手动复制/);
   assert.match(app, /window\.clearTimeout\(feedbackCopyResetTimer\)/);
+});
+
+test("roguelike UI keeps an isolated save and the confirmed normal strength formula", () => {
+  const app = read("js/app.js");
+  const horseRules = read("js/rules/horse-generator.js");
+  const rogueRules = read("js/rules/roguelike.js");
+  const styles = read("css/styles.css");
+  assert.match(app, /keiba-roguelike-save-v1/);
+  assert.match(app, /careerSource: "standard"/);
+  assert.match(app, /id="rogueConsumableTitle"/);
+  assert.match(app, /data-rogue-consumable=/);
+  assert.match(app, /data-rogue-item-select=/);
+  assert.match(app, /data-rogue-shop-tab=/);
+  assert.match(app, /data-rogue-candidate-tab=/);
+  assert.match(app, /data-rogue-comments=/);
+  assert.match(app, /class="rogue-inventory-disclosure"/);
+  assert.match(app, /class="rogue-candidate-dock"/);
+  assert.match(app, /rogueCandidateIndex: 0/);
+  assert.match(app, /rogueShopCategory: "consumables"/);
+  assert.match(app, /\["action", "horse", "challenge", "more"\]/);
+  assert.match(app, /workspaceChallengeNav\.hidden = !isRogueCareer/);
+  assert.match(app, /function challengeHintHtml/);
+  assert.match(app, /data-workspace-jump="challenge"/);
+  assert.match(app, /document\.getElementById\("rogueVeterinarianPanel"\)/);
+  assert.match(app, /role="status" aria-live="polite"/);
+  assert.match(app, />荣誉商店</);
+  assert.doesNotMatch(app, /data-rogue-refresh=/);
+  assert.doesNotMatch(app, /data-rogue-review=/);
+  assert.match(horseRules, /R\.rollMulti\(2, 15\) \+ 60/);
+  assert.match(rogueRules, /PROFILE_VERSION = 2/);
+  assert.match(rogueRules, /CONSUMABLE_PRODUCTS/);
+  assert.match(rogueRules, /purchaseConsumable/);
+  assert.match(rogueRules, /useRefreshConsumable/);
+  assert.match(rogueRules, /useReviewConsumable/);
+  assert.match(rogueRules, /useAdaptationConsumable/);
+  assert.match(rogueRules, /id: "consistency"/);
+  assert.match(rogueRules, /windowMatches\(records, 8/);
+  assert.match(rogueRules, /buildSettlement/);
+  assert.match(styles, /\.rogue-store-shell/);
+  assert.match(styles, /\.rogue-inventory-bar/);
+  assert.match(styles, /\.rogue-item-use/);
+  assert.match(styles, /\.rogue-store-tabs/);
+  assert.match(styles, /\.rogue-candidate-tabs/);
+  assert.match(styles, /\.rogue-candidate-card:not\(\.is-mobile-active\)/);
+  assert.match(styles, /\.rogue-challenge-hint-button/);
+  assert.match(styles, /\.rogue-challenge-hint\s*\{\s*display: none !important;/);
+  assert.match(styles, /env\(safe-area-inset-bottom\)/);
 });
