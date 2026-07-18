@@ -516,7 +516,7 @@
       const inventory = state.rogueSave.profile.consumables.adaptation || 0;
       const used = !!run.consumablesUsed.adaptation;
       const disabled = !eligible || inventory < 1 || used;
-      return `<button class="secondary" type="button" data-rogue-adaptation="${id}" ${disabled ? "disabled" : ""}>${label} · 调教券 ×${inventory}</button>`;
+      return `<button class="secondary" type="button" data-rogue-adaptation="${id}" ${disabled ? "disabled" : ""}>${label} · 幼驹调教券 ×${inventory}</button>`;
     };
     return `
       <div class="rogue-page-heading">
@@ -526,9 +526,9 @@
       <div class="rogue-selected-summary"><strong>${escapeHtml(selected.trainerName)}</strong><span>${escapeHtml(selected.regionLabel)} · ${escapeHtml(selected.horse.gender)} · ${escapeHtml(selected.horse.coat)}</span><span>${escapeHtml(selected.horse.sireName)} × ${escapeHtml(selected.horse.damName)}</span></div>
       <label class="rogue-name-field">马名<input id="rogueHorseName" type="text" maxlength="30" value="${name}"></label>
       <section class="rogue-section">
-        <div><p class="eyebrow">赛区适应调教</p><h2>使用一张赛区调教券，或直接跳过</h2><p class="muted">日本会在日本草地/泥地中随机提升一项，欧洲提升欧洲草地，北美会在美国草地/泥地中随机提升一项。只按G→C→B→A提升；前后等级保持隐藏，A不会提升为S。</p></div>
+        <div><p class="eyebrow">幼驹调教</p><h2>使用一张幼驹调教券，或直接跳过</h2><p class="muted">日本会在日本草地/泥地中随机提升一项，欧洲提升欧洲草地，北美会在美国草地/泥地中随机提升一项。只按G→C→B→A提升；前后等级保持隐藏，A不会提升为S。</p></div>
         ${run.adaptationResolved
-          ? `<div class="rogue-resolved"><strong>${run.services.adaptation ? "赛区调教已完成" : "已跳过赛区调教"}</strong></div>`
+          ? `<div class="rogue-resolved"><strong>${run.services.adaptation ? "幼驹调教已完成" : "已跳过幼驹调教"}</strong></div>`
           : `<div class="rogue-adaptation-actions">${directionButton("japan", "日本适应")}${directionButton("europe", "欧洲适应")}${directionButton("northAmerica", "北美适应")}<button type="button" data-rogue-adaptation-skip>不购买并继续</button></div>`}
       </section>
       ${run.adaptationResolved ? `<section class="rogue-section"><div><p class="eyebrow">本局挑战</p><h2>选择后不可更换</h2></div><div class="rogue-challenge-grid">${challengeOptionsHtml(run)}</div></section>` : ""}
@@ -729,7 +729,7 @@
     }
     content.querySelectorAll("[data-rogue-adaptation]").forEach((button) => button.addEventListener("click", () => {
       rememberRogueName();
-      if (!window.confirm("将消耗一张赛区调教券，并随机提升对应方向的一项适性。确定使用吗？")) return;
+      if (!window.confirm("将消耗一张幼驹调教券，并随机提升对应方向的一项适性。确定使用吗？")) return;
       const result = ns.RoguelikeRules.useAdaptationConsumable(state.rogueSave, button.dataset.rogueAdaptation);
       if (!result.ok) window.alert(result.reason);
       rogueSaveAndRefresh();

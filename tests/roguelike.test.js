@@ -79,11 +79,15 @@ test("candidate generation records actual parents and a usable route", () => {
 test("consumable shop preserves inventory across saves and locks after candidate generation", () => {
   const save = rules.RoguelikeRules.createSave();
   save.profile.honorCoins = 1000;
+  assert.equal(rules.RoguelikeRules.CONSUMABLE_PRODUCTS.reappraise.price, 20);
+  assert.equal(rules.RoguelikeRules.CONSUMABLE_PRODUCTS.authoritative.price, 50);
+  assert.equal(rules.RoguelikeRules.CONSUMABLE_PRODUCTS.adaptation.price, 20);
+  assert.equal(rules.RoguelikeRules.CONSUMABLE_PRODUCTS.adaptation.label, "幼驹调教券");
   Object.keys(rules.RoguelikeRules.CONSUMABLE_PRODUCTS).forEach((itemId) => {
     assert.equal(rules.RoguelikeRules.purchaseConsumable(save, itemId).ok, true);
   });
   assert.equal(rules.RoguelikeRules.purchaseConsumable(save, "reroll").ok, true);
-  assert.equal(save.profile.honorCoins, 640);
+  assert.equal(save.profile.honorCoins, 670);
   assert.equal(save.profile.consumables.reroll, 2);
   assert.equal(save.profile.consumables.champion, 1);
 

@@ -10,9 +10,9 @@
     reroll: 10,
     selected: 70,
     champion: 150,
-    reappraise: 30,
-    authoritative: 60,
-    adaptation: 30
+    reappraise: 20,
+    authoritative: 50,
+    adaptation: 20
   };
   const CONSUMABLE_PRODUCTS = Object.freeze({
     reroll: Object.freeze({ id: "reroll", category: "refresh", label: "重新寻马券", price: SERVICE_PRICES.reroll, description: "按普通范围重新生成指定位置的候选。" }),
@@ -20,7 +20,7 @@
     champion: Object.freeze({ id: "champion", category: "refresh", label: "拍买马王券", price: SERVICE_PRICES.champion, description: "重新生成实力 81～100、主要场地至少 A 的候选。" }),
     reappraise: Object.freeze({ id: "reappraise", category: "review", label: "再次鉴定券", price: SERVICE_PRICES.reappraise, description: "由原练马师重新给出一组独立评语。" }),
     authoritative: Object.freeze({ id: "authoritative", category: "review", label: "权威复核券", price: SERVICE_PRICES.authoritative, description: "生成一组可靠程度提升一级的复核评语。" }),
-    adaptation: Object.freeze({ id: "adaptation", category: "adaptation", label: "赛区调教券", price: SERVICE_PRICES.adaptation, description: "选马后将指定赛区的一项可提升适性随机提高一级。" })
+    adaptation: Object.freeze({ id: "adaptation", category: "adaptation", label: "幼驹调教券", price: SERVICE_PRICES.adaptation, description: "选马后将指定赛区的一项可提升适性随机提高一级。" })
   });
   const CONSUMABLE_IDS = Object.keys(CONSUMABLE_PRODUCTS);
   const PERMANENT_PRICES = { obrien: 80, pletcher: 80, veterinarian: 180 };
@@ -486,7 +486,7 @@
 
   function skipAdaptation(save) {
     const run = save.run;
-    if (!run || run.phase !== "horse-setup" || run.adaptationResolved) return { ok: false, reason: "赛区调教已经处理。" };
+    if (!run || run.phase !== "horse-setup" || run.adaptationResolved) return { ok: false, reason: "幼驹调教已经处理。" };
     run.adaptationResolved = true;
     ensureChallengeOptions(run);
     return { ok: true, skipped: true };
@@ -496,7 +496,7 @@
     const prepared = prepareConsumableUse(save, "adaptation", "adaptation");
     if (!prepared.ok) return prepared;
     const run = prepared.run;
-    if (!run || run.phase !== "horse-setup" || run.adaptationResolved) return { ok: false, reason: "赛区调教已经处理。" };
+    if (!run || run.phase !== "horse-setup" || run.adaptationResolved) return { ok: false, reason: "幼驹调教已经处理。" };
     const horse = run.selectedCandidate.horse;
     const eligible = eligibleAdaptationFields(horse, direction);
     if (eligible.length === 0) return { ok: false, reason: "该方向的对应适性已经全部达到A或S。" };
@@ -527,7 +527,7 @@
 
   function chooseChallenge(save, challengeId) {
     const run = save.run;
-    if (!run || run.phase !== "horse-setup" || !run.adaptationResolved) return { ok: false, reason: "请先完成或跳过赛区调教。" };
+    if (!run || run.phase !== "horse-setup" || !run.adaptationResolved) return { ok: false, reason: "请先完成或跳过幼驹调教。" };
     ensureChallengeOptions(run);
     if (!run.challengeOptions.includes(challengeId)) return { ok: false, reason: "挑战目标不在本局选项中。" };
     run.selectedChallengeId = challengeId;
