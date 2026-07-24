@@ -747,11 +747,6 @@
       const item = awarded.splice(index, 1)[0];
       suppressed.push({ id: item.id, name: item.name, reason });
     }
-    if (awarded.some((item) => item.id === "japan-classic-triple-crown")) {
-      suppress("japan-alternate-triple-crown", "与日本经典三冠重叠");
-    } else if (awarded.some((item) => item.id === "japan-filly-triple-crown")) {
-      suppress("japan-alternate-triple-crown", "与日本牝马三冠重叠");
-    }
     if (awarded.some((item) => item.id === "older-horse-road-sweep")) {
       suppress("spring-autumn-grand-prix", "古马王道完全制霸已覆盖");
       suppress("spring-autumn-tenno-sho", "古马王道完全制霸已覆盖");
@@ -811,7 +806,11 @@
       };
     }
     const challengeCoins = STAGE_REWARDS[challengeProgress.stage];
-    const resolved = resolveAchievementOverlaps(ns.AchievementRules.evaluate(career));
+    const achievementResult = ns.AchievementRules.evaluateResolved
+      ? ns.AchievementRules.evaluateResolved(career)
+      : { awarded: ns.AchievementRules.evaluate(career), suppressed: [] };
+    const resolved = resolveAchievementOverlaps(achievementResult.awarded);
+    const suppressedAchievements = achievementResult.suppressed.concat(resolved.suppressed);
     const debugMode = !!(career.horse && career.horse.debugMode);
     const achievements = resolved.awarded.map((achievement) => {
       const points = achievementPointValue(achievement);
@@ -833,7 +832,7 @@
         challengeCoins,
         challengeScore: challengeCoins,
         achievements,
-        suppressedAchievements: resolved.suppressed,
+        suppressedAchievements,
         achievementCoins,
         achievementScore,
         totalCoins,

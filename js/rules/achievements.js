@@ -129,10 +129,10 @@
       name: "日本变则三冠",
       category: "combo",
       type: "raceSet",
-      raceIds: ["oka-sho", "yushun-himba", "shuka-sho", "satsuki-sho", "tokyo-yushun", "kikka-sho"],
+      raceIds: ["oka-sho", "yushun-himba", "shuka-sho", "satsuki-sho", "tokyo-yushun", "kikka-sho", "tenno-sho-aki"],
       minWins: 3,
-      sameAge: true,
-      description: "同一年龄年胜出日本经典/牝马六战中的任意三场"
+      requiredAge: 3,
+      description: "3岁时胜出日本经典/牝马六战与天皇赏秋中的任意三场"
     },
     {
       id: "japan-dirt-triple-crown",
@@ -410,8 +410,11 @@
   }
 
   function hasRaceSet(winRecords, definition) {
-    if (!definition.sameAge) return raceSetMatches(winRecords, definition);
-    const byAge = groupByAge(winRecords);
+    const eligibleRecords = definition.requiredAge == null
+      ? winRecords
+      : winRecords.filter((record) => record.age === definition.requiredAge);
+    if (!definition.sameAge) return raceSetMatches(eligibleRecords, definition);
+    const byAge = groupByAge(eligibleRecords);
     return Object.keys(byAge).some((age) => raceSetMatches(byAge[age], definition));
   }
 
@@ -513,7 +516,7 @@
     });
   }
 
-  function evaluate(career) {
+  function evaluateRaw(career) {
     const winRecords = collectWinRecords(career);
     const fixed = DEFINITIONS
       .map((definition, index) => ({ definition, index }))
@@ -523,9 +526,35 @@
     return sortAchievements(collapseGroupedAchievements(fixed.concat(repeated)));
   }
 
+  function resolveAchievementOverlaps(achievements) {
+    const awarded = (achievements || []).slice();
+    const suppressed = [];
+    function suppress(id, reason) {
+      const index = awarded.findIndex((item) => item.id === id);
+      if (index < 0) return;
+      const item = awarded.splice(index, 1)[0];
+      suppressed.push({ id: item.id, name: item.name, reason });
+    }
+    if (awarded.some((item) => item.id === "japan-classic-triple-crown")) {
+      suppress("japan-alternate-triple-crown", "与日本经典三冠重叠");
+    } else if (awarded.some((item) => item.id === "japan-filly-triple-crown")) {
+      suppress("japan-alternate-triple-crown", "与日本牝马三冠重叠");
+    }
+    return { awarded, suppressed };
+  }
+
+  function evaluateResolved(career) {
+    return resolveAchievementOverlaps(evaluateRaw(career));
+  }
+
+  function evaluate(career) {
+    return evaluateResolved(career).awarded;
+  }
+
   ns.AchievementRules = {
     DEFINITIONS,
     collectWinRecords,
+    evaluateResolved,
     evaluate
   };
 })();

@@ -103,6 +103,37 @@ function loadRoguelikeRules() {
   return { ...project, rules: context.window.Keiba };
 }
 
+function loadEraRules() {
+  const project = loadProjectData();
+  const { context } = project;
+  context.window.Keiba.HistoricalHorses = project.horses;
+  [
+    "js/utils/random.js",
+    "js/data/bloodlines.js",
+    "js/data/races.js",
+    "js/data/era/registry.js",
+    "js/data/era/texts.js",
+    "js/data/era/golden-road-1998.js",
+    "js/rules/time.js",
+    "js/rules/region-rules.js",
+    "js/rules/race-progression.js",
+    "js/rules/debut-lock.js",
+    "js/rules/maturity.js",
+    "js/rules/temperament.js",
+    "js/rules/jockey-rules.js",
+    "js/rules/injury-rules.js",
+    "js/rules/race-fatigue.js",
+    "js/rules/horse-generator.js",
+    "js/rules/comments.js",
+    "js/rules/historical-opponents.js",
+    "js/rules/race-simulator.js",
+    "js/rules/career.js",
+    "js/rules/era-narrative.js",
+    "js/rules/era.js"
+  ].forEach((file) => runProjectFile(context, file));
+  return { ...project, rules: context.window.Keiba };
+}
+
 function loadChangelogData() {
   const context = createBrowserContext();
   runProjectFile(context, "js/data/changelog.js");
@@ -115,5 +146,6 @@ module.exports = {
   loadProjectData,
   loadCoreRules,
   loadRoguelikeRules,
+  loadEraRules,
   loadChangelogData
 };

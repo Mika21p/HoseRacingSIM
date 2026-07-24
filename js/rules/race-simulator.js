@@ -76,7 +76,31 @@
     return String(result.total);
   }
 
+  function hasHistoricalScore(entry) {
+    return !!entry && Number.isFinite(entry.historicalScore);
+  }
+
+  function fixedHistoricalResult(entry) {
+    const fixedPhase = { roll: null, random: null, result: { label: "史实固定", mod: 0 }, total: 0 };
+    return {
+      entry,
+      base: entry.historicalScore,
+      riderMod: 0,
+      retired: false,
+      retiredPhase: "",
+      total: entry.historicalScore,
+      fixedScore: true,
+      scoreSource: "historical-fixed",
+      phases: {
+        gate: { ...fixedPhase },
+        position: { ...fixedPhase },
+        sprint: { roll: null, random: null, total: 0 }
+      }
+    };
+  }
+
   function runOneRunner(entry) {
+    if (hasHistoricalScore(entry)) return fixedHistoricalResult(entry);
     const riderMod = Math.floor(entry.riderAbility / 10);
     const base = entry.ability + riderMod;
     let retired = false;
@@ -654,6 +678,8 @@
       jockeyId: opponent.jockeyId,
       jockeyName: opponent.jockeyName,
       riderAbility: opponent.riderAbility,
+      historicalScore: opponent.historicalScore,
+      historicalFinish: opponent.historicalFinish,
       specialSprint: false
     };
   }
@@ -725,6 +751,19 @@
     ];
   }
 
+  function compareHistoricalTie(leftEntry, rightEntry) {
+    const leftFixed = hasHistoricalScore(leftEntry);
+    const rightFixed = hasHistoricalScore(rightEntry);
+    if (!leftFixed && !rightFixed) return 0;
+    if (leftFixed !== rightFixed) return leftFixed ? -1 : 1;
+    const leftFinish = leftEntry.historicalFinish;
+    const rightFinish = rightEntry.historicalFinish;
+    if (Number.isFinite(leftFinish) && Number.isFinite(rightFinish) && leftFinish !== rightFinish) {
+      return leftFinish - rightFinish;
+    }
+    return 0;
+  }
+
   function orderedFieldResults(results) {
     return results
       .map((result, index) => ({ result, index, tieBreaker: R.rollRange(1, 1000000) }))
@@ -732,6 +771,9 @@
         if (a.result.retired !== b.result.retired) return a.result.retired ? 1 : -1;
         if (a.result.retired && b.result.retired) return a.index - b.index;
         if (a.result.total !== b.result.total) return b.result.total - a.result.total;
+        const historicalTie = compareHistoricalTie(a.result.entry, b.result.entry);
+        if (historicalTie !== 0) return historicalTie;
+        if (hasHistoricalScore(a.result.entry) || hasHistoricalScore(b.result.entry)) return a.index - b.index;
         if (a.tieBreaker !== b.tieBreaker) return b.tieBreaker - a.tieBreaker;
         return a.index - b.index;
       })
@@ -863,7 +905,10 @@
       playerResult,
       competitiveOpponentResult
     ];
-    const finishers = finalResults.filter((item) => !item.retired).sort((a, b) => b.total - a.total);
+    const finishers = finalResults.filter((item) => !item.retired).sort((a, b) => {
+      if (a.total !== b.total) return b.total - a.total;
+      return compareHistoricalTie(a.entry, b.entry);
+    });
     const retirees = finalResults.filter((item) => item.retired);
     const ordered = finishers.concat(retirees);
     const playerRankInDuel = ordered.findIndex((item) => item.entry.key === "player") + 1;
@@ -888,7 +933,7 @@
         playerRank = rollPlacementWhenBehind(marginLengths);
         opponentRank = 1;
       } else {
-        tieOutcome = rollTieOutcome();
+        tieOutcome = hasHistoricalScore(competitiveOpponentResult.entry) ? "player-loss" : rollTieOutcome();
         if (tieOutcome === "player-win") {
           playerRank = 1;
           opponentRank = 2;

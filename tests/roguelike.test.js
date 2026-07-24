@@ -246,6 +246,61 @@ test("world tour excludes JpnI and recognizes an overseas G1", () => {
   assert.equal(after.stage, "bronze");
 });
 
+test("alternate Japanese triple crown accepts any three eligible 3-year-old wins, including Tenno Sho Autumn", () => {
+  const records = [
+    raceRecord({ id: "oka-sho", age: 3 }),
+    raceRecord({ id: "tokyo-yushun", age: 3 }),
+    raceRecord({ id: "tenno-sho-aki", age: 3 })
+  ];
+  const achievementIds = rules.AchievementRules.evaluate(career(records)).map((achievement) => achievement.id);
+  assert.equal(achievementIds.includes("japan-alternate-triple-crown"), true);
+});
+
+test("alternate Japanese triple crown does not count a Tenno Sho Autumn win after age three", () => {
+  const records = [
+    raceRecord({ id: "oka-sho", age: 3 }),
+    raceRecord({ id: "tokyo-yushun", age: 3 }),
+    raceRecord({ id: "tenno-sho-aki", age: 4 })
+  ];
+  const achievementIds = rules.AchievementRules.evaluate(career(records)).map((achievement) => achievement.id);
+  assert.equal(achievementIds.includes("japan-alternate-triple-crown"), false);
+});
+
+test("Japanese classic and filly triple crowns suppress the alternate crown in all achievement results", () => {
+  const cases = [
+    {
+      records: [
+        raceRecord({ id: "satsuki-sho" }),
+        raceRecord({ id: "tokyo-yushun" }),
+        raceRecord({ id: "kikka-sho" })
+      ],
+      crownId: "japan-classic-triple-crown",
+      reason: "与日本经典三冠重叠"
+    },
+    {
+      records: [
+        raceRecord({ id: "oka-sho" }),
+        raceRecord({ id: "yushun-himba" }),
+        raceRecord({ id: "shuka-sho" })
+      ],
+      crownId: "japan-filly-triple-crown",
+      reason: "与日本牝马三冠重叠"
+    }
+  ];
+
+  cases.forEach(({ records, crownId, reason }) => {
+    const achievementIds = rules.AchievementRules.evaluate(career(records)).map((achievement) => achievement.id);
+    assert.equal(achievementIds.includes(crownId), true);
+    assert.equal(achievementIds.includes("japan-alternate-triple-crown"), false);
+
+    const settlement = rules.RoguelikeRules.buildSettlement(rules.RoguelikeRules.createProfile(), career(records)).settlement;
+    assert.equal(settlement.achievements.some((achievement) => achievement.id === "japan-alternate-triple-crown"), false);
+    const suppressed = settlement.suppressedAchievements.find((achievement) => achievement.id === "japan-alternate-triple-crown");
+    assert.equal(suppressed.name, "日本变则三冠");
+    assert.equal(suppressed.reason, reason);
+  });
+});
+
 test("settlement pays first achievements in full and repeats at half without race points", () => {
   const records = [
     raceRecord({ id: "fixture-g1", raceClass: "g1", rank: 1 }),

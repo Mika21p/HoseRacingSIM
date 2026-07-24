@@ -8,7 +8,7 @@
   },
   "scripts": {
     "test": "npm run test:quick",
-    "test:quick": "node --test tests/syntax.test.js tests/data-integrity.test.js tests/core-rules.test.js tests/roguelike.test.js tests/ui-workspace.test.js",
+    "test:quick": "node --test tests/syntax.test.js tests/data-integrity.test.js tests/core-rules.test.js tests/roguelike.test.js tests/era.test.js tests/era-narrative.test.js tests/ui-workspace.test.js",
     "audit:legend": "node scripts/audit-legend-opponent-pools.js",
     "hooks:install": "node scripts/install-hooks.js"
   }

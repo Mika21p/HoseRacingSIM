@@ -734,6 +734,7 @@
             </div>
           </section>
           <div class="home-secondary-actions">
+            <button class="secondary" id="homeEraBtn" type="button">剧情模式测试入口</button>
             <button class="secondary" id="homeHelpBtn" type="button">游戏帮助</button>
             <button class="secondary" id="homeChangelogBtn" type="button">更新日志</button>
           </div>
@@ -950,6 +951,8 @@
           <div id="rogueContent"></div>
         </section>
       </div>
+
+      <div class="era-overlay" id="eraOverlay" hidden></div>
 
       <section class="workspace-shell" id="workspaceShell" hidden aria-label="生涯工作台">
         <header class="workspace-status" id="workspaceStatus"></header>

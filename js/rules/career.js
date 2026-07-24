@@ -10,7 +10,9 @@
     horse.currentRegionId = horse.currentRegionId || horse.homeRegionId;
     horse.gameMode = horse.gameMode === "legend"
       ? "legend"
-      : (horse.gameMode === "roguelike" ? "roguelike" : "normal");
+      : (horse.gameMode === "roguelike"
+        ? "roguelike"
+        : (horse.gameMode === "era" ? "era" : "normal"));
     const career = {
       horse,
       gameMode: horse.gameMode,
