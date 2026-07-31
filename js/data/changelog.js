@@ -3,9 +3,9 @@
 
   ns.Changelog = ns.Changelog || {};
   ns.Changelog.meta = {
-    version: "v0.13e",
-    updatedAt: "2026-07-18T11:54:00+08:00",
-    displayUpdatedAt: "2026.07.18 11:54"
+    version: "v0.13f",
+    updatedAt: "2026-07-31T08:57:00+08:00",
+    displayUpdatedAt: "2026.07.31 08:57"
   };
   ns.Changelog.contentStats = Object.freeze({
     nonConditionRaces: 622,
@@ -23,6 +23,7 @@
   };
 
   ns.Changelog.entries = [
+    { date: "2026.7.31", version: "v0.13f", title: "网页加载与资料更新优化", items: ["线上版本会先完成测试再打包发布，史实马资料加载更稳定，更新内容也能更及时生效。"] },
     { date: "2026.7.18", version: "v0.13e", title: "肉鸽道具价格调整", items: ["再次鉴定券降至20枚、权威复核券降至50枚；赛区调教更名为幼驹调教，幼驹调教券价格降至20枚。"] },
     { date: "2026.7.17", version: "v0.13d", title: "挑战独立页面与游玩界面精简", items: ["肉鸽挑战详情移入独立工作区，行动页只在电脑端保留右栏紧凑提示；驻场兽医入口同步移动到马匹页面。"] },
     { date: "2026.7.17", version: "v0.13c", title: "肉鸽手机端紧凑布局", items: ["荣誉商店在手机端改为分类浏览与固定操作栏，选马页面一次聚焦一匹候选，并支持紧凑评语、库存折叠和无障碍候选切换。"] },

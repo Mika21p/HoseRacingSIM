@@ -8,6 +8,9 @@ on:
       - index.html
       - css/**
       - js/**
+      - package.json
+      - scripts/build-web.js
+      - tests/**
       - .github/workflows/deploy-cos.yml
   workflow_dispatch:
 
@@ -21,6 +24,17 @@ jobs:
     steps:
       - name: Get website source
         uses: actions/checkout@v4
+
+      - name: Use Node.js 20
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Test website source
+        run: npm test
+
+      - name: Build website
+        run: npm run build:web
 
       - name: Install COSCLI
         run: |
@@ -57,7 +71,4 @@ jobs:
             --bucket "$COS_BUCKET" \
             --region "$COS_REGION"
 
-          mkdir deploy
-          cp index.html deploy/
-          cp -R css js deploy/
-          ./coscli sync deploy/ cos://website/ --recursive --force
+          ./coscli sync dist/ cos://website/ --recursive --force
