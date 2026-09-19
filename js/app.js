@@ -2821,6 +2821,7 @@
     bindEraEvents();
     bindSaveLifecycleEvents();
     refresh();
+    if (ns.ChairmanApp) ns.ChairmanApp.mount();
   }
 
   document.addEventListener("DOMContentLoaded", () => {

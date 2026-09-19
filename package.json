@@ -8,9 +8,13 @@
   },
   "scripts": {
     "test": "npm run test:quick",
-    "test:quick": "node --test tests/syntax.test.js tests/data-integrity.test.js tests/build-web.test.js tests/core-rules.test.js tests/roguelike.test.js tests/era.test.js tests/era-narrative.test.js tests/ui-workspace.test.js",
+    "test:quick": "node --test tests/syntax.test.js tests/data-integrity.test.js tests/build-web.test.js tests/core-rules.test.js tests/roguelike.test.js tests/era.test.js tests/era-narrative.test.js tests/ui-workspace.test.js tests/chairman.test.js tests/chairman-storage.test.js tests/chairman-office.test.js",
+    "test:chairman:long": "node --test tests/chairman-long.test.js",
     "build:web": "node scripts/build-web.js",
     "audit:legend": "node scripts/audit-legend-opponent-pools.js",
     "hooks:install": "node scripts/install-hooks.js"
+  },
+  "devDependencies": {
+    "fake-indexeddb": "^6.2.5"
   }
 }

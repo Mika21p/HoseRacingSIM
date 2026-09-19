@@ -1,0 +1,60 @@
+{
+  "seed": 995173,
+  "years": 5,
+  "halfMonths": 120,
+  "starts": 9649,
+  "retiredRuns": 290,
+  "g1Starts": 653,
+  "pressureEvents": 50,
+  "pressureRate": 0.07656967840735068,
+  "minimumGapHalfMonths": 3,
+  "meanGapHalfMonths": 3.969388882749475,
+  "availableHorseTurns": 37291,
+  "idleUnbookedAtLeastSixTurns": 0,
+  "idleDefinition": "可出赛、无报名且距上次出赛至少6个半月的马匹回合；不是独立马匹人数",
+  "regions": {
+    "美国": {
+      "total": 270,
+      "cancelled": 6,
+      "full": 133
+    },
+    "日本": {
+      "total": 270,
+      "cancelled": 3,
+      "full": 102
+    },
+    "欧洲": {
+      "total": 270,
+      "cancelled": 9,
+      "full": 68
+    }
+  },
+  "grades": {
+    "op": {
+      "total": 720,
+      "full": 292,
+      "tf": {
+        "count": 8723,
+        "min": -15,
+        "p10": 58,
+        "median": 96,
+        "p90": 116,
+        "max": 147
+      }
+    },
+    "g1": {
+      "total": 90,
+      "full": 11,
+      "tf": {
+        "count": 636,
+        "min": 11,
+        "p10": 65,
+        "median": 97,
+        "p90": 116,
+        "max": 135
+      }
+    }
+  },
+  "activeAtEnd": 323,
+  "elapsedMs": 5251
+}

@@ -42,7 +42,7 @@
     };
   }
 
-  function evaluate(horse, time, decline) {
+  function evaluate(horse, time, decline, options) {
     const peak = getPeakWindow(horse);
     const currentIndex = time.index;
     const declineValue = decline || 0;
@@ -59,7 +59,8 @@
 
     if (currentIndex < peak.startIndex) {
       const monthsEarly = Math.ceil((peak.startIndex - currentIndex) / 2);
-      const adjustedStrength = Math.max(60, horse.strength - monthsEarly);
+      const adjustedStrength = options && options.noAbilityFloor
+        ? horse.strength - monthsEarly : Math.max(60, horse.strength - monthsEarly);
       return {
         status: "未成熟",
         adjustedStrength,

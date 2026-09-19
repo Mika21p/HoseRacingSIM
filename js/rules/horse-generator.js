@@ -721,7 +721,8 @@
     const maturity = opts.maturity || ns.MaturityRules.evaluate(
       horse,
       opts.currentTime || ns.TimeRules.startTime(),
-      opts.maturityDecline || 0
+      opts.maturityDecline || 0,
+      opts
     );
     const surfaceGrade = getSurfaceGrade(horse, race);
     const surfaceRegion = race.surfaceRegion || "日本";
@@ -738,7 +739,7 @@
     const temperamentMod = opts.temperamentMod || ns.TemperamentRules.rollRaceMod(horse.temperamentLabel);
     const racePenaltyMod = Number.isFinite(opts.racePenaltyMod) ? opts.racePenaltyMod : 0;
     const rawAbility = maturity.adjustedStrength + surfaceMod + courseMod + heavyMod + temperamentMod.mod - distancePenalty + racePenaltyMod;
-    const ability = Math.max(MIN_EFFECTIVE_RACE_ABILITY, rawAbility);
+    const ability = opts.noAbilityFloor ? rawAbility : Math.max(MIN_EFFECTIVE_RACE_ABILITY, rawAbility);
     return {
       ability,
       rawAbility,

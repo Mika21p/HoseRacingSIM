@@ -1153,7 +1153,50 @@
       : simulateDuelRace(horse, race, context);
   }
 
+  // All world runners use the same existing phases, without historical fixed scores.
+  function simulateWorldRace(runners, race, options) {
+    const opts = options || {};
+    const trackCondition = opts.trackCondition || rollTrackCondition();
+    const results = runners.map((runner) => {
+      const calc = ns.HorseRules.calcRaceAbility(runner.horse, race, {
+        currentTime: runner.time,
+        maturityDecline: runner.decline || 0,
+        noAbilityFloor: true,
+        trackCondition,
+        racePenaltyMod: preRaceAbilityMod(runner.condition)
+      });
+      const pressure = race.raceClass === "g1" && R.roll(100) <= 8 ? R.rollRange(3, 8) : 0;
+      const result = runOneRunner({
+        key: runner.horse.id, name: runner.horse.name,
+        ability: calc.ability - pressure, riderAbility: runner.jockey.ability,
+        jockeyId: runner.jockey.id, jockeyName: runner.jockey.name, specialSprint: false
+      });
+      applyPreRaceAccident(result, runner.condition);
+      result.injury = retirementInjury(result, runner.condition);
+      result.pressure = pressure;
+      return result;
+    });
+    const ordered = orderedFieldResults(results);
+    const winner = ordered.find((result) => !result.retired);
+    const tfFloat = R.rollRange(-5, 5);
+    const pointsPerLength = getPointsPerLength(race.distance);
+    return {
+      trackCondition, tfFloat,
+      results: ordered.map((result) => ({
+        horseId: result.entry.key, jockeyId: result.entry.jockeyId, jockeyName: result.entry.jockeyName,
+        rank: result.retired ? null : result.fieldPosition,
+        retired: result.retired, phase: result.retiredPhase, injury: result.injury,
+        total: result.total, tf: result.retired ? null : result.total + 10 + tfFloat,
+        pressure: result.pressure,
+        margin: result.retired || !winner ? null : (winner.total - result.total) / pointsPerLength,
+        marginLabel: result.retired || result === winner ? "" : createMarginLabel((winner.total - result.total) / pointsPerLength,
+          result.total === winner.total ? "player-loss" : "")
+      }))
+    };
+  }
+
   ns.RaceRules = {
+    simulateWorldRace,
     simulateRace,
     chooseOpponent,
     chooseOpponentField,

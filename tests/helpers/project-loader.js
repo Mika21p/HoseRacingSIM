@@ -140,6 +140,12 @@ function loadChangelogData() {
   return context.window.Keiba.Changelog;
 }
 
+function loadChairmanRules() {
+  const project = loadEraRules();
+  ["js/rules/chairman.js", "js/rules/chairman-office.js", "js/chairman-csv.js"].forEach((file) => runProjectFile(project.context, file));
+  return project;
+}
+
 module.exports = {
   projectRoot,
   listJavaScriptFiles,
@@ -147,5 +153,6 @@ module.exports = {
   loadCoreRules,
   loadRoguelikeRules,
   loadEraRules,
+  loadChairmanRules,
   loadChangelogData
 };
