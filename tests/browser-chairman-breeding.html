@@ -1,0 +1,49 @@
+<!doctype html><html lang="zh-CN"><meta charset="UTF-8"><title>主席模式第三轮繁殖浏览器验收</title>
+<style>body{font:16px system-ui;background:#172235;color:#e5edf8;max-width:1000px;margin:40px auto;padding:20px}button{font:inherit;padding:12px}pre{white-space:pre-wrap}iframe{display:none}</style>
+<h1>主席模式第三轮繁殖浏览器验收</h1><p>使用独立临时数据库；不读写实际游戏世界。结束后自动清理测试库。</p>
+<button id="start" disabled>运行1万谱系／1000匹现役／20年历史测试</button><pre id="status">正在加载测试引擎…</pre><div id="table"></div><iframe id="engine" src="../"></iframe>
+<script>
+const log = document.getElementById('status'), start = document.getElementById('start'), frame = document.getElementById('engine');
+frame.onload=()=>{start.disabled=false;log.textContent='引擎已就绪。';};
+start.onclick=async()=>{
+  start.disabled=true;const dbName='keiba-breeding-benchmark-'+Date.now(), timings={}, began=performance.now(); let store;
+  const assert=(v,m)=>{if(!v)throw Error(m);}, now=()=>performance.now(), tick=()=>new Promise(r=>setTimeout(r,0));
+  try{
+    const ns=frame.contentWindow.Keiba,W=ns.ChairmanRules, env={Keiba:ns,indexedDB,IDBKeyRange,setInterval:(...a)=>setInterval(...a),clearInterval:(...a)=>clearInterval(...a),navigator:{},crypto};
+    const sources=await Promise.all(['chairman-storage.js','chairman-history.js'].map(f=>fetch('../js/'+f).then(r=>r.text())));
+    new Function('window',sources[0].replace('"keiba-chairman-v1"',JSON.stringify(dbName)))(env);new Function('window',sources[1])(env);
+    store=await ns.ChairmanStorage.open();log.textContent='生成1000匹和20年测试记录…';await tick();
+    const w=W.createWorld({id:'browser-performance-world',seed:77531,horseCount:1000});w.turn=480;
+    w.horses.forEach(h=>{h.birthYear+=20;h.annual.year=21;h.booked=null;h.annual.runs=[];});
+    ns.ChairmanBreeding.enable(w,{foundation:false});
+    for(let i=1;i<=10000;i++) w.pedigrees.push({id:'benchmark-ancestor-'+i,name:'始祖'+i,originalName:'Ancestor '+i,gender:'牡马',birthYear:-100+Math.floor(Math.log2(i))*3,status:'ancestor',sourceKind:'foundation',fatherId:i>1?'benchmark-ancestor-'+Math.floor(i/2):'',motherId:''});
+    w.horses.forEach((h,i)=>{h.fatherId='benchmark-ancestor-'+(9001+i);});
+    W.validateWorld(w);
+    let qt=now();const search=ns.ChairmanBreeding.query(w,{search:'Ancestor',offset:5000});timings.pedigreeSearchMs=now()-qt;assert(search.total===10000&&search.rows.length===50,'一万谱系搜索分页');
+    qt=now();const children=ns.ChairmanBreeding.query(w,{ancestor:'benchmark-ancestor-1',relation:'all',offset:9500});timings.descendantsDeepMs=now()-qt;assert(children.total===10999&&children.rows.length===50,'后代去重深分页');
+    qt=now();assert(ns.ChairmanBreeding.ancestors(w,w.horses[0].id,3).size===3,'三代展开');timings.threeGenerationsMs=now()-qt;
+    const occurrences=[],performances=[],ratings=[];
+    for(let year=1;year<=20;year++){
+      for(const r of w.races){const turn=(year-1)*24+(r.month-1)*2+r.half-1,oid=year+':'+r.id;
+        occurrences.push({id:oid,raceId:r.id,race:W.engineRace(w,r),year,turn,name:r.name,raceClass:r.raceClass,count:16,status:'completed'});
+        for(let i=0;i<16;i++){const h=w.horses[(turn*17+i)%1000];performances.push({id:oid+':'+h.id,occurrenceId:oid,horseId:h.id,raceId:r.id,year,turn,horseName:h.name,homeRegion:h.homeRegion,
+          rank:i+1,total:100-i,tf:110-i,manualRating:null,prize:i<5?r.prizes[i]:0,raceName:r.name,raceClass:r.raceClass,surface:r.surface,surfaceRegion:W.engineRace(w,r).surfaceRegion,distance:r.distance});}
+      }
+      for(const h of w.horses)ratings.push({id:year+':'+h.id,year,horseId:h.id,horseName:h.name,age:2+(year%4),gender:h.gender,homeRegion:h.homeRegion,wtr:100+(Number(h.id.split('-')[1])+year)%40,tf:130,suggested:120,manual:null,starts:4,wins:1,g1:0,prize:10});
+    }
+    log.textContent='写入独立测试库：51840条出赛、20000条年度评级…';await tick();
+    await store.acquire(w.id);let t=now();await store.commitChanges(null,{world:w,occurrences,performances,ratings});timings.initialSaveMs=now()-t;
+    t=now();let board=await store.board(w,'history',{},0,true);timings.boardFirstMs=now()-t;assert(board.rows.length===50&&board.total===20000,'历史榜数量');
+    t=now();let deep=await store.board(w,'history',{region:'日本',age:'4+'},500,true);timings.filteredDeepMs=now()-t;assert(deep.rows.length===50,'筛选深分页');
+    t=now();let history=await store.historyPage(w,{},0);timings.resultsFirstMs=now()-t;assert(history.rows.length===50&&history.total===3240,'赛事数量');
+    t=now();document.getElementById('table').innerHTML='<table><tr><th>名次</th><th>年份</th><th>WTR</th></tr>'+board.rows.map(r=>'<tr><td>'+r.rank+'</td><td>'+r.year+'</td><td>'+r.wtr+'</td></tr>').join('')+'</table>';await new Promise(requestAnimationFrame);timings.tableRenderMs=now()-t;
+    t=now();const old=ratings[0],updated=ns.ChairmanOffice.annualScore(w,old.horseId,old.year,200,old);await store.commitChanges(w,updated);assert((await store.board(updated.world,'history',{},0,false)).rows[0].wtr===200,'改分重新排序');timings.historicalEditMs=now()-t;
+    t=now();const loaded=await store.load(w.id);assert(loaded.horses.length===1000&&loaded.pedigrees.length===10000,'完整读取');timings.loadMs=now()-t;
+    t=now();const out=W.advanceHalfMonth(loaded);await store.commitChanges(loaded,out,{checkpoint:'turn'});const recovered=await store.restore(out.world,'turn:'+loaded.revision);assert(recovered.turn===480&&recovered.rngState===loaded.rngState&&recovered.breeding.rngState===loaded.breeding.rngState&&recovered.pedigrees.length===10000,'回退随机状态与谱系');timings.turnAndRestoreMs=now()-t;
+    t=now();const snapshot=await store.exportWorld(w.id);store.validateSnapshot(snapshot);assert(snapshot.records.performances.length===51840,'恢复后的历史完整');timings.exportMs=now()-t;
+    const copy=await store.importWorld(snapshot);assert(copy.pedigrees.length===10000&&copy.horses[0].fatherId,'导入血统关联');assert((await store.board(copy,'history',{},0,false)).rows[0].wtr===200,'导入保留评分');
+    timings.totalMs=now()-began;log.textContent='全部通过\n'+JSON.stringify({userAgent:navigator.userAgent,hardwareConcurrency:navigator.hardwareConcurrency,timings},null,2);
+  }catch(error){log.textContent='失败：'+error.stack;}
+  finally{if(store)await store.close(); await new Promise((resolve,reject)=>{const r=indexedDB.deleteDatabase(dbName);r.onsuccess=resolve;r.onerror=reject;});log.textContent+='\n临时测试库已清理。';start.disabled=false;}
+};
+</script></html>

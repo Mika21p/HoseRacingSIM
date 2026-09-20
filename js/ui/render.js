@@ -657,51 +657,52 @@
     const distances = [1000, 1200, 1400, 1600, 1800, 2000, 2200, 2400, 2600, 3000, 3200, 3600];
     root.innerHTML = `
       <section class="home-screen" id="homeScreen" aria-labelledby="homeTitle">
-        <div class="home-mode-grid">
-          <div class="home-hero">
-            <div class="home-hero-copy">
-              <p class="eyebrow">赛马生涯模拟</p>
-              <h1 id="homeTitle">培育赛马，规划竞赛生涯</h1>
-              <p class="home-lead">选择血统、练马师与骑手，规划赛程并挑战各地重赏。</p>
-              <div class="home-primary-actions">
-                <button class="primary" id="homeContinueBtn" type="button" hidden>继续生涯</button>
-                <button class="secondary" id="homeStartBtn" type="button">开始生涯</button>
-              </div>
-              <p class="home-save-note" id="homeSaveStatus" aria-live="polite">暂无存档</p>
-            </div>
+        <header class="home-brand-bar">
+          <div class="home-brand"><img src="assets/home/logo.svg" width="48" height="48" alt=""><div><strong>赛马生涯模拟</strong><span>KEIBA CAREER SIMULATOR</span></div></div>
+          <span class="home-brand-note">每一次出闸，都是新的可能。</span>
+        </header>
+        <section class="home-banner" aria-labelledby="homeTitle">
+          <img class="home-banner-art" src="assets/home/racing-hero.png" alt="" fetchpriority="high" width="2172" height="724">
+          <div class="home-banner-copy">
+            <p class="home-kicker"><span></span> YOUR NEXT CHAPTER STARTS HERE</p>
+            <h1 id="homeTitle" tabindex="-1">下一匹传奇，<br>由你<span>缔造。</span></h1>
+            <p class="home-banner-lead">培育赛马，规划竞赛生涯。<br>从初次出闸，到世界赛场，奔赴属于你的终点线。</p>
+            <div class="home-banner-caption"><span>育成</span><i></i><span>竞逐</span><i></i><span>荣耀</span></div>
           </div>
-
-          <section class="home-legend-feature" aria-labelledby="homeLegendTitle">
-            <div class="home-legend-copy">
-              <div class="home-legend-kicker"><span>NEW!</span><p class="eyebrow">传奇模式</p></div>
-              <h2 id="homeLegendTitle">迎战五匹史实强敌</h2>
-              <p>以更高潜力出道，报名后立即锁定符合条件的史实名马阵容。</p>
-              <div class="home-legend-facts" aria-label="传奇模式特点">
-                <span>史实阵容</span><span>报名锁定</span>
-              </div>
-              <button class="home-legend-action" id="homeLegendBtn" type="button">开始传奇模式</button>
-            </div>
-            <div class="home-legend-mark" aria-hidden="true">
-              <small>每场</small>
-              <strong>5</strong>
-              <span>匹强敌</span>
+          <span class="home-art-caption" aria-hidden="true">THE TRACK IS YOURS.</span>
+        </section>
+        <div class="home-mode-heading"><div><p class="home-kicker">CHOOSE YOUR JOURNEY</p><h2>选择你的赛马之旅</h2></div><span>五种玩法，无限可能</span></div>
+        <div class="home-mode-grid">
+          <section class="home-mode-card home-mode-career" aria-labelledby="homeCareerTitle">
+            <div class="home-card-top"><img src="assets/home/career.svg" width="44" height="44" alt=""><span class="home-card-index">01 / CAREER</span></div>
+            <h3 id="homeCareerTitle">普通生涯</h3><p class="home-card-tagline">从第一步，跑向无限可能</p>
+            <p class="home-card-description">选择血统、练马师与骑手，培育独一无二的赛马，规划你的竞赛生涯。</p>
+            <div class="home-card-tags"><span>自由育成</span><span>全球赛程</span></div>
+            <div class="home-card-bottom">
+              <p class="home-card-status" id="homeSaveStatus" aria-live="polite">暂无存档</p>
+              <div class="home-card-actions"><button class="home-mode-action" id="homeStartBtn" type="button">开始生涯</button><button class="home-mode-resume" id="homeContinueBtn" type="button" hidden>继续生涯</button></div>
             </div>
           </section>
-
-          <section class="home-rogue-feature" aria-labelledby="homeRogueTitle">
-            <div class="home-rogue-copy">
-              <div class="home-rogue-kicker"><span>NEW!</span><p class="eyebrow">肉鸽挑战</p></div>
-              <h2 id="homeRogueTitle">从未知候选中押注传奇</h2>
-              <p>挑选随机小马并锁定挑战，用荣誉币扩展下一段生涯。</p>
-              <div class="home-legend-facts" aria-label="肉鸽模式特点">
-                <span>随机候选</span><span>荣誉币循环</span>
-              </div>
-              <div class="home-rogue-actions">
-                <button class="home-rogue-action" id="homeRogueBtn" type="button">进入肉鸽挑战</button>
-                <button class="secondary" id="homeRogueContinueBtn" type="button" hidden>继续肉鸽进度</button>
-              </div>
-              <p class="home-save-note" id="homeRogueStatus">荣誉币 0 · 仅佐藤悠太已解锁</p>
-            </div>
+          <section class="home-mode-card home-mode-legend" aria-labelledby="homeLegendTitle">
+            <div class="home-card-top"><img src="assets/home/legend.svg" width="44" height="44" alt=""><span class="home-card-index">02 / LEGEND</span></div>
+            <h3 id="homeLegendTitle">传奇模式</h3><p class="home-card-tagline">迎战五匹史实强敌</p>
+            <p class="home-card-description">以更高潜力出道，与史实名马同场较量，把你的名字写进赛场传奇。</p>
+            <div class="home-card-tags"><span>史实阵容</span><span>报名锁定</span></div>
+            <div class="home-card-bottom"><p class="home-card-status">向历代名马发起挑战</p><div class="home-card-actions"><button class="home-mode-action" id="homeLegendBtn" type="button">开始传奇模式</button></div></div>
+          </section>
+          <section class="home-mode-card home-mode-rogue" aria-labelledby="homeRogueTitle">
+            <div class="home-card-top"><img src="assets/home/rogue.svg" width="44" height="44" alt=""><span class="home-card-index">03 / ROGUELIKE</span></div>
+            <h3 id="homeRogueTitle">肉鸽挑战</h3><p class="home-card-tagline">从未知候选中押注传奇</p>
+            <p class="home-card-description">挑选随机小马，锁定本轮挑战。积累荣誉币，让每一次重来更进一步。</p>
+            <div class="home-card-tags"><span>随机候选</span><span>荣誉币循环</span></div>
+            <div class="home-card-bottom"><p class="home-card-status" id="homeRogueStatus">荣誉币 0 · 仅佐藤悠太已解锁</p><div class="home-card-actions"><button class="home-mode-action" id="homeRogueBtn" type="button">进入肉鸽挑战</button><button class="home-mode-resume" id="homeRogueContinueBtn" type="button" hidden>继续肉鸽进度</button></div></div>
+          </section>
+          <section class="home-mode-card home-mode-era" aria-labelledby="homeEraTitle">
+            <div class="home-card-top"><img src="assets/home/era.svg" width="44" height="44" alt=""><span class="home-card-index">04 / STORY</span></div>
+            <h3 id="homeEraTitle">剧情模式 <span class="home-mode-badge">测试</span></h3><p class="home-card-tagline">走进黄金时代的故事</p>
+            <p class="home-card-description">踏入 1997—1998 年的赛马世界，在时代的交汇处，书写你的赛场篇章。</p>
+            <div class="home-card-tags"><span>时代叙事</span><span>剧情体验</span></div>
+            <div class="home-card-bottom"><p class="home-card-status">黄金世代 · 故事由此展开</p><div class="home-card-actions"><button class="home-mode-action" id="homeEraBtn" type="button">进入剧情模式</button></div></div>
           </section>
         </div>
 
@@ -734,7 +735,6 @@
             </div>
           </section>
           <div class="home-secondary-actions">
-            <button class="secondary" id="homeEraBtn" type="button">剧情模式测试入口</button>
             <button class="secondary" id="homeHelpBtn" type="button">游戏帮助</button>
             <button class="secondary" id="homeChangelogBtn" type="button">更新日志</button>
           </div>

@@ -89,7 +89,7 @@ test("new drafts and revisions survive export and slots and are removed by recov
   const { store, world: before, race, rows } = await setup(); let w = before;
   try {
     const out = await store.draftOutput(w, race.id, { [rows[0].id]: "132" }); await store.commitChanges(w, out); w = out.world;
-    const snapshot = await store.exportWorld(w.id); store.validateSnapshot(snapshot); assert.equal(snapshot.version, 2); assert.equal(snapshot.records.scoreDrafts.length, 1);
+    const snapshot = await store.exportWorld(w.id); store.validateSnapshot(snapshot); assert.equal(snapshot.version, 3); assert.equal(snapshot.records.scoreDrafts.length, 1);
     await store.saveSlot(w.id, 1); const fork = await store.loadSlot(1); assert.equal((await store.get("scoreDrafts", fork.id, race.id)).values[rows[0].id], "132");
     await store.acquire(w.id); const recovered = await store.restore(w, "turn:0"); assert.equal(recovered.turn, 0);
     assert.equal((await store.query("scoreDrafts", recovered.id)).rows.length, 0); assert.equal((await store.query("revisions", recovered.id)).rows.length, 0);
@@ -145,7 +145,7 @@ test("lifetime prize filtering uses highest historical WTR, including after reti
 test("database v2 migration preserves old journal and normalizes rating and result indexes", async () => {
   const p = loadChairmanRules(), W = p.rules.ChairmanRules;
   Object.assign(p.context.window, { indexedDB: new IDBFactory(), IDBKeyRange, setInterval, clearInterval });
-  let legacy = read("js/chairman-storage.js").replace('"awards", "scoreDrafts", "revisions"', '"awards"').replace('indexedDB.open(DB_NAME, 3)', 'indexedDB.open(DB_NAME, 2)');
+  let legacy = read("js/chairman-storage.js").replace('"awards", "scoreDrafts", "revisions", "breedingEvents", "breedingYears"', '"awards"').replace(', "pedigrees"', '').replace('indexedDB.open(DB_NAME, 4)', 'indexedDB.open(DB_NAME, 2)');
   const start = legacy.indexOf('        if (event.oldVersion < 3)'), end = legacy.indexOf('\n      };\n      req.onsuccess', start);
   assert.ok(start > 0 && end > start); legacy = legacy.slice(0, start) + legacy.slice(end);
   vm.runInContext(legacy, p.context); let store = await p.rules.ChairmanStorage.open();
@@ -154,7 +154,7 @@ test("database v2 migration preserves old journal and normalizes rating and resu
   for (const file of ['js/chairman-storage.js', 'js/chairman-history.js']) vm.runInContext(read(file), p.context);
   store = await p.rules.ChairmanStorage.open();
   try {
-    assert.equal(store.db.version, 3); const loaded = await store.load(world.id); assert.equal(loaded.rngState, out.world.rngState);
+    assert.equal(store.db.version, 4); const loaded = await store.load(world.id); assert.equal(loaded.rngState, out.world.rngState);
     assert.ok((await store.historyPage(loaded, {}, 0)).total > 0); await store.acquire(world.id);
     const restored = await store.restore(loaded, 'turn:0'); assert.equal(restored.turn, 0); assert.equal(restored.rngState, world.rngState);
     assert.equal((await store.query('scoreDrafts', world.id)).rows.length, 0);

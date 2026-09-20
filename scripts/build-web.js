@@ -156,6 +156,8 @@ function buildWeb(options = {}) {
 
   const assetsRoot = path.join(outputRoot, "assets");
   fs.mkdirSync(assetsRoot, { recursive: true });
+  const sourceAssetsRoot = path.join(projectRoot, "assets");
+  if (fs.existsSync(sourceAssetsRoot)) copyDirectory(sourceAssetsRoot, assetsRoot);
   fs.writeFileSync(path.join(assetsRoot, bundleName), bundle, "utf8");
 
   const productionLoader = createProductionLoader(files, bundlePath);

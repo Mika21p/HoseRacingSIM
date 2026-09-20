@@ -1,8 +1,8 @@
 (function () {
   "use strict";
   const ns = (window.Keiba = window.Keiba || {});
-  const ENTITIES = ["horses", "tracks", "races"];
-  const HISTORY = ["occurrences", "performances", "ratings", "awards", "scoreDrafts", "revisions"];
+  const ENTITIES = ["horses", "tracks", "races", "pedigrees"];
+  const HISTORY = ["occurrences", "performances", "ratings", "awards", "scoreDrafts", "revisions", "breedingEvents", "breedingYears"];
   const DATA = [...ENTITIES, ...HISTORY];
   const DB_NAME = "keiba-chairman-v1";
   const clean = (row) => { if (!row) return row; const value = { ...row }; delete value.worldId; return value; };
@@ -23,7 +23,7 @@
   function open() {
     return new Promise((resolve, reject) => {
       if (!window.indexedDB) { reject(new Error("当前浏览器无法使用本地数据库，未保存的世界不会被静默丢弃。请启用站点存储。")); return; }
-      const req = window.indexedDB.open(DB_NAME, 3);
+      const req = window.indexedDB.open(DB_NAME, 4);
       req.onupgradeneeded = (event) => {
         const db = req.result;
         if (event.oldVersion < 1) {
@@ -82,6 +82,17 @@
               };
             }
           };
+        }
+      };
+      const originalUpgrade = req.onupgradeneeded;
+      req.onupgradeneeded = (event) => {
+        originalUpgrade(event);
+        if (event.oldVersion < 4) for (const key of ["pedigrees", "breedingEvents", "breedingYears"]) {
+          const db = req.result;
+          const s = db.objectStoreNames.contains(key) ? req.transaction.objectStore(key) : db.createObjectStore(key, { keyPath: ["worldId", "id"] });
+          for (const [name, path] of [["byWorld", "worldId"], ["byYear", ["worldId", "year"]], ["byHorse", ["worldId", "horseId"]],
+            ["byFather", ["worldId", "fatherId"]], ["byMother", ["worldId", "motherId"]], ["byTemplate", ["worldId", "templateId"]]])
+            if (!s.indexNames.contains(name)) s.createIndex(name, path);
         }
       };
       req.onsuccess = () => { const db = req.result; db.onversionchange = () => db.close(); resolve(new Store(db)); };
@@ -176,8 +187,8 @@
       if (!this.writable || this.worldId !== world.id) throw new Error("本世界已在其他页面打开。请关闭另一个页面后重新取得编辑权。");
       const mutations = [];
       for (const key of ENTITIES) {
-        const old = new Map((previous ? previous[key] : []).map((item) => [item.id, item]));
-        for (const item of world[key]) if (!old.has(item.id) || JSON.stringify(old.get(item.id)) !== JSON.stringify(item)) {
+        const old = new Map((previous?.[key] || []).map((item) => [item.id, item]));
+        for (const item of world[key] || []) if (!old.has(item.id) || JSON.stringify(old.get(item.id)) !== JSON.stringify(item)) {
           mutations.push({ store: key, row: { ...item, worldId: world.id } });
         }
       }
@@ -304,19 +315,20 @@
       if (!meta) throw new Error("世界不存在。");
       const world = { ...meta }; const records = {};
       DATA.forEach((key, i) => { if (ENTITIES.includes(key)) world[key] = all[i].map(clean); else records[key] = all[i].map(clean); });
-      return { format: "keiba-chairman-save", version: 2, savedAt: new Date().toISOString(), world, records };
+      return { format: "keiba-chairman-save", version: 3, savedAt: new Date().toISOString(), world, records };
     }
     validateSnapshot(snapshot) {
-      if (!snapshot || snapshot.format !== "keiba-chairman-save" || ![1, 2].includes(snapshot.version)) throw new Error("不支持的存档格式，原存档未修改。");
+      if (!snapshot || snapshot.format !== "keiba-chairman-save" || ![1, 2, 3].includes(snapshot.version)) throw new Error("不支持的存档格式，原存档未修改。");
       ns.ChairmanRules.validateWorld(snapshot.world);
       const horseIds = new Set(snapshot.world.horses.map((h) => h.id));
+      const pedigreeIds = new Set([...snapshot.world.horses, ...(snapshot.world.pedigrees || [])].map((h) => h.id));
       const raceIds = new Set(snapshot.world.races.map((r) => r.id));
       for (const key of HISTORY) {
-        const rows = snapshot.records && snapshot.records[key] || (snapshot.version === 1 && ["scoreDrafts", "revisions"].includes(key) ? [] : null);
+        const rows = snapshot.records && snapshot.records[key] || (snapshot.version < 3 && ["breedingEvents", "breedingYears"].includes(key) || snapshot.version === 1 && ["scoreDrafts", "revisions"].includes(key) ? [] : null);
         if (!Array.isArray(rows) || new Set(rows.map((r) => r.id)).size !== rows.length) throw new Error("历史记录缺失或编号重复。");
         for (const row of rows) {
           if (!row || typeof row.id !== "string" || !Number.isInteger(row.year)) throw new Error("历史记录格式无效。");
-          if (row.horseId && !horseIds.has(row.horseId)) throw new Error("历史记录引用不存在的马匹。");
+          if (row.horseId && !(key === "breedingYears" ? pedigreeIds : horseIds).has(row.horseId)) throw new Error("历史记录引用不存在的马匹。");
           if (row.raceId && !raceIds.has(row.raceId)) throw new Error("历史记录引用不存在的赛事。");
         }
       }
@@ -344,6 +356,16 @@
         })) throw new Error("评分草稿无效。");
       }
       for (const r of snapshot.records.revisions || []) if (!["annual", "event"].includes(r.kind) || [r.before, r.after].some((v) => v != null && !Number.isFinite(v))) throw new Error("评分修订记录无效。");
+      const mothers = new Set(), bornIds = new Set();
+      for (const r of snapshot.records.breedingEvents || []) {
+        const h = ns.ChairmanBreeding.get(snapshot.world, r.horseId), key = `${r.birthYear}:${r.motherId}`;
+        if (!pedigreeIds.has(r.fatherId) || !pedigreeIds.has(r.motherId) || !h || h.fatherId !== r.fatherId || h.motherId !== r.motherId
+          || h.birthYear !== r.birthYear || r.birthYear !== r.year + 1 || mothers.has(key) || bornIds.has(r.horseId)
+          || r.fatherSnapshot?.id !== r.fatherId || r.motherSnapshot?.id !== r.motherId) throw new Error("配种与出生记录关联无效。");
+        mothers.add(key); bornIds.add(r.horseId);
+      }
+      if (snapshot.world.breeding && snapshot.world.horses.some((h) => h.sourceKind === "bred" && !bornIds.has(h.id))) throw new Error("繁殖后代缺少出生记录。");
+      for (const r of snapshot.records.breedingYears || []) if (!Number.isFinite(r.prize) || r.prize < 0 || typeof r.champion !== "boolean") throw new Error("繁殖年度统计无效。");
       return true;
     }
     async importWorld(snapshot) {

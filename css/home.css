@@ -1,0 +1,146 @@
+/* Homepage only: illustrated racing lobby. Gameplay layouts keep their own styles. */
+.app-shell:has(> .home-screen:not([hidden])) {
+  width: min(1440px, calc(100% - 64px));
+  margin: 0 auto;
+  padding: 24px 0 28px;
+}
+body:has(#app:not([hidden]) > .home-screen:not([hidden])) {
+  background: #0b1420;
+}
+body:has(#app:not([hidden]) > .home-screen:not([hidden])) .app-meta-widget {
+  position: absolute;
+  top: 28px;
+  right: max(32px, calc((100vw - 1440px) / 2));
+  left: auto;
+}
+body:has(#app:not([hidden]) > .home-screen:not([hidden])) .app-meta-button { min-height: 44px; }
+body:has(#app:not([hidden]) > .home-screen:not([hidden])) .changelog-panel { position: absolute; right: 0; }
+.home-screen { width: 100%; min-height: 0; gap: 0; color: #f1f5fa; }
+.home-screen button { min-height: 44px; font-weight: 700; }
+.home-screen button:focus-visible { outline: 3px solid #f9e1a6; outline-offset: 4px; }
+.home-screen button[hidden] { display: none !important; }
+.home-screen .home-brand-bar { display: flex; align-items: center; justify-content: space-between; min-height: 52px; margin-bottom: 24px; padding-right: 265px; gap: 24px; }
+.home-screen .home-brand { display: flex; gap: 12px; align-items: center; }
+.home-screen .home-brand img { width: 48px; height: 48px; }
+.home-screen .home-brand strong { display: block; font-size: 20px; letter-spacing: .08em; }
+.home-screen .home-brand span { display: block; margin-top: 5px; color: #8fa6bb; font-size: 9px; letter-spacing: .18em; }
+.home-screen .home-brand-note { color: #8fa6bb; font-size: 12px; letter-spacing: .08em; }
+.home-screen .home-banner { position: relative; isolation: isolate; overflow: hidden; min-height: 390px; border: 1px solid #30475d; border-radius: 20px; background: #132c40; }
+.home-screen .home-banner-art { position: absolute; inset: 0; z-index: -2; width: 100%; height: 100%; object-fit: cover; object-position: 66% top; }
+.home-screen .home-banner::after { position: absolute; inset: 0; z-index: -1; content: ""; background: linear-gradient(90deg, rgba(8,23,38,.7), rgba(8,23,38,.16) 52%, transparent 75%); }
+.home-screen .home-banner-copy { padding: 42px 48px; max-width: 620px; }
+.home-screen .home-kicker { display: flex; align-items: center; gap: 8px; margin: 0; color: #75d9d8; font-size: 10px; font-weight: 700; letter-spacing: .16em; line-height: 1.6; }
+.home-screen .home-kicker > span { display: inline-block; width: 6px; height: 6px; background: #7ce1da; transform: rotate(45deg); }
+.home-screen .home-banner h1 { margin: 20px 0 16px; font-size: clamp(38px, 4.1vw, 58px); line-height: 1.22; letter-spacing: .015em; font-weight: 900; text-shadow: 0 3px 25px #09203166; }
+.home-screen .home-banner h1 span { color: #ffc886; }
+.home-screen .home-banner-lead { color: #c6d6e3; font-size: 14px; line-height: 1.9; margin: 0; }
+.home-screen .home-banner-caption { display: flex; align-items: center; gap: 16px; color: #e0eaf0; margin-top: 24px; font-size: 11px; letter-spacing: .18em; }
+.home-screen .home-banner-caption i { height: 1px; width: 28px; background: #85afb677; }
+.home-screen .home-art-caption { position: absolute; right: 24px; bottom: 20px; color: #fff6dc; letter-spacing: .22em; font-size: 10px; text-shadow: 0 1px 8px #112232; }
+.home-screen .home-mode-heading { display: flex; justify-content: space-between; align-items: end; gap: 16px; margin: 30px 0 18px; }
+.home-screen .home-mode-heading h2 { font-size: 23px; margin: 5px 0 0; letter-spacing: .035em; }
+.home-screen .home-mode-heading > span { color: #8ea3b7; font-size: 12px; }
+.home-screen .home-mode-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px; align-items: stretch; }
+.home-screen .home-mode-card { --mode-color: #7de1d7; display: flex; flex-direction: column; min-width: 0; padding: 22px 18px 18px; border: 1px solid #2c3d50; border-top: 2px solid var(--mode-color); border-radius: 12px; background: linear-gradient(155deg, #1b2c3c, #142130 60%); transition: border-color .18s, transform .18s, box-shadow .18s; }
+.home-screen .home-mode-legend { --mode-color: #ffd08c; }
+.home-screen .home-mode-rogue { --mode-color: #b4a3ff; }
+.home-screen .home-mode-era { --mode-color: #8ac5ff; }
+.home-screen .home-mode-chairman { --mode-color: #eeacb9; }
+.home-screen .home-mode-card:hover { border-color: var(--mode-color); transform: translateY(-3px); box-shadow: 0 12px 24px #0002; }
+.home-screen .home-card-top { display: flex; justify-content: space-between; align-items: center; gap: 6px; margin-bottom: 22px; }
+.home-screen .home-card-top img { width: 44px; height: 44px; flex: 0 0 auto; }
+.home-screen .home-card-index { font-size: 9px; color: #95a9bc; letter-spacing: .07em; }
+.home-screen .home-mode-card h3 { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; font-size: 20px; line-height: 1.5; margin: 0 0 6px; }
+.home-screen .home-mode-badge { padding: 1px 5px; border: 1px solid #50647a; border-radius: 4px; font-size: 9px; color: #c0ccdb; font-weight: 500; white-space: nowrap; }
+.home-screen .home-card-tagline { color: var(--mode-color); font-size: 11px; line-height: 1.6; margin: 0 0 12px; }
+.home-screen .home-card-description { margin: 0; color: #aabccd; font-size: 12px; line-height: 1.85; }
+.home-screen .home-card-tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 16px 0 22px; }
+.home-screen .home-card-tags span { color: #b5c6d7; border: 1px solid #35485a; padding: 3px 7px; border-radius: 4px; font-size: 10px; }
+.home-screen .home-card-bottom { margin-top: auto; }
+.home-screen .home-card-status { color: #91a8bd; font-size: 10px; line-height: 1.6; margin: 0 0 12px; min-height: 32px; }
+.home-screen .home-card-actions { display: grid; gap: 8px; }
+/* Reserve a second action row for every card when a saved run is available. */
+.home-screen .home-mode-grid:has(.home-mode-resume:not([hidden])) .home-card-actions { grid-template-rows: 44px 44px; }
+.home-screen .home-mode-action { display: block; width: 100%; min-width: 0; padding: 11px 6px; border: 1px solid var(--mode-color); border-radius: 6px; background: var(--mode-color); color: #102132; font-size: 12px; line-height: 20px; transition: filter .18s; }
+.home-screen .home-mode-action:hover { filter: brightness(1.12); }
+.home-screen .home-mode-resume { width: 100%; padding: 10px 6px; border: 1px solid #51677c; border-radius: 6px; background: #1b3041; color: #e9f4fc; font-size: 12px; }
+.home-screen .home-mode-resume:hover { background: #284659; }
+.home-screen .home-how-to { grid-template-columns: minmax(190px,.8fr) minmax(0,3fr); margin-top: 28px; padding: 22px 0; border-top: 1px solid #293b4d; border-bottom: 1px solid #293b4d; }
+.home-screen .home-section-heading .eyebrow { color: #7bcfc9; font-size: 10px; letter-spacing: .15em; margin: 0; }
+.home-screen .home-section-heading h2 { color: #dae5ef; font-size: 17px; max-width: 200px; line-height: 1.7; }
+.home-screen .home-play-card { background: transparent; border: 0; border-radius: 0; padding: 4px 12px; min-height: 0; }
+.home-screen .home-play-card > span { color: #6c9dac; font-size: 19px; font-style: italic; }
+.home-screen .home-play-card h3 { color: #dce9f4; font-size: 14px; }
+.home-screen .home-play-card p { font-size: 11px; line-height: 1.8; color: #91a8bd; }
+.home-screen .home-support-row { margin-top: 20px; grid-template-columns: minmax(0,1fr) 170px; }
+.home-screen .home-feedback-card { box-shadow: none; border: 1px solid #293e50; border-radius: 10px; padding: 18px 20px; background: #111f2d; grid-template-columns: minmax(0,1fr) auto; gap: 16px; }
+.home-screen .home-feedback-card::before { display: none; }
+.home-screen .home-feedback-copy .eyebrow { margin: 0; font-size: 10px; color: #7bcfc9; }
+.home-screen .home-feedback-copy h2 { font-size: 16px; margin: 6px 0; }
+.home-screen .home-feedback-copy > p:last-child { font-size: 11px; color: #91a8bd; max-width: 470px; }
+.home-screen .home-feedback-number { padding: 0; border: 0; background: transparent; gap: 12px; }
+.home-screen .home-feedback-number > div { min-width: 0; }
+.home-screen .home-feedback-number strong { font-size: 21px; }
+.home-screen .home-feedback-number button { font-size: 11px; background: #254557; border: 1px solid #426477; }
+.home-screen .home-secondary-actions { gap: 10px; }
+.home-screen .home-secondary-actions button { background: #152534; border: 1px solid #354c60; color: #c6d8e7; min-height: 44px; font-size: 12px; }
+.home-screen .home-secondary-actions button:hover { background: #21394d; }
+.home-screen .site-footer { margin-top: 20px; border-top: 0; padding: 0; font-size: 10px; color: #70879c; }
+@media (max-width: 1199px) {
+  .home-screen .home-mode-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .home-screen .home-brand-note { display: none; }
+  .home-screen .home-mode-card { padding: 22px; }
+  .home-screen .home-card-top { margin-bottom: 14px; }
+  .home-screen .home-banner-copy { padding: 38px 30px; }
+  .home-screen .home-banner { min-height: 350px; }
+  .home-screen .home-how-to { grid-template-columns: 1fr; gap: 16px; }
+  .home-screen .home-section-heading h2 { max-width: none; }
+  .home-screen .home-support-row { grid-template-columns: 1fr; }
+  .home-screen .home-secondary-actions { grid-template-columns: repeat(2, minmax(0,1fr)); grid-template-rows: none; }
+}
+@media (max-width: 760px) {
+  .app-shell:has(> .home-screen:not([hidden])) { width: calc(100% - 32px); padding-top: 18px; }
+  .home-screen .home-brand-bar { padding-right: 105px; margin-bottom: 20px; }
+  .home-screen .home-brand { gap: 8px; }
+  .home-screen .home-brand strong { font-size: 16px; }
+  .home-screen .home-brand span { font-size: 7px; letter-spacing: .1em; }
+  .home-screen .home-brand img { width: 36px; height: 36px; }
+  body:has(#app:not([hidden]) > .home-screen:not([hidden])) .app-meta-widget { top: 22px; right: 16px; }
+  body:has(#app:not([hidden]) > .home-screen:not([hidden])) .app-meta-button small { display: none; }
+  .home-screen .home-play-grid { grid-template-columns: repeat(3, minmax(0,1fr)); }
+  .home-screen .home-feedback-number { flex-direction: row; align-items: center; }
+  .home-screen .home-feedback-number button { width: auto; }
+}
+@media (max-width: 639px) {
+  .home-screen .home-mode-grid { grid-template-columns: 1fr; gap: 14px; }
+  .home-screen .home-brand-bar { padding-right: 65px; }
+  .home-screen .home-banner { min-height: 330px; border-radius: 14px; }
+  .home-screen .home-banner-art { object-position: 72% center; opacity: .85; }
+  .home-screen .home-banner::after { background: linear-gradient(90deg, #081726df 0%, #08172688 55%, #08172622), linear-gradient(0deg, #0d2436aa, transparent 50%); }
+  .home-screen .home-banner-copy { padding: 24px 20px; max-width: 340px; }
+  .home-screen .home-banner .home-kicker { font-size: 7px; letter-spacing: .1em; }
+  .home-screen .home-banner h1 { font-size: 37px; margin-top: 32px; }
+  .home-screen .home-banner-lead { font-size: 11px; line-height: 1.9; }
+  .home-screen .home-banner-caption { margin-top: 22px; font-size: 9px; }
+  .home-screen .home-art-caption { display: none; }
+  .home-screen .home-mode-heading { margin-top: 26px; }
+  .home-screen .home-mode-heading h2 { font-size: 20px; }
+  .home-screen .home-mode-heading > span { display: none; }
+  .home-screen .home-mode-card { padding: 20px; }
+  .home-screen .home-card-top { margin-bottom: 10px; }
+  .home-screen .home-card-description { font-size: 13px; }
+  .home-screen .home-card-tags { margin: 12px 0; }
+  .home-screen .home-card-status { min-height: 0; }
+  .home-screen .home-mode-grid:has(.home-mode-resume:not([hidden])) .home-card-actions { grid-template-rows: none; }
+  .home-screen .home-how-to { margin-top: 24px; }
+  .home-screen .home-play-grid { grid-template-columns: 1fr; gap: 18px; }
+  .home-screen .home-play-card { padding: 0; }
+  .home-screen .home-feedback-card { grid-template-columns: 1fr; padding: 18px; }
+  .home-screen .home-feedback-number { justify-content: space-between; gap: 8px; }
+  .home-screen .home-feedback-number strong { font-size: 20px; }
+  .home-screen .home-feedback-number button { padding-inline: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-screen .home-mode-card, .home-screen .home-mode-action { transition: none; }
+  .home-screen .home-mode-card:hover { transform: none; }
+}

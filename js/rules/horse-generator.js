@@ -760,6 +760,7 @@
   }
 
   ns.HorseRules = {
+    generatePeak(type) { return { start: R.pickOne(PEAK_START_MAP[type] || PEAK_START_MAP["普早"]), end: R.pickOne(PEAK_END_MAP[type] || PEAK_END_MAP["普早"]) }; },
     GRADES,
     COATS,
     generateHorse,

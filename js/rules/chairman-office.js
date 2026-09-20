@@ -41,12 +41,13 @@
     const n = score(value), current = W.date(world.turn).year;
     return W.mutate(world, (w, out) => {
       const h = w.horses.find((v) => v.id === horseId); assert(h, "马匹不存在。");
+      assert(h.status !== "juvenile", "幼驹尚未出道，不能赋予年度竞赛评分。");
       assert(year === current || archived && archived.year === year && archived.horseId === horseId, "没有对应年度档案。");
       const row = year === current ? { ...h.annual, id: `${year}:${horseId}`, horseId } : { ...archived };
       revision(out, "annual", row, row.manual, n);
       row.manual = n; row.wtr = n ?? row.suggested;
       if (year === current) h.annual.manual = n;
-      else { out.ratings.push(row); if (year === current - 1) h.previousWtr = row.wtr; }
+      else { out.ratings.push(row); if (year === current - 1) h.previousWtr = row.wtr; ns.ChairmanBreeding?.recordRating(h, year, row.wtr); }
     });
   }
   function raceScores(world, occurrence, performances, values, yearRows, archives, reset) {
@@ -67,6 +68,7 @@
         else {
           const old = archives.find((a) => a.horseId === horseId && a.year === occurrence.year); assert(old, "缺少年度档案。");
           const row = { ...old, suggested, wtr: old.manual ?? suggested }; out.ratings.push(row);
+          ns.ChairmanBreeding?.recordRating(h, occurrence.year, row.wtr);
           if (occurrence.year === current - 1) h.previousWtr = row.wtr;
         }
         const last = rows.find((p) => p.turn === h.lastRaceTurn); if (last) h.lastEventRating = last.manualRating ?? last.tf;

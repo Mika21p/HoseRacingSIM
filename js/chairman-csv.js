@@ -5,7 +5,7 @@
   const field = (key, label, type) => ({ key, label, type: type || "text" });
   const HORSE = [field("id", "编号"), field("name", "马名"), field("gender", "性别"), field("birthYear", "出生年份", "number"),
     field("homeRegion", "所属地区"), field("owner", "马主"), field("coat", "毛色"), field("strength", "基础能力", "number"),
-    field("weight", "体重kg", "number"), field("temperamentLabel", "气性"), field("heavyType", "重场地适性"),
+    field("weight", "体重kg", "number"), field("breedingStrength", "配种实力", "number"), field("temperamentLabel", "气性"), field("heavyType", "重场地适性"),
     field("distMin", "距离下限米", "number"), field("coreDist", "核心距离米", "number"), field("distMax", "距离上限米", "number"),
     field("growthType", "成长类型"), field("peakStart", "巅峰开始"), field("peakEnd", "巅峰结束"),
     field("fatherId", "父马编号"), field("motherId", "母马编号"), field("sireId", "父系模板"), field("damId", "母系模板"),
@@ -59,11 +59,12 @@
     const fields = schema(kind);
     const rows = (kind === "horse" ? world.horses.filter((h) => h.origin === "custom") : world.races.filter((r) => !r.deleted))
       .filter((row) => !ids || ids.includes(row.id));
-    const output = [["模板版本", ...fields.map((f) => f.label)].map((v) => quote(v)).join(",")];
+    const output = [["模板版本", "来源世界", ...fields.map((f) => f.label)].map((v) => quote(v)).join(",")];
     for (const original of rows) {
       const row = { ...original };
+      if (kind === "horse") row.breedingStrength = original.breeding?.strength ?? original.breedingStrength;
       if (kind === "race") row.trackName = (world.tracks.find((t) => t.id === row.trackId) || {}).name;
-      output.push(["1", ...fields.map((f) => quote(read(row, f.key), f.type === "number"))].join(","));
+      output.push(["1", quote(world.id), ...fields.map((f) => quote(read(row, f.key), f.type === "number"))].join(","));
     }
     return "\uFEFF" + output.join("\r\n") + "\r\n";
   }
@@ -86,7 +87,7 @@
     if (!rows.length) return { errors: ["CSV为空。"], changes, added, updated, skipped, output: null };
     const headers = rows.shift().values.map((v) => v.trim());
     if (new Set(headers).size !== headers.length) errors.push("表头含重复列。");
-    for (const header of headers) if (header !== "模板版本" && !lookup.has(header)) errors.push(`不支持的列：${header}`);
+    for (const header of headers) if (!["模板版本", "来源世界"].includes(header) && !lookup.has(header)) errors.push(`不支持的列：${header}`);
     if (!headers.includes("模板版本")) errors.push("缺少模板版本列，请使用本模式模板。");
     if (!headers.includes(kind === "horse" ? "马名" : "比赛名")) errors.push("缺少名称列。");
     if (!["copy", "update", "skip"].includes(mode)) errors.push("导入模式无效。");
@@ -94,7 +95,7 @@
     const inputIds = new Set(); const remap = new Map();
     const output = W.mutate(world, (w) => {
       const collection = kind === "horse" ? w.horses : w.races;
-      const prepared = [];
+      const prepared = [], pendingStrength = new Map();
       for (const row of rows) {
         if (row.values.length !== headers.length) { errors.push(`第${row.line}行：列数与表头不一致。`); continue; }
         const version = row.values[headers.indexOf("模板版本")];
@@ -144,7 +145,15 @@
         if (invalid) continue;
         if (kind === "horse") {
           if (!existing || value.homeRegion !== existing.homeRegion) value.locationRegion = value.homeRegion;
-          for (const key of ["fatherId", "motherId"]) if (value[key] && remap.has(value[key])) value[key] = remap.get(value[key]);
+          for (const key of ["fatherId", "motherId"]) if (value[key]) {
+            const external = headers.includes("来源世界") ? row.values[headers.indexOf("来源世界")] !== w.id : !(existing && existing[key] === value[key]);
+            if (remap.has(value[key])) value[key] = remap.get(value[key]);
+            else if (opts.parentMappings?.[value[key]]) value[key] = opts.parentMappings[value[key]];
+            else if (external) { errors.push(`第${row.line}行，${key === "fatherId" ? "父马编号" : "母马编号"}：跨世界引用${value[key]}须明确映射，不能按同号自动关联。`); invalid = true; }
+          }
+          if (value.breedingStrength != null && w.breeding) { value.breeding.strength = value.breedingStrength; delete value.breedingStrength; }
+          else if (!existing && w.breeding) pendingStrength.set(value.id, value);
+          if (invalid) continue;
         } else {
           value.raceClass = String(value.raceClass).toLowerCase();
           value.grade = value.raceClass.toUpperCase();
@@ -166,7 +175,18 @@
         changes.push({ line: row.line, name: value.name, action: existing ? "更新" : "新增", id: value.id });
       }
       if (!errors.length) {
-        try { W.validateWorld(w); W.planEntries(w); } catch (error) { errors.push(error.message); }
+        try {
+          W.validateWorld(w);
+          // Resolve the complete batch before deriving B, including parents appearing later in the CSV.
+          const settled = new Set();
+          function initializeStrength(h) {
+            if (settled.has(h.id)) return;
+            for (const id of [h.fatherId, h.motherId]) if (pendingStrength.has(id)) initializeStrength(pendingStrength.get(id));
+            delete h.breeding; ns.ChairmanBreeding.initialize(w, h); settled.add(h.id);
+          }
+          for (const h of pendingStrength.values()) initializeStrength(h);
+          W.planEntries(w);
+        } catch (error) { errors.push(error.message); }
       }
     });
     return { errors, changes, added, updated, skipped, baseRevision: world.revision, output: errors.length ? null : output };

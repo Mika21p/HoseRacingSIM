@@ -142,7 +142,7 @@ function loadChangelogData() {
 
 function loadChairmanRules() {
   const project = loadEraRules();
-  ["js/rules/chairman.js", "js/rules/chairman-office.js", "js/chairman-csv.js"].forEach((file) => runProjectFile(project.context, file));
+  ["js/data/chairman-pedigrees.js", "js/rules/chairman.js", "js/rules/chairman-breeding.js", "js/rules/chairman-office.js", "js/chairman-csv.js"].forEach((file) => runProjectFile(project.context, file));
   return project;
 }
 

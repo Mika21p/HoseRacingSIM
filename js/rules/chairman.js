@@ -6,6 +6,14 @@
   const REGION_IDS = { 日本: "japan", 欧洲: "europe", 美国: "northAmerica" };
   const TRAVEL_IDS = { 日本: "japan", 欧洲: "europe", 美国: "america" };
   const AFFILIATIONS = { 日本: "japan", 欧洲: "europe", 美国: "usa" };
+  function regions(w) { return w.regions || REGIONS.map((name) => ({ id: REGION_IDS[name], name, baseRegion: name, autoPopulate: true })); }
+  function regionNames(w) { return regions(w).map((r) => r.name); }
+  function populationRegions(w) { return regions(w).filter((r) => r.autoPopulate).map((r) => r.name); }
+  function regionBase(w, name) {
+    const region = regions(w).find((r) => r.name === name);
+    assert(region, `地区“${name}”不存在，请先在管理地区中创建。`);
+    return region.baseRegion;
+  }
   const G1_IDS = [
     "takamatsunomiya-kinen", "oka-sho", "tokyo-yushun", "japan-cup", "champions-cup", "asahi-hai-fs",
     "epsom-derby", "epsom-oaks", "ascot-gold-cup", "july-cup", "prix-de-larc", "prix-morny",
@@ -60,12 +68,22 @@
   }
   // IndexedDB returns key order, not insertion order. Simulation order must survive reloads.
   function canonicalOrder(w) {
-    for (const key of ["horses", "races", "tracks"]) w[key].sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
+    for (const key of ["horses", "races", "tracks", "pedigrees"]) (w[key] || []).sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
   }
   function engineRace(w, race) {
     const track = w.tracks.find((item) => item.id === race.trackId);
     assert(track, "赛事关联的马场不存在。");
-    return { ...race, surfaceRegion: track.region, course: track.courseType, trackName: track.name };
+    return { ...race, surfaceRegion: track.region, engineRegion: regionBase(w, track.region), course: track.courseType, trackName: track.name };
+  }
+  function simulationRace(w, race) { return { ...race, surfaceRegion: race.engineRegion || regionBase(w, race.surfaceRegion) }; }
+  // Reuse the engine's travel timings with three distinct locations: home,
+  // current location and destination. Equal rule templates do not merge geography.
+  function travelContext(career, horse, race) {
+    const names = [...new Set([horse.homeRegion, horse.locationRegion, race.surfaceRegion])];
+    const mapped = (name) => REGIONS[names.indexOf(name)];
+    return { career: { ...career, stable: { regionId: REGION_IDS[mapped(horse.homeRegion)] },
+      travel: { currentRegionId: TRAVEL_IDS[mapped(horse.locationRegion)], history: [] } },
+      race: { ...race, surfaceRegion: mapped(race.surfaceRegion) } };
   }
   function careerFor(w, horse) {
     const time = timeFor(w, horse);
@@ -75,15 +93,15 @@
       horse, currentTime: time,
       lastRaceIndex: horse.lastRaceTurn == null ? null : horse.lastRaceTurn + offset,
       fatigue: horse.fatigue,
-      stable: { regionId: REGION_IDS[horse.homeRegion] },
-      travel: { currentRegionId: TRAVEL_IDS[horse.locationRegion], history: [] },
+      stable: { regionId: REGION_IDS[regionBase(w, horse.homeRegion)] },
+      travel: { currentRegionId: TRAVEL_IDS[regionBase(w, horse.locationRegion)], history: [] },
       injury: { active: horse.restUntil > w.turn ? { restUntilIndex: horse.restUntil + offset } : null, history: [] },
       races: last ? [{ public: { rank: last.rank }, hidden: { race: { id: last.raceId, raceClass: last.raceClass, surfaceRegion: last.region } } }] : []
     };
   }
-  function validateTrack(track) {
+  function validateTrack(track, world) {
     assert(typeof track.name === "string" && track.name.trim(), "请填写马场名。");
-    assert(REGIONS.includes(track.region), "首轮马场地区支持日本、欧洲、美国。");
+    assert(regionNames(world || {}).includes(track.region), "请选择已创建的地区。");
     assert(["东京", "中山", "京都", "阪神", "其他地方"].includes(track.courseType), "请选择有效的赛道适性类型。");
     assert(Array.isArray(track.surfaces) && track.surfaces.length && track.surfaces.every((v) => ["草地", "泥地"].includes(v)), "请选择马场支持的场地。");
   }
@@ -103,10 +121,11 @@
   function validateHorse(w, horse) {
     assert(typeof horse.name === "string" && horse.name.trim(), "请填写马名。");
     assert(["牡马", "牝马", "骟马"].includes(horse.gender), "性别无效。");
-    assert(REGIONS.includes(horse.homeRegion), "所属地区无效。");
-    assert(Number.isInteger(horse.birthYear) && ageOf(w, horse) >= 2, "马匹至少二岁。");
+    assert(regionNames(w).includes(horse.homeRegion), "所属地区不存在，请先在管理地区中创建。");
+    assert(Number.isInteger(horse.birthYear) && ageOf(w, horse) >= (w.breeding && horse.status === "juvenile" ? 0 : 2), "马匹至少二岁，繁殖幼驹除外。");
     assert(finite(horse.strength) && horse.strength > 0, "基础能力须为正数。");
     assert(finite(horse.weight) && horse.weight > 0, "体重须为正数。");
+    if (horse.breedingStrength != null) assert(Number.isInteger(horse.breedingStrength) && horse.breedingStrength >= 1 && horse.breedingStrength <= 100, "配种实力须为1～100的整数。");
     assert([horse.distMin, horse.coreDist, horse.distMax].every((v) => Number.isInteger(v) && v > 0)
       && horse.distMin <= horse.coreDist && horse.coreDist <= horse.distMax, "距离需满足下限≤核心距离≤上限。");
     const peak = ns.MaturityRules.getPeakWindow(horse);
@@ -118,14 +137,14 @@
     assert(horse.fatherId !== horse.id && horse.motherId !== horse.id, "父母不能为马匹自己。");
   }
   function addHorse(w, options) {
-    const opts = options || {};
+    const opts = Object.fromEntries(Object.entries(options || {}).filter(([, value]) => value !== undefined));
     const gender = opts.gender || R.weightedPick(["牡马", "牝马", "骟马"], (v) => v === "骟马" ? 5 : v === "牡马" ? 45 : 50);
     const generated = ns.HorseRules.generateHorse({ gender: gender === "骟马" ? "牡马" : gender, gameMode: "normal" });
     const horseId = id(w, "horse");
-    const homeRegion = opts.homeRegion || REGIONS[(w.totalHorses || 0) % 3];
+    const homes = populationRegions(w), homeRegion = opts.homeRegion || (homes.length ? homes : regionNames(w))[(w.totalHorses || 0) % (homes.length || regionNames(w).length)];
     const h = Object.assign(generated, {
       id: horseId, gender, name: `${R.pickOne(NAMES)}${R.pickOne(NAMES)}·${horseId.split("-")[1]}`,
-      origin: "ai", birthYear: date(w.turn).year - (opts.age || 2), homeRegion, locationRegion: homeRegion,
+      origin: "ai", birthYear: date(w.turn).year - (opts.age ?? 2), homeRegion, locationRegion: homeRegion,
       owner: `${homeRegion}个体马主`, association: "世界马会", fatherId: "", motherId: "",
       status: "active", lastRaceTurn: null, restUntil: 0, lastRace: null, booked: null,
       annual: emptyStats(date(w.turn).year), lifetime: { starts: 0, wins: 0, g1: 0, prize: 0 }, previousWtr: null,
@@ -136,10 +155,11 @@
     delete h.career;
     // Template bloodlines and actual parent IDs intentionally remain separate.
     const t = timeFor(w, h);
-    ns.MaturityRules.applyMonthlyDecline(h, h.maturity, ns.TimeRules.toIndex(2, 1, 1), t.index);
+    if (h.status !== "juvenile") ns.MaturityRules.applyMonthlyDecline(h, h.maturity, ns.TimeRules.toIndex(2, 1, 1), t.index);
     h.maturity.lastCheckedIndex = t.index;
     validateHorse(w, h);
     w.horses.push(h);
+    ns.ChairmanBreeding?.initialize(w, h);
     w.totalHorses = (w.totalHorses || 0) + 1;
     return h;
   }
@@ -188,7 +208,7 @@
     const seed = Number.isInteger(opts.seed) ? opts.seed >>> 0 : (Date.now() ^ Math.floor(Math.random() * 0xffffffff)) >>> 0;
     const w = { id: opts.id || `world-${Date.now()}-${seed}`, schemaVersion: 1, rulesVersion: 1, ratingVersion: 1, revision: 0,
       name: opts.name || "我的国际马会", turn: 0, phase: "season", seed, rngState: seed, nextId: 1,
-      settings: { annualNewHorses: 75, autoRetire: true }, tracks: [], races: [], horses: [],
+      settings: { annualNewHorses: 75, autoRetire: true }, regions: regions({}), tracks: [], races: [], horses: [],
       totalHorses: 0, awardDraft: {}, awardsStrict: true, lastCompletedTurn: null, ui: {}, lockedRaces: {} };
     seeded(w, () => {
       if (!opts.blank) {
@@ -198,6 +218,7 @@
         planEntries(w);
       }
     });
+    if (opts.breeding) ns.ChairmanBreeding.enable(w, { foundation: !opts.blank, background: !opts.blank });
     return w;
   }
   function eligible(w, h, race, turn) {
@@ -232,7 +253,8 @@
       for (const { race, turn } of races) {
         if (turn >= w.turn + 6 || !eligible(w, h, race, turn) || h.lastRaceTurn != null && turn - h.lastRaceTurn < 3) continue;
         const schedule = timeFor(w, h, turn);
-        if (!ns.RegionRules.isTravelScheduleReachable(career, race, schedule)) continue;
+        const route = travelContext(career, h, race);
+        if (!ns.RegionRules.isTravelScheduleReachable(route.career, route.race, schedule)) continue;
         const observation = h.observations[observedKey(race)];
         const estimate = waiting >= 6 ? 100 : observation ? observation.total / observation.count : 100;
         const affinity = estimate + (race.surfaceRegion === h.locationRegion ? 2 : 0);
@@ -253,7 +275,8 @@
       if (!selected) continue;
       counts.set(selected.key, (counts.get(selected.key) || 0) + 1);
       const { horse } = proposal;
-      const travel = ns.RegionRules.buildTravel(careerFor(w, horse), selected.race, timeFor(w, horse, selected.turn));
+      const route = travelContext(careerFor(w, horse), horse, selected.race);
+      const travel = ns.RegionRules.buildTravel(route.career, route.race, timeFor(w, horse, selected.turn));
       const offset = timeFor(w, horse).index - w.turn;
       horse.booked = { raceId: selected.race.id, turn: selected.turn, targetRegion: selected.race.surfaceRegion,
         preparationTurn: travel ? travel.prepIndex - offset : null };
@@ -316,14 +339,15 @@
           name: race.name, raceClass: race.raceClass, status: horses.length < 2 ? "cancelled" : "completed", count: horses.length };
         out.occurrences.push(occurrence);
         if (horses.length < 2) { horses.forEach((h) => { h.booked = null; }); continue; }
-        const jockeys = assignJockeys(horses, race.surfaceRegion);
+        const simRace = simulationRace(w, race);
+        const jockeys = assignJockeys(horses, simRace.surfaceRegion);
         const runners = horses.map((h) => {
           const career = careerFor(w, h);
           const condition = ns.RaceFatigueRules.lockPreRaceCondition(career, { race, schedule: timeFor(w, h) });
           h.fatigue = { pressure: career.fatigue.pressure, lockedEvents: [], cancellations: [] };
           return { horse: h, time: timeFor(w, h), decline: h.maturity.decline, condition, jockey: jockeys.get(h.id) };
         });
-        const simulated = ns.RaceRules.simulateWorldRace(runners, race);
+        const simulated = ns.RaceRules.simulateWorldRace(runners, simRace);
         occurrence.trackCondition = simulated.trackCondition;
         occurrence.tfFloat = simulated.tfFloat;
         for (const result of simulated.results) {
@@ -372,6 +396,7 @@
     assert(world.phase === "yearEnd", "只有年末回合可以结束年度。");
     return mutate(world, (w, out) => {
       const year = date(w.turn).year;
+      const births = ns.ChairmanBreeding?.closeYear(w, out);
       for (const award of AWARDS) {
         const horseId = w.awardDraft[award.id];
         if (!horseId) continue;
@@ -386,6 +411,7 @@
         if (h.annual.starts || h.annual.manual != null) out.ratings.push({ id: `${year}:${h.id}`, horseId: h.id, horseName: h.name,
           year, rulesVersion: w.rulesVersion || 1, ratingVersion: w.ratingVersion, age: ageOf(w, h), gender: h.gender, homeRegion: h.homeRegion, ...clone(h.annual), wtr: rating(h), tf: h.annual.starts ? h.annual.tf : null });
         h.previousWtr = rating(h);
+        if (h.breeding) ns.ChairmanBreeding.recordRating(h, year, rating(h));
         h.annual = emptyStats(year + 1);
       }
       w.turn++;
@@ -399,16 +425,30 @@
           h.status = "retired"; h.retiredYear = year + 1; h.booked = null;
         }
       }
-      for (let i = 0; i < w.settings.annualNewHorses; i++) addHorse(w, { age: 2, homeRegion: REGIONS[i % 3] });
+      const homes = populationRegions(w);
+      if (w.breeding) ns.ChairmanBreeding.startYear(w, out, births);
+      else for (let i = 0; homes.length && i < w.settings.annualNewHorses; i++) addHorse(w, { age: 2, homeRegion: homes[i % homes.length] });
       planEntries(w);
     });
   }
   function edit(world, kind, value) {
     return mutate(world, (w) => {
-      if (kind === "track") {
+      if (kind === "region") {
+        w.regions = clone(regions(w));
+        const existing = w.regions.find((r) => r.id === value.id);
+        assert(!value.id || existing, "地区不存在。");
+        const name = String(value.name || "").trim();
+        assert(name && name.length <= 80 && !/[\u0000-\u001f|]/.test(name) && name !== "未记录", "地区名需为1～80字，不能包含换行或竖线，也不能使用“未记录”。");
+        assert(!existing || existing.name === name, "已建立地区的名称不能修改，以保留历史关联。");
+        assert(!w.regions.some((r) => r.id !== value.id && r.name === name), "地区名称已存在。");
+        assert(REGIONS.includes(value.baseRegion), "请选择有效的参考比赛环境。");
+        assert(!existing || !REGIONS.includes(existing.name) || value.baseRegion === existing.baseRegion, "默认地区的参考环境保持原有规则。");
+        const region = { id: existing ? existing.id : id(w, "region"), name, baseRegion: value.baseRegion, autoPopulate: !!value.autoPopulate };
+        if (existing) Object.assign(existing, region); else w.regions.push(region);
+      } else if (kind === "track") {
         const existing = w.tracks.find((t) => t.id === value.id);
         const track = { ...(existing || { id: id(w, "track"), deleted: false }), ...value };
-        validateTrack(track);
+        validateTrack(track, w);
         assert(!w.tracks.some((t) => t.id !== track.id && !t.deleted && t.name === track.name), "马场名称已存在。");
         for (const race of w.races.filter((r) => !r.deleted && r.trackId === track.id)) assert(track.surfaces.includes(race.surface), "该马场仍有使用此场地的赛事。");
         if (existing) Object.assign(existing, track); else w.tracks.push(track);
@@ -421,13 +461,17 @@
         race.notBeforeYear = existing && existing.lastHeldYear === date(w.turn).year ? date(w.turn).year + 1 : race.notBeforeYear;
         if (existing) Object.assign(existing, race); else w.races.push(race);
       } else if (kind === "horse") {
+        if (w.breeding) value = ns.ChairmanBreeding.resolveParents(w, value);
         const existing = w.horses.find((h) => h.id === value.id);
         if (existing) {
           assert(existing.origin === "custom", "普通AI马的真实属性不可编辑。");
           const h = { ...existing, ...value };
+          if (h.homeRegion !== existing.homeRegion) { h.locationRegion = h.homeRegion; h.booked = null; }
           validateHorse(w, h);
           Object.assign(existing, h);
+          if (value.breedingStrength != null && w.breeding) { existing.breeding.strength = value.breedingStrength; delete existing.breedingStrength; }
         } else addHorse(w, { ...value, origin: "custom" });
+        validateWorld(w);
       } else if (kind === "retire") {
         const h = w.horses.find((item) => item.id === value.id);
         assert(h, "马匹不存在。"); h.status = "retired"; h.retiredYear = date(w.turn).year; h.booked = null;
@@ -478,18 +522,26 @@
     assert(w.phase !== "yearEnd" || w.turn % 24 === 23, "年末回合时间无效。");
     assert(Number.isInteger(w.revision) && w.revision >= 0 && Number.isInteger(w.rngState) && w.rngState >= 0 && w.rngState <= 0xffffffff && Number.isSafeInteger(w.nextId) && w.nextId > 0, "随机状态或编号无效。");
     assert(w.settings && Number.isSafeInteger(w.settings.annualNewHorses) && w.settings.annualNewHorses >= 0 && typeof w.settings.autoRetire === "boolean", "世界设置无效。");
+    assert(w.regions === undefined || Array.isArray(w.regions), "地区设置无效。");
+    const areas = regions(w);
+    assert(areas.every((r) => r && typeof r.id === "string" && r.id && typeof r.name === "string" && r.name.trim() === r.name
+      && r.name.length > 0 && r.name.length <= 80 && !/[\u0000-\u001f|]/.test(r.name) && r.name !== "未记录"
+      && REGIONS.includes(r.baseRegion) && typeof r.autoPopulate === "boolean")
+      && new Set(areas.map((r) => r.id)).size === areas.length && new Set(areas.map((r) => r.name)).size === areas.length, "地区名称、编号或参考环境无效或重复。");
+    assert(REGIONS.every((name) => areas.some((r) => r.name === name && r.id === REGION_IDS[name] && r.baseRegion === name)), "存档缺少默认地区。");
+    for (const r of areas) { const match = r.id.match(/^region-(\d+)$/); if (match) assert(Number(match[1]) < w.nextId, "地区编号与后续编号冲突。"); }
     for (const key of ["horses", "tracks", "races"]) {
       assert(Array.isArray(w[key]), `存档缺少${key}。`);
       assert(new Set(w[key].map((item) => item.id)).size === w[key].length && w[key].every((item) => typeof item.id === "string" && item.id), `${key}编号重复或缺失。`);
       for (const item of w[key]) { const match = item.id.match(/^(?:horse|race|track)-(\d+)$/); if (match) assert(Number(match[1]) < w.nextId, "下一个编号与现有对象冲突。"); }
     }
-    w.tracks.forEach(validateTrack);
+    w.tracks.forEach((t) => validateTrack(t, w));
     w.races.filter((r) => !r.deleted).forEach((r) => validateRace(w, r));
     w.horses.forEach((h) => {
       validateHorse(w, h);
       assert(h.annual && h.lifetime && h.maturity && h.fatigue && h.observations, "马匹状态不完整。");
-      assert(["active", "retired"].includes(h.status) && ["ai", "custom"].includes(h.origin), "马匹身份无效。");
-      assert(REGIONS.includes(h.locationRegion) && Number.isInteger(h.restUntil) && h.restUntil >= 0, "马匹地点或休养状态无效。");
+      assert(["active", "retired", ...(w.breeding ? ["juvenile"] : [])].includes(h.status) && ["ai", "custom"].includes(h.origin), "马匹身份无效。");
+      assert(regionNames(w).includes(h.locationRegion) && Number.isInteger(h.restUntil) && h.restUntil >= 0, "马匹地点或休养状态无效。");
       assert(h.lastRaceTurn === null || Number.isInteger(h.lastRaceTurn) && h.lastRaceTurn <= w.turn, "出赛时间无效。");
       assert(h.annual.year === date(w.turn).year, "本年评分年份与世界时间不符。");
       for (const stats of [h.annual, h.lifetime]) assert([stats.starts, stats.wins, stats.g1].every((v) => Number.isInteger(v) && v >= 0)
@@ -497,10 +549,10 @@
       for (const key of ["tf", "suggested", "manual"]) assert(h.annual[key] === null || finite(h.annual[key]), "马匹评级无效。");
       assert(finite(h.maturity.decline) && h.maturity.decline >= 0 && Number.isInteger(h.maturity.lastCheckedIndex), "成长状态无效。");
       assert(typeof h.observations === "object" && !Array.isArray(h.observations) && Object.values(h.observations).every((v) => v && Number.isInteger(v.count) && v.count > 0 && finite(v.total)), "已观察表现资料无效。");
-      if (h.booked) assert(w.races.some((r) => r.id === h.booked.raceId && (!r.deleted || (w.lockedRaces || {})[`${date(h.booked.turn).year}:${r.id}`])) && Number.isInteger(h.booked.turn) && h.booked.turn >= w.turn, "报名关联无效。");
-      for (const parent of [h.fatherId, h.motherId]) if (parent) assert(w.horses.some((other) => other.id === parent), "父母编号不存在。");
+      if (h.booked) assert(w.races.some((r) => r.id === h.booked.raceId && (!r.deleted || (w.lockedRaces || {})[`${date(h.booked.turn).year}:${r.id}`])) && Number.isInteger(h.booked.turn) && h.booked.turn >= w.turn && regionNames(w).includes(h.booked.targetRegion), "报名关联无效。");
+      for (const parent of [h.fatherId, h.motherId]) if (parent) assert([...w.horses, ...(w.pedigrees || [])].some((other) => other.id === parent), "父母编号不存在。");
     });
-    const byId = new Map(w.horses.map((h) => [h.id, h]));
+    const byId = new Map([...w.horses, ...(w.pedigrees || [])].map((h) => [h.id, h]));
     const complete = new Set();
     function visit(h, path) {
       if (complete.has(h.id)) return;
@@ -514,9 +566,10 @@
       complete.add(h.id);
     }
     w.horses.forEach((h) => visit(h, new Set()));
+    ns.ChairmanBreeding?.validate(w);
     return true;
   }
-  ns.ChairmanRules = { REGIONS, AWARDS, G1_IDS, clone, date, ageOf, timeFor, category, rating, entryRating,
+  ns.ChairmanRules = { REGIONS, regions, regionNames, populationRegions, regionBase, simulationRace, AWARDS, G1_IDS, clone, date, ageOf, timeFor, category, rating, entryRating,
     emptyStats, createWorld, addHorse, planEntries, advanceHalfMonth, finishYear, edit, mutate, seeded,
     validateWorld, validateHorse, validateRace, validateTrack, engineRace, eligible, awardEligible, defaultPrizes, scorePerformance };
 })();
