@@ -35,6 +35,7 @@ async function app(t, options = {}) {
   w.HTMLDialogElement.prototype.close = function () { this.open = false; this.dispatchEvent(new w.Event('close')); };
   for (const f of ['chairman-storage', 'chairman-history', 'chairman-ui', 'chairman-office-ui', 'chairman-breeding-ui', 'chairman-app']) w.eval(source(`js/${f}.js`));
   const W = ns.ChairmanRules, store = await ns.ChairmanStorage.open(); let world = W.createWorld({ seed: 5701, horseCount: 160, ...options });
+  world.races.filter(r=>r.month===1 && r.half===1).forEach(r=>{r.raceClass="g3";r.grade="G3";}); W.planEntries(world);
   await store.acquire(world.id); await store.commitChanges(null, { world });
   const out = W.advanceHalfMonth(world); await store.commitChanges(world, out); world = out.world; await store.release();
   const errors = []; w.console.error = (err) => errors.push(err);
@@ -51,7 +52,7 @@ test('chairman pages retain complete actions, compact lists, independent setting
   assert.match(dialog.textContent, /属性未公开/); assert.equal(dialog.querySelector('[name=strength]'), null); assert.doesNotMatch(dialog.innerHTML, /courseGrades|peakStart|breedingStrength/);
   await click('[data-action=close]', dialog);
   await click('[data-action=batch][data-id=horse]', body); assert.ok(body.querySelector('th').textContent.includes('选择'));
-  await click('[data-action=tab][data-id=calendar]'); assert.equal(body.querySelectorAll('tbody tr').length, 50); assert.ok(body.querySelector('[data-action=entryList]'));
+  await click('[data-action=tab][data-id=calendar]'); assert.equal(body.querySelectorAll('tbody tr').length, 24); await click('[data-action=calendarView][data-id=background]'); assert.equal(body.querySelectorAll('tbody tr').length, 50); assert.ok(body.querySelector('[data-action=entryList]'));
   await click('[data-action=calendarView][data-id=tracks]'); assert.ok(body.querySelector('[data-action=editTrack]')); assert.equal(body.querySelector('[data-action=editRace]'), null);
   await click('[data-action=calendarView][data-id=regions]'); assert.ok(body.querySelector('[data-action=editRegion]'));
   await click('[data-action=tab][data-id=settings]'); assert.equal(body.querySelector(':scope > section:not([hidden]) [data-action=saveSlot]'), null);
@@ -77,6 +78,25 @@ test('result draft survives horse navigation and back; individual and whole-race
   const expand = dialog.querySelector('.cm-row-toggle'); expand.click(); assert.ok(expand.closest('tr').classList.contains('cm-row-open'));
   await click('[data-action=close]', dialog); await wait();
 });
+
+test('WTR benchmark recommendations preserve edits and baseline across navigation, approval and reload', async (t) => {
+  const { w, store, world, click, wait, body, dialog } = await app(t);
+  await click('[data-action=tab][data-id=results]'); await click('[data-action=result]', body);
+  await click('[data-action=defaultWtrDraft]', dialog);
+  const first=dialog.querySelector('[data-performance]'), id=first.dataset.performance, race=first.dataset.draft;
+  first.value='0'; first.dispatchEvent(new w.Event('input',{bubbles:true}));
+  const form=dialog.querySelector('[data-form=wtrBenchmark]'); form.elements.benchmarkScore.value='130';
+  form.elements.benchmarkScore.dispatchEvent(new w.Event('input',{bubbles:true}));form.requestSubmit();await wait();
+  assert.equal(dialog.querySelector(`[data-performance="${id}"]`).value,'0');
+  const draft=await store.get('scoreDrafts',world.id,race);assert.equal(draft.benchmarkScore,130);assert.equal(draft.touched[id],true);
+  await click('[data-action=horse]',dialog);await click('[data-action=dialogBack]',dialog);
+  assert.equal(dialog.querySelector('[name=benchmarkScore]').value,'130');
+  await click('[data-action=saveRaceScores]',dialog);
+  assert.equal((await store.get('occurrences',world.id,race)).wtrBenchmark.score,130);
+  assert.equal((await store.get('performances',world.id,id)).manualRating,0);
+  assert.equal(dialog.querySelector('[name=benchmarkScore]').value,'130');
+  await click('[data-action=close]',dialog);
+});
 test('breeding views share horse archives, preserve private fields and save designated pairings from the compact editor', async (t) => {
   const { w, ns, world, store, click, wait, body, dialog } = await app(t, { breeding: true });
   await click('[data-action=tab][data-id=breeding]'); assert.ok(body.querySelector('table'));
@@ -95,6 +115,45 @@ test('breeding views share horse archives, preserve private fields and save desi
   assert.equal(dialog.querySelector('[name=name]').value, '测试父母跳转不丢失编辑'); assert.equal(dialog.querySelector('[name=fatherId]').value, plan.fatherId); assert.ok(dialog.querySelector('[data-parent-search]'));
   await click('[data-action=close]', dialog);
 });
+test('advancing and fast forwarding preserve saved filters; latest summary only adds its own condition', async (t) => {
+  const { w, store, world, click, wait, body } = await app(t);
+  const plain = value => JSON.parse(JSON.stringify(value));
+  async function filter(tab, values) {
+    await click(`[data-action=tab][data-id=${tab}]`);
+    const form = body.querySelector('[data-form=officeFilter]');
+    for (const [key, value] of Object.entries(values)) {
+      const el = form.elements[key];
+      if (el.multiple) [...el.options].forEach(o => o.selected = value.includes(o.value));
+      else if (el.type === 'checkbox') el.checked = value;
+      else el.value = value;
+    }
+    form.requestSubmit(); await wait();
+  }
+  await filter('horses', { region: ['日本', '欧洲'], gender: ['牝马'], sort: 'prize' });
+  await filter('calendar', { region: ['美国'], raceClass: ['g1'], surface: ['泥地'] });
+  await filter('boards', { region: ['日本'], minimum: '110' });
+  await filter('results', { search: '杯', region: ['日本', '美国'], surface: ['草地'], raceClass: ['g1', 'g3'], year: '1', scoring: 'none', latest: false });
+  const before = plain((await store.load(world.id)).ui);
+  for (const action of ['advance', 'fast']) {
+    await click(`[data-action=${action}]`);
+    const saved = (await store.load(world.id)).ui;
+    for (const key of ['horses', 'calendar', 'board_tf', 'results']) assert.deepEqual(plain(saved[key]), before[key], `${action} retains ${key}`);
+    assert.equal(body.querySelector('[name=search]').value, '杯');
+    assert.deepEqual([...body.querySelector('[name=region]').selectedOptions].map(o => o.value), ['日本', '美国']);
+    assert.equal(body.querySelector('[name=latest]').checked, false);
+  }
+  await click('[data-action=latest]', body);
+  assert.deepEqual(plain((await store.load(world.id)).ui.results), { ...before.results, latest: '1' });
+  await click('[data-action=advance]');
+  assert.equal(body.querySelector('[name=latest]').checked, true);
+  await click('[data-action=exit]'); await click('#chairmanLaunch'); await click('[data-action=openWorld]');
+  await click('[data-action=tab][data-id=results]');
+  assert.equal(body.querySelector('[name=search]').value, '杯');
+  assert.equal(body.querySelector('[name=latest]').checked, true);
+  await click('[data-action=officeClear]', body); await click('[data-action=advance]');
+  assert.deepEqual(plain((await store.load(world.id)).ui.results), {}, 'explicitly cleared filters stay cleared');
+});
+
 test('paging, search submission, advanced state and list scroll survive detail and tab navigation', async (t) => {
   const { w, store, world, click, wait, body, dialog } = await app(t);
   await click('[data-action=tab][data-id=horses]'); await click('[data-action=page][data-id="1"]', body);

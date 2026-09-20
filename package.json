@@ -8,7 +8,7 @@
   },
   "scripts": {
     "test": "npm run test:quick",
-    "test:quick": "node --test tests/syntax.test.js tests/data-integrity.test.js tests/build-web.test.js tests/core-rules.test.js tests/roguelike.test.js tests/era.test.js tests/era-narrative.test.js tests/ui-workspace.test.js tests/chairman.test.js tests/chairman-storage.test.js tests/chairman-office.test.js tests/chairman-regions.test.js tests/chairman-breeding.test.js tests/chairman-ui.test.js",
+    "test:quick": "node --test tests/syntax.test.js tests/data-integrity.test.js tests/build-web.test.js tests/core-rules.test.js tests/roguelike.test.js tests/era.test.js tests/era-narrative.test.js tests/ui-workspace.test.js tests/chairman.test.js tests/chairman-storage.test.js tests/chairman-office.test.js tests/chairman-regions.test.js tests/chairman-breeding.test.js tests/chairman-ui.test.js tests/chairman-ratings.test.js",
     "test:chairman:long": "node --test tests/chairman-long.test.js",
     "test:breeding:long": "node --test tests/chairman-breeding-long.test.js",
     "build:web": "node scripts/build-web.js",

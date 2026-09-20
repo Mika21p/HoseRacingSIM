@@ -153,7 +153,7 @@ test('search and all four ancestry queries deduplicate nodes, page after full fi
   assert.equal(B.descendants(w, f.id, 'maternal').size, 0);
   assert.ok(B.descendants(w, f.id, 'all').has(child.id)); assert.equal(w.breeding.rngState, state);
 });
-test('breeding entities, annual births and RNG commit atomically and replay after recovery; v3 snapshot preserves relations', async () => {
+test('breeding entities, annual births and RNG commit atomically and replay after recovery; v4 snapshot preserves relations', async () => {
   const p = setup(), { W, B } = p; let w = p.w; w.settings.annualNewHorses = 3;
   Object.assign(p.context.window, { indexedDB: new IDBFactory(), IDBKeyRange, setInterval, clearInterval });
   vm.runInContext(fs.readFileSync(path.join(projectRoot, 'js/chairman-storage.js'), 'utf8'), p.context);
@@ -165,7 +165,7 @@ test('breeding entities, annual births and RNG commit atomically and replay afte
     await assert.rejects(store.commitChanges(w, out, { failForTest: true, checkpoint: 'year' }));
     assert.equal((await store.load(w.id)).turn, w.turn);
     await store.commitChanges(w, out, { checkpoint: 'year' });
-    const saved = await store.exportWorld(w.id); assert.equal(saved.version, 3); assert.equal(saved.records.breedingEvents.length, 3);
+    const saved = await store.exportWorld(w.id); assert.equal(saved.version, 4); assert.equal(saved.records.breedingEvents.length, 3);
     assert.ok(store.validateSnapshot(saved));
     const bad = W.clone(saved); bad.records.breedingEvents[0].motherId = 'missing'; assert.throws(() => store.validateSnapshot(bad), /关联/);
     const points = await store.query('checkpoints', w.id); const point = points.rows.find((p) => p.turn === 23);

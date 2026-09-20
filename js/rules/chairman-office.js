@@ -47,12 +47,13 @@
       revision(out, "annual", row, row.manual, n);
       row.manual = n; row.wtr = n ?? row.suggested;
       if (year === current) h.annual.manual = n;
-      else { out.ratings.push(row); if (year === current - 1) h.previousWtr = row.wtr; ns.ChairmanBreeding?.recordRating(h, year, row.wtr); }
+      else { out.ratings.push(row); if (year === current - 1) h.previousWtr = row.wtr; ns.ChairmanBreeding?.recordRating(h, year, row.wtr, row.tf); }
     });
   }
   function raceScores(world, occurrence, performances, values, yearRows, archives, reset) {
+    assert(occurrence.raceClass !== "op", "普通赛不开放人工评分。");
     return W.mutate(world, (w, out) => {
-      const current = W.date(w.turn).year, changed = new Map();
+      const changed = new Map();
       for (const p of performances) {
         if (!reset && !Object.hasOwn(values, p.id)) continue;
         const n = reset ? null : score(values[p.id]); assert(!p.retired || n === null, "退赛不接受评分。");
@@ -62,16 +63,7 @@
       for (const horseId of new Set([...changed.values()].map((p) => p.horseId))) {
         const h = w.horses.find((v) => v.id === horseId); assert(h, "马匹不存在。");
         const rows = yearRows.filter((p) => p.horseId === horseId && p.year === occurrence.year).map((p) => changed.get(p.id) || p);
-        const valid = rows.filter((p) => !p.retired).map((p) => p.manualRating ?? p.tf).filter((v) => v != null);
-        const suggested = valid.length ? Math.max(...valid) : null;
-        if (occurrence.year === current) h.annual.suggested = suggested;
-        else {
-          const old = archives.find((a) => a.horseId === horseId && a.year === occurrence.year); assert(old, "缺少年度档案。");
-          const row = { ...old, suggested, wtr: old.manual ?? suggested }; out.ratings.push(row);
-          ns.ChairmanBreeding?.recordRating(h, occurrence.year, row.wtr);
-          if (occurrence.year === current - 1) h.previousWtr = row.wtr;
-        }
-        const last = rows.find((p) => p.turn === h.lastRaceTurn); if (last) h.lastEventRating = last.manualRating ?? last.tf;
+        ns.ChairmanRatings.applyManualYear(w,h,occurrence.year,rows,archives.find(a=>a.horseId===horseId && a.year===occurrence.year),out);
       }
       const final = performances.map((p) => changed.get(p.id) || p).filter((p) => !p.retired);
       const filled = final.filter((p) => p.manualRating != null).length;

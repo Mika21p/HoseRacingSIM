@@ -1,0 +1,1655 @@
+{
+  "date": "2026-09-20",
+  "baselineCommit": "a9a1fcaf72220682bf423a2ebdd82d5e9dbf70b0",
+  "notes": [
+    "Five fixed seeds, ten years each; no human WTR approval.",
+    "Leaders proxy: annual top 30 TF horses; count those racing OP only.",
+    "Booking changes count unlocked next-entry changes, not target changes.",
+    "TF numerical scales differ: baseline uses internal performance, current uses public form.",
+    "Each yearly tf distribution summarizes individual race ratings, not the annual maximum distribution."
+  ],
+  "summary": {
+    "baseline": {
+      "worldYears": 50,
+      "g1": 900,
+      "cancelled": 148,
+      "youngG1": 450,
+      "youngCancelled": 146,
+      "meanG1Entries": 7.147777777777778,
+      "meanTop30OnlyOP": 18.16,
+      "bookingChanges": 5933,
+      "illegalGaps": 0,
+      "overflow": 0,
+      "tfMax": 150,
+      "raceTfMedianRange": [
+        90,
+        100
+      ],
+      "idleEligibleTurns": 0,
+      "eligibleTurns": 380144
+    },
+    "current": {
+      "worldYears": 50,
+      "g1": 900,
+      "cancelled": 2,
+      "youngG1": 450,
+      "youngCancelled": 2,
+      "meanG1Entries": 15.185555555555556,
+      "meanTop30OnlyOP": 2.02,
+      "bookingChanges": 23045,
+      "illegalGaps": 0,
+      "overflow": 0,
+      "tfMax": 139,
+      "raceTfMedianRange": [
+        83,
+        100
+      ],
+      "idleEligibleTurns": 0,
+      "eligibleTurns": 378937
+    }
+  },
+  "baseline": [
+    {
+      "seed": 5701,
+      "years": [
+        {
+          "year": 1,
+          "g1": 18,
+          "cancelled": 4,
+          "entries": 131,
+          "young": 9,
+          "youngCancelled": 4,
+          "tf": {
+            "min": -2,
+            "median": 93,
+            "p90": 115,
+            "max": 143
+          },
+          "onlyOpLeaders": 19
+        },
+        {
+          "year": 2,
+          "g1": 18,
+          "cancelled": 3,
+          "entries": 136,
+          "young": 9,
+          "youngCancelled": 3,
+          "tf": {
+            "min": -7,
+            "median": 98,
+            "p90": 116,
+            "max": 137
+          },
+          "onlyOpLeaders": 19
+        },
+        {
+          "year": 3,
+          "g1": 18,
+          "cancelled": 2,
+          "entries": 134,
+          "young": 9,
+          "youngCancelled": 2,
+          "tf": {
+            "min": 0,
+            "median": 97,
+            "p90": 116,
+            "max": 135
+          },
+          "onlyOpLeaders": 21
+        },
+        {
+          "year": 4,
+          "g1": 18,
+          "cancelled": 3,
+          "entries": 127,
+          "young": 9,
+          "youngCancelled": 3,
+          "tf": {
+            "min": -12,
+            "median": 99,
+            "p90": 118,
+            "max": 136
+          },
+          "onlyOpLeaders": 19
+        },
+        {
+          "year": 5,
+          "g1": 18,
+          "cancelled": 2,
+          "entries": 125,
+          "young": 9,
+          "youngCancelled": 2,
+          "tf": {
+            "min": -6,
+            "median": 98,
+            "p90": 117,
+            "max": 135
+          },
+          "onlyOpLeaders": 18
+        },
+        {
+          "year": 6,
+          "g1": 18,
+          "cancelled": 3,
+          "entries": 118,
+          "young": 9,
+          "youngCancelled": 3,
+          "tf": {
+            "min": 5,
+            "median": 98,
+            "p90": 117,
+            "max": 136
+          },
+          "onlyOpLeaders": 14
+        },
+        {
+          "year": 7,
+          "g1": 18,
+          "cancelled": 2,
+          "entries": 111,
+          "young": 9,
+          "youngCancelled": 1,
+          "tf": {
+            "min": -2,
+            "median": 98,
+            "p90": 117,
+            "max": 136
+          },
+          "onlyOpLeaders": 16
+        },
+        {
+          "year": 8,
+          "g1": 18,
+          "cancelled": 2,
+          "entries": 124,
+          "young": 9,
+          "youngCancelled": 2,
+          "tf": {
+            "min": -12,
+            "median": 100,
+            "p90": 117,
+            "max": 137
+          },
+          "onlyOpLeaders": 18
+        },
+        {
+          "year": 9,
+          "g1": 18,
+          "cancelled": 3,
+          "entries": 128,
+          "young": 9,
+          "youngCancelled": 3,
+          "tf": {
+            "min": -7,
+            "median": 98,
+            "p90": 117,
+            "max": 139
+          },
+          "onlyOpLeaders": 19
+        },
+        {
+          "year": 10,
+          "g1": 18,
+          "cancelled": 3,
+          "entries": 113,
+          "young": 9,
+          "youngCancelled": 3,
+          "tf": {
+            "min": -6,
+            "median": 96,
+            "p90": 115,
+            "max": 134
+          },
+          "onlyOpLeaders": 20
+        }
+      ],
+      "illegalGaps": 0,
+      "overflow": 0,
+      "idle": 0,
+      "eligibleTurns": 75234,
+      "changes": 1063
+    },
+    {
+      "seed": 778,
+      "years": [
+        {
+          "year": 1,
+          "g1": 18,
+          "cancelled": 5,
+          "entries": 117,
+          "young": 9,
+          "youngCancelled": 5,
+          "tf": {
+            "min": -12,
+            "median": 90,
+            "p90": 112,
+            "max": 135
+          },
+          "onlyOpLeaders": 20
+        },
+        {
+          "year": 2,
+          "g1": 18,
+          "cancelled": 4,
+          "entries": 121,
+          "young": 9,
+          "youngCancelled": 4,
+          "tf": {
+            "min": -8,
+            "median": 96,
+            "p90": 116,
+            "max": 143
+          },
+          "onlyOpLeaders": 15
+        },
+        {
+          "year": 3,
+          "g1": 18,
+          "cancelled": 2,
+          "entries": 143,
+          "young": 9,
+          "youngCancelled": 1,
+          "tf": {
+            "min": -14,
+            "median": 98,
+            "p90": 117,
+            "max": 140
+          },
+          "onlyOpLeaders": 18
+        },
+        {
+          "year": 4,
+          "g1": 18,
+          "cancelled": 4,
+          "entries": 124,
+          "young": 9,
+          "youngCancelled": 4,
+          "tf": {
+            "min": -2,
+            "median": 98,
+            "p90": 117,
+            "max": 142
+          },
+          "onlyOpLeaders": 23
+        },
+        {
+          "year": 5,
+          "g1": 18,
+          "cancelled": 2,
+          "entries": 148,
+          "young": 9,
+          "youngCancelled": 2,
+          "tf": {
+            "min": 7,
+            "median": 97,
+            "p90": 116,
+            "max": 141
+          },
+          "onlyOpLeaders": 18
+        },
+        {
+          "year": 6,
+          "g1": 18,
+          "cancelled": 2,
+          "entries": 142,
+          "young": 9,
+          "youngCancelled": 2,
+          "tf": {
+            "min": 0,
+            "median": 99,
+            "p90": 118,
+            "max": 136
+          },
+          "onlyOpLeaders": 20
+        },
+        {
+          "year": 7,
+          "g1": 18,
+          "cancelled": 1,
+          "entries": 148,
+          "young": 9,
+          "youngCancelled": 1,
+          "tf": {
+            "min": 7,
+            "median": 97,
+            "p90": 117,
+            "max": 142
+          },
+          "onlyOpLeaders": 15
+        },
+        {
+          "year": 8,
+          "g1": 18,
+          "cancelled": 3,
+          "entries": 147,
+          "young": 9,
+          "youngCancelled": 3,
+          "tf": {
+            "min": -5,
+            "median": 98,
+            "p90": 117,
+            "max": 139
+          },
+          "onlyOpLeaders": 18
+        },
+        {
+          "year": 9,
+          "g1": 18,
+          "cancelled": 3,
+          "entries": 145,
+          "young": 9,
+          "youngCancelled": 3,
+          "tf": {
+            "min": -1,
+            "median": 95,
+            "p90": 116,
+            "max": 137
+          },
+          "onlyOpLeaders": 21
+        },
+        {
+          "year": 10,
+          "g1": 18,
+          "cancelled": 4,
+          "entries": 134,
+          "young": 9,
+          "youngCancelled": 4,
+          "tf": {
+            "min": -25,
+            "median": 95,
+            "p90": 115,
+            "max": 136
+          },
+          "onlyOpLeaders": 14
+        }
+      ],
+      "illegalGaps": 0,
+      "overflow": 0,
+      "idle": 0,
+      "eligibleTurns": 76423,
+      "changes": 1249
+    },
+    {
+      "seed": 2026,
+      "years": [
+        {
+          "year": 1,
+          "g1": 18,
+          "cancelled": 3,
+          "entries": 125,
+          "young": 9,
+          "youngCancelled": 3,
+          "tf": {
+            "min": -17,
+            "median": 91,
+            "p90": 114,
+            "max": 150
+          },
+          "onlyOpLeaders": 19
+        },
+        {
+          "year": 2,
+          "g1": 18,
+          "cancelled": 1,
+          "entries": 141,
+          "young": 9,
+          "youngCancelled": 1,
+          "tf": {
+            "min": 0,
+            "median": 93,
+            "p90": 114,
+            "max": 145
+          },
+          "onlyOpLeaders": 17
+        },
+        {
+          "year": 3,
+          "g1": 18,
+          "cancelled": 3,
+          "entries": 129,
+          "young": 9,
+          "youngCancelled": 3,
+          "tf": {
+            "min": 7,
+            "median": 96,
+            "p90": 116,
+            "max": 137
+          },
+          "onlyOpLeaders": 17
+        },
+        {
+          "year": 4,
+          "g1": 18,
+          "cancelled": 4,
+          "entries": 123,
+          "young": 9,
+          "youngCancelled": 4,
+          "tf": {
+            "min": -17,
+            "median": 97,
+            "p90": 116,
+            "max": 136
+          },
+          "onlyOpLeaders": 17
+        },
+        {
+          "year": 5,
+          "g1": 18,
+          "cancelled": 2,
+          "entries": 129,
+          "young": 9,
+          "youngCancelled": 2,
+          "tf": {
+            "min": -17,
+            "median": 99,
+            "p90": 117,
+            "max": 134
+          },
+          "onlyOpLeaders": 20
+        },
+        {
+          "year": 6,
+          "g1": 18,
+          "cancelled": 3,
+          "entries": 120,
+          "young": 9,
+          "youngCancelled": 3,
+          "tf": {
+            "min": -30,
+            "median": 97,
+            "p90": 116,
+            "max": 136
+          },
+          "onlyOpLeaders": 21
+        },
+        {
+          "year": 7,
+          "g1": 18,
+          "cancelled": 3,
+          "entries": 127,
+          "young": 9,
+          "youngCancelled": 3,
+          "tf": {
+            "min": 3,
+            "median": 100,
+            "p90": 118,
+            "max": 141
+          },
+          "onlyOpLeaders": 18
+        },
+        {
+          "year": 8,
+          "g1": 18,
+          "cancelled": 2,
+          "entries": 140,
+          "young": 9,
+          "youngCancelled": 2,
+          "tf": {
+            "min": -7,
+            "median": 99,
+            "p90": 118,
+            "max": 139
+          },
+          "onlyOpLeaders": 16
+        },
+        {
+          "year": 9,
+          "g1": 18,
+          "cancelled": 3,
+          "entries": 125,
+          "young": 9,
+          "youngCancelled": 3,
+          "tf": {
+            "min": 6,
+            "median": 98,
+            "p90": 117,
+            "max": 137
+          },
+          "onlyOpLeaders": 18
+        },
+        {
+          "year": 10,
+          "g1": 18,
+          "cancelled": 6,
+          "entries": 125,
+          "young": 9,
+          "youngCancelled": 6,
+          "tf": {
+            "min": 7,
+            "median": 97,
+            "p90": 116,
+            "max": 138
+          },
+          "onlyOpLeaders": 18
+        }
+      ],
+      "illegalGaps": 0,
+      "overflow": 0,
+      "idle": 0,
+      "eligibleTurns": 76888,
+      "changes": 1305
+    },
+    {
+      "seed": 995173,
+      "years": [
+        {
+          "year": 1,
+          "g1": 18,
+          "cancelled": 4,
+          "entries": 139,
+          "young": 9,
+          "youngCancelled": 4,
+          "tf": {
+            "min": -2,
+            "median": 91,
+            "p90": 112,
+            "max": 135
+          },
+          "onlyOpLeaders": 15
+        },
+        {
+          "year": 2,
+          "g1": 18,
+          "cancelled": 4,
+          "entries": 135,
+          "young": 9,
+          "youngCancelled": 4,
+          "tf": {
+            "min": -1,
+            "median": 96,
+            "p90": 116,
+            "max": 134
+          },
+          "onlyOpLeaders": 24
+        },
+        {
+          "year": 3,
+          "g1": 18,
+          "cancelled": 2,
+          "entries": 127,
+          "young": 9,
+          "youngCancelled": 2,
+          "tf": {
+            "min": -15,
+            "median": 99,
+            "p90": 118,
+            "max": 139
+          },
+          "onlyOpLeaders": 18
+        },
+        {
+          "year": 4,
+          "g1": 18,
+          "cancelled": 3,
+          "entries": 130,
+          "young": 9,
+          "youngCancelled": 3,
+          "tf": {
+            "min": -4,
+            "median": 98,
+            "p90": 117,
+            "max": 140
+          },
+          "onlyOpLeaders": 21
+        },
+        {
+          "year": 5,
+          "g1": 18,
+          "cancelled": 2,
+          "entries": 133,
+          "young": 9,
+          "youngCancelled": 2,
+          "tf": {
+            "min": -9,
+            "median": 98,
+            "p90": 118,
+            "max": 147
+          },
+          "onlyOpLeaders": 18
+        },
+        {
+          "year": 6,
+          "g1": 18,
+          "cancelled": 3,
+          "entries": 136,
+          "young": 9,
+          "youngCancelled": 3,
+          "tf": {
+            "min": 2,
+            "median": 96,
+            "p90": 118,
+            "max": 137
+          },
+          "onlyOpLeaders": 18
+        },
+        {
+          "year": 7,
+          "g1": 18,
+          "cancelled": 1,
+          "entries": 124,
+          "young": 9,
+          "youngCancelled": 1,
+          "tf": {
+            "min": -16,
+            "median": 99,
+            "p90": 117,
+            "max": 137
+          },
+          "onlyOpLeaders": 22
+        },
+        {
+          "year": 8,
+          "g1": 18,
+          "cancelled": 5,
+          "entries": 113,
+          "young": 9,
+          "youngCancelled": 5,
+          "tf": {
+            "min": -22,
+            "median": 99,
+            "p90": 117,
+            "max": 144
+          },
+          "onlyOpLeaders": 13
+        },
+        {
+          "year": 9,
+          "g1": 18,
+          "cancelled": 4,
+          "entries": 126,
+          "young": 9,
+          "youngCancelled": 4,
+          "tf": {
+            "min": -10,
+            "median": 100,
+            "p90": 118,
+            "max": 136
+          },
+          "onlyOpLeaders": 18
+        },
+        {
+          "year": 10,
+          "g1": 18,
+          "cancelled": 4,
+          "entries": 107,
+          "young": 9,
+          "youngCancelled": 4,
+          "tf": {
+            "min": -8,
+            "median": 100,
+            "p90": 118,
+            "max": 140
+          },
+          "onlyOpLeaders": 21
+        }
+      ],
+      "illegalGaps": 0,
+      "overflow": 0,
+      "idle": 0,
+      "eligibleTurns": 75753,
+      "changes": 1269
+    },
+    {
+      "seed": 18349,
+      "years": [
+        {
+          "year": 1,
+          "g1": 18,
+          "cancelled": 4,
+          "entries": 135,
+          "young": 9,
+          "youngCancelled": 4,
+          "tf": {
+            "min": -2,
+            "median": 92,
+            "p90": 113,
+            "max": 132
+          },
+          "onlyOpLeaders": 15
+        },
+        {
+          "year": 2,
+          "g1": 18,
+          "cancelled": 3,
+          "entries": 120,
+          "young": 9,
+          "youngCancelled": 3,
+          "tf": {
+            "min": -7,
+            "median": 96,
+            "p90": 115,
+            "max": 140
+          },
+          "onlyOpLeaders": 15
+        },
+        {
+          "year": 3,
+          "g1": 18,
+          "cancelled": 2,
+          "entries": 127,
+          "young": 9,
+          "youngCancelled": 2,
+          "tf": {
+            "min": 8,
+            "median": 98,
+            "p90": 116,
+            "max": 143
+          },
+          "onlyOpLeaders": 18
+        },
+        {
+          "year": 4,
+          "g1": 18,
+          "cancelled": 3,
+          "entries": 133,
+          "young": 9,
+          "youngCancelled": 3,
+          "tf": {
+            "min": -7,
+            "median": 99,
+            "p90": 118,
+            "max": 145
+          },
+          "onlyOpLeaders": 18
+        },
+        {
+          "year": 5,
+          "g1": 18,
+          "cancelled": 4,
+          "entries": 116,
+          "young": 9,
+          "youngCancelled": 4,
+          "tf": {
+            "min": -17,
+            "median": 98,
+            "p90": 118,
+            "max": 138
+          },
+          "onlyOpLeaders": 16
+        },
+        {
+          "year": 6,
+          "g1": 18,
+          "cancelled": 2,
+          "entries": 127,
+          "young": 9,
+          "youngCancelled": 2,
+          "tf": {
+            "min": -13,
+            "median": 99,
+            "p90": 117,
+            "max": 138
+          },
+          "onlyOpLeaders": 19
+        },
+        {
+          "year": 7,
+          "g1": 18,
+          "cancelled": 3,
+          "entries": 134,
+          "young": 9,
+          "youngCancelled": 3,
+          "tf": {
+            "min": 7,
+            "median": 97,
+            "p90": 117,
+            "max": 133
+          },
+          "onlyOpLeaders": 17
+        },
+        {
+          "year": 8,
+          "g1": 18,
+          "cancelled": 3,
+          "entries": 112,
+          "young": 9,
+          "youngCancelled": 3,
+          "tf": {
+            "min": 2,
+            "median": 98,
+            "p90": 118,
+            "max": 139
+          },
+          "onlyOpLeaders": 20
+        },
+        {
+          "year": 9,
+          "g1": 18,
+          "cancelled": 2,
+          "entries": 125,
+          "young": 9,
+          "youngCancelled": 2,
+          "tf": {
+            "min": -12,
+            "median": 98,
+            "p90": 117,
+            "max": 137
+          },
+          "onlyOpLeaders": 20
+        },
+        {
+          "year": 10,
+          "g1": 18,
+          "cancelled": 3,
+          "entries": 134,
+          "young": 9,
+          "youngCancelled": 3,
+          "tf": {
+            "min": -9,
+            "median": 99,
+            "p90": 118,
+            "max": 142
+          },
+          "onlyOpLeaders": 16
+        }
+      ],
+      "illegalGaps": 0,
+      "overflow": 0,
+      "idle": 0,
+      "eligibleTurns": 75846,
+      "changes": 1047
+    }
+  ],
+  "current": [
+    {
+      "seed": 5701,
+      "years": [
+        {
+          "year": 1,
+          "g1": 18,
+          "cancelled": 0,
+          "entries": 275,
+          "young": 9,
+          "youngCancelled": 0,
+          "tf": {
+            "min": 56,
+            "median": 96,
+            "p90": 113,
+            "max": 135
+          },
+          "onlyOpLeaders": 1
+        },
+        {
+          "year": 2,
+          "g1": 18,
+          "cancelled": 0,
+          "entries": 271,
+          "young": 9,
+          "youngCancelled": 0,
+          "tf": {
+            "min": 53,
+            "median": 94,
+            "p90": 111,
+            "max": 133
+          },
+          "onlyOpLeaders": 1
+        },
+        {
+          "year": 3,
+          "g1": 18,
+          "cancelled": 0,
+          "entries": 274,
+          "young": 9,
+          "youngCancelled": 0,
+          "tf": {
+            "min": 53,
+            "median": 94,
+            "p90": 110,
+            "max": 128
+          },
+          "onlyOpLeaders": 0
+        },
+        {
+          "year": 4,
+          "g1": 18,
+          "cancelled": 0,
+          "entries": 275,
+          "young": 9,
+          "youngCancelled": 0,
+          "tf": {
+            "min": 46,
+            "median": 91,
+            "p90": 107,
+            "max": 130
+          },
+          "onlyOpLeaders": 3
+        },
+        {
+          "year": 5,
+          "g1": 18,
+          "cancelled": 0,
+          "entries": 271,
+          "young": 9,
+          "youngCancelled": 0,
+          "tf": {
+            "min": 49,
+            "median": 92,
+            "p90": 108,
+            "max": 127
+          },
+          "onlyOpLeaders": 2
+        },
+        {
+          "year": 6,
+          "g1": 18,
+          "cancelled": 0,
+          "entries": 272,
+          "young": 9,
+          "youngCancelled": 0,
+          "tf": {
+            "min": 48,
+            "median": 93,
+            "p90": 108,
+            "max": 133
+          },
+          "onlyOpLeaders": 2
+        },
+        {
+          "year": 7,
+          "g1": 18,
+          "cancelled": 0,
+          "entries": 276,
+          "young": 9,
+          "youngCancelled": 0,
+          "tf": {
+            "min": 53,
+            "median": 94,
+            "p90": 109,
+            "max": 128
+          },
+          "onlyOpLeaders": 3
+        },
+        {
+          "year": 8,
+          "g1": 18,
+          "cancelled": 0,
+          "entries": 273,
+          "young": 9,
+          "youngCancelled": 0,
+          "tf": {
+            "min": 27,
+            "median": 93,
+            "p90": 110,
+            "max": 131
+          },
+          "onlyOpLeaders": 1
+        },
+        {
+          "year": 9,
+          "g1": 18,
+          "cancelled": 0,
+          "entries": 268,
+          "young": 9,
+          "youngCancelled": 0,
+          "tf": {
+            "min": 33,
+            "median": 89,
+            "p90": 106,
+            "max": 127
+          },
+          "onlyOpLeaders": 1
+        },
+        {
+          "year": 10,
+          "g1": 18,
+          "cancelled": 0,
+          "entries": 274,
+          "young": 9,
+          "youngCancelled": 0,
+          "tf": {
+            "min": 48,
+            "median": 90,
+            "p90": 107,
+            "max": 130
+          },
+          "onlyOpLeaders": 1
+        }
+      ],
+      "illegalGaps": 0,
+      "overflow": 0,
+      "idle": 0,
+      "eligibleTurns": 75676,
+      "changes": 4589
+    },
+    {
+      "seed": 778,
+      "years": [
+        {
+          "year": 1,
+          "g1": 18,
+          "cancelled": 0,
+          "entries": 273,
+          "young": 9,
+          "youngCancelled": 0,
+          "tf": {
+            "min": 55,
+            "median": 100,
+            "p90": 116,
+            "max": 139
+          },
+          "onlyOpLeaders": 1
+        },
+        {
+          "year": 2,
+          "g1": 18,
+          "cancelled": 0,
+          "entries": 276,
+          "young": 9,
+          "youngCancelled": 0,
+          "tf": {
+            "min": 43,
+            "median": 91,
+            "p90": 108,
+            "max": 135
+          },
+          "onlyOpLeaders": 2
+        },
+        {
+          "year": 3,
+          "g1": 18,
+          "cancelled": 0,
+          "entries": 277,
+          "young": 9,
+          "youngCancelled": 0,
+          "tf": {
+            "min": 37,
+            "median": 88,
+            "p90": 106,
+            "max": 126
+          },
+          "onlyOpLeaders": 6
+        },
+        {
+          "year": 4,
+          "g1": 18,
+          "cancelled": 0,
+          "entries": 275,
+          "young": 9,
+          "youngCancelled": 0,
+          "tf": {
+            "min": 40,
+            "median": 84,
+            "p90": 102,
+            "max": 124
+          },
+          "onlyOpLeaders": 2
+        },
+        {
+          "year": 5,
+          "g1": 18,
+          "cancelled": 0,
+          "entries": 270,
+          "young": 9,
+          "youngCancelled": 0,
+          "tf": {
+            "min": 42,
+            "median": 87,
+            "p90": 104,
+            "max": 124
+          },
+          "onlyOpLeaders": 5
+        },
+        {
+          "year": 6,
+          "g1": 18,
+          "cancelled": 0,
+          "entries": 268,
+          "young": 9,
+          "youngCancelled": 0,
+          "tf": {
+            "min": 38,
+            "median": 89,
+            "p90": 104,
+            "max": 123
+          },
+          "onlyOpLeaders": 2
+        },
+        {
+          "year": 7,
+          "g1": 18,
+          "cancelled": 0,
+          "entries": 270,
+          "young": 9,
+          "youngCancelled": 0,
+          "tf": {
+            "min": 49,
+            "median": 87,
+            "p90": 104,
+            "max": 138
+          },
+          "onlyOpLeaders": 1
+        },
+        {
+          "year": 8,
+          "g1": 18,
+          "cancelled": 0,
+          "entries": 281,
+          "young": 9,
+          "youngCancelled": 0,
+          "tf": {
+            "min": 43,
+            "median": 88,
+            "p90": 105,
+            "max": 127
+          },
+          "onlyOpLeaders": 2
+        },
+        {
+          "year": 9,
+          "g1": 18,
+          "cancelled": 0,
+          "entries": 264,
+          "young": 9,
+          "youngCancelled": 0,
+          "tf": {
+            "min": 46,
+            "median": 85,
+            "p90": 104,
+            "max": 129
+          },
+          "onlyOpLeaders": 1
+        },
+        {
+          "year": 10,
+          "g1": 18,
+          "cancelled": 1,
+          "entries": 273,
+          "young": 9,
+          "youngCancelled": 1,
+          "tf": {
+            "min": 41,
+            "median": 83,
+            "p90": 101,
+            "max": 122
+          },
+          "onlyOpLeaders": 4
+        }
+      ],
+      "illegalGaps": 0,
+      "overflow": 0,
+      "idle": 0,
+      "eligibleTurns": 76907,
+      "changes": 4594
+    },
+    {
+      "seed": 2026,
+      "years": [
+        {
+          "year": 1,
+          "g1": 18,
+          "cancelled": 0,
+          "entries": 272,
+          "young": 9,
+          "youngCancelled": 0,
+          "tf": {
+            "min": 53,
+            "median": 96,
+            "p90": 113,
+            "max": 135
+          },
+          "onlyOpLeaders": 2
+        },
+        {
+          "year": 2,
+          "g1": 18,
+          "cancelled": 0,
+          "entries": 273,
+          "young": 9,
+          "youngCancelled": 0,
+          "tf": {
+            "min": 61,
+            "median": 96,
+            "p90": 111,
+            "max": 133
+          },
+          "onlyOpLeaders": 1
+        },
+        {
+          "year": 3,
+          "g1": 18,
+          "cancelled": 0,
+          "entries": 271,
+          "young": 9,
+          "youngCancelled": 0,
+          "tf": {
+            "min": 52,
+            "median": 96,
+            "p90": 112,
+            "max": 134
+          },
+          "onlyOpLeaders": 1
+        },
+        {
+          "year": 4,
+          "g1": 18,
+          "cancelled": 0,
+          "entries": 273,
+          "young": 9,
+          "youngCancelled": 0,
+          "tf": {
+            "min": 42,
+            "median": 95,
+            "p90": 111,
+            "max": 132
+          },
+          "onlyOpLeaders": 2
+        },
+        {
+          "year": 5,
+          "g1": 18,
+          "cancelled": 0,
+          "entries": 269,
+          "young": 9,
+          "youngCancelled": 0,
+          "tf": {
+            "min": 51,
+            "median": 92,
+            "p90": 109,
+            "max": 131
+          },
+          "onlyOpLeaders": 4
+        },
+        {
+          "year": 6,
+          "g1": 18,
+          "cancelled": 0,
+          "entries": 270,
+          "young": 9,
+          "youngCancelled": 0,
+          "tf": {
+            "min": 43,
+            "median": 87,
+            "p90": 105,
+            "max": 127
+          },
+          "onlyOpLeaders": 0
+        },
+        {
+          "year": 7,
+          "g1": 18,
+          "cancelled": 0,
+          "entries": 270,
+          "young": 9,
+          "youngCancelled": 0,
+          "tf": {
+            "min": 47,
+            "median": 87,
+            "p90": 104,
+            "max": 133
+          },
+          "onlyOpLeaders": 4
+        },
+        {
+          "year": 8,
+          "g1": 18,
+          "cancelled": 0,
+          "entries": 272,
+          "young": 9,
+          "youngCancelled": 0,
+          "tf": {
+            "min": 49,
+            "median": 90,
+            "p90": 105,
+            "max": 129
+          },
+          "onlyOpLeaders": 3
+        },
+        {
+          "year": 9,
+          "g1": 18,
+          "cancelled": 0,
+          "entries": 269,
+          "young": 9,
+          "youngCancelled": 0,
+          "tf": {
+            "min": 41,
+            "median": 90,
+            "p90": 108,
+            "max": 130
+          },
+          "onlyOpLeaders": 6
+        },
+        {
+          "year": 10,
+          "g1": 18,
+          "cancelled": 0,
+          "entries": 274,
+          "young": 9,
+          "youngCancelled": 0,
+          "tf": {
+            "min": 44,
+            "median": 86,
+            "p90": 104,
+            "max": 124
+          },
+          "onlyOpLeaders": 1
+        }
+      ],
+      "illegalGaps": 0,
+      "overflow": 0,
+      "idle": 0,
+      "eligibleTurns": 74785,
+      "changes": 4515
+    },
+    {
+      "seed": 995173,
+      "years": [
+        {
+          "year": 1,
+          "g1": 18,
+          "cancelled": 1,
+          "entries": 270,
+          "young": 9,
+          "youngCancelled": 1,
+          "tf": {
+            "min": 49,
+            "median": 94,
+            "p90": 112,
+            "max": 136
+          },
+          "onlyOpLeaders": 1
+        },
+        {
+          "year": 2,
+          "g1": 18,
+          "cancelled": 0,
+          "entries": 278,
+          "young": 9,
+          "youngCancelled": 0,
+          "tf": {
+            "min": 55,
+            "median": 95,
+            "p90": 111,
+            "max": 131
+          },
+          "onlyOpLeaders": 1
+        },
+        {
+          "year": 3,
+          "g1": 18,
+          "cancelled": 0,
+          "entries": 276,
+          "young": 9,
+          "youngCancelled": 0,
+          "tf": {
+            "min": 50,
+            "median": 93,
+            "p90": 109,
+            "max": 133
+          },
+          "onlyOpLeaders": 2
+        },
+        {
+          "year": 4,
+          "g1": 18,
+          "cancelled": 0,
+          "entries": 279,
+          "young": 9,
+          "youngCancelled": 0,
+          "tf": {
+            "min": 54,
+            "median": 94,
+            "p90": 110,
+            "max": 133
+          },
+          "onlyOpLeaders": 2
+        },
+        {
+          "year": 5,
+          "g1": 18,
+          "cancelled": 0,
+          "entries": 269,
+          "young": 9,
+          "youngCancelled": 0,
+          "tf": {
+            "min": 48,
+            "median": 93,
+            "p90": 109,
+            "max": 130
+          },
+          "onlyOpLeaders": 2
+        },
+        {
+          "year": 6,
+          "g1": 18,
+          "cancelled": 0,
+          "entries": 276,
+          "young": 9,
+          "youngCancelled": 0,
+          "tf": {
+            "min": 50,
+            "median": 93,
+            "p90": 109,
+            "max": 130
+          },
+          "onlyOpLeaders": 2
+        },
+        {
+          "year": 7,
+          "g1": 18,
+          "cancelled": 0,
+          "entries": 272,
+          "young": 9,
+          "youngCancelled": 0,
+          "tf": {
+            "min": 55,
+            "median": 92,
+            "p90": 108,
+            "max": 130
+          },
+          "onlyOpLeaders": 2
+        },
+        {
+          "year": 8,
+          "g1": 18,
+          "cancelled": 0,
+          "entries": 276,
+          "young": 9,
+          "youngCancelled": 0,
+          "tf": {
+            "min": 57,
+            "median": 91,
+            "p90": 109,
+            "max": 134
+          },
+          "onlyOpLeaders": 2
+        },
+        {
+          "year": 9,
+          "g1": 18,
+          "cancelled": 0,
+          "entries": 271,
+          "young": 9,
+          "youngCancelled": 0,
+          "tf": {
+            "min": 51,
+            "median": 94,
+            "p90": 109,
+            "max": 128
+          },
+          "onlyOpLeaders": 1
+        },
+        {
+          "year": 10,
+          "g1": 18,
+          "cancelled": 0,
+          "entries": 274,
+          "young": 9,
+          "youngCancelled": 0,
+          "tf": {
+            "min": 53,
+            "median": 92,
+            "p90": 107,
+            "max": 126
+          },
+          "onlyOpLeaders": 2
+        }
+      ],
+      "illegalGaps": 0,
+      "overflow": 0,
+      "idle": 0,
+      "eligibleTurns": 75133,
+      "changes": 4591
+    },
+    {
+      "seed": 18349,
+      "years": [
+        {
+          "year": 1,
+          "g1": 18,
+          "cancelled": 0,
+          "entries": 275,
+          "young": 9,
+          "youngCancelled": 0,
+          "tf": {
+            "min": 45,
+            "median": 97,
+            "p90": 114,
+            "max": 137
+          },
+          "onlyOpLeaders": 0
+        },
+        {
+          "year": 2,
+          "g1": 18,
+          "cancelled": 0,
+          "entries": 277,
+          "young": 9,
+          "youngCancelled": 0,
+          "tf": {
+            "min": 56,
+            "median": 95,
+            "p90": 110,
+            "max": 132
+          },
+          "onlyOpLeaders": 3
+        },
+        {
+          "year": 3,
+          "g1": 18,
+          "cancelled": 0,
+          "entries": 272,
+          "young": 9,
+          "youngCancelled": 0,
+          "tf": {
+            "min": 49,
+            "median": 93,
+            "p90": 109,
+            "max": 131
+          },
+          "onlyOpLeaders": 4
+        },
+        {
+          "year": 4,
+          "g1": 18,
+          "cancelled": 0,
+          "entries": 277,
+          "young": 9,
+          "youngCancelled": 0,
+          "tf": {
+            "min": 51,
+            "median": 92,
+            "p90": 109,
+            "max": 133
+          },
+          "onlyOpLeaders": 1
+        },
+        {
+          "year": 5,
+          "g1": 18,
+          "cancelled": 0,
+          "entries": 275,
+          "young": 9,
+          "youngCancelled": 0,
+          "tf": {
+            "min": 57,
+            "median": 94,
+            "p90": 109,
+            "max": 129
+          },
+          "onlyOpLeaders": 3
+        },
+        {
+          "year": 6,
+          "g1": 18,
+          "cancelled": 0,
+          "entries": 278,
+          "young": 9,
+          "youngCancelled": 0,
+          "tf": {
+            "min": 45,
+            "median": 93,
+            "p90": 110,
+            "max": 128
+          },
+          "onlyOpLeaders": 3
+        },
+        {
+          "year": 7,
+          "g1": 18,
+          "cancelled": 0,
+          "entries": 275,
+          "young": 9,
+          "youngCancelled": 0,
+          "tf": {
+            "min": 37,
+            "median": 93,
+            "p90": 109,
+            "max": 130
+          },
+          "onlyOpLeaders": 2
+        },
+        {
+          "year": 8,
+          "g1": 18,
+          "cancelled": 0,
+          "entries": 276,
+          "young": 9,
+          "youngCancelled": 0,
+          "tf": {
+            "min": 53,
+            "median": 92,
+            "p90": 108,
+            "max": 127
+          },
+          "onlyOpLeaders": 3
+        },
+        {
+          "year": 9,
+          "g1": 18,
+          "cancelled": 0,
+          "entries": 274,
+          "young": 9,
+          "youngCancelled": 0,
+          "tf": {
+            "min": 56,
+            "median": 92,
+            "p90": 107,
+            "max": 129
+          },
+          "onlyOpLeaders": 0
+        },
+        {
+          "year": 10,
+          "g1": 18,
+          "cancelled": 0,
+          "entries": 278,
+          "young": 9,
+          "youngCancelled": 0,
+          "tf": {
+            "min": 39,
+            "median": 87,
+            "p90": 106,
+            "max": 126
+          },
+          "onlyOpLeaders": 0
+        }
+      ],
+      "illegalGaps": 0,
+      "overflow": 0,
+      "idle": 0,
+      "eligibleTurns": 76436,
+      "changes": 4756
+    }
+  ]
+}

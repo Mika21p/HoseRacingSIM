@@ -1178,15 +1178,15 @@
     });
     const ordered = orderedFieldResults(results);
     const winner = ordered.find((result) => !result.retired);
-    const tfFloat = R.rollRange(-5, 5);
+
     const pointsPerLength = getPointsPerLength(race.distance);
     return {
-      trackCondition, tfFloat,
+      trackCondition,
       results: ordered.map((result) => ({
         horseId: result.entry.key, jockeyId: result.entry.jockeyId, jockeyName: result.entry.jockeyName,
         rank: result.retired ? null : result.fieldPosition,
         retired: result.retired, phase: result.retiredPhase, injury: result.injury,
-        total: result.total, tf: result.retired ? null : result.total + 10 + tfFloat,
+        total: result.total, tf: null,
         pressure: result.pressure,
         margin: result.retired || !winner ? null : (winner.total - result.total) / pointsPerLength,
         marginLabel: result.retired || result === winner ? "" : createMarginLabel((winner.total - result.total) / pointsPerLength,

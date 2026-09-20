@@ -20,7 +20,7 @@ test("default world runs five complete seasons without duplicate starts, prizes 
     const out = W.finishYear(world); world = out.world;
     assert.ok(out.ratings.every((r) => r.year === year)); W.validateWorld(world);
   }
-  assert.equal(world.turn, 120); assert.equal(world.horses.length, 675); assert.equal(occurrences.size, 810); assert.equal(g1, 90);
+  assert.equal(world.turn, 120); assert.equal(world.horses.length, 675); assert.equal(occurrences.size, world.races.length * 5); assert.equal(g1, 90);
   assert.equal(starts, world.horses.reduce((sum, h) => sum + h.lifetime.starts, 0));
   assert.ok(Math.abs(prize - world.horses.reduce((sum, h) => sum + h.lifetime.prize, 0)) < .001);
   t.diagnostic(`5 years: ${starts} starts, ${world.horses.filter((h) => h.status === "active").length} active, ${(performance.now() - began).toFixed(0)} ms`);
@@ -53,7 +53,7 @@ test("1000 active horses and 20 years of indexed history save, query, restore an
     const out = W.advanceHalfMonth(loaded); await store.commitChanges(loaded, out, { checkpoint: "turn" });
     const recovered = await store.restore(out.world, `turn:${loaded.revision}`); assert.equal(recovered.turn, 480); assert.equal(recovered.rngState, loaded.rngState);
     const snapshot = await store.exportWorld(w.id); store.validateSnapshot(snapshot);
-    assert.equal(snapshot.records.performances.length, 51840);
+    assert.equal(snapshot.records.performances.length, w.races.length * 20 * 16);
     t.diagnostic(`1000 active / 20 years / 51840 performances: save ${(saved - began).toFixed(0)} ms; newest 50 query ${(queried - saved).toFixed(0)} ms; export ${(JSON.stringify(snapshot).length / 1024 / 1024).toFixed(1)} MiB`);
   } finally { await store.close(); }
 });

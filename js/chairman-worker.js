@@ -4,7 +4,7 @@ self.window = self;
 var window = self;
 self.Keiba = {};
 importScripts("utils/random.js", "data/bloodlines.js", "rules/time.js", "rules/region-rules.js", "rules/maturity.js",
-  "rules/temperament.js", "rules/horse-generator.js", "rules/comments.js", "rules/career.js", "rules/chairman.js",
+  "rules/temperament.js", "rules/horse-generator.js", "rules/comments.js", "rules/career.js", "rules/chairman-ratings.js", "rules/chairman-scheduling.js", "rules/chairman.js",
   "data/chairman-pedigrees.js", "rules/chairman-breeding.js", "chairman-csv.js", "chairman-storage.js");
 self.onmessage = (event) => {
   const { kind, payload } = event.data;

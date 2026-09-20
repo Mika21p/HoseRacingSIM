@@ -16,11 +16,14 @@
     finally { w.breeding.rngState = random.state(); activeRandom.delete(w); }
   }
   function grade(value) { return value >= 90 ? "顶级" : value >= 75 ? "优秀" : value >= 60 ? "良好" : value >= 40 ? "普通" : "较低"; }
-  function recordRating(h, y, value) {
+  function recordRating(h, y, value, tf) {
     if (!h.breeding) return;
     (h.breeding.yearWtr ||= {})[y] = value;
     const values = Object.values(h.breeding.yearWtr).filter((v) => v != null && Number.isFinite(v));
     h.breeding.bestWtr = values.length ? Math.max(...values) : null;
+    (h.breeding.evaluationByYear ||= {})[y] = value ?? (tf == null ? null : tf - 5);
+    const evaluation = Object.values(h.breeding.evaluationByYear).filter(v=>v!=null && Number.isFinite(v));
+    h.breeding.bestEvaluation = evaluation.length ? Math.max(...evaluation) : null;
   }
   function initialize(w, h) {
     if (!w.breeding || h.breeding) return;
@@ -71,7 +74,7 @@
   }
   function reputations(w) {
     const horses = w.horses.filter((h) => h.lifetime.starts), candidates = all(w).filter((h) => h.breeding);
-    const top = (h) => Math.max(h.breeding?.bestWtr ?? -Infinity, W().rating(h) ?? -Infinity, h.previousWtr ?? -Infinity);
+    const top = (h) => Math.max(h.breeding?.bestEvaluation ?? h.breeding?.bestWtr ?? -Infinity, W().rating(h) ?? (h.annual.tf == null ? -Infinity : h.annual.tf - 5), h.previousWtr ?? (h.previousTf == null ? -Infinity : h.previousTf - 5));
     const ratings = horses.map(top).filter(Number.isFinite), g1s = horses.map((h) => h.lifetime.g1), prizes = horses.map((h) => h.lifetime.prize);
     const children = new Map();
     for (const h of horses) for (const id of [h.fatherId, h.motherId]) if (id) { if (!children.has(id)) children.set(id, []); children.get(id).push(h); }
@@ -187,7 +190,7 @@
     w.pedigrees ||= []; w.breeding = { version: 1, templateVersion: ns.ChairmanPedigrees?.version || 1,
       rngState: ((w.seed ?? w.rngState) ^ 0xb4e31d57) >>> 0, enabledYear: year(w), manual: [], sources: {}, completedYear: year(w) - 1 };
     seeded(w, () => {
-      w.horses.forEach((h) => { initialize(w, h); for (const [y, score] of Object.entries(options.ratings?.[h.id] || {})) recordRating(h, y, score); });
+      w.horses.forEach((h) => { initialize(w, h); for (const [y, score] of Object.entries(options.ratings?.[h.id] || {})) recordRating(h, y, score && typeof score === "object" ? score.wtr : score, score && typeof score === "object" ? score.tf : null); });
       if (options.foundation !== false) for (const region of W().populationRegions(w)) foundation(w, region);
       if (options.background) {
         const byId = map(w), occupied = new Set();

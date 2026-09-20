@@ -20,7 +20,7 @@
       const finish = () => resolve({ rows, total: count, more: count > offset + limit, offset });
       // These compound indexes have a unique final ID. Bounded blocks avoid one
       // browser event per historical row without loading the complete archive.
-      if (["byWtr", "byDisplay"].includes(index) && !p.reverse) {
+      if (["byWtr", "byTf", "byLegacy", "byDisplay", "byGradedDisplay"].includes(index) && !p.reverse) {
         const block = (keyRange) => {
           const req = source.getAll(keyRange, 256); req.onerror = () => reject(req.error);
           req.onsuccess = () => { const values = req.result; values.forEach(accept); if (values.length < 256) return finish();
@@ -39,23 +39,23 @@
   };
   P.historyPage = function (world, prefs, offset, extra) {
     const e = extra || {};
-    return this.scanPage("occurrences", world.id, { index: e.raceId ? "byRace" : e.trackId ? "byTrack" : "byDisplay",
-      range: range(e.raceId ? [world.id, e.raceId] : e.trackId ? [world.id, e.trackId] : [world.id]),
+    return this.scanPage("occurrences", world.id, { index: e.raceId ? "byRace" : e.trackId ? "byTrack" : "byGradedDisplay",
+      range: range(e.raceId ? [world.id, e.raceId] : e.trackId ? [world.id, e.trackId] : [world.id, 1]),
       reverse: !!(e.raceId || e.trackId), offset,
-      filter: (r) => O.raceMatches(r, prefs, world.lastCompletedTurn) && (!e.g1 || r.raceClass === "g1") });
+      filter: (r) => r.raceClass !== "op" && O.raceMatches(r, prefs, world.lastCompletedTurn) && (!e.g1 || r.raceClass === "g1") });
   };
   P.board = async function (world, kind, prefs, offset, expanded) {
     const limit = expanded ? 50 : 10;
-    if (kind === "history") return this.scanPage("ratings", world.id, { index: "byWtr", range: range([world.id]), offset, limit, metric: "wtr",
-      filter: (r) => r.wtr != null && O.horseMatches(r, prefs) });
+    if (["history", "tfHistory", "legacy"].includes(kind)) return this.scanPage("ratings", world.id, { index: kind === "tfHistory" ? "byTf" : kind === "legacy" ? "byLegacy" : "byWtr", range: range([world.id]), offset, limit, metric: kind === "tfHistory" ? "tf" : kind === "legacy" ? "legacyAutomatic" : "wtr",
+      filter: (r) => (kind === "tfHistory" ? r.tf : kind === "legacy" ? r.legacyAutomatic : r.wtr) != null && O.horseMatches(kind === "tfHistory" ? { ...r, wtr:r.tf } : r, prefs) });
     let rows = world.horses.map((h) => O.publicHorse(world, h, kind === "lifetime"));
     if (kind === "lifetime" && prefs.minimum !== "" && prefs.minimum != null) {
       const highest = await this.highestRatings(world.id);
       rows.forEach((r) => { const old = highest.get(r.horseId); r.bestWtr = r.wtr == null ? old ?? null : old == null ? r.wtr : Math.max(old, r.wtr); });
     }
-    rows = rows.filter((r) => kind === "current" ? r.status === "active" && r.wtr != null : r.starts > 0 || r.prize > 0)
-      .filter((r) => O.horseMatches(kind === "lifetime" && Object.hasOwn(r, "bestWtr") ? { ...r, wtr: r.bestWtr } : r, prefs));
-    rows = O.ranked(rows, kind === "current" ? "wtr" : "prize");
+    rows = rows.filter((r) => ["current", "tf"].includes(kind) ? r.status === "active" && (kind === "tf" ? r.tf : r.wtr) != null : r.starts > 0 || r.prize > 0)
+      .filter((r) => O.horseMatches(kind === "tf" ? { ...r, wtr:r.tf } : kind === "lifetime" && Object.hasOwn(r, "bestWtr") ? { ...r, wtr: r.bestWtr } : r, prefs));
+    rows = O.ranked(rows, kind === "current" ? "wtr" : kind === "tf" ? "tf" : "prize");
     const start = rows.length && offset >= rows.length ? Math.floor((rows.length - 1) / limit) * limit : offset;
     return { rows: rows.slice(start, start + limit), total: rows.length, offset: start, more: rows.length > start + limit };
   };
@@ -76,24 +76,46 @@
   };
   P.scoreOutput = async function (world, occurrenceId, values, reset) {
     const occurrence = await this.get("occurrences", world.id, occurrenceId);
-    if (!occurrence || occurrence.status !== "completed") throw new Error("该届赛事没有可评分的成绩。");
+    if (!occurrence || occurrence.raceClass === "op" || occurrence.status !== "completed") throw new Error("该届赛事没有可评分的成绩。");
     const all = (await this.query("performances", world.id, { occurrenceId, limit: Number.MAX_SAFE_INTEGER })).rows;
     for (const id of Object.keys(values)) if (!all.some((p) => p.id === id)) throw new Error("评分不属于当前赛事。");
     const horseIds = [...new Set(all.filter((p) => reset || Object.hasOwn(values, p.id)).map((p) => p.horseId))];
     const rows = await Promise.all(horseIds.map((horseId) => this.query("performances", world.id, { horseId, year: occurrence.year, limit: Number.MAX_SAFE_INTEGER })));
     const archives = occurrence.year === W.date(world.turn).year ? [] : await Promise.all(horseIds.map((h) => this.get("ratings", world.id, `${occurrence.year}:${h}`)));
-    return O.raceScores(world, occurrence, all, values, rows.flatMap((r) => r.rows), archives, reset);
+    const draft=await this.get('scoreDrafts',world.id,occurrenceId);
+    const out=O.raceScores(world, occurrence, all, values, rows.flatMap((r) => r.rows), archives, reset);
+    if(reset)out.occurrences[0].wtrBenchmark=null;
+    else if(draft?.benchmarkId && draft.benchmarkScore!=null)out.occurrences[0].wtrBenchmark={horseId:draft.benchmarkId,score:draft.benchmarkScore,scaleOffset:draft.scaleOffset??occurrence.scaleOffset,ratingVersion:2};
+    return out;
   };
-  P.draftOutput = async function (world, occurrenceId, values) {
+  P.draftOutput = async function (world, occurrenceId, values, metadata) {
     const occurrence = await this.get("occurrences", world.id, occurrenceId);
-    if (!occurrence || occurrence.status !== "completed") throw new Error("没有对应的已完成比赛。");
+    if (!occurrence || occurrence.raceClass === "op" || occurrence.status !== "completed") throw new Error("没有对应的已完成比赛。");
     const old = await this.get("scoreDrafts", world.id, occurrenceId);
     for (const [id, v] of Object.entries(values)) {
       O.score(v); const p = await this.get("performances", world.id, id);
       if (!p || p.occurrenceId !== occurrenceId || p.retired) throw new Error("评分草稿对象无效。");
     }
     return W.mutate(world, (w, out) => { out.scoreDrafts = [{ id: occurrenceId, year: occurrence.year, turn: w.turn,
-      values: { ...(old || {}).values, ...values }, savedAt: Date.now() }]; });
+      ...old, ...metadata, values: { ...(old || {}).values, ...values }, touched: metadata?.touched || { ...old?.touched, ...Object.fromEntries(Object.keys(values).map(id=>[id,true])) }, savedAt: Date.now() }]; });
+  };
+  P.recommendOutput = async function(world, occurrenceId, benchmarkId, value, options) {
+    const occurrence=await this.get('occurrences',world.id,occurrenceId);
+    if(!occurrence || occurrence.raceClass==='op' || occurrence.status!=='completed') throw new Error('仅可为已完成重赏生成推荐。');
+    const rows=(await this.query('performances',world.id,{occurrenceId,limit:Number.MAX_SAFE_INTEGER})).rows;
+    const old=await this.get('scoreDrafts',world.id,occurrenceId), S=ns.ChairmanRatings, opts=options||{};
+    const anchor=rows.find(p=>p.horseId===(benchmarkId||occurrence.tfBenchmarkId)&&!p.retired) || rows.find(p=>p.rank===1);
+    if(benchmarkId && !rows.some(p=>p.horseId===benchmarkId && !p.retired))throw new Error('基准马不属于本场完赛马。');
+    if(!anchor)throw new Error('没有可用的完赛基准马。');
+    const scaleOffset=occurrence.scaleOffset??S.getRatingScaleOffset(world.ratingSeed??world.seed,occurrenceId);
+    const benchmarkScore=opts.useTf ? anchor.tf-scaleOffset : O.score(value);
+    const recommendations=S.buildWtrRecommendations(occurrence.race,rows,anchor.horseId,benchmarkScore), values={}, touched=opts.replace ? {} : {...old?.touched};
+    for(const p of rows) if(Object.hasOwn(recommendations,p.id) && (opts.replace || !touched[p.id])) {
+      if(!opts.replace && p.manualRating!=null && !Object.hasOwn(old?.values||{},p.id)) {touched[p.id]=true;continue;}
+      values[p.id]=String(recommendations[p.id]);
+    }
+    const out=await this.draftOutput(world,occurrenceId,values,{benchmarkId:anchor.horseId,benchmarkScore,scaleOffset,recommendations,touched,ratingVersion:S.VERSION});
+    out.occurrences.push({...occurrence,scaleOffset}); return out;
   };
   P.visibilityOutput = async function (world, ids, hidden) {
     const rows = await Promise.all(ids.map((id) => this.get("occurrences", world.id, id)));

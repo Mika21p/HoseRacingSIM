@@ -19,7 +19,7 @@ test("legacy simulation matches the pre-chairman deterministic baseline", () => 
 function make(count = 36) { return W.createWorld({ id: "test-world", seed: 37119, horseCount: count }); }
 test("chairman preset preserves source races and balanced generations", () => {
   const w = make(300);
-  assert.equal(w.races.length, 162);
+  assert.equal(w.races.filter(r=>!r.prepTemplate).length, 162); assert.ok(w.races.some(r=>r.prepTemplate));
   for (const region of W.REGIONS) for (const age of [2, 3, 4, 5]) assert.equal(w.horses.filter((h) => h.homeRegion === region && W.ageOf(w, h) === age).length, 25);
   for (const r of w.races.filter((r) => r.sourceId)) {
     const original = ns.RaceRegistry.all().find((v) => v.id === r.sourceId);
@@ -35,14 +35,14 @@ test("seeded turns are repeatable without mutating the input or leaking the rand
   assert.throws(() => ns.Random.withSource(() => .1, () => { throw Error("unwind"); }));
   assert.notEqual(ns.Random.next(), .1);
 });
-test("16 and 24 real runners produce all ranks, unique jockeys and one shared TF float", () => {
+test("16 and 24 real runners produce all ranks, unique jockeys and leave scoring to the rating module", () => {
   const w = make(24), race = W.engineRace(w, w.races.find((r) => r.raceClass === "g1"));
   for (const n of [16, 24]) {
     const result = ns.Random.withSource(ns.Random.seeded(99), () => ns.RaceRules.simulateWorldRace(w.horses.slice(0, n).map((h, i) => ({ horse: h, time: W.timeFor(w, h), jockey: { id: `j-${i}`, name: "骑手", ability: 60 } })), race));
     assert.equal(result.results.length, n);
     const completed = result.results.filter((r) => !r.retired);
     assert.deepEqual(plain(completed.map((r) => r.rank)), Array.from({ length: completed.length }, (_, i) => i + 1));
-    assert.ok(completed.every((r) => r.tf - r.total - 10 === result.tfFloat));
+    assert.ok(completed.every((r) => r.tf === null)); assert.equal(result.tfFloat, undefined);
     assert.ok(result.results.filter((r) => r.retired).every((r) => r.tf === null && r.rank === null));
     assert.ok(result.results.some((r) => r.pressure >= 3 && r.pressure <= 8));
   }
@@ -88,7 +88,7 @@ test("rescheduled recurring races occur only once per year and single entrants c
   assert.ok(out.occurrences.some((r) => r.raceId === target.id && r.year === 2));
 });
 test("manual yearly WTR stays authoritative, zero is not blank and archives stay separate", () => {
-  const w = make(36), out = W.advanceHalfMonth(w), p = out.performances.find((r) => !r.retired), hid = p.horseId;
+  const w = make(36); w.races.filter(r=>r.month===1 && r.half===1).forEach(r=>{r.raceClass="g3";r.grade="G3";}); W.planEntries(w); const out = W.advanceHalfMonth(w), p = out.performances.find((r) => !r.retired), hid = p.horseId;
   let world = W.edit(out.world, "wtr", { id: hid, score: 0 }).world;
   const scored = W.scorePerformance(world, p, 155, out.performances.filter((r) => r.horseId === hid));
   world = scored.world; const h = world.horses.find((v) => v.id === hid);

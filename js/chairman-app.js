@@ -20,7 +20,7 @@
     if (!window.Worker) throw new Error("此浏览器不支持后台文件处理，请使用支持Worker的浏览器。");
     if (stopping) throw new Error("操作已取消，当前世界未改变。");
     return new Promise((resolve, reject) => {
-      const worker = new Worker("js/chairman-worker.js?v=20260920-breeding"); activeWorker = worker;
+      const worker = new Worker("js/chairman-worker.js?v=20260920-ratings"); activeWorker = worker;
       const end = () => { worker.terminate(); activeWorker = null; cancelWorker = null; };
       cancelWorker = () => { end(); reject(new Error("操作已取消，当前世界未改变。")); };
       worker.onmessage = ({ data }) => { if (data.progress) { notice(data.progress); return; } end(); if (data.error) reject(new Error(data.error)); else resolve(data.result); };
@@ -71,7 +71,7 @@
     notice("已保存至本地数据库。");
   }
   async function openWorld(id) {
-    const loaded = await store.load(id); await store.acquire(id); world = loaded;
+    await store.acquire(id); world = await store.load(id);
     tab = world.ui.tab || "overview"; page = 0;
     notice(store.writable ? "进度已恢复，所有操作自动保存。" : "当前为只读：另一页面正在操作此世界。可在设置中重新取得编辑权。", !store.writable);
     await render();
@@ -100,25 +100,25 @@
     if (await breeding.render(tab)) return;
     if (await office.render(tab)) return;
     if (tab === "overview") {
-      const active = world.horses.filter((h) => h.status === "active"), upcoming = world.races.filter((r) => !r.deleted && r.month === d.month && r.half === d.half);
-      body.innerHTML = `<div class="cm-stats"><article><strong>${active.length}</strong>现役</article><article><strong>${world.races.filter((r) => !r.deleted).length}</strong>赛事</article><article><strong>${active.filter((h) => h.booked).length}</strong>已安排</article></div>${UI.toolbar(world.phase === "yearEnd" ? "年度颁奖待完成" : "本半月赛事", upcoming.length, button("latest", "上次汇总") + UI.more(button("editHorse", "自建赛马") + button("editRace", "创办赛事")))}${raceTable(upcoming.sort((a, b) => (b.raceClass === "g1") - (a.raceClass === "g1")).slice(page * 50, page * 50 + 50))}${upcoming.length > 50 ? pager(upcoming.length > (page + 1) * 50) : ""}`;
+      const active = world.horses.filter((h) => h.status === "active"), upcoming = world.races.filter((r) => !r.deleted && r.raceClass !== "op" && r.month === d.month && r.half === d.half);
+      body.innerHTML = `<div class="cm-stats"><article><strong>${active.length}</strong>现役</article><article><strong>${world.races.filter((r) => !r.deleted).length}</strong>赛事</article><article><strong>${active.filter((h) => h.booked).length}</strong>已安排</article></div>${UI.toolbar(world.phase === "yearEnd" ? "年度颁奖待完成" : "本半月赛事", upcoming.length, button("latest", "上次汇总") + UI.more(button("editHorse", "自建赛马") + button("editRace", "创办赛事")))}${world.backgroundSummary ? `<p class="cm-muted">上次后台普通赛：完成${world.backgroundSummary.completed}场 · 取消${world.backgroundSummary.cancelled}场</p>` : ""}${raceTable(upcoming.sort((a, b) => (b.raceClass === "g1") - (a.raceClass === "g1")).slice(page * 50, page * 50 + 50))}${upcoming.length > 50 ? pager(upcoming.length > (page + 1) * 50) : ""}`;
 
     } else if (tab === "horses") {
       const p = world.ui.horses || {};
       const rows = world.horses.filter((h) => ns.ChairmanOffice.horseMatches({ ...h, age: W.ageOf(world, h) }, { status: "active", ...p }));
       if (rows.length && page * 50 >= rows.length) page = Math.floor((rows.length - 1) / 50);
-      rows.sort((a, b) => p.sort === "prize" ? b.lifetime.prize - a.lifetime.prize : (W.rating(b) ?? -Infinity) - (W.rating(a) ?? -Infinity) || b.lifetime.prize - a.lifetime.prize);
+      rows.sort((a, b) => p.sort === "prize" ? b.lifetime.prize - a.lifetime.prize : p.sort !== "wtr" ? (b.annual.tf ?? -Infinity) - (a.annual.tf ?? -Infinity) || b.lifetime.prize-a.lifetime.prize : (W.rating(b) ?? -Infinity) - (W.rating(a) ?? -Infinity) || b.lifetime.prize - a.lifetime.prize);
       body.innerHTML = `${UI.toolbar("马匹", rows.length, button("editHorse", "自建赛马", "", 'class="cm-primary"') + UI.more(button("generate", "生成随机马群") + button("csv", "CSV导入导出", "horse") + button("batch", batch === "horse" ? "结束批量选择" : "批量导出", "horse")))}${batch === "horse" ? `<div class="cm-actions">${button("exportSelected", "导出所选", "horse")}</div>` : ""}${filters("horses")}${horseTable(rows.slice(page * 50, page * 50 + 50))}${rows.length ? "" : '<p class="cm-empty">暂无符合条件的马匹</p>'}${pager(rows.length > (page + 1) * 50)}`;
 
     } else if (tab === "calendar") {
       const p = world.ui.calendar || {};
-      const rows = world.races.filter((r) => !r.deleted && ns.ChairmanOffice.raceMatches({ ...r, region: world.tracks.find((t) => t.id === r.trackId).region }, p)).sort((a, b) => a.month - b.month || a.half - b.half || (b.raceClass === "g1") - (a.raceClass === "g1"));
-      if (rows.length && page * 50 >= rows.length) page = Math.floor((rows.length - 1) / 50);
       const sub = world.ui.layout?.calendar || "races";
-      body.innerHTML = UI.tabs([["races", "赛事"], ["tracks", "马场"], ["regions", "地区"]], sub, "calendarView", button);
+      const rows = world.races.filter((r) => !r.deleted && (sub === "background" ? r.raceClass === "op" : r.raceClass !== "op") && ns.ChairmanOffice.raceMatches({ ...r, region: world.tracks.find((t) => t.id === r.trackId).region }, p)).sort((a, b) => a.month - b.month || a.half - b.half || (b.raceClass === "g1") - (a.raceClass === "g1"));
+      if (rows.length && page * 50 >= rows.length) page = Math.floor((rows.length - 1) / 50);
+      body.innerHTML = UI.tabs([["races", "重赏"], ["background", "后台赛事"], ["tracks", "马场"], ["regions", "地区"]], sub, "calendarView", button);
       if (sub === "tracks") body.innerHTML += UI.toolbar("马场", world.tracks.filter((t) => !t.deleted).length, button("editTrack", "建立马场", "", 'class="cm-primary"')) + `<div class="cm-table-wrap"><table><thead><tr><th>马场</th><th>地区</th><th>场地</th><th>操作</th></tr></thead><tbody>${world.tracks.filter((t) => !t.deleted).slice(page * 50, page * 50 + 50).map((t) => `<tr><td>${button("trackArchive", t.name, t.id, 'class="cm-link"')}</td><td>${escape(t.region)}</td><td>${escape(t.surfaces.join("／"))}</td><td>${UI.more(button("editTrack", "编辑马场", t.id) + button("trackRaces", "查看赛事", t.id))}</td></tr>`).join("")}</tbody></table></div>` + pager(world.tracks.length > (page + 1) * 50);
       else if (sub === "regions") body.innerHTML += UI.toolbar("地区", W.regions(world).length, button("editRegion", "新增虚构地区", "", 'class="cm-primary"')) + `<div class="cm-table-wrap"><table><thead><tr><th>地区</th><th>参考环境</th><th>自动补马</th><th>操作</th></tr></thead><tbody>${W.regions(world).slice(page * 50, page * 50 + 50).map((r) => `<tr><td>${escape(r.name)}</td><td>${escape(r.baseRegion)}</td><td>${r.autoPopulate ? "开启" : "关闭"}</td><td>${button("editRegion", "设置", r.id)} ${button("editTrack", "建立马场", "", `data-region="${escape(r.name)}"`)}</td></tr>`).join("")}</tbody></table></div>` + pager(W.regions(world).length > (page + 1) * 50);
-      else body.innerHTML += UI.toolbar("年度赛历", rows.length, button("editRace", "创办赛事", "", 'class="cm-primary"') + UI.more(button("csv", "CSV导入导出", "race") + button("batch", batch === "race" ? "结束批量选择" : "批量导出", "race"))) + (batch === "race" ? `<div class="cm-actions">${button("exportSelected", "导出所选", "race")}</div>` : "") + filters("calendar") + raceTable(rows.slice(page * 50, page * 50 + 50)) + pager(rows.length > (page + 1) * 50);
+      else body.innerHTML += UI.toolbar("年度赛历", rows.length, button("editRace", "创办赛事", "", 'class="cm-primary"') + UI.more(button("csv", "CSV导入导出", "race") + button("prepPreview", "补充年轻马准备赛") + button("batch", batch === "race" ? "结束批量选择" : "批量导出", "race"))) + (batch === "race" ? `<div class="cm-actions">${button("exportSelected", "导出所选", "race")}</div>` : "") + filters("calendar") + raceTable(rows.slice(page * 50, page * 50 + 50)) + pager(rows.length > (page + 1) * 50);
 
     } else if (tab === "settings") {
       const points = await store.query("checkpoints", world.id); const slots = await store.slots(); if (seq !== token) return;
@@ -181,6 +181,8 @@
       if (action === "importSave") { modal("导入完整存档", '<form data-form="importSave"><p>验证通过后建立独立世界副本，现有世界和手动存档保留。</p><input type="file" name="file" accept=".json,application/json" required><button>验证并导入</button></form>'); return; }
       if (action === "dialogBack") return modalBack();
       if (!world) return;
+      if (action === 'prepPreview') { const races=ns.ChairmanScheduling.preparationRaces(world); modal('补充年轻马准备赛', `<p>将新增${races.length}场后台赛事，不修改已有赛历。</p>${races.map(r=>`<p>${escape(r.name)} · ${r.month}月${r.half===1?'上':'下'}半月</p>`).join('')}${button('prepApply','加入赛历','',races.length?'':'disabled')}`);return; }
+      if (action === 'prepApply') {await commit(W.edit(world,'preparationRaces',{}));dialog.close();return render();}
       if (action === "calendarView" || action === "settingsView") { const key = action === "calendarView" ? "calendar" : "settings"; const layout = { ...(world.ui.layout || {}), [key]: id }; if (store.writable) await commit(W.edit(world, "ui", { layout })); else world.ui.layout = layout; page = 0; return render(); }
       if (action === "batch") { batch = batch === id ? "" : id; return render(); }
       if (await breeding.click(action, id, el)) return;
@@ -202,7 +204,10 @@
           const out = W.advanceHalfMonth(world); await commit(out, "turn");
           if (stopping || world.phase === "yearEnd" || out.occurrences.some((r) => r.raceClass === "g1")) break;
         }
-        tab = world.phase === "yearEnd" ? "awards" : "results"; if (tab === "results") { await commit(W.edit(world, "ui", { results: { latest: "1" } })); } page = 0; window.scrollTo({ top: 0 }); await render(); return;
+        tab = world.phase === "yearEnd" ? "awards" : "results";
+        // Only initialise the summary filter once; advancing must not replace saved choices.
+        if (tab === "results" && world.ui.results == null) await commit(W.edit(world, "ui", { results: { latest: "1" } }));
+        page = 0; window.scrollTo({ top: 0 }); await render(); return;
       }
       if (action === "finish") { await commit(W.finishYear(world), "year"); tab = "overview"; window.scrollTo({ top: 0 }); return render(); }
       if (action === "retire" || action === "deleteRace") {

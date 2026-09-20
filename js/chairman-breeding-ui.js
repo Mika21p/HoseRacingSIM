@@ -106,7 +106,7 @@
       else if (action === "pedigree") await detail(id);
       else if (action === "breedEnable") {
         const ratings = {}; let offset = 0, result;
-        do { result = await c.store.query("ratings", w.id, { offset, limit: 50 }); for (const r of result.rows) (ratings[r.horseId] ||= {})[r.year] = r.wtr; offset += 50; } while (result.more);
+        do { result = await c.store.query("ratings", w.id, { offset, limit: 50 }); for (const r of result.rows) (ratings[r.horseId] ||= {})[r.year] = { wtr: r.wtr, tf: r.tf }; offset += 50; } while (result.more);
         await c.commit(B.edit(w, "enable", { ratings })); await c.render();
       }
       else if (["breedView", "breedPage", "breedLetter", "breedClear"].includes(action)) { await prefs({ breedingFilter: action === "breedClear" ? { view: p.view } : { ...p, ...(action === "breedView" ? { view: id, offset: 0 } : action === "breedPage" ? { offset: Number(id) } : { letter: id, offset: 0 }) } }); await c.render(); }
