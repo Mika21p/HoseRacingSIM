@@ -4,17 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>赛马生涯模拟</title>
-  <link rel="stylesheet" href="css/styles.css?v=20260718-rogue-item-price">
+  <link rel="stylesheet" href="css/styles.css?v=20260920-changelog-panel">
   <link rel="stylesheet" href="css/era.css?v=20260720-era-v5">
   <link rel="stylesheet" href="css/chairman.css?v=20260920-ui">
-  <link rel="stylesheet" href="css/home.css?v=20260920-home-art">
+  <link rel="stylesheet" href="css/home.css?v=20260920-home-images">
   <link rel="icon" href="assets/home/logo.svg" type="image/svg+xml">
+  <link rel="preload" as="image" type="image/webp" media="(max-width: 639px)" href="assets/home/racing-hero-mobile.32ed156b66.webp" fetchpriority="high">
+  <link rel="preload" as="image" type="image/webp" media="(min-width: 640px)" imagesrcset="assets/home/racing-hero-1280.1693b82dc7.webp 1280w, assets/home/racing-hero-1920.63f61e69c0.webp 1920w" imagesizes="(min-width: 1504px) 1440px, (max-width: 760px) calc(100vw - 32px), calc(100vw - 64px)" fetchpriority="high">
 </head>
 <body>
   <div class="app-meta-widget">
-    <button class="app-meta-button" id="changelogToggleBtn" type="button" aria-expanded="false" aria-label="查看 v0.14a 更新日志">
-      <strong id="appVersion">v0.14a</strong>
-      <small id="appUpdatedAt">更新于 2026.09.20 13:35</small>
+    <button class="app-meta-button" id="changelogToggleBtn" type="button" aria-expanded="false" aria-label="查看 v0.14b 更新日志">
+      <strong id="appVersion">v0.14b</strong>
+      <small id="appUpdatedAt">更新于 2026.09.20 14:07</small>
     </button>
     <section class="changelog-panel" id="changelogPanel" hidden>
       <div class="changelog-header">
@@ -90,7 +92,8 @@
   <script src="js/rules/roguelike.js?v=20260718-rogue-item-price"></script>
   <script src="js/rules/era-narrative.js?v=20260720-era-v5"></script>
   <script src="js/rules/era.js?v=20260720-era-v5"></script>
-  <script src="js/ui/render.js?v=20260920-home-art"></script>
+  <script src="js/ui/render.js?v=20260920-home-images"></script>
+  <script src="js/ui/home-art.js?v=20260920-home-images"></script>
   <script src="js/ui/era-render.js?v=20260720-era-v5"></script>
   <script src="js/data/chairman-pedigrees.js?v=20260920-breeding"></script>
   <script src="js/rules/chairman.js?v=20260920-breeding"></script>

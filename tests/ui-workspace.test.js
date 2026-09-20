@@ -58,15 +58,15 @@ test("home, global metadata and mobile navigation are wired", () => {
   const render = read("js/ui/render.js");
   const changelog = read("js/data/changelog.js");
   const styles = read("css/styles.css");
-  assert.match(index, /styles\.css\?v=20260718-rogue-item-price/);
-  assert.match(index, /render\.js\?v=20260920-home-art/);
+  assert.match(index, /styles\.css\?v=20260920-changelog-panel/);
+  assert.match(index, /render\.js\?v=20260920-home-images/);
   assert.match(index, /app\.js\?v=20260920-breeding/);
   assert.match(index, /golden-road-1998\.js\?v=20260720-era-v5/);
   assert.match(index, /race-simulator\.js\?v=20260920-breeding/);
   assert.match(index, /era-narrative\.js\?v=20260720-era-v5/);
   assert.match(index, /era\.js\?v=20260720-era-v5/);
   assert.match(index, /id="appVersion"/);
-  assert.match(changelog, /version: "v0\.14a"/);
+  assert.match(changelog, /version: "v0\.14b"/);
   assert.match(changelog, /nonConditionRaces: 622/);
   assert.match(render, /class="home-mode-grid"/);
   assert.match(render, /class="home-support-row"/);

@@ -3,9 +3,9 @@
 
   ns.Changelog = ns.Changelog || {};
   ns.Changelog.meta = {
-    version: "v0.14a",
-    updatedAt: "2026-09-20T13:35:30+08:00",
-    displayUpdatedAt: "2026.09.20 13:35"
+    version: "v0.14b",
+    updatedAt: "2026-09-20T14:07:36+08:00",
+    displayUpdatedAt: "2026.09.20 14:07"
   };
   ns.Changelog.contentStats = Object.freeze({
     nonConditionRaces: 622,

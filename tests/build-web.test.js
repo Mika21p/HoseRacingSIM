@@ -85,7 +85,7 @@ test("production build preserves historical-horse data and loads one bundle", as
 
   const productionIndex = fs.readFileSync(path.join(result.outputRoot, "index.html"), "utf8");
   // Image paths must work from a standalone production build, not just the source tree.
-  for (const asset of ["racing-hero.png", "logo.svg", "career.svg", "legend.svg", "rogue.svg", "era.svg", "chairman.svg"]) {
+  for (const asset of fs.readdirSync(path.join(projectRoot, "assets", "home"))) {
     const relative = path.join("assets", "home", asset);
     assert.deepEqual(fs.readFileSync(path.join(result.outputRoot, relative)), fs.readFileSync(path.join(projectRoot, relative)));
   }

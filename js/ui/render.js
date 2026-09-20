@@ -662,7 +662,11 @@
           <span class="home-brand-note">每一次出闸，都是新的可能。</span>
         </header>
         <section class="home-banner" aria-labelledby="homeTitle">
-          <img class="home-banner-art" src="assets/home/racing-hero.png" alt="" fetchpriority="high" width="2172" height="724">
+          <picture class="home-banner-picture">
+            <source media="(max-width: 639px)" type="image/webp" srcset="assets/home/racing-hero-mobile.32ed156b66.webp">
+            <source type="image/webp" srcset="assets/home/racing-hero-1280.1693b82dc7.webp 1280w, assets/home/racing-hero-1920.63f61e69c0.webp 1920w" sizes="(min-width: 1504px) 1440px, (max-width: 760px) calc(100vw - 32px), calc(100vw - 64px)">
+            <img class="home-banner-art" src="assets/home/racing-hero-fallback.35962b9580.jpg" data-fallback-src="assets/home/racing-hero-fallback.35962b9580.jpg" alt="" fetchpriority="high" decoding="async" width="2172" height="724">
+          </picture>
           <div class="home-banner-copy">
             <p class="home-kicker"><span></span> YOUR NEXT CHAPTER STARTS HERE</p>
             <h1 id="homeTitle" tabindex="-1">下一匹传奇，<br>由你<span>缔造。</span></h1>
