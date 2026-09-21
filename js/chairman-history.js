@@ -3,6 +3,18 @@
   const ns = window.Keiba, W = ns.ChairmanRules, O = ns.ChairmanOffice, P = ns.ChairmanStorage.Store.prototype;
   const range = (parts) => window.IDBKeyRange.bound(parts, [...parts, []]);
   const plain = (row) => { const r = { ...row }; delete r.worldId; return r; };
+  P.previousPerformance = async function (worldId, row) {
+    if (row.priorPerformanceId) {
+      const prior = await this.get('performances', worldId, row.priorPerformanceId);
+      if (prior && prior.horseId === row.horseId && prior.turn < row.turn) return prior;
+    }
+    if (row.turn <= 0) return null;
+    const source = this.db.transaction('performances').objectStore('performances').index('byHorseTurn');
+    return new Promise((resolve, reject) => {
+      const req = source.openCursor(window.IDBKeyRange.bound([worldId, row.horseId, 0], [worldId, row.horseId, row.turn], false, true), 'prev');
+      req.onsuccess = () => resolve(req.result ? plain(req.result.value) : null); req.onerror = () => reject(req.error);
+    });
+  };
   P.scanPage = async function (key, worldId, options) {
     const p = options || {}, limit = Math.min(50, p.limit || 50), offset = p.offset || 0;
     const store = this.db.transaction(key).objectStore(key);
@@ -43,6 +55,13 @@
       range: range(e.raceId ? [world.id, e.raceId] : e.trackId ? [world.id, e.trackId] : [world.id, 1]),
       reverse: !!(e.raceId || e.trackId), offset,
       filter: (r) => r.raceClass !== "op" && O.raceMatches(r, prefs, world.lastCompletedTurn) && (!e.g1 || r.raceClass === "g1") });
+  };
+  P.queryHonorHistory = function (worldId, key, prefs = {}) {
+    const year = Number(prefs.year), bounds = window.IDBKeyRange;
+    const index = prefs.roundId ? 'byRound' : prefs.scope ? 'byScopeYear' : 'byYear';
+    const base = prefs.scope ? [worldId, prefs.scope] : [worldId];
+    const range = prefs.roundId ? bounds.only([worldId, prefs.roundId]) : bounds.bound([...base, year || 1], [...base, year || Number.MAX_SAFE_INTEGER]);
+    return this.scanPage(key, worldId, { index, range, reverse: !prefs.roundId, offset: prefs.offset || 0, limit: 50 });
   };
   P.board = async function (world, kind, prefs, offset, expanded) {
     const limit = expanded ? 50 : 10;
@@ -92,6 +111,8 @@
     const occurrence = await this.get("occurrences", world.id, occurrenceId);
     if (!occurrence || occurrence.raceClass === "op" || occurrence.status !== "completed") throw new Error("没有对应的已完成比赛。");
     const old = await this.get("scoreDrafts", world.id, occurrenceId);
+    if (metadata?.benchmarkScore != null) O.score(metadata.benchmarkScore);
+    for (const v of Object.values(metadata?.recommendations || {})) O.score(v);
     for (const [id, v] of Object.entries(values)) {
       O.score(v); const p = await this.get("performances", world.id, id);
       if (!p || p.occurrenceId !== occurrenceId || p.retired) throw new Error("评分草稿对象无效。");
@@ -108,7 +129,7 @@
     if(benchmarkId && !rows.some(p=>p.horseId===benchmarkId && !p.retired))throw new Error('基准马不属于本场完赛马。');
     if(!anchor)throw new Error('没有可用的完赛基准马。');
     const scaleOffset=occurrence.scaleOffset??S.getRatingScaleOffset(world.ratingSeed??world.seed,occurrenceId);
-    const benchmarkScore=opts.useTf ? anchor.tf-scaleOffset : O.score(value);
+    const benchmarkScore=opts.useTf ? S.integer(anchor.tf)-scaleOffset : O.score(value);
     const recommendations=S.buildWtrRecommendations(occurrence.race,rows,anchor.horseId,benchmarkScore), values={}, touched=opts.replace ? {} : {...old?.touched};
     for(const p of rows) if(Object.hasOwn(recommendations,p.id) && (opts.replace || !touched[p.id])) {
       if(!opts.replace && p.manualRating!=null && !Object.hasOwn(old?.values||{},p.id)) {touched[p.id]=true;continue;}

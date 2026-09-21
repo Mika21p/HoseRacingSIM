@@ -3,7 +3,7 @@
   const ns = (window.Keiba = window.Keiba || {});
   const W = ns.ChairmanRules;
   const field = (key, label, type) => ({ key, label, type: type || "text" });
-  const HORSE = [field("id", "编号"), field("name", "马名"), field("gender", "性别"), field("birthYear", "出生年份", "number"),
+  const HORSE = [field("id", "编号"), field("name", "马名"), field("gender", "性别"), field("birthYear", "出生年份", "number"), field("age", "导入时年龄", "number"),
     field("homeRegion", "所属地区"), field("owner", "马主"), field("coat", "毛色"), field("strength", "基础能力", "number"),
     field("weight", "体重kg", "number"), field("breedingStrength", "配种实力", "number"), field("temperamentLabel", "气性"), field("heavyType", "重场地适性"),
     field("distMin", "距离下限米", "number"), field("coreDist", "核心距离米", "number"), field("distMax", "距离上限米", "number"),
@@ -144,6 +144,10 @@
         });
         if (invalid) continue;
         if (kind === "horse") {
+          if(value.age != null){
+            if(!headers.includes('出生年份') || row.values[headers.indexOf('出生年份')].trim()==='')delete value.birthYear;
+            try{value=W.setHorseAge(w,value);}catch(error){errors.push('第'+row.line+'行：'+error.message);continue;}
+          }
           if (!existing || value.homeRegion !== existing.homeRegion) value.locationRegion = value.homeRegion;
           for (const key of ["fatherId", "motherId"]) if (value[key]) {
             const external = headers.includes("来源世界") ? row.values[headers.indexOf("来源世界")] !== w.id : !(existing && existing[key] === value[key]);
@@ -168,11 +172,11 @@
           if (!track) { errors.push(`第${row.line}行，马场：无法唯一匹配“${trackName || suppliedTrackId}”，请指定映射。`); continue; }
           value.trackId = track.id;
         }
-        try { if (kind === "horse") W.validateHorse(w, value); else W.validateRace(w, value); }
+        try { if (kind === "horse") { W.initializeHorseTime(w, value, existing); W.validateHorse(w, value); } else W.validateRace(w, value); }
         catch (error) { errors.push(`第${row.line}行：${error.message}`); continue; }
         if (existing) { Object.assign(existing, value); updated++; }
         else { collection.push(value); added++; if (kind === "horse") w.totalHorses++; }
-        changes.push({ line: row.line, name: value.name, action: existing ? "更新" : "新增", id: value.id });
+        changes.push({ line: row.line, name: value.name, action: existing ? "更新" : "新增", id: value.id, ...(kind === "horse" ? { age: W.ageOf(w,value) } : {}) });
       }
       if (!errors.length) {
         try {

@@ -40,7 +40,7 @@ test("snapshot and slot imports fork worlds, validate references first and retai
     const snapshot = await store.exportWorld(world.id); assert.equal(snapshot.records.performances.length, out.performances.length);
     const invalid = W.clone(snapshot); invalid.records.performances[0].horseId = "missing";
     await assert.rejects(store.importWorld(invalid), /不存在/); assert.equal(store.worldId, world.id);
-    const loaded = await store.loadSlot(1); assert.notEqual(loaded.id, world.id); assert.equal(loaded.rngState, out.world.rngState);
+    const loaded = await store.loadSlot(1, true); assert.notEqual(loaded.id, world.id); assert.equal(loaded.rngState, out.world.rngState);
     assert.equal((await store.query("performances", loaded.id)).rows.length, out.performances.length);
     assert.equal((await store.load(world.id)).turn, 1);
   } finally { await store.close(); }

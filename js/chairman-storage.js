@@ -1,8 +1,9 @@
 (function () {
   "use strict";
   const ns = (window.Keiba = window.Keiba || {});
-  const ENTITIES = ["horses", "tracks", "races", "pedigrees"];
-  const HISTORY = ["occurrences", "performances", "ratings", "awards", "scoreDrafts", "revisions", "breedingEvents", "breedingYears"];
+  const ENTITIES = ["horses", "tracks", "races", "pedigrees", "councilTypes", "honorProfiles", "series", "familyTemplates", "sourceMappings"];
+  const HONOR_HISTORY = ["councilRounds", "councilVotes", "hallEvents", "honorYears"];
+  const HISTORY = ["occurrences", "performances", "ratings", "awards", "scoreDrafts", "revisions", "breedingEvents", "breedingYears", ...HONOR_HISTORY, "seriesYears", "seriesRewards"];
   const DATA = [...ENTITIES, ...HISTORY];
   const DB_NAME = "keiba-chairman-v1";
   const clean = (row) => { if (!row) return row; const value = { ...row }; delete value.worldId; return value; };
@@ -23,7 +24,7 @@
   function open() {
     return new Promise((resolve, reject) => {
       if (!window.indexedDB) { reject(new Error("当前浏览器无法使用本地数据库，未保存的世界不会被静默丢弃。请启用站点存储。")); return; }
-      const req = window.indexedDB.open(DB_NAME, 5);
+      const req = window.indexedDB.open(DB_NAME, 7);
       req.onupgradeneeded = (event) => {
         const db = req.result;
         if (event.oldVersion < 1) {
@@ -87,6 +88,15 @@
       const originalUpgrade = req.onupgradeneeded;
       req.onupgradeneeded = (event) => {
         originalUpgrade(event);
+        if(event.oldVersion<7)for(const key of ['series','familyTemplates','sourceMappings','seriesYears','seriesRewards']){
+          const db=req.result,s=db.objectStoreNames.contains(key)?req.transaction.objectStore(key):db.createObjectStore(key,{keyPath:['worldId','id']});
+          for(const [name,path] of [['byWorld','worldId'],['byYear',['worldId','year']],['byHorse',['worldId','horseId']],['bySeries',['worldId','seriesId','year']],['byTurn',['worldId','turn']]])if(!s.indexNames.contains(name))s.createIndex(name,path);
+        }
+        if (event.oldVersion < 6) for (const key of ['councilTypes', 'honorProfiles', ...HONOR_HISTORY]) {
+          const db = req.result, s = db.objectStoreNames.contains(key) ? req.transaction.objectStore(key) : db.createObjectStore(key, { keyPath: ['worldId', 'id'] });
+          for (const [name, path] of [['byWorld', 'worldId'], ['byYear', ['worldId', 'year']], ['byTurn', ['worldId', 'turn']], ['byHorse', ['worldId', 'horseId']], ['byRound', ['worldId', 'roundId']], ['byScopeYear', ['worldId', 'scope', 'year']]])
+            if (!s.indexNames.contains(name)) s.createIndex(name, path);
+        }
         if (event.oldVersion < 5) {
           const occurrences = req.transaction.objectStore('occurrences'), ratings = req.transaction.objectStore('ratings');
           occurrences.createIndex('byGradedDisplay', ['worldId', 'visibleGrade', 'displayTurn', 'gradeOrder', 'name', 'id']);
@@ -189,10 +199,28 @@
           raceClass: p.raceClass, surface: p.surface, distance: p.distance, rank: p.rank }); });
       }
       if (world.ratingVersion < 2 && this.writable && this.worldId === world.id) {
-        const [performances, ratings] = await Promise.all(['performances','ratings'].map(key => this.query(key, world.id, { limit: Number.MAX_SAFE_INTEGER })));
+        const [performances, ratings, awards] = await Promise.all(['performances','ratings','awards'].map(key => this.query(key, world.id, { limit: Number.MAX_SAFE_INTEGER })));
         const out = ns.ChairmanRatings.migrate(world, performances.rows, ratings.rows);
+        if (!out.world.honors && ns.ChairmanHonors) {
+          out.world = ns.ChairmanHonors.migrate(out.world, performances.rows, out.ratings, awards.rows).world;
+          out.world.revision = world.revision + 1;
+        }
         await this.commitChanges(world, out, { checkpoint: 'migration' });
-        return out.world;
+        return this.load(worldId);
+      }
+      if (!world.honors && ns.ChairmanHonors && this.writable && this.worldId === world.id) {
+        const records = await Promise.all(['performances', 'ratings', 'awards'].map(key => this.query(key, worldId, { limit: Number.MAX_SAFE_INTEGER })));
+        const out = ns.ChairmanHonors.migrate(world, ...records.map(r => r.rows));
+        await this.commitChanges(world, out, { checkpoint: 'migration' }); return this.load(worldId);
+      }
+      if (!world.ratingPrecisionVersion && this.writable && this.worldId === world.id) {
+        const snapshot = await this.exportWorld(worldId);
+        const out = ns.ChairmanRatings.integerMigration(world, snapshot.records);
+        await this.commitChanges(world, out, { checkpoint: 'precision' }); return this.load(worldId);
+      }
+      if(!world.seriesState && ns.ChairmanSeries && this.writable && this.worldId===world.id){
+        const out=ns.ChairmanRules.mutate(world,w=>ns.ChairmanSeries.initialize(w));
+        await this.commitChanges(world,out,{checkpoint:'content'});return out.world;
       }
       return world;
     }
@@ -200,12 +228,16 @@
       const opts = options || {};
       const world = output.world;
       if (!this.writable || this.worldId !== world.id) throw new Error("本世界已在其他页面打开。请关闭另一个页面后重新取得编辑权。");
-      const migrationSnapshot = opts.checkpoint === "migration" ? await this.exportWorld(world.id) : null;
+      const migrationSnapshot = ["migration", "precision", "content"].includes(opts.checkpoint) ? await this.exportWorld(world.id) : null;
       const mutations = [];
       for (const key of ENTITIES) {
         const old = new Map((previous?.[key] || []).map((item) => [item.id, item]));
         for (const item of world[key] || []) if (!old.has(item.id) || JSON.stringify(old.get(item.id)) !== JSON.stringify(item)) {
           mutations.push({ store: key, row: { ...item, worldId: world.id } });
+        }
+        if (key === 'councilTypes') {
+          const remaining = new Set((world[key] || []).map(item => item.id));
+          for (const id of old.keys()) if (!remaining.has(id)) mutations.push({ store: key, row: { id, worldId: world.id }, remove: true });
         }
       }
       for (const key of HISTORY) for (const row of output[key] || []) mutations.push({ store: key, row: { ...indexed(key, row), worldId: world.id } });
@@ -240,7 +272,7 @@
           if (previous) tx.objectStore("journal").put({ worldId: world.id, id: world.revision, revision: world.revision, before, metadata: heads[0] });
           if (previous && opts.checkpoint) tx.objectStore("checkpoints").put({
             worldId: world.id, id: `${opts.checkpoint}:${previous.revision}`, revision: previous.revision,
-            kind: opts.checkpoint, ...(migrationSnapshot ? { snapshot: migrationSnapshot } : {}), turn: previous.turn, savedAt: Date.now(), label: opts.checkpoint === "migration" ? "评分体系升级前" : opts.checkpoint === "year" ? "结束年度前" : "推进半月前"
+            kind: opts.checkpoint, ...(migrationSnapshot ? { snapshot: migrationSnapshot } : {}), turn: previous.turn, savedAt: Date.now(), label: opts.checkpoint === "content" ? "系列与分享升级前" : opts.checkpoint === "precision" ? "整数评分转换前" : opts.checkpoint === "migration" ? "规则升级前" : opts.checkpoint === "year" ? "结束年度前" : "推进半月前"
           });
           tx.objectStore("leases").put({ ...heads[1], expires: Date.now() + 15000 });
         }
@@ -258,7 +290,7 @@
       const tx = this.db.transaction(["checkpoints", "journal"], "readwrite"); const done = complete(tx);
       const checkpoints = await request(tx.objectStore("checkpoints").index("byWorld").getAll(worldId));
       const keep = [];
-      for (const kind of ["turn", "year", "migration"]) {
+      for (const kind of ["turn", "year", "migration", "precision", "backup", "content"]) {
         const sorted = checkpoints.filter((c) => c.kind === kind).sort((a, b) => b.revision - a.revision);
         keep.push(...sorted.slice(0, kind === "turn" ? 3 : 1));
         sorted.slice(kind === "turn" ? 3 : 1).forEach((c) => tx.objectStore("checkpoints").delete([worldId, c.id]));
@@ -341,16 +373,24 @@
       if (!meta) throw new Error("世界不存在。");
       const world = { ...meta }; const records = {};
       DATA.forEach((key, i) => { if (ENTITIES.includes(key)) world[key] = all[i].map(clean); else records[key] = all[i].map(clean); });
-      return { format: "keiba-chairman-save", version: 4, savedAt: new Date().toISOString(), world, records };
+      return { format: "keiba-chairman-save", version: 6, savedAt: new Date().toISOString(), world, records };
     }
     validateSnapshot(snapshot) {
-      if (!snapshot || snapshot.format !== "keiba-chairman-save" || ![1, 2, 3, 4].includes(snapshot.version)) throw new Error("不支持的存档格式，原存档未修改。");
+      if (!snapshot || snapshot.format !== "keiba-chairman-save" || ![1, 2, 3, 4, 5, 6].includes(snapshot.version)) throw new Error("不支持的存档格式，原存档未修改。");
       ns.ChairmanRules.validateWorld(snapshot.world);
+      if (snapshot.world.ratingPrecisionVersion === 1) {
+        const check = values => { if (values.some(v => v != null && v !== '' && !Number.isSafeInteger(Number(v)))) throw new Error('评分须为整数，存档未修改。'); };
+        for (const h of snapshot.world.horses) check([h.annual.tf, h.annual.manual, h.annual.suggested, h.lastTf, h.lastEventRating, h.previousTf, h.previousWtr]);
+        for (const r of snapshot.records?.performances || []) check([r.tf, r.manualRating, r.priorTf, r.priorEventRating]);
+        for (const r of snapshot.records?.ratings || []) check([r.tf, r.wtr, r.manual, r.suggested, r.legacyAutomatic]);
+        for (const r of snapshot.records?.occurrences || []) check([r.wtrBenchmark?.score]);
+        for (const d of snapshot.records?.scoreDrafts || []) check([d.benchmarkScore, ...Object.values(d.values || {}), ...Object.values(d.recommendations || {})]);
+      }
       const horseIds = new Set(snapshot.world.horses.map((h) => h.id));
       const pedigreeIds = new Set([...snapshot.world.horses, ...(snapshot.world.pedigrees || [])].map((h) => h.id));
       const raceIds = new Set(snapshot.world.races.map((r) => r.id));
       for (const key of HISTORY) {
-        const rows = snapshot.records && snapshot.records[key] || (snapshot.version < 3 && ["breedingEvents", "breedingYears"].includes(key) || snapshot.version === 1 && ["scoreDrafts", "revisions"].includes(key) ? [] : null);
+        const rows = snapshot.records && snapshot.records[key] || (snapshot.version < 6 && ["seriesYears","seriesRewards"].includes(key) || snapshot.version < 5 && HONOR_HISTORY.includes(key) || snapshot.version < 3 && ["breedingEvents", "breedingYears"].includes(key) || snapshot.version === 1 && ["scoreDrafts", "revisions"].includes(key) ? [] : null);
         if (!Array.isArray(rows) || new Set(rows.map((r) => r.id)).size !== rows.length) throw new Error("历史记录缺失或编号重复。");
         for (const row of rows) {
           if (!row || typeof row.id !== "string" || !Number.isInteger(row.year)) throw new Error("历史记录格式无效。");
@@ -375,6 +415,7 @@
         if (!horseIds.has(row.horseId) || [row.wtr, row.tf, row.manual, row.suggested].some((v) => v != null && !Number.isFinite(v))) throw new Error("年度评分无效。");
       }
       for (const row of snapshot.records.awards) if (!horseIds.has(row.horseId) || !ns.ChairmanRules.AWARDS.some((a) => a.id === row.awardId)) throw new Error("年度奖项无效。");
+      if (snapshot.world.honors) ns.ChairmanHonors.validateHistory(snapshot.world, snapshot.records);
       const performanceById = new Map(snapshot.records.performances.map((p) => [p.id, p]));
       for (const d of snapshot.records.scoreDrafts || []) {
         if (d.benchmarkId && ![...performanceById.values()].some(p=>p.occurrenceId===d.id && p.horseId===d.benchmarkId && !p.retired)
@@ -387,6 +428,8 @@
         })) throw new Error("评分草稿无效。");
       }
       for (const r of snapshot.records.revisions || []) if (!["annual", "event"].includes(r.kind) || [r.before, r.after].some((v) => v != null && !Number.isFinite(v))) throw new Error("评分修订记录无效。");
+      ns.ChairmanPackages?.validateWorld(snapshot.world);
+      ns.ChairmanSeries?.validateHistory(snapshot.world,snapshot.records);
       const mothers = new Set(), bornIds = new Set();
       for (const r of snapshot.records.breedingEvents || []) {
         const h = ns.ChairmanBreeding.get(snapshot.world, r.horseId), key = `${r.birthYear}:${r.motherId}`;
@@ -412,7 +455,7 @@
       if (!Number.isInteger(slot) || slot < 1 || slot > 10) throw new Error("存档槽必须为1至10。");
       const snapshot = await this.exportWorld(worldId);
       const tx = this.db.transaction(["slots", "slotSummaries"], "readwrite"); const done = complete(tx);
-      const meta = { id: slot, name: snapshot.world.name, turn: snapshot.world.turn, savedAt: snapshot.savedAt };
+      const meta = { id: slot, name: snapshot.world.name, sourceWorldId: worldId, turn: snapshot.world.turn, savedAt: snapshot.savedAt };
       tx.objectStore("slots").put({ ...meta, snapshot });
       tx.objectStore("slotSummaries").put(meta);
       await done;
@@ -420,10 +463,51 @@
     async slots() {
       return request(this.db.transaction("slotSummaries").objectStore("slotSummaries").getAll());
     }
-    async loadSlot(slot) {
-      const row = await request(this.db.transaction("slots").objectStore("slots").get(slot));
-      if (!row) throw new Error("此存档槽为空。");
-      return this.importWorld(row.snapshot);
+    async backupInfo(slot) {
+      const row = await request(this.db.transaction('slots').objectStore('slots').get(Number(slot)));
+      if (!row) throw new Error('此手动备份为空。');
+      return row;
+    }
+    async deleteSlot(slot, savedAt) {
+      const tx=this.db.transaction(['slots','slotSummaries'],'readwrite'), done=complete(tx); done.catch(()=>{});
+      const row=await request(tx.objectStore('slots').get(Number(slot)));
+      if(!row || savedAt && row.savedAt!==savedAt){tx.abort();try{await done;}catch(_){}throw new Error('备份已改变，请重新查看。');}
+      tx.objectStore('slots').delete(Number(slot));tx.objectStore('slotSummaries').delete(Number(slot));await done;
+    }
+    async deleteWorld(id, revision, options={}) {
+      if(this.worldId!==id || !this.writable) if(!await this.acquire(id))throw new Error('另一页面正在操作此游戏，不能删除。');
+      const tx=this.db.transaction(['worlds',...DATA,'journal','checkpoints','leases'],'readwrite'),done=complete(tx);done.catch(()=>{});
+      try {
+        const head=await request(tx.objectStore('worlds').get(id)),lease=await request(tx.objectStore('leases').get(id));
+        if(!head || head.revision!==revision || lease?.owner!==this.owner || lease.expires<=Date.now())throw new Error('游戏或编辑权已改变，请重新查看。');
+        await Promise.all([...DATA,'journal','checkpoints'].map(key=>this.clearWorldStore(tx,key,id)));
+        tx.objectStore('worlds').delete(id);tx.objectStore('leases').delete(id);
+        if(options.failForTest)throw new Error('测试：事务中断。'); await done;
+      } catch(e){try{tx.abort();}catch(_){}try{await done;}catch(_){}throw e;}
+      await this.release();
+    }
+    clearWorldStore(tx,key,id) {
+      return new Promise((resolve,reject)=>{const req=tx.objectStore(key).index('byWorld').openCursor(id);req.onerror=()=>reject(req.error);req.onsuccess=()=>{const c=req.result;if(c){c.delete();c.continue();}else resolve();};});
+    }
+    async loadSlot(slot, asNew=false, expectedSavedAt, options={}) {
+      const row=await this.backupInfo(slot);
+      if(expectedSavedAt && row.savedAt!==expectedSavedAt)throw new Error('备份已改变，请重新确认。');
+      this.validateSnapshot(row.snapshot);
+      const id=row.snapshot.world.id, exists=await request(this.db.transaction('worlds').objectStore('worlds').get(id));
+      if(asNew || !exists)return this.importWorld(row.snapshot);
+      if(this.worldId!==id || !this.writable)if(!await this.acquire(id))throw new Error('来源游戏正在另一页面使用，不能恢复。');
+      const before=await this.exportWorld(id), copy=ns.ChairmanRules.clone(row.snapshot);
+      const tx=this.db.transaction(['worlds',...DATA,'journal','checkpoints','leases','slots'],'readwrite'),done=complete(tx);done.catch(()=>{});
+      try {
+        const head=await request(tx.objectStore('worlds').get(id)), lease=await request(tx.objectStore('leases').get(id)), currentSlot=await request(tx.objectStore('slots').get(Number(slot)));
+        if(!head || head.revision!==before.world.revision || lease?.owner!==this.owner || lease.expires<=Date.now() || currentSlot?.savedAt!==row.savedAt)throw new Error('游戏或备份已更新，恢复没有执行。');
+        await Promise.all([...DATA,'journal','checkpoints'].map(key=>this.clearWorldStore(tx,key,id)));
+        for(const key of DATA)for(const record of (ENTITIES.includes(key)?copy.world[key]:copy.records[key])||[])tx.objectStore(key).put({...indexed(key,record),worldId:id});
+        tx.objectStore('worlds').put({...metadata(copy.world),id,revision:head.revision+1,savedAt:Date.now()});
+        tx.objectStore('checkpoints').put({worldId:id,id:'backup:'+head.revision,revision:head.revision,kind:'backup',turn:head.turn,label:'恢复手动备份前',savedAt:Date.now(),snapshot:before});
+        if(options.failForTest)throw new Error('测试：事务中断。');await done;
+      }catch(e){try{tx.abort();}catch(_){}try{await done;}catch(_){}throw e;}
+      return this.load(id);
     }
     async close() { await this.release(); this.db.close(); }
   }

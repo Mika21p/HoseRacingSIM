@@ -3,9 +3,9 @@
 
   ns.Changelog = ns.Changelog || {};
   ns.Changelog.meta = {
-    version: "v0.14c",
-    updatedAt: "2026-09-20T16:50:25+08:00",
-    displayUpdatedAt: "2026.09.20 16:50"
+    version: "v0.14d",
+    updatedAt: "2026-09-21T13:00:23+08:00",
+    displayUpdatedAt: "2026.09.21 13:00"
   };
   ns.Changelog.contentStats = Object.freeze({
     nonConditionRaces: 622,
@@ -23,6 +23,7 @@
   };
 
   ns.Changelog.entries = [
+    { date: "2026.9.21", version: "v0.14d", title: "主席模式内容与工作台扩展", items: ["新增评议会与殿堂、连冠系列和内容分享，并整理主席工作台与游戏管理流程。"] },
     { date: "2026.9.20", version: "v0.14c", title: "主席模式评分与排赛优化", items: ["优化赛事评分、马匹排赛和年轻马准备赛，让比赛安排与赛后评价更加稳定。"] },
     { date: "2026.9.20", version: "v0.14a", title: "主席模式扩展与主页优化", items: ["新增血统与自动繁殖、虚构地区和更清晰的主席工作台；主页与移动端操作也更加顺手。"] },
     { date: "2026.9.19", version: "v0.14", title: "主席模式", items: ["新增主席模式：建设赛马世界、安排赛事、观察赛果并评定年度表现，逐步留下属于你的赛马历史。"] },

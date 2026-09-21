@@ -62,6 +62,7 @@
     canonicalOrder(w);
     const out = { world: w, occurrences: [], performances: [], ratings: [], awards: [] };
     seeded(w, () => operation(w, out));
+    ns.ChairmanHonors?.synchronize(w, out);
     canonicalOrder(w);
     w.revision = world.revision + 1;
     return out;
@@ -70,7 +71,8 @@
   function canonicalOrder(w) {
     for (const key of ["horses", "races", "tracks", "pedigrees"]) (w[key] || []).sort((a, b) => a.id < b.id ? -1 : a.id > b.id ? 1 : 0);
   }
-  function engineRace(w, race) {
+  function engineRace(w, race, targetYear) {
+    const frozen=ns.ChairmanSeries?.frozenRace(w,race.id,targetYear); if(frozen)return clone(frozen);
     const track = w.tracks.find((item) => item.id === race.trackId);
     assert(track, "赛事关联的马场不存在。");
     return { ...race, surfaceRegion: track.region, engineRegion: regionBase(w, track.region), course: track.courseType, trackName: track.name };
@@ -136,6 +138,20 @@
     assert(horse.courseGrades && ["东京", "中山", "京都", "阪神", "其他地方"].every((key) => ["S", "A", "B"].includes(horse.courseGrades[key])), "赛道适性无效或缺失。");
     assert(horse.fatherId !== horse.id && horse.motherId !== horse.id, "父母不能为马匹自己。");
   }
+  function setHorseAge(w, value) {
+    if(value.age == null)return value;
+    assert(Number.isSafeInteger(value.age) && value.age>=2, '当前年龄须为至少二岁的整数。');
+    const birthYear=date(w.turn).year-value.age;
+    assert(value.birthYear==null || value.birthYear===birthYear, '当前年龄与出生年份不一致。');
+    const result={...value,birthYear};delete result.age;return result;
+  }
+  function initializeHorseTime(w,h,existing) {
+    if(existing && existing.birthYear===h.birthYear)return;
+    assert(!existing || !existing.lifetime.starts && ![...w.horses,...(w.pedigrees||[])].some(c=>c.fatherId===h.id || c.motherId===h.id), '已有出赛或子代记录的马不能修改年龄。');
+    h.maturity={decline:0,lastCheckedIndex:0,events:[]};
+    const t=timeFor(w,h);if(h.status!=='juvenile')ns.MaturityRules.applyMonthlyDecline(h,h.maturity,ns.TimeRules.toIndex(2,1,1),t.index);
+    h.maturity.lastCheckedIndex=t.index;
+  }
   function addHorse(w, options) {
     const opts = Object.fromEntries(Object.entries(options || {}).filter(([, value]) => value !== undefined));
     const gender = opts.gender || R.weightedPick(["牡马", "牝马", "骟马"], (v) => v === "骟马" ? 5 : v === "牡马" ? 45 : 50);
@@ -160,6 +176,7 @@
     validateHorse(w, h);
     w.horses.push(h);
     ns.ChairmanBreeding?.initialize(w, h);
+    if (w.honors) ns.ChairmanHonors.register(w, h);
     w.totalHorses = (w.totalHorses || 0) + 1;
     return h;
   }
@@ -206,7 +223,7 @@
   function createWorld(options) {
     const opts = options || {};
     const seed = Number.isInteger(opts.seed) ? opts.seed >>> 0 : (Date.now() ^ Math.floor(Math.random() * 0xffffffff)) >>> 0;
-    const w = { id: opts.id || `world-${Date.now()}-${seed}`, schemaVersion: 1, rulesVersion: 1, ratingVersion: 2, aiVersion: 2, ratingSeed: seed, aiRngState: ns.ChairmanRatings.hash(`ai:${seed}`), tfStandards: {}, revision: 0,
+    const w = { id: opts.id || `world-${Date.now()}-${seed}`, schemaVersion: 1, rulesVersion: 1, ratingVersion: 2, ratingPrecisionVersion: 1, aiVersion: 2, ratingSeed: seed, aiRngState: ns.ChairmanRatings.hash(`ai:${seed}`), tfStandards: {}, revision: 0,
       name: opts.name || "我的国际马会", turn: 0, phase: "season", seed, rngState: seed, nextId: 1,
       settings: { annualNewHorses: 75, autoRetire: true }, regions: regions({}), tracks: [], races: [], horses: [],
       totalHorses: 0, awardDraft: {}, awardsStrict: true, lastCompletedTurn: null, ui: {}, lockedRaces: {} };
@@ -220,6 +237,8 @@
       }
     });
     if (opts.breeding) ns.ChairmanBreeding.enable(w, { foundation: !opts.blank, background: !opts.blank });
+    ns.ChairmanHonors?.initialize(w);
+    ns.ChairmanSeries?.initialize(w);
     return w;
   }
   function eligible(w, h, race, turn) {
@@ -232,7 +251,10 @@
     return ageAllowed && sexAllowed;
   }
   function planEntries(w) {
-    return ns.ChairmanScheduling.plan(w, { engineRace, careerFor, eligible, travelContext, timeFor });
+    ns.ChairmanSeries?.prepare(w);
+    const result=ns.ChairmanScheduling.plan(w, { engineRace, careerFor, eligible, travelContext, timeFor });
+    ns.ChairmanSeries?.prepare(w);
+    return result;
   }
   function assignJockeys(horses, region) {
     const pool = ns.JockeyRules.getDefaultJockeys(AFFILIATIONS[region]);
@@ -262,9 +284,10 @@
 
     }
   }
-  function advanceHalfMonth(world) {
+  function advanceHalfMonth(world, options) {
     assert(world.phase === "season", "请先完成年末回合。");
-    return mutate(world, (w, out) => {
+    const output = mutate(world, (w, out) => {
+      ns.ChairmanSeries?.prepare(w,true);
       const d = date(w.turn);
       const tfCalibration = ns.ChairmanRatings.calibration(w);
       w.lockedRaces = w.lockedRaces || {};
@@ -276,11 +299,11 @@
         if (h.booked && h.booked.preparationTurn != null && h.booked.preparationTurn <= w.turn) {
           h.locationRegion = h.booked.targetRegion;
           const key = `${date(h.booked.turn).year}:${h.booked.raceId}`;
-          if (!w.lockedRaces[key]) w.lockedRaces[key] = clone(engineRace(w, w.races.find((r) => r.id === h.booked.raceId)));
+          if (!w.lockedRaces[key]) w.lockedRaces[key] = clone(engineRace(w, w.races.find((r) => r.id === h.booked.raceId),date(h.booked.turn).year));
         }
       }
       for (const definition of w.races) {
-        const locked = w.lockedRaces[`${d.year}:${definition.id}`];
+        const locked = w.lockedRaces[`${d.year}:${definition.id}`] || ns.ChairmanSeries?.frozenRace(w,definition.id,d.year);
         if (definition.deleted && !locked) continue;
         const race = locked || engineRace(w, definition);
         if (!locked && definition.deleted || race.month !== d.month || race.half !== d.half || definition.lastHeldYear === d.year || !locked && d.year < (definition.notBeforeYear || 1)) continue;
@@ -315,11 +338,12 @@
             turn: w.turn, year: d.year, rulesVersion: w.rulesVersion || 1, ratingVersion: w.ratingVersion, horseName: h.name, owner: h.owner, association: h.association,
             age: ageOf(w, h), gender: h.gender, homeRegion: h.homeRegion,
             raceName: race.name, raceClass: race.raceClass, surfaceRegion: race.surfaceRegion, surface: race.surface, distance: race.distance,
-            ratingDeficit: result.retired ? null : ns.ChairmanRatings.deficit(result,race.distance), manualRating: null, priorTf: h.lastTf, priorEventRating: h.lastEventRating, count: horses.length,
+            ratingDeficit: result.retired ? null : ns.ChairmanRatings.deficit(result,race.distance), manualRating: null, priorPerformanceId: h.lastPerformanceId || null, priorTf: h.lastTf, priorEventRating: h.lastEventRating, count: horses.length,
             prize: result.rank && result.rank <= 5 ? race.prizes[result.rank - 1] : 0 };
           out.performances.push(performance);
           updateAnnual(h, performance);
           ns.ChairmanRatings.record(h, performance, horses.length);
+          h.lastPerformanceId = performance.id;
           h.lastRaceTurn = w.turn;
           h.lastRace = { raceId: race.id, raceClass: race.raceClass, region: race.surfaceRegion, rank: result.rank, jockeyId: result.jockeyId };
           h.lastTf = result.tf;
@@ -340,11 +364,14 @@
           }
         }
       }
+      ns.ChairmanSeries?.settle(w,out);
       w.backgroundSummary = { turn: w.turn, completed: out.occurrences.filter(r => r.raceClass === 'op' && r.status === 'completed').length, cancelled: out.occurrences.filter(r => r.raceClass === 'op' && r.status === 'cancelled').length };
       w.lastCompletedTurn = w.turn;
       if (w.turn % 24 === 23) w.phase = "yearEnd";
       else { w.turn++; planEntries(w); }
     });
+    if (!options?.deferHonors) ns.ChairmanHonors?.runAutomatic(output);
+    return output;
   }
   function awardEligible(w, h, award, strict) {
     return h.annual.year === date(w.turn).year && h.annual.starts > 0 && (!strict || h.annual.g1 > 0)
@@ -357,6 +384,7 @@
     assert(world.phase === "yearEnd", "只有年末回合可以结束年度。");
     return mutate(world, (w, out) => {
       const year = date(w.turn).year;
+      ns.ChairmanHonors?.finalizeAnnualHonors(w, out);
       const births = ns.ChairmanBreeding?.closeYear(w, out);
       for (const award of AWARDS) {
         const horseId = w.awardDraft[award.id];
@@ -365,7 +393,7 @@
         assert(h && awardEligible(w, h, award, w.awardsStrict), `${award.name}候选不符合条件。`);
         const detail = (w.awardDetails || {})[award.id] || {};
         assert(!detail.representative || (h.annual.runs || []).some((r) => r.id === detail.representative), "代表赛事须为该马本年实际参加的比赛。");
-        out.awards.push({ id: `${year}:${award.id}`, year, awardId: award.id, name: award.name, horseId, horseName: h.name,
+        out.awards.push({ id: `${year}:${award.id}`, year, turn: w.turn, scope: 'central', associationName: '中央马会', awardId: award.id, name: award.name, horseId, horseName: h.name,
           comment: String(detail.comment || ""), representative: detail.representative || "", awardVersion: 2 });
       }
       for (const h of w.horses) {
@@ -423,12 +451,14 @@
         race.notBeforeYear = existing && existing.lastHeldYear === date(w.turn).year ? date(w.turn).year + 1 : race.notBeforeYear;
         if (existing) Object.assign(existing, race); else w.races.push(race);
       } else if (kind === "horse") {
+        value = setHorseAge(w, value);
         if (w.breeding) value = ns.ChairmanBreeding.resolveParents(w, value);
         const existing = w.horses.find((h) => h.id === value.id);
         if (existing) {
           assert(existing.origin === "custom", "普通AI马的真实属性不可编辑。");
           const h = { ...existing, ...value };
           if (h.homeRegion !== existing.homeRegion) { h.locationRegion = h.homeRegion; h.booked = null; }
+          initializeHorseTime(w, h, existing);
           validateHorse(w, h);
           Object.assign(existing, h);
           if (value.breedingStrength != null && w.breeding) { existing.breeding.strength = value.breedingStrength; delete existing.breedingStrength; }
@@ -440,9 +470,10 @@
       } else if (kind === "deleteRace") {
         const race = w.races.find((r) => r.id === value.id);
         assert(race, "赛事不存在。"); race.deleted = true;
+        for(const series of w.series||[])if(series.raceIds.includes(race.id))series.deleted=true;
       } else if (kind === "wtr") {
         const h = w.horses.find((item) => item.id === value.id);
-        assert(h && (value.score === null || finite(value.score)), "评级输入无效。"); h.annual.manual = value.score;
+        assert(h, "马匹不存在。"); h.annual.manual = ns.ChairmanRatings.score(value.score);
       } else if (kind === "preparationRaces") {
         for (const race of ns.ChairmanScheduling.preparationRaces(w)) w.races.push({ ...race, id: id(w, "race") });
       } else if (kind === "settings") {
@@ -457,7 +488,7 @@
     });
   }
   function scorePerformance(world, performance, score, yearRows, archived) {
-    assert(score === null || finite(score), "赛事分须为数字或留空。");
+    score = ns.ChairmanRatings.score(score);
     assert(performance.raceClass !== "op", "普通赛不开放人工评分。");
     assert(!performance.retired || score === null, "退赛不生成赛事评级。");
     return mutate(world, (w, out) => {
@@ -470,6 +501,7 @@
     });
   }
   function validateWorld(w) {
+    ns.ChairmanSeries?.validate(w);
     assert(w && w.schemaVersion === 1 && typeof w.id === "string", "存档版本不受支持。");
     assert(typeof w.name === "string" && w.ui && typeof w.ui === "object" && !Array.isArray(w.ui)
       && w.awardDraft && typeof w.awardDraft === "object" && typeof w.awardsStrict === "boolean", "世界界面或颁奖状态缺失。");
@@ -527,9 +559,10 @@
     }
     w.horses.forEach((h) => visit(h, new Set()));
     ns.ChairmanBreeding?.validate(w);
+    ns.ChairmanHonors?.validate(w);
     return true;
   }
-  ns.ChairmanRules = { REGIONS, regions, regionNames, populationRegions, regionBase, simulationRace, AWARDS, G1_IDS, clone, date, ageOf, timeFor, category, rating, entryRating,
+  ns.ChairmanRules = { setHorseAge, initializeHorseTime, REGIONS, regions, regionNames, populationRegions, regionBase, simulationRace, AWARDS, G1_IDS, clone, date, ageOf, timeFor, category, rating, entryRating,
     emptyStats, createWorld, addHorse, planEntries, advanceHalfMonth, finishYear, edit, mutate, seeded,
     validateWorld, validateHorse, validateRace, validateTrack, engineRace, eligible, awardEligible, defaultPrizes, scorePerformance };
 })();

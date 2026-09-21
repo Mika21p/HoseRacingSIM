@@ -1,0 +1,96 @@
+/* Static dusk scenery. Backgrounds never add layout, hit targets or large bitmaps. */
+body {
+  background-color: #101f1e;
+  background-image:
+    radial-gradient(ellipse at 88% 0, rgba(191, 155, 102, .07), transparent 52%),
+    linear-gradient(155deg, #1c2e37, #172c28 55%, #101e1c);
+  background-repeat: no-repeat;
+}
+
+/* Keep the workspace atmosphere quieter than the homepage and its artwork. */
+.rogue-overlay,
+.app-has-career .setup-overlay {
+  background-color: #101f1e;
+  background-image:
+    radial-gradient(ellipse at 90% 0, rgba(176, 148, 94, .06), transparent 50%),
+    linear-gradient(155deg, #1b2c35, #142723 65%, #101e1c);
+}
+
+body:has(#app:not([hidden]) > .home-screen:not([hidden])) {
+  background-color: #12251f;
+  background-image:
+    radial-gradient(ellipse at 96% 0, rgba(241, 193, 121, .22), transparent 61%),
+    radial-gradient(ellipse at 0 35%, rgba(99, 156, 132, .18), transparent 66%),
+    url("../assets/home/track-dusk.svg?v=20260920-dusk"),
+    linear-gradient(172deg, #304753 0%, #294548 25%, #213c32 59%, #12251f 100%);
+  background-size: 100% 800px, 100% 1300px, 1800px 1125px, 100% 100%;
+  background-position: right top, left center, center bottom, center;
+  background-repeat: no-repeat;
+}
+
+.home-screen .home-brand-note,
+.home-screen .home-mode-heading > span { color: #bacbc5; }
+.home-screen .home-brand span { color: #a9c1bc; }
+.home-screen .home-brand img { box-shadow: 0 5px 18px #061a1b30; border-radius: 13px; }
+
+.home-screen .home-banner {
+  border-color: rgba(218, 213, 177, .32);
+  background: linear-gradient(140deg, #203a47, #213f34);
+  box-shadow: 0 24px 64px -30px rgba(3, 20, 15, .85), 0 -20px 100px -45px rgba(255, 200, 127, .6);
+}
+
+.home-screen .home-mode-card {
+  border-color: #4b6663;
+  border-top-color: var(--mode-color);
+  background: linear-gradient(150deg, #2b4345, #1a302e 70%);
+  box-shadow: inset 0 1px 0 rgba(216, 232, 211, .04), 0 12px 30px -18px #041812a6;
+}
+.home-screen .home-mode-card:hover {
+  border-color: var(--mode-color);
+  box-shadow: 0 16px 36px -18px #041812c9;
+}
+.home-screen .home-card-index,
+.home-screen .home-card-status { color: #a7c0b9; }
+.home-screen .home-card-description { color: #bfd0cc; }
+.home-screen .home-card-tags span { border-color: #4b6660; color: #bfd2ca; background: #09231d26; }
+.home-screen .home-mode-badge { border-color: #60776d; color: #d4ddd2; }
+.home-screen .home-mode-resume { background: #253f39; border-color: #617a6c; }
+.home-screen .home-mode-resume:hover { background: #315549; }
+
+.home-screen .home-how-to {
+  border-color: #9db69a36;
+  border-radius: 12px;
+  padding-inline: 18px;
+  background: linear-gradient(110deg, #112a24b8, #142b24a6);
+}
+.home-screen .home-play-card > span { color: #a9b998; }
+.home-screen .home-play-card p,
+.home-screen .home-feedback-copy > p:last-child { color: #b2c6bd; }
+.home-screen .home-feedback-card {
+  background: linear-gradient(135deg, #203c33f5, #152e27fa);
+  border-color: #627c665c;
+  box-shadow: 0 12px 30px -22px #041812a6;
+}
+.home-screen .home-feedback-number span,
+.home-screen .home-feedback-number small { color: #b2c6bd; }
+.home-screen .home-feedback-number button { background: #34564a; border-color: #6b8572; }
+.home-screen .home-feedback-number button:hover { background: #426956; }
+.home-screen .home-secondary-actions button { background: #223c32f5; border-color: #58715f; color: #d7e2d6; }
+.home-screen .home-secondary-actions button:hover { background: #345647; }
+.home-screen .site-footer { color: #a1b5a4; }
+
+body:has(#app:not([hidden]) > .home-screen:not([hidden])) .app-meta-button {
+  background: #203735f5;
+  border-color: #8aa28b66;
+  box-shadow: 0 8px 22px #0b211926;
+}
+
+@media (max-width: 760px) {
+  body:has(#app:not([hidden]) > .home-screen:not([hidden])) {
+    background-size: 100% 650px, 100% 1700px, 1200px 750px, 100% 100%;
+  }
+  .home-screen .home-banner { box-shadow: 0 18px 40px -28px #001f15bf, 0 -10px 65px -38px #f9c38080; }
+}
+@media (max-width: 639px) {
+  .home-screen .home-how-to { padding: 18px 16px; }
+}

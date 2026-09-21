@@ -266,6 +266,11 @@
 @media(max-width:767px) { #chairmanApp .cm-editor-group:has([name=fatherId]) { grid-template-columns:1fr; } }
 /* The mode has its own compact status bar; avoid overlapping the site update widget. */
 body:has(#chairmanApp:not([hidden]))>.app-meta-widget { display:none; }
+#chairmanApp [data-form=honorType] fieldset { min-width:0; margin:0 0 12px; border:1px solid #364457; border-radius:8px; padding:10px; }
+#chairmanApp [data-form=honorType] legend { padding:0 8px; color:#d8e1ec; }
+#chairmanApp [data-form=honorType] input[type=range] { width:100%; padding:0; accent-color:#cbb06c; }
+#chairmanApp [data-form^=honor].cm-actions { flex-wrap:wrap; }
+#chairmanApp [data-form^=honor].cm-actions label { min-width:0; max-width:100%; }
 @media(max-width:767px) { #chairmanApp summary { min-height:44px; display:flex; align-items:center; } }
 #chairmanApp .cm-breeding-nav { display:flex; gap:6px; align-items:flex-start; }
 #chairmanApp .cm-breeding-nav>.cm-tabs { flex:1; min-width:0; }

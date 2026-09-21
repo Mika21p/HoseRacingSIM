@@ -1,0 +1,276 @@
+/* Shared dusk palette for the five game modes. Layout and state visibility stay
+   in the mode stylesheets; this layer only supplies surfaces and interaction colors. */
+:root {
+  --dusk-text: #e5eee6;
+  --dusk-muted: #b0c4bc;
+  --dusk-border: #48625b;
+  --dusk-panel: #243c38;
+  --dusk-inset: #172e29;
+  --dusk-raised: #2f4c43;
+  --dusk-accent: #dcb579;
+  --dusk-mint: #9bd8c5;
+  --dusk-danger: #ffb8a6;
+  --dusk-shadow: 0 14px 38px -24px #051b15cc;
+  --dusk-scene:
+    radial-gradient(ellipse at 93% 0, #dcb5791c, transparent 55%),
+    radial-gradient(ellipse at 0 45%, #79b49b14, transparent 60%),
+    url("../assets/home/track-dusk.svg?v=20260920-dusk"),
+    linear-gradient(160deg, #293e46, #1b352e 58%, #12251f);
+}
+
+body {
+  color: var(--dusk-text);
+  background-color: #12251f;
+  background-image: var(--dusk-scene);
+  background-size: 100% 700px, 100% 1200px, 1800px 1125px, 100% 100%;
+  background-position: right top, left center, center bottom, center;
+  background-repeat: no-repeat;
+}
+
+.rogue-overlay,
+.era-overlay,
+.app-has-career .setup-overlay {
+  color: var(--dusk-text);
+  background: var(--dusk-scene) #12251f;
+  background-size: 100% 700px, 100% 1200px, 1800px 1125px, 100% 100%;
+  background-position: right top, left center, center bottom, center;
+  background-repeat: no-repeat;
+}
+
+/* Core workspace, creation forms, help and shared dialogs. Opaque surfaces keep
+   dense race data readable, including where sticky headers overlap content. */
+.panel,
+.legend-intro-dialog,
+.race-result-dialog,
+.changelog-panel {
+  color: var(--dusk-text);
+  border-color: var(--dusk-border);
+  background: linear-gradient(145deg, #29413e, var(--dusk-panel) 70%);
+  box-shadow: var(--dusk-shadow);
+}
+
+.workspace-status,
+.workspace-nav,
+.workspace-drawer,
+.app-meta-button {
+  background: #203832;
+  border-color: var(--dusk-border);
+  box-shadow: var(--dusk-shadow);
+}
+
+#racePanel .race-panel-header,
+#historyPanel .section-title-row { background: var(--dusk-panel); }
+
+.save-panel, .help-panel, .debug-panel, .workspace-save-card,
+.race-filter-options, .changelog-entry,
+.summary-stat-grid span, .compact-adaptation-list span,
+.race-result-facts span, .adaptation-section,
+.race-plan-card:not(.is-active), .scheduled-race,
+.history-card, .history-empty-card, .history-card-stats span,
+.history-record-summary span:not(:first-child),
+.achievement-group, .more-action, .notice,
+.name-language-toggle, .history-mobile-display-controls > div {
+  background: var(--dusk-inset);
+  border-color: var(--dusk-border);
+}
+
+.changelog-roadmap { background: #34372b; border-color: #756747; }
+.changelog-entry ul { color: var(--dusk-text); }
+.changelog-section-title, .site-footer,
+.workspace-status-label, .workspace-status-facts small,
+.summary-stat-grid small, .compact-adaptation-list small, .race-result-facts small,
+:where(.setup-overlay, .workspace-shell, .rogue-overlay, .era-overlay, .workspace-drawer) :is(.muted, .eyebrow, label, .field-block) {
+  color: var(--dusk-muted);
+}
+
+:where(.setup-overlay, .workspace-shell, .rogue-overlay, .era-overlay, .workspace-drawer, .legend-intro-dialog, .race-result-dialog, .help-panel, .changelog-panel) {
+  color-scheme: dark;
+  scrollbar-color: #668879 #19312b;
+}
+
+:where(.setup-overlay, .workspace-shell, .rogue-overlay, .era-overlay, .workspace-drawer) :is(input, select, textarea),
+.race-filter-menu summary, .race-risk-filter {
+  color: var(--dusk-text);
+  background: var(--dusk-inset);
+  border-color: var(--dusk-border);
+  accent-color: var(--dusk-mint);
+}
+
+:where(.setup-overlay, .workspace-shell, .rogue-overlay, .era-overlay, .workspace-drawer, .legend-intro-dialog, .race-result-dialog) button {
+  background: var(--dusk-accent);
+  color: #182b26;
+}
+
+:where(.setup-overlay, .workspace-shell, .rogue-overlay, .era-overlay, .workspace-drawer, .legend-intro-dialog, .race-result-dialog, .help-panel, .changelog-panel) button.secondary:not(.is-active):not([aria-selected="true"]) {
+  background: var(--dusk-raised);
+  color: var(--dusk-text);
+  box-shadow: inset 0 0 0 1px #73918055;
+}
+
+:where(.setup-overlay, .workspace-shell, .rogue-overlay, .era-overlay, .workspace-drawer, .legend-intro-dialog, .race-result-dialog, .help-panel, .changelog-panel) button:hover:not(:disabled) {
+  filter: brightness(1.12);
+}
+
+:where(.setup-overlay, .workspace-shell, .rogue-overlay, .era-overlay, .workspace-drawer, .legend-intro-dialog, .race-result-dialog, .help-panel, .changelog-panel) :is(button, input, select, textarea, summary):focus-visible,
+#chairmanApp :is(button, input, select, textarea, summary):focus-visible {
+  outline: 2px solid #f1cf97;
+  outline-offset: 3px;
+}
+
+.workspace-nav-button { background: transparent; color: var(--dusk-muted); }
+.workspace-nav-button[hidden] { display: none; }
+.workspace-nav-button:hover, .workspace-nav-button:focus-visible { background: var(--dusk-raised); color: var(--dusk-text); }
+.workspace-nav-button.is-active {
+  background: #47533c;
+  color: #fff1cd;
+  box-shadow: inset 3px 0 0 var(--dusk-accent);
+}
+.workspace-nav-icon { color: var(--dusk-accent); }
+.name-language-button.is-active { background: #c8a56c; color: #182b26; }
+.race-plan-card.is-active { background: #3b4532; border-color: #dcb579; box-shadow: inset 0 0 0 1px #dcb57940; }
+.race-plan-card .race-card-meta { color: #e4c18f; }
+.current-time-block, .race-result-rank { background: #3d3e2b; border-color: #a68b59; }
+.current-time-block :is(strong, small), .app-meta-button small { color: #cfdbce; }
+.workspace-status-facts > span { border-color: var(--dusk-border); }
+.workspace-status-save { background: #294d3e; color: #b8ead5; }
+.race-filter-option:hover { background: var(--dusk-raised); }
+.badge, .race-plan-card em, .race-filter-menu summary b { background: #305248; color: #c7ecdc; }
+.legend-badge { background: #4b3610; color: #ffe08a; }
+:where(.workspace-shell) :is(th, td) { border-color: #48625b88; }
+
+.legend-intro-dialog::backdrop, .race-result-overlay,
+.era-drawer-backdrop, .era-newspaper-backdrop,
+#chairmanApp .cm-dialog::backdrop { background: #081a16bd; }
+
+/* Roguelike inventory and drafting keep green ownership/success, amber warnings
+   and red failure states; neutral shop surfaces share the workspace palette. */
+.rogue-store-header { background: linear-gradient(120deg, #3c4e36, #243c38 72%); border-color: #657d52; }
+.rogue-shop-card:not(.is-owned), .rogue-candidate-card,
+.rogue-challenge-option, .rogue-selected-summary, .rogue-final-grid > div {
+  background: var(--dusk-panel);
+  border-color: var(--dusk-border);
+  box-shadow: var(--dusk-shadow);
+}
+.rogue-store-section, .rogue-service-disclosure,
+.rogue-candidate-facts span, .rogue-progress-metrics span,
+.rogue-settlement-totals span, .rogue-settlement-totals strong,
+.rogue-comment, .rogue-item-use,
+.rogue-challenge-option li, .rogue-achievement-payouts li,
+.rogue-progress-stages li:not(.is-complete):not(.is-failed),
+.rogue-store-tabs, .rogue-candidate-tabs,
+.rogue-store-steps li:not(.is-active) { background: var(--dusk-inset); border-color: var(--dusk-border); }
+.rogue-store-section.is-primary, .rogue-shop-card.is-owned { background: #2b402e; }
+.rogue-consumable-card { background: linear-gradient(145deg, #314730, var(--dusk-panel)); }
+.rogue-store-steps b { background: var(--dusk-raised); }
+.rogue-start-card, .rogue-candidate-dock { background: #243b2d; }
+.rogue-challenge-hint-button { background: linear-gradient(135deg, #2b402e, var(--dusk-panel)); }
+.rogue-store-tabs button, .rogue-candidate-tabs button { background: transparent; color: var(--dusk-muted); }
+
+/* Story retains its editorial composition, now with dark green pages. Separate
+   text accents from filled labels so the brighter ink never becomes white-on-mint. */
+.era-screen {
+  --era-ink: var(--dusk-text);
+  --era-muted: var(--dusk-muted);
+  --era-green: #b3dcc8;
+  --era-red: #efb597;
+  --era-gold: var(--dusk-accent);
+  --era-rule: #58736880;
+  --era-paper: var(--dusk-panel);
+}
+.era-hub-card, .era-current-scene, .era-timeline-section,
+.era-dossier, .era-editorial-summary, .era-entry-card {
+  border-radius: 12px;
+  box-shadow: var(--dusk-shadow);
+}
+.era-hub-card { border-top-color: var(--dusk-accent); }
+.era-editorial-header { background: #243c38; border-color: #729684; border-radius: 12px; }
+.era-scenario-facts span, .era-entry-card,
+.era-trainer-comment, .era-editorial-summary > div span,
+.era-schedule-row { background: var(--dusk-inset); }
+.era-trainer-comment, .era-newspaper-item { border-color: var(--era-rule); }
+.era-header-actions > span { color: var(--dusk-muted); }
+.era-outline-note, .era-scene-meta em, .era-report-angle,
+.era-trainer-comments > header > span { color: #e6c58c; }
+.era-test-badge, .era-scene-meta span, .era-history-status { border-color: #b58a685e; }
+.era-current-kicker { background: #70523b; color: #fff0d5; }
+.era-speaker span { background: #365749; color: #edf6e9; }
+.era-speaker.is-player span { background: #71503d; }
+.era-route-notes { background: #315044; color: #edf6e9; }
+.era-scene-slot:not(:first-child) { background: #172e2980; border-color: #729684; }
+.era-timeline-item { border-left-color: #587368; }
+.era-schedule-drawer, .era-newspaper-drawer { background: #203832; color: var(--era-ink); }
+.era-overlay button.secondary.era-retire-button { color: var(--dusk-danger); box-shadow: inset 0 0 0 1px #a479635c; }
+
+/* Chairman's dense management tables use the same surfaces, while keeping their
+   existing compact geometry and mobile row expansion. */
+#chairmanApp { color: var(--dusk-text); color-scheme: dark; scrollbar-color: #668879 #19312b; }
+#chairmanApp .cm-sticky-head { background: #203832; border-color: var(--dusk-border); box-shadow: 0 10px 24px -20px #051b15; }
+#chairmanApp .cm-card, #chairmanApp .cm-stats article, #chairmanApp .cm-filter-grid,
+#chairmanApp .cm-dialog, #chairmanApp .cm-dialog header { background: var(--dusk-panel); border-color: var(--dusk-border); }
+#chairmanApp .cm-card { box-shadow: var(--dusk-shadow); }
+#chairmanApp .cm-welcome { border-top: 3px solid var(--dusk-accent); }
+#chairmanApp .cm-dialog-footer, #chairmanApp .cm-pedigree-cell,
+#chairmanApp .cm-horse-metrics, #chairmanApp .cm-help[open] { background: var(--dusk-inset); border-color: var(--dusk-border); }
+#chairmanApp .cm-menu, #chairmanApp .cm-multi-options { background: #2c473d; border-color: #688777; }
+#chairmanApp button,
+#chairmanApp .cm-filter-advanced > summary, #chairmanApp .cm-multi > summary, #chairmanApp .cm-more > summary {
+  background: var(--dusk-raised);
+  color: var(--dusk-text);
+  border-color: #637f6f;
+}
+#chairmanApp button:hover { background: #3c6050; }
+#chairmanApp button[aria-current], #chairmanApp .cm-world-bar nav button[aria-current], #chairmanApp .cm-primary,
+#chairmanApp button[type="submit"], #chairmanApp form > button:not([type]) {
+  background: var(--dusk-accent);
+  border-color: var(--dusk-accent);
+  color: #182b26;
+}
+#chairmanApp .cm-world-bar nav button:not([aria-current]) { background: transparent; }
+#chairmanApp button.cm-link { background: transparent; color: #b6e4d2; }
+#chairmanApp button.cm-link:hover { color: #f3d6a5; }
+#chairmanApp input, #chairmanApp select, #chairmanApp textarea {
+  background: var(--dusk-inset);
+  border-color: var(--dusk-border);
+  color: var(--dusk-text);
+  accent-color: var(--dusk-mint);
+}
+#chairmanApp th { background: #29463b; color: #c6dacc; }
+#chairmanApp td, #chairmanApp th, #chairmanApp .cm-editor-group,
+#chairmanApp .cm-award-grid > article, #chairmanApp .cm-responsive-table tr,
+#chairmanApp .cm-score-table tr { border-color: #48625b88; }
+#chairmanApp tbody tr:hover { background: #2d4a3e; }
+#chairmanApp .cm-g1 { background: #3b402e; }
+#chairmanApp tr.cm-g1, #chairmanApp tr.cm-g1-row { background: #71633b29; }
+#chairmanApp .cm-chip { color: #c7ecdc; background: #305248; }
+#chairmanApp .cm-muted, #chairmanApp .cm-detail-meta, #chairmanApp .cm-help,
+#chairmanApp .cm-card p, #chairmanApp .cm-body > p, #chairmanApp .cm-dialog-content > p,
+#chairmanApp .cm-stats article, #chairmanApp .cm-toolbar h2 small,
+#chairmanApp td small, #chairmanApp .cm-attributes dt, #chairmanApp label,
+#chairmanApp .cm-eyebrow, #chairmanApp .cm-empty,
+#chairmanApp .cm-horse-metrics small, #chairmanApp .cm-pedigree-cell small,
+#chairmanApp .cm-score-table td:nth-child(n+7),
+#chairmanApp .cm-responsive-table td:not(.cm-row-name)::before,
+#chairmanApp .cm-score-table td:nth-child(n+3)::before { color: var(--dusk-muted); }
+#chairmanApp summary, #chairmanApp .cm-editor-group legend { color: #c5dbc9; }
+#chairmanApp .cm-error, #chairmanApp .cm-dialog-notice { color: var(--dusk-danger); }
+
+/* The desktop status grid otherwise overflows between the phone breakpoint and
+   tablet widths, particularly with the extra roguelike status labels. */
+@media (min-width: 761px) and (max-width: 1080px) {
+  .workspace-status { position: static; display: flex; flex-wrap: wrap; gap: 12px; }
+  .workspace-status-identity { flex: 1 1 240px; }
+  .workspace-status-facts { flex-wrap: wrap; }
+  .workspace-status-facts > span { min-width: 0; }
+  .workspace-status-save { margin-left: auto; }
+  .workspace-nav, .workspace-aside { top: 12px; }
+}
+
+@media (max-width: 760px) {
+  .workspace-nav-button.is-active { box-shadow: inset 0 3px 0 var(--dusk-accent); }
+  .setup-overlay, .app-has-career .setup-overlay, .rogue-overlay, .era-overlay {
+    background: var(--dusk-scene) #12251f;
+    background-size: 100% 650px, 100% 1200px, 1200px 750px, 100% 100%;
+    background-position: right top, left center, center bottom, center;
+    background-repeat: no-repeat;
+  }
+}

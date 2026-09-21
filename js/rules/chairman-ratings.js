@@ -2,6 +2,13 @@
   'use strict';
   const ns = window.Keiba;
   const VERSION = 2;
+  const integer = value => value == null ? null : Math.sign(value) * Math.round(Math.abs(value)) || 0;
+  function score(value) {
+    if (value == null || String(value).trim() === '') return null;
+    const n = Number(value);
+    if (!Number.isSafeInteger(n)) throw new Error('评分须为整数或留空。');
+    return n;
+  }
   const knots = [[1000, 3.3], [1200, 3], [1600, 2.5], [2000, 2], [2400, 1.5], [3200, 1]];
   const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
   function hash(text) { let h = 2166136261; for (const c of String(text)) h = Math.imul(h ^ c.charCodeAt(0), 16777619); h ^= h >>> 16; h = Math.imul(h, 0x85ebca6b); return (h ^ h >>> 13) >>> 0; }
@@ -56,13 +63,13 @@
       const standard=median(field.map(p=>(calibration.references[p.horseId]??calibration.target)+p.d));
       winnerRating=.8*winnerRating+.2*standard;
     }
-    return { ratings: Object.fromEntries(field.map(p=>[p.horseId, Math.round(winnerRating-p.d)])), benchmarkId, winnerRating, source, version: VERSION };
+    return { ratings: Object.fromEntries(field.map(p=>[p.horseId, integer(winnerRating-p.d)])), benchmarkId, winnerRating, source, version: VERSION };
   }
   function buildWtrRecommendations(race, rows, benchmarkId, score) {
     const anchor = rows.find(p=>p.horseId===benchmarkId && !p.retired && p.rank != null);
-    if (!anchor || !Number.isFinite(score)) throw new Error('请选择完赛基准马并填写有效分数。');
+    if (!anchor || !Number.isSafeInteger(score)) throw new Error('请选择完赛基准马并填写整数评分。');
     const d = deficit(anchor, race.distance);
-    return Object.fromEntries(rows.filter(p=>!p.retired && p.rank != null).map(p=>[p.id, p.horseId===benchmarkId ? score : Number((score+d-deficit(p,race.distance)).toFixed(1))]));
+    return Object.fromEntries(rows.filter(p=>!p.retired && p.rank != null).map(p=>[p.id, p.horseId===benchmarkId ? score : integer(score+d-deficit(p,race.distance))]));
   }
   function record(h, p, count) {
     const row = { turn:p.turn, tf:p.tf, raceClass:p.raceClass, rank:p.rank, retired:!!p.retired, surface:p.surface, distance:p.distance,
@@ -108,5 +115,38 @@
       for (const r of out.ratings) {const h=w.horses.find(h=>h.id===r.horseId);if(h?.breeding)ns.ChairmanBreeding.recordRating(h,r.year,r.wtr,r.tf);}
     });
   }
-  ns.ChairmanRatings={VERSION,hash,getRatingScaleOffset,pointsPerLength,deficit,median,recent,rateRaceTF,buildWtrRecommendations,record,calibration,manualMaximum,applyManualYear,migrate};
+  // Precision migration preserves race facts and frozen council evidence. The
+  // pre-migration snapshot retains original decimals for rollback and auditing.
+  function integerMigration(world, records) {
+    const W = ns.ChairmanRules;
+    return W.mutate(world, (w, out) => {
+      const fields = (obj, keys) => { if (obj) for (const key of keys) if (obj[key] != null) obj[key] = integer(Number(obj[key])); };
+      out.performances = W.clone(records.performances || []);
+      const byYear = new Map(), last = new Map();
+      for (const p of out.performances.sort((a,b)=>a.turn-b.turn)) {
+        fields(p,['tf','manualRating','priorTf','priorEventRating']);
+        p.priorPerformanceId = last.get(p.horseId)?.id || null;
+        if (last.has(p.horseId)) { p.priorTf = last.get(p.horseId).tf; p.priorEventRating = last.get(p.horseId).manualRating; }
+        last.set(p.horseId,p);
+        const key = p.year+':'+p.horseId; if (!byYear.has(key)) byYear.set(key,[]); byYear.get(key).push(p);
+      }
+      out.ratings = W.clone(records.ratings || []);
+      for (const r of out.ratings) { fields(r,['tf','manual','wtr','suggested','legacyAutomatic']); r.suggested=manualMaximum(byYear.get(r.year+':'+r.horseId)||[]); r.wtr=r.manual??r.suggested; }
+      const archived = new Map(out.ratings.map(r=>[r.year+':'+r.horseId,r]));
+      for (const h of [...w.horses,...(w.pedigrees||[])]) {
+        fields(h,['lastTf','lastEventRating','previousWtr','previousTf']); fields(h.annual,['tf','manual','suggested','legacyAutomatic']);
+        fields(h.background,['lastTf']); for (const r of h.recentForm||[]) fields(r,['tf']);
+        if(h.annual) h.annual.suggested=manualMaximum(byYear.get(h.annual.year+':'+h.id)||[]);
+        const prev=archived.get((W.date(w.turn).year-1)+':'+h.id); if(prev){h.previousWtr=prev.wtr;h.previousTf=prev.tf;}
+        const recent=last.get(h.id); if(recent){h.lastTf=recent.tf;h.lastEventRating=recent.manualRating;h.lastPerformanceId=recent.id;}
+        if(h.breeding){ fields(h.breeding,['bestWtr','bestEvaluation']); for(const key of ['yearWtr','evaluationByYear']) if(h.breeding[key]) for(const y of Object.keys(h.breeding[key])) h.breeding[key][y]=integer(h.breeding[key][y]); }
+      }
+      for(const p of w.honorProfiles||[]) for(const r of Object.values(p.ratings||{})) fields(r,['tf','wtr']);
+      out.occurrences=W.clone(records.occurrences||[]); for(const r of out.occurrences)fields(r.wtrBenchmark,['score']);
+      out.scoreDrafts=W.clone(records.scoreDrafts||[]);
+      for(const d of out.scoreDrafts){ fields(d,['benchmarkScore']); for(const key of ['values','recommendations']) for(const id of Object.keys(d[key]||{})) if(d[key][id]!=='' && d[key][id]!=null)d[key][id]=key==='values'?String(integer(Number(d[key][id]))):integer(d[key][id]); }
+      w.ratingPrecisionVersion=1;
+    });
+  }
+  ns.ChairmanRatings={VERSION,integer,score,integerMigration,hash,getRatingScaleOffset,pointsPerLength,deficit,median,recent,rateRaceTF,buildWtrRecommendations,record,calibration,manualMaximum,applyManualYear,migrate};
 })();

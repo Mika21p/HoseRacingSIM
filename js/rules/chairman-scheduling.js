@@ -35,16 +35,20 @@
       const W=ns.ChairmanRules, races=[], cohorts=new Map(), cohortCache=new Map();
       for(const h of w.horses) if(h.status==='active') {const age=W.ageOf(w,h);if(!cohorts.has(age))cohorts.set(age,[]);cohorts.get(age).push(h);}
       for(const d of w.races)for(const year of [W.date(w.turn).year,W.date(w.turn).year+1]){
-        const locked=w.lockedRaces?.[`${year}:${d.id}`]; if(!locked&&d.deleted || d.lastHeldYear===year || !locked&&year<(d.notBeforeYear||1))continue;
-        const race=locked||api.engineRace(w,d), turn=(year-1)*24+(race.month-1)*2+race.half-1;
+        const locked=w.lockedRaces?.[`${year}:${d.id}`] || ns.ChairmanSeries?.frozenRace(w,d.id,year); if(!locked&&d.deleted || d.lastHeldYear===year || !locked&&year<(d.notBeforeYear||1))continue;
+        const race=locked||api.engineRace(w,d,year), turn=(year-1)*24+(race.month-1)*2+race.half-1;
         if(turn>=w.turn&&turn<w.turn+12)races.push({race,turn,key:`${year}:${race.id}`});
       }
       const proposals=[], accepted=new Map(), pins=new Map();
       for(const h of w.horses){
-        const old=h.booked; h.booked=null; if(h.status!=='active'){h.target=null;continue;}
+        const old=h.booked; h.booked=null; if(h.status!=='active'){h.target=null;h.seriesTarget=null;continue;}
         const career=api.careerFor(w,h), candidates=[], cache=new Map();
+        const challenges=ns.ChairmanSeries?.challenges(w,h,api)||[], pursuit=challenges.find(s=>s.wins>0);
+        h.seriesTarget=pursuit?{seriesId:pursuit.seriesId,name:pursuit.name,wins:pursuit.wins,total:pursuit.total,raceId:pursuit.race.id,turn:pursuit.turn}:null;
         for(const event of races){
-          const {race,turn}=event; if(!api.eligible(w,h,race,turn)||h.lastRaceTurn!=null&&turn-h.lastRaceTurn<3)continue;
+          const {race,turn}=event;
+          const fixed=old&&old.raceId===race.id&&old.turn===turn&&(w.lockedRaces?.[`${W.date(turn).year}:${race.id}`]||old.preparationTurn!=null&&old.preparationTurn<=w.turn);
+          if(!fixed&&ns.ChairmanSeries&&!ns.ChairmanSeries.preserves(w,h,event,pursuit,api))continue; if(!api.eligible(w,h,race,turn)||h.lastRaceTurn!=null&&turn-h.lastRaceTurn<3)continue;
           const route=api.travelContext(career,h,race), time=api.timeFor(w,h,turn);
           if(!ns.RegionRules.isTravelScheduleReachable(route.career,route.race,time))continue;
           const travel=ns.RegionRules.buildTravel(route.career,route.race,time), offset=api.timeFor(w,h).index-w.turn;
@@ -55,7 +59,8 @@
           if(advantage<0)advantage*=waiting>=10?.25:waiting>=6?.5:1;
           const utility=advantage+({op:0,g3:3,g2:5,g1:7}[race.raceClass])+Math.min(6,Math.log2(1+race.prizes[0]/10))
             -(turn-w.turn)*.75-(prep==null?0:turn-prep)+(race.raceClass==='g1'&&form.challenge&&form.advantage>=-5?6:0)
-            +(form.promotion&&['g3','g2'].includes(race.raceClass)?4:0);
+            +(form.promotion&&['g3','g2'].includes(race.raceClass)?4:0)
+            +Math.max(0,...challenges.filter(s=>s.race.id===race.id&&s.turn===turn).map(s=>s.boost));
           candidates.push({...event,utility,form,prep,tie:R.next()});
         }
         const graded=candidates.filter(c=>c.race.raceClass!=='op');
@@ -64,7 +69,7 @@
         let target=graded[0], previous=graded.find(c=>h.target?.raceId===c.race.id&&h.target.turn===c.turn);
         if(previous&&target&&target.utility<previous.utility+5)target=previous;
         const stableTarget=(!target&&!h.target)||target&&previous&&target.key===previous.key;
-        h.target=target ? {raceId:target.race.id,turn:target.turn,reason:target.form.reason} : null;
+        h.target=target ? {raceId:target.race.id,turn:target.turn,reason:challenges.find(s=>s.race.id===target.race.id)?.name ? `挑战${challenges.find(s=>s.race.id===target.race.id).name}` : target.form.reason} : null;
         let choices=candidates.filter(c=>c.turn<w.turn+6).filter(c=>{
           if(!target||c.key===target.key)return true;
           if(c.turn>=target.turn)return false;

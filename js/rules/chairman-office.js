@@ -4,12 +4,13 @@
   const categories = ["短途", "英里", "中距离", "中长距离", "长距离", "超长距离"];
   const classOrder = { g1: 0, g2: 1, g3: 2, op: 3 };
   const assert = (ok, message) => { if (!ok) throw new Error(message); };
-  const score = (v) => { const n = v === null || String(v).trim() === "" ? null : Number(v); assert(n === null || Number.isFinite(n), "评分须为有限数字或留空。"); return n; };
+  const score = (v) => ns.ChairmanRatings.score(v);
   const matches = (selected, value) => !selected || !selected.length || (Array.isArray(selected) ? selected.includes(String(value)) : String(selected) === String(value));
   function horseMatches(h, p) {
     return String(h.horseName || h.name).includes(p.search || "") && matches(p.age, h.age >= 4 ? "4+" : h.age)
       && matches(p.gender, h.gender) && matches(p.region, h.homeRegion || "未记录")
       && matches(p.status, h.status) && matches(p.origin, h.origin)
+      && (!p.honor || (p.honor === 'local' ? h.localAwards > 0 : p.honor === 'central' ? h.centralAwards > 0 : p.honor === 'hall' ? !!h.inducted : false))
       && (!p.year || h.year === Number(p.year)) && (p.minimum === "" || p.minimum == null || h.wtr != null && h.wtr >= Number(p.minimum));
   }
   function raceMatches(row, p, lastTurn) {
@@ -19,7 +20,7 @@
       && (!p.distance || r.distance === Number(p.distance)) && matches(p.ageRule, r.ageRule) && matches(p.sexRule, r.sexRule)
       && (!p.month || r.month === Number(p.month)) && (!p.half || r.half === Number(p.half))
       && (!p.year || row.year === Number(p.year)) && (!p.latest || row.turn === lastTurn)
-      && (!p.resultStatus || row.status === p.resultStatus) && (!p.scoring || (row.scoring || "none") === p.scoring)
+      && (!p.resultStatus || row.status === p.resultStatus) && matches(p.scoring, row.scoring || "none")
       && (p.hidden === "all" || p.hidden === "only" ? p.hidden !== "only" || !!row.hidden : !row.hidden);
   }
   function publicHorse(world, h, lifetime) {

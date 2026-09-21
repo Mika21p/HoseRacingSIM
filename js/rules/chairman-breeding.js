@@ -116,6 +116,7 @@
       ...(existing ? { id: existing.id, fatherId: existing.fatherId, motherId: existing.motherId, parentsLocked: true } : {}),
       status: "retired", origin: "ai", sourceKind: template ? "historical" : "foundation" });
     w.horses.pop(); w.totalHorses--;
+    if (w.honorProfiles) w.honorProfiles = w.honorProfiles.filter(p => p.id !== h.id);
     if (existing) w.pedigrees[w.pedigrees.indexOf(existing)] = h; else (w.pedigrees ||= []).push(h);
     h.name = template ? template.displayName || template.originalName : `外来始祖·${h.name}`;
     h.templateId = template?.id || ""; h.templateVersion = w.breeding.templateVersion; h.historicalBirthYear = template?.birthYear ?? null;
@@ -333,6 +334,7 @@
       aliases: h.aliases || [], pinyin: h.pinyin || "", romanizedName: h.romanizedName || h.originalName, birthYear: h.birthYear, historicalBirthYear: h.birthYear, gender: h.gender, region: h.region,
       fatherId: h.fatherId, motherId: h.motherId, regionTags: h.regionTags || [], status: "template", source: "historical", breedingStatus: h.core ? "template" : "ancestor", grade: "未公开", sourceUrl: h.sourceUrl }))
       : all(w).map((h) => publicHorse(w, h));
+    if(p.view==='library') rows.push(...(w.familyTemplates||[]).map(t=>({...t,templateId:t.id,originalName:t.originalName||t.name,pinyin:t.pinyin||'',romanizedName:t.romanizedName||t.name,aliases:t.aliases||[],source:'imported',status:'template',breedingStatus:'template'})));
     if (p.view === "active" && !p.breedingStatus) rows = rows.filter((h) => h.breedingStatus === "active");
     if (p.view === "candidate") rows = rows.filter((h) => ["candidate", "none"].includes(h.breedingStatus) && available(w, byId.get(h.id)));
     if (p.view === "young") rows = rows.filter((h) => h.status === "juvenile");

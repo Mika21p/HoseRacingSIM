@@ -83,7 +83,7 @@ test("region metadata survives IndexedDB, full snapshots, slots and turn recover
     const snapshot = await store.exportWorld(world.id), imported = await store.importWorld(snapshot);
     assert.deepEqual(plain(imported.regions), plain(world.regions));
     assert.equal((await store.query("performances", imported.id)).rows[0].surfaceRegion, "星海群岛");
-    await store.acquire(world.id); await store.saveSlot(world.id, 2); const slot = await store.loadSlot(2);
+    await store.acquire(world.id); await store.saveSlot(world.id, 2); const slot = await store.loadSlot(2, true);
     assert.ok(W.regionNames(slot).includes("星海群岛"));
     await store.acquire(world.id); const restored = await store.restore(out.world, `turn:${world.revision}`);
     assert.deepEqual(plain(W.advanceHalfMonth(restored).performances), plain(out.performances));

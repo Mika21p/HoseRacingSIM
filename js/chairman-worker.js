@@ -5,7 +5,7 @@ var window = self;
 self.Keiba = {};
 importScripts("utils/random.js", "data/bloodlines.js", "rules/time.js", "rules/region-rules.js", "rules/maturity.js",
   "rules/temperament.js", "rules/horse-generator.js", "rules/comments.js", "rules/career.js", "rules/chairman-ratings.js", "rules/chairman-scheduling.js", "rules/chairman.js",
-  "data/chairman-pedigrees.js", "rules/chairman-breeding.js", "chairman-csv.js", "chairman-storage.js");
+  "data/chairman-pedigrees.js", "rules/chairman-breeding.js", "rules/chairman-honors.js", "chairman-csv.js", "rules/chairman-series.js", "chairman-packages.js", "chairman-storage.js");
 self.onmessage = (event) => {
   const { kind, payload } = event.data;
   try {
@@ -17,6 +17,10 @@ self.onmessage = (event) => {
         const rows = self.Keiba.ChairmanCSV.parse(payload.text), column = rows[0]?.values.indexOf("马场");
         result.missingTracks = [...new Set(rows.slice(1).map((r) => r.values[column]).filter((name) => name && !payload.world.tracks.some((t) => t.name === name)))];
       }
+    } else if (kind === "contentPreview") {
+      const p=typeof payload.package==='string'?JSON.parse(payload.package):payload.package;
+      const g=self.Keiba.ChairmanPackages.previewSteps(payload.world,p,payload.options);
+      for(;;){const n=g.next();if(n.done){result=n.value;break;}self.postMessage({progress:n.value.name+' '+n.value.done+'/'+n.value.total});}
     } else if (kind === "parseSave") {
       self.postMessage({ progress: "正在后台解析存档…" }); result = JSON.parse(payload);
       self.postMessage({ progress: "正在检查存档版本、评分与关联…" }); self.Keiba.ChairmanStorage.Store.prototype.validateSnapshot(result);

@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" fill="none">
+  <defs>
+    <linearGradient id="rail" x1="0" y1="200" x2="1500" y2="920" gradientUnits="userSpaceOnUse"><stop stop-color="#c3d2bf" stop-opacity=".17"/><stop offset=".5" stop-color="#b8cbb5" stop-opacity=".04"/><stop offset="1" stop-color="#f0d3a0" stop-opacity=".2"/></linearGradient>
+    <linearGradient id="turf" x1="800" y1="540" x2="800" y2="1000" gradientUnits="userSpaceOnUse"><stop stop-color="#689278" stop-opacity="0"/><stop offset="1" stop-color="#689278" stop-opacity=".1"/></linearGradient>
+  </defs>
+  <path d="M-60 780C290 601 611 640 900 701s529 73 760-18v317H-60Z" fill="url(#turf)"/>
+  <g stroke="url(#rail)" stroke-linecap="round">
+    <path d="M-110 90C415 103 474 253 94 454S-34 781 671 807s1037-194 1006-445" stroke-width="5"/>
+    <path d="M-110 115C387 128 440 260 82 477S-1 822 675 849s1067-206 1042-470" stroke-width="2"/>
+    <path d="m-7 94-2 24m105-18-2 25m88-13-1 24m73-6-1 25m52-4-2 27m29-5-2 27M22 492l9 40m-16 90 12 45m83 29 9 48m132-3 4 49m142-15 3 49m152-22 2 46m153-21 1 43m148-29 4 43m132-35 6 41m120-44 8 42m105-53 11 41m89-59 14 37m73-66 16 34m56-74 18 31m36-83 20 28" stroke-width="3"/>
+    <path d="M-130 432C261 241 584 239 942 285s573-15 751-147" stroke-width="1" opacity=".5"/>
+    <path d="M-130 447C261 256 584 254 942 300s573-15 751-147" stroke-width="1" opacity=".35"/>
+  </g>
+</svg>

@@ -1,0 +1,142 @@
+/* Chairman workbench layout. Loaded after the shared dusk palette. */
+#chairmanApp { --cm-line:#456258; --cm-muted:#b4c9bd; color:var(--dusk-text,#e5eee6); }
+#chairmanApp .cm-shell { max-width:1600px; padding:20px 24px 64px; }
+#chairmanApp.cm-in-world .cm-shell { display:grid; grid-template-columns:200px minmax(0,1fr); gap:24px; }
+#chairmanApp .cm-work-area { min-width:0; }
+#chairmanApp .cm-sidebar { position:sticky; top:20px; height:calc(100dvh - 40px); overflow:auto; padding:16px 12px; background:#1d352eee; border:1px solid var(--cm-line); border-radius:14px; }
+#chairmanApp .cm-nav-brand { display:flex; gap:10px; align-items:center; padding:4px 4px 24px; }
+#chairmanApp .cm-nav-brand strong,#chairmanApp .cm-nav-brand small { display:block; }
+#chairmanApp .cm-nav-brand small { color:var(--cm-muted); font-size:11px; margin-top:3px; letter-spacing:.16em; }
+#chairmanApp .cm-nav-group { margin-bottom:8px; }
+#chairmanApp .cm-nav-group>button { width:100%; min-height:42px; display:flex; gap:12px; align-items:center; text-align:left; background:transparent; border-color:transparent; color:var(--cm-muted); }
+#chairmanApp .cm-nav-group>button[aria-current] { background:#3b513c; color:#f1d5a3; }
+#chairmanApp .cm-group-links { display:grid; gap:3px; padding:6px 0 8px 16px; }
+#chairmanApp .cm-group-links button { min-height:36px; text-align:left; background:transparent; border:0; font-size:13px; white-space:normal; }
+#chairmanApp .cm-group-links button[aria-current] { background:#dcb579; color:#182b26; }
+#chairmanApp .cm-sticky-head { position:sticky; top:0; z-index:30; min-height:0; padding:12px 16px; background:#1e362ff5; border:1px solid var(--cm-line); border-radius:12px; }
+#chairmanApp .cm-topline { position:static; min-height:0; display:flex; justify-content:flex-end; margin-bottom:4px; }
+#chairmanApp.cm-in-world .cm-lobby-exit { display:none; }
+#chairmanApp .cm-world-bar { display:flex; align-items:center; flex-wrap:wrap; justify-content:space-between; gap:8px; padding:0; }
+#chairmanApp .cm-world-identity { display:block; }
+#chairmanApp .cm-world-identity .cm-eyebrow { max-width:260px; }
+#chairmanApp .cm-world-identity h2 { margin:2px 0 0; font-size:18px; }
+#chairmanApp .cm-world-bar>.cm-actions { margin:0; }
+#chairmanApp .cm-notice { max-width:100%; font-size:12px; }
+#chairmanApp .cm-page-heading { display:flex; align-items:center; justify-content:space-between; gap:12px; margin:26px 0 18px; }
+#chairmanApp .cm-page-heading h1 { margin:4px 0 0; font-size:28px; letter-spacing:.02em; }
+#chairmanApp .cm-page-switch,#chairmanApp .cm-bottom-nav { display:none; }
+#chairmanApp .cm-body { padding:0; min-width:0; }
+#chairmanApp .cm-toolbar { margin:12px 0; flex-wrap:wrap; }
+#chairmanApp .cm-toolbar h2 { font-size:17px; }
+#chairmanApp .cm-view-select { display:flex; flex-direction:row; align-items:center; gap:12px; margin:0 0 16px; width:fit-content; max-width:100%; }
+#chairmanApp .cm-view-select select { width:auto; min-width:140px; max-width:100%; }
+#chairmanApp .cm-table-wrap { max-width:100%; overflow-x:auto; border:1px solid var(--cm-line); border-radius:10px; background:#1b332dc9; }
+#chairmanApp table { width:100%; }
+#chairmanApp td,#chairmanApp th { padding:9px 10px; line-height:1.45; }
+#chairmanApp th { background:#29463b; }
+#chairmanApp .cm-arrangement { max-width:180px; }
+#chairmanApp .cm-arrangement span { max-width:170px; }
+#chairmanApp .cm-empty { padding:30px 18px; border:1px dashed var(--cm-line); border-radius:10px; }
+#chairmanApp .cm-stats { gap:12px; margin-bottom:20px; }
+#chairmanApp .cm-stats article { padding:16px; border-radius:10px; }
+#chairmanApp .cm-todo { padding:16px; border:1px solid var(--cm-line); border-radius:10px; background:#243c38; margin-bottom:20px; }
+#chairmanApp .cm-todo h2 { margin:0 0 12px; }
+#chairmanApp .cm-todo .cm-actions { gap:8px; }
+#chairmanApp .cm-filters { display:block; margin:12px 0 18px; background:#203830; border:1px solid var(--cm-line); border-radius:10px; padding:12px; }
+#chairmanApp .cm-mobile-filters { display:inline-flex; margin:0; }
+#chairmanApp .cm-filter-panel { padding-top:16px; }
+#chairmanApp .cm-filter-main,#chairmanApp .cm-filter-grid { border:0; background:transparent; margin:0; padding:0 0 16px; display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); align-items:start; gap:14px; min-width:0; }
+#chairmanApp .cm-filter-panel legend { color:#d0decd; font-weight:700; padding:0 0 10px; }
+#chairmanApp .cm-filter-main input[name=search],#chairmanApp .cm-filter-main select { width:100%; max-width:100%; }
+#chairmanApp .cm-filter-panel .cm-multi { display:block; border:0; padding:0; margin:0; min-width:0; }
+#chairmanApp .cm-filter-panel .cm-multi legend { font-size:12px; font-weight:500; padding:0 0 5px; color:var(--cm-muted); }
+#chairmanApp .cm-filter-panel .cm-multi-options { position:static; display:flex; flex-direction:row; flex-wrap:wrap; gap:4px 12px; max-height:180px; width:auto; min-width:0; max-width:none; border:0; padding:0; box-shadow:none; background:transparent; }
+#chairmanApp .cm-filter-panel .cm-check { margin:0; min-height:30px; }
+#chairmanApp .cm-filter-actions { display:flex; gap:8px; flex-wrap:wrap; align-items:center; border-top:1px solid var(--cm-line); padding-top:12px; }
+#chairmanApp .cm-filter-state { color:#e5c68f; font-size:12px; }
+#chairmanApp .cm-filter-chips { margin-top:8px; }
+#chairmanApp .cm-chip { white-space:normal; text-align:left; }
+#chairmanApp .cm-menu-shade { position:fixed; inset:0; z-index:1000; background:transparent; }
+#chairmanApp .cm-floating-menu { position:fixed; z-index:1001; display:flex; flex-direction:column; gap:6px; margin:0; padding:10px; max-width:none; min-width:0; overflow:auto; border:1px solid #7b9984; border-radius:10px; background:#29463b; box-shadow:0 16px 48px #061a1680; }
+#chairmanApp .cm-floating-menu button { white-space:normal; text-align:left; }
+#chairmanApp .cm-menu-heading { display:flex; align-items:center; gap:8px; justify-content:space-between; border-bottom:1px solid var(--cm-line); padding-bottom:8px; margin-bottom:4px; }
+#chairmanApp .cm-menu-heading strong { font-size:13px; overflow-wrap:anywhere; }
+#chairmanApp .cm-menu-heading button { flex:none; }
+#chairmanApp [data-danger] { color:#ffb8a6; border-color:#986e5b; }
+#chairmanApp .cm-dialog[data-kind=workspace] { height:92dvh; max-height:92dvh; width:min(1200px,96vw); margin:auto; }
+#chairmanApp .cm-dialog[data-kind=confirm] { width:min(520px,94vw); height:auto; max-height:85dvh; margin:auto; }
+#chairmanApp .cm-dialog-content { flex:1; min-height:0; overflow:auto; padding:18px; }
+#chairmanApp .cm-dialog header { padding:12px 18px; }
+#chairmanApp .cm-dialog-footer { padding:12px 18px; }
+#chairmanApp .cm-score-section-title { padding:14px 0 6px; color:#e6c58c; }
+#chairmanApp .cm-score-summary { padding:12px; margin:10px 0; background:#172e29; border-radius:8px; }
+#chairmanApp .cm-score-table td:nth-child(6) { min-width:200px; white-space:normal; }
+#chairmanApp .cm-score-table td:nth-child(6) small { display:block; margin:5px 0; }
+#chairmanApp .cm-score-table td button { margin-top:4px; }
+#chairmanApp .cm-phase-note { color:#e6c58c; padding:10px 0; }
+#chairmanApp .cm-back-top { bottom:16px; right:24px; }
+@media(max-width:1023px) {
+ #chairmanApp .cm-shell,#chairmanApp.cm-in-world .cm-shell { display:block; padding:10px 12px calc(90px + env(safe-area-inset-bottom)); }
+ #chairmanApp .cm-sidebar { display:none; }
+ #chairmanApp .cm-page-switch { display:block; }
+ #chairmanApp .cm-bottom-nav { position:fixed; left:0; right:0; bottom:0; z-index:40; display:grid; grid-template-columns:repeat(5,minmax(0,1fr)); padding:6px 8px max(6px,env(safe-area-inset-bottom)); gap:4px; background:#1d352ef5; border-top:1px solid var(--cm-line); }
+ #chairmanApp .cm-bottom-nav button { min-height:48px; padding:4px; border:0; background:transparent; }
+ #chairmanApp .cm-bottom-nav button[aria-current] { background:#dcb579; color:#182b26; }
+ #chairmanApp .cm-desktop-fast { display:none; }
+ #chairmanApp .cm-sticky-head { padding:8px 10px; border-radius:10px; }
+ #chairmanApp .cm-topline { margin:0; position:absolute; top:8px; right:10px; max-width:50%; }
+ #chairmanApp .cm-world-identity .cm-eyebrow { max-width:46%; font-size:11px; }
+ #chairmanApp .cm-world-bar { display:block; }
+ #chairmanApp .cm-world-bar>.cm-actions { margin-top:8px; }
+ #chairmanApp .cm-world-bar>.cm-actions>.cm-primary { flex:1; }
+ #chairmanApp .cm-page-heading { margin:18px 0 14px; }
+ #chairmanApp .cm-page-heading h1 { font-size:23px; }
+ #chairmanApp .cm-back-top { bottom:78px; right:12px; }
+ #chairmanApp button,#chairmanApp input,#chairmanApp select,#chairmanApp summary { min-height:44px; }
+}
+@media(max-width:767px) {
+ #chairmanApp .cm-table-wrap { border:0; overflow:visible; background:transparent; }
+ #chairmanApp .cm-responsive-table tr { padding:14px 12px; margin:0 0 10px; border:1px solid var(--cm-line); border-radius:10px; background:#213a32; gap:8px 12px; }
+ #chairmanApp .cm-responsive-table .cm-row-name { padding-bottom:4px; }
+ #chairmanApp .cm-responsive-table .cm-row-name .cm-link { font-weight:700; font-size:15px; }
+ #chairmanApp .cm-responsive-table .cm-row-toggle { font-size:11px; padding:4px 7px; flex:none; }
+ #chairmanApp .cm-responsive-table td:not(.cm-row-name) { flex:1 1 auto; }
+ #chairmanApp .cm-responsive-table td.cm-row-secondary { display:none; }
+ #chairmanApp .cm-responsive-table .cm-row-open td.cm-row-secondary { display:block; }
+ #chairmanApp .cm-responsive-table td:has(>.cm-more),#chairmanApp .cm-responsive-table td:has(>button[data-action=loadSlot]) { flex-basis:100%; }
+ #chairmanApp .cm-responsive-table td.cm-arrangement { max-width:100%; flex-basis:100%; }
+ #chairmanApp .cm-arrangement span { white-space:normal; max-width:none; }
+ #chairmanApp .cm-stats { flex-wrap:wrap; gap:6px; }
+ #chairmanApp .cm-stats article { min-width:90px; padding:10px; }
+ #chairmanApp .cm-filter-main,#chairmanApp .cm-filter-grid { grid-template-columns:1fr; }
+ #chairmanApp .cm-filter-panel .cm-multi-options { max-height:none; }
+ #chairmanApp .cm-filter-panel .cm-check { min-height:44px; }
+ #chairmanApp .cm-filter-actions { position:sticky; bottom:0; background:#203830; padding:10px 0; z-index:2; }
+ #chairmanApp .cm-filter-actions button { flex:1; }
+ #chairmanApp .cm-filter-state { flex-basis:100%; }
+ #chairmanApp .cm-menu-shade { background:#081a1680; }
+ #chairmanApp .cm-floating-menu { border-radius:16px 16px 8px 8px; padding:16px; }
+ #chairmanApp .cm-floating-menu button { min-height:44px; }
+ #chairmanApp .cm-dialog[data-kind=workspace] { width:100vw; height:100dvh; max-height:100dvh; max-width:100vw; border-radius:0; }
+ #chairmanApp .cm-dialog[data-kind=confirm] { width:calc(100vw - 24px); border-radius:12px; }
+ #chairmanApp .cm-dialog-content { padding:12px; }
+ #chairmanApp .cm-dialog-footer { padding:10px 12px max(10px,env(safe-area-inset-bottom)); }
+ #chairmanApp .cm-score-table tr { grid-template-columns:28px minmax(0,1fr); }
+ #chairmanApp .cm-score-table td:nth-child(2) { grid-column:2; }
+ #chairmanApp .cm-score-table td:nth-child(n+3) { grid-column:1/-1; min-width:0; width:100%; }
+ #chairmanApp .cm-score-table td:nth-child(6) { display:flex; flex-wrap:wrap; align-items:center; gap:6px; }
+ #chairmanApp .cm-score-table .cm-row-open td:nth-child(n+7) { display:block; }
+ #chairmanApp .cm-score-table .cm-row-toggle { margin-left:auto; }
+ #chairmanApp .cm-horse-metrics strong { font-size:18px; }
+ #chairmanApp .cm-view-select { width:100%; justify-content:space-between; }
+}
+#chairmanApp .cm-menu-section { display:flex; flex-direction:column; gap:6px; padding-top:6px; border-top:1px solid var(--cm-line); }
+#chairmanApp .cm-menu-section>small { color:var(--cm-muted); }
+#chairmanApp .cm-responsive-table td::before { padding-right:4px; }
+#chairmanApp .cm-position-note { color:#e6c58c; }
+#chairmanApp .cm-page-heading h1:focus-visible,#chairmanApp h2:focus-visible { outline:2px solid #e6c58c; outline-offset:4px; }
+#chairmanApp .cm-current-page { display:inline-block; margin-left:10px; padding:3px 8px; border:1px solid var(--cm-line); border-radius:6px; font-size:12px; font-weight:500; vertical-align:middle; color:#e6c58c; }
+@media(max-width:1023px) {
+ #chairmanApp .cm-topline:has(.cm-error) { position:static; max-width:none; margin-bottom:8px; }
+ #chairmanApp .cm-current-page { font-size:11px; margin-left:6px; padding:3px 5px; }
+}

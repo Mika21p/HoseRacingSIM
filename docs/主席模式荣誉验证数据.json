@@ -1,0 +1,92 @@
+{
+  "date": "2026-09-20",
+  "quick": {
+    "tests": 162,
+    "passed": 162,
+    "failed": 0
+  },
+  "longTests": {
+    "honors": 1,
+    "chairman": 2,
+    "breeding": 3,
+    "passed": 6,
+    "failed": 0
+  },
+  "honorsTwentyYears": [
+    {
+      "seed": 123,
+      "rounds": 980,
+      "ballots": 16440,
+      "centralAwards": 198,
+      "localAwards": 331,
+      "inductions": 2,
+      "ms": 127703
+    },
+    {
+      "seed": 43127,
+      "rounds": 980,
+      "ballots": 16440,
+      "centralAwards": 191,
+      "localAwards": 308,
+      "inductions": 1,
+      "ms": 132443
+    },
+    {
+      "seed": 995173,
+      "rounds": 980,
+      "ballots": 16440,
+      "centralAwards": 200,
+      "localAwards": 333,
+      "inductions": 2,
+      "ms": 136294
+    },
+    {
+      "seed": 77,
+      "rounds": 980,
+      "ballots": 16440,
+      "centralAwards": 199,
+      "localAwards": 322,
+      "inductions": 1,
+      "ms": 128180
+    },
+    {
+      "seed": 20260920,
+      "rounds": 980,
+      "ballots": 16440,
+      "centralAwards": 199,
+      "localAwards": 327,
+      "inductions": 2,
+      "ms": 133673
+    }
+  ],
+  "browser": {
+    "saved": {
+      "directors": 12,
+      "inducted": 1,
+      "localComment": "地方马会评语",
+      "votes": 12
+    },
+    "mobile": {
+      "overflow": false,
+      "saveBottom": 835
+    },
+    "reload": true,
+    "large": {
+      "horses": 10000,
+      "directors": 1000,
+      "years": 20,
+      "voteRows": 20000,
+      "chunks": 200,
+      "historyPage": 50,
+      "queryMs": 19,
+      "roundsQueryMs": 464,
+      "loadMs": 237,
+      "votingAndSaveMs": 94140,
+      "totalMs": 97039,
+      "cancelledWithoutCommit": true
+    },
+    "errors": []
+  },
+  "build": "passed",
+  "published": false
+}
