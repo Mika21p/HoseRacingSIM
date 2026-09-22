@@ -18,8 +18,8 @@ test("fictional regions run local fields with mapped engine rules and preserve g
   assert.ok(world.horses.every((h) => h.booked?.turn === 0 && h.booked.preparationTurn === null));
   const race = W.engineRace(world, world.races[0]), mapped = W.simulationRace(world, race);
   assert.equal(mapped.surfaceRegion, "美国");
-  const horse = { ...world.horses[0], grass: { ...world.horses[0].grass, 美国: "S", 其他: "G" } };
-  assert.equal(rules.HorseRules.calcRaceAbility(horse, mapped, { currentTime: W.timeFor(world, horse), noAbilityFloor: true }).surfaceGrade, "S");
+  const horse = { ...world.horses[0], surfaceGrades: { ...world.horses[0].surfaceGrades, grass: "A" } };
+  assert.equal(rules.HorseRules.calcRaceAbility(horse, mapped, { currentTime: W.timeFor(world, horse), noAbilityFloor: true }).surfaceGrade, "A");
   let seen; const original = rules.RaceRules.simulateWorldRace;
   rules.RaceRules.simulateWorldRace = (runners, r) => { seen = r; return original(runners, r); };
   const out = W.advanceHalfMonth(world); W.validateWorld(out.world);

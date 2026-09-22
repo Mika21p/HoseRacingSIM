@@ -150,7 +150,9 @@ function buildWeb(options = {}) {
 
   fs.rmSync(outputRoot, { recursive: true, force: true });
   fs.mkdirSync(outputRoot, { recursive: true });
-  fs.copyFileSync(path.join(projectRoot, "index.html"), path.join(outputRoot, "index.html"));
+  fs.readdirSync(projectRoot, { withFileTypes: true })
+    .filter((entry) => entry.isFile() && entry.name.endsWith(".html"))
+    .forEach((entry) => fs.copyFileSync(path.join(projectRoot, entry.name), path.join(outputRoot, entry.name)));
   copyDirectory(path.join(projectRoot, "css"), path.join(outputRoot, "css"));
   copyDirectory(path.join(projectRoot, "js"), path.join(outputRoot, "js"));
 

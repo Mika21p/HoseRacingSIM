@@ -3,6 +3,12 @@
   const ns = window.Keiba;
   const motives = { g1: 'G1', rating: '评价', prize: '奖金', winRate: '胜率', honor: '荣誉', local: '地方', continuity: '延续', random: '随机', abstain: '弃权' };
   const affinities = ['短途', '英里', '中距离', '中长距离', '长距离', '超长距离', '草地', '泥地'];
+  // V2 parameters are immutable; changing the scoring contract requires a new round version.
+  const hallParameters = Object.freeze({ g1Scale: 4, ratingOrigin: 100, ratingScale: 2.5, honorScale: 4, prizeScale: 6000,
+    winStarts: 5, winPrior: 5, qualityFloor: 60, relativeFloor: .85, affinityDivisor: 20, preferencePenalty: 100, jitter: 3,
+    defaults: Object.freeze({ g1: 40, rating: 30, honor: 20, prize: 5, winRate: 5 }) });
+  const hallReasons = { support: '获得支持', abstain: '按弃权比例弃权', zeroWeight: '票权为零', noPrevious: '去年无有效支持对象',
+    notRecognized: '无符合认可标准的候选', noMoreCandidates: '可认可候选不足三匹' };
   const W = () => ns.ChairmanRules, year = w => W().date(w.turn).year;
   const check = (ok, message) => { if (!ok) throw new Error(message); };
   const copy = v => W().clone(v);
@@ -11,6 +17,8 @@
   const max = values => { const a = values.filter(v => v != null); return a.length ? Math.max(...a) : null; };
   const units = n => Math.round(n * 100);
   const decimal = n => Number.isFinite(n) && Number.isSafeInteger(units(n)) && Math.abs(n * 100 - units(n)) < 1e-6;
+  const same = (a, b) => a === b || !!a && !!b && typeof a === 'object' && typeof b === 'object' && Array.isArray(a) === Array.isArray(b)
+    && Object.keys(a).length === Object.keys(b).length && Object.keys(a).every(k => Object.hasOwn(b, k) && same(a[k], b[k]));
   function initialize(w) {
     w.honors ||= { version: 1, nextId: 1, rngState: ns.ChairmanRatings.hash(`honors:${w.seed}`), threshold: 60, autoHall: false,
       associations: {}, drafts: {}, latest: {}, previous: {}, currentVotes: {}, closedYear: 0 };
@@ -133,8 +141,82 @@
     for (let i = 0; i < sorted.length;) { let j = i + 1; while (j < sorted.length && sorted[j] === sorted[i]) j++; rank.set(sorted[i], (i + j) / 2 / sorted.length); i = j; }
     return new Map(valid.map(h => [h.id, 1 + 9 * rank.get(h[key])]));
   }
-  function evidenceSignature(w, scope, awardId, candidates, types) {
-    return ns.ChairmanRatings.hash(JSON.stringify({ scope, awardId, candidates, types, threshold: w.honors.threshold }));
+  function defaultHallMotives() { return Object.fromEntries(Object.keys(motives).map(k => [k, hallParameters.defaults[k] || 0])); }
+  function hallMetrics(h, p = hallParameters) {
+    const clamp = n => Math.max(0, Math.min(100, n)), value = k => Number.isFinite(h[k]) ? Math.max(0, h[k]) : 0;
+    return { g1: 100 * value('g1') / (value('g1') + p.g1Scale),
+      rating: h.rating == null ? 0 : clamp((h.rating - p.ratingOrigin) * p.ratingScale),
+      honor: 100 * value('honor') / (value('honor') + p.honorScale),
+      prize: 100 * value('prize') / (value('prize') + p.prizeScale),
+      winRate: value('starts') < p.winStarts ? 0 : clamp(100 * value('wins') / (value('starts') + p.winPrior)) };
+  }
+  function hallQuality(h, p = hallParameters) { const m = hallMetrics(h, p); return Math.max(m.g1, m.rating, m.honor); }
+  function hallPrevious(w, candidates, types) {
+    const ids = new Set(candidates.map(h => h.id)), previous = w.honors.previous['central:hall'] || {};
+    return Object.fromEntries(types.flatMap(t => t.members.map(id => [id, [...new Set(previous[id] || [])].filter(h => ids.has(h)).sort()])));
+  }
+  function evidenceSignature(w, scope, awardId, candidates, types, version = awardId === 'hall' ? 2 : 1) {
+    const evidence = { scope, awardId, candidates, types, threshold: w.honors.threshold };
+    if (version === 2) Object.assign(evidence, { version, parameters: hallParameters, previousVotes: hallPrevious(w, candidates, types) });
+    return ns.ChairmanRatings.hash(JSON.stringify(evidence));
+  }
+  // Shared by generation and history validation: every V2 ballot can be replayed from its frozen round.
+  function createHallEvaluator(round) {
+    const p = round.parameters, keys = Object.keys(hallParameters.defaults), ids = new Set(round.candidates.map(h => h.id));
+    const hash = ns.ChairmanRatings.hash, randomValue = (...parts) => ns.Random.seeded(hash(JSON.stringify(parts)))();
+    const candidates = round.candidates.map(h => { const metrics = hallMetrics(h, p); return { h, metrics,
+      quality: Math.max(metrics.g1, metrics.rating, metrics.honor), tie: hash(JSON.stringify([round.tieSeed, h.id])), rankSeed: hash(`rank:${h.id}`) }; }).filter(h => h.quality >= p.qualityFloor);
+    const configs = new Map();
+    const compare = (a, b) => b.rankScore - a.rankScore || b.quality - a.quality || a.tie - b.tie || a.horseId.localeCompare(b.horseId);
+    const bestThree = rows => { const top = []; for (const row of rows) if (top.length < 3 || compare(row, top[top.length - 1]) < 0) { top.push(row); top.sort(compare); if (top.length > 3) top.pop(); } return top; };
+    const remember = (cache, key, value) => { if (cache.size >= 16) cache.delete(cache.keys().next().value); cache.set(key, value); return value; };
+    return (type, memberId) => {
+      const configKey = JSON.stringify([type.regionId, keys.map(k => type.motives[k]), type.motives.local, type.motives.continuity, affinities.map(k => type.affinities[k])]);
+      let config = configs.get(configKey);
+      if (!config) {
+        const total = keys.reduce((s, k) => s + type.motives[k], 0), weights = Object.fromEntries(keys.map(k => [k, total ? type.motives[k] / total : p.defaults[k] / 100]));
+        const avg = group => { const entries = Object.entries(group), total = entries.reduce((s, [, n]) => s + n, 0); return total ? entries.reduce((s, [k, n]) => s + n * type.affinities[k], 0) / total : 0; };
+        const rows = candidates.filter(({ h }) => type.motives.local !== 100 || type.regionId && h.regionId === type.regionId).map(({ h, metrics, quality, tie, rankSeed }) => {
+          const base = keys.reduce((s, k) => s + weights[k] * metrics[k], 0), affinity = (avg(h.distance) + avg(h.surface)) / p.affinityDivisor;
+          const localPenalty = type.regionId && h.regionId === type.regionId ? 0 : p.preferencePenalty * type.motives.local / 100;
+          return { horseId: h.id, metrics, quality, tie, rankSeed, base, affinity, localPenalty };
+        }).filter(h => h.base > 0);
+        config = remember(configs, configKey, { rows, histories: new Map() });
+      }
+      const previous = type.motives.continuity ? [...new Set(round.previousVotes[memberId] || [])].filter(id => ids.has(id)).sort() : [];
+      const historyKey = JSON.stringify(previous);
+      let eligible = config.histories.get(historyKey);
+      if (!eligible) {
+        const previousIds = new Set(previous), missing = !previous.length;
+        const rows = type.motives.continuity === 100 && missing ? [] : config.rows.filter(h => type.motives.continuity !== 100 || previousIds.has(h.horseId)).map(h => {
+          const continuityPenalty = missing || previousIds.has(h.horseId) ? 0 : p.preferencePenalty * type.motives.continuity / 100;
+          const score = h.base + h.affinity - h.localPenalty - continuityPenalty;
+          return { ...h, continuityPenalty, score, rankScore: score, jitter: 0 };
+        }).filter(h => h.score > 0);
+        const best = rows.reduce((best, h) => Math.max(best, h.score), 0);
+        const pool = rows.filter(h => h.score >= best * p.relativeFloor);
+        eligible = remember(config.histories, historyKey, { pool, top: bestThree(pool) });
+      }
+      let top = eligible.top;
+      if (type.motives.random > 0) {
+        top = [];
+        const memberSeed = hash(JSON.stringify([round.ballotSeed, memberId, 'rank'])), amplitude = p.jitter * type.motives.random / 100;
+        for (const h of eligible.pool) {
+          const jitter = amplitude * (2 * ns.Random.seeded((memberSeed ^ h.rankSeed) >>> 0)() - 1), rankScore = h.score + jitter;
+          const last = top[top.length - 1];
+          if (top.length < 3 || rankScore > last.rankScore || rankScore === last.rankScore && (h.quality > last.quality || h.quality === last.quality && (h.tie < last.tie || h.tie === last.tie && h.horseId.localeCompare(last.horseId) < 0))) {
+            top.push({ ...h, jitter, rankScore }); top.sort(compare); if (top.length > 3) top.pop();
+          }
+        }
+      }
+      return Array.from({ length: 3 }, (_, slot) => {
+        const h = top[slot], abstained = type.motives.abstain > 0 && randomValue(round.ballotSeed, memberId, slot, 'abstain') < type.motives.abstain / 100;
+        const reason = type.weight === 0 ? 'zeroWeight' : !h ? type.motives.continuity === 100 && !previous.length ? 'noPrevious' : top.length ? 'noMoreCandidates' : 'notRecognized' : abstained ? 'abstain' : 'support';
+        const score = h ? { metrics: { ...h.metrics }, quality: h.quality, base: h.base, affinity: h.affinity, localPenalty: h.localPenalty,
+          continuityPenalty: h.continuityPenalty, score: h.score, jitter: h.jitter, rankScore: h.rankScore } : null;
+        return { horseId: reason === 'support' ? h.horseId : null, candidateId: h?.horseId || null, reason, score };
+      });
+    };
   }
   function* buildCouncilBallot(w, out, scope = 'central', awardId = 'hall', force = false) {
     initialize(w); const key = `${scope}:${awardId}`, previous = w.honors.latest[key];
@@ -143,19 +225,29 @@
     if (!types.length) return;
     const candidates = getHonorCandidates(w, scope, awardId), byId = new Map(candidates.map(h => [h.id, h]));
     const totalUnits = types.reduce((s, t) => s + t.count * units(t.weight), 0); check(Number.isSafeInteger(totalUnits), '评议会总票权过大。');
-    const id = unique(w, 'ballot'), random = ns.Random.seeded(w.honors.rngState), lifetime = awardId === 'hall';
-    const weights = Object.fromEntries(['g1', 'rating', 'prize', 'winRate'].map(k => [k, percentileWeights(candidates, k)]));
+    const id = unique(w, 'ballot'), lifetime = awardId === 'hall';
+    const random = ns.Random.seeded(lifetime ? w.honors.hallRngState ?? ns.ChairmanRatings.hash(`hall-v2:${w.seed}`) : w.honors.rngState);
+    const weights = lifetime ? {} : Object.fromEntries(['g1', 'rating', 'prize', 'winRate'].map(k => [k, percentileWeights(candidates, k)]));
     const tallies = Object.fromEntries(candidates.map(h => [h.id, 0])), byType = {}, continuity = {}, lastVotes = w.honors.previous[key] || {};
     const round = { id, year: year(w), turn: w.turn, scope, awardId, name: lifetime ? '中央殿堂' : W().AWARDS.find(a => a.id === awardId).name,
-      associationName: scope === 'central' ? '中央马会' : w.honors.associations[scope].name, phase: w.phase, version: 1, candidates, types,
+      associationName: scope === 'central' ? '中央马会' : w.honors.associations[scope].name, phase: w.phase, version: lifetime ? 2 : 1, candidates, types,
       totalUnits, threshold: w.honors.threshold, signature: evidenceSignature(w, scope, awardId, candidates, types), replaces: previous?.id || null };
+    if (lifetime) {
+      random();
+      Object.assign(round, { parameters: copy(hallParameters), ballotSeed: random.state(),
+        tieSeed: ns.ChairmanRatings.hash(`hall-ties:${w.seed}:${round.year}`), previousVotes: hallPrevious(w, candidates, types) });
+    }
+    const evaluate = lifetime ? createHallEvaluator(round) : null;
     let count = 0;
     for (const type of types) {
       byType[type.id] = {};
-      const factors = new Map(candidates.map(h => [h.id, affinityMultiplier(type, h)]));
+      const factors = lifetime ? null : new Map(candidates.map(h => [h.id, affinityMultiplier(type, h)]));
       for (const memberId of type.members) {
         const supported = new Set(), slots = [];
-        for (let slot = 0; slot < (lifetime ? 3 : 1); slot++) {
+        if (lifetime) {
+          slots.push(...evaluate(type, memberId));
+          for (const s of slots) if (s.horseId) { supported.add(s.horseId); tallies[s.horseId] += units(type.weight); byType[type.id][s.horseId] = (byType[type.id][s.horseId] || 0) + units(type.weight); }
+        } else for (let slot = 0; slot < 1; slot++) {
           const available = candidates.filter(h => !supported.has(h.id));
           const previousCandidates = (lastVotes[memberId] || []).map(id => byId.get(id)).filter(h => h && !supported.has(h.id));
           const options = Object.keys(motives).filter(k => (lifetime || k !== 'honor') && (k !== 'continuity' || previousCandidates.length));
@@ -180,7 +272,7 @@
       for (const h of candidates) profiles.get(h.id).lastHallVote = { roundId: id, year: round.year, votes: tallies[h.id], totalUnits };
     }
     w.honors.latest[key] = { id, year: round.year, phase: round.phase, signature: round.signature, totalUnits, threshold: round.threshold, tallies };
-    w.honors.currentVotes[key] = continuity; w.honors.rngState = random.state();
+    w.honors.currentVotes[key] = continuity; w.honors[lifetime ? 'hallRngState' : 'rngState'] = random.state();
     if (lifetime && w.honors.autoHall) for (const h of candidates) if (passes(tallies[h.id], totalUnits, round.threshold)) confirmHallInductions(w, out, { id: h.id, method: 'vote', round });
     return round;
   }
@@ -234,6 +326,7 @@
   function validate(w) {
     if (!w.honors) return;
     check(w.honors.version === 1 && Number.isSafeInteger(w.honors.nextId) && w.honors.nextId > 0 && Number.isInteger(w.honors.rngState) && w.honors.rngState >= 0 && w.honors.rngState <= 0xffffffff, '评议版本或随机状态无效。');
+    check(w.honors.hallRngState === undefined || Number.isInteger(w.honors.hallRngState) && w.honors.hallRngState >= 0 && w.honors.hallRngState <= 0xffffffff, '殿堂随机状态无效。');
     check(decimal(w.honors.threshold) && w.honors.threshold > 0 && w.honors.threshold <= 100, '殿堂门槛无效。');
     const horses = new Set(w.horses.map(h => h.id)), members = new Set();
     for (const t of w.councilTypes || []) { validateType(w, t); check(t.members.length === t.count, '理事人数与身份不一致。'); for (const id of t.members) { check(typeof id === 'string' && !members.has(id), '理事身份重复。'); members.add(id); } }
@@ -247,7 +340,7 @@
   function validateHistory(w, records) {
     const horses = new Set(w.horses.map(h => h.id)), rounds = new Map((records.councilRounds || []).map(r => [r.id, r]));
     for (const r of rounds.values()) {
-      check(r.version === 1 && Number.isSafeInteger(r.totalUnits) && r.totalUnits >= 0 && (r.scope === 'central' || w.honors.associations[r.scope]), '评议轮次内容无效。');
+      check((r.version === 1 || r.version === 2 && r.awardId === 'hall') && Number.isSafeInteger(r.totalUnits) && r.totalUnits >= 0 && (r.scope === 'central' || w.honors.associations[r.scope]), '评议轮次内容无效。');
       check(decimal(r.threshold) && r.threshold > 0 && r.threshold <= 100, '历史殿堂门槛无效。');
       check(r.awardId === 'hall' ? r.scope === 'central' : W().AWARDS.some(a => a.id === r.awardId), '评议项目无效。');
       check(Array.isArray(r.candidates) && new Set(r.candidates.map(h => h.id)).size === r.candidates.length && r.candidates.every(h => horses.has(h.id)), '评议候选关联无效。');
@@ -256,23 +349,39 @@
         check(h.distance && h.surface && [...Object.values(h.distance), ...Object.values(h.surface)].every(n => Number.isFinite(n) && n >= 0), '候选表现分布无效。');
       }
       const ids = new Set(r.candidates.map(h => h.id));
-      check(Object.entries(r.tallies).every(([id, n]) => ids.has(id) && Number.isSafeInteger(n) && n >= 0 && n <= r.totalUnits), '票数无效。');
+      check(Object.keys(r.tallies).length === ids.size && Object.entries(r.tallies).every(([id, n]) => ids.has(id) && Number.isSafeInteger(n) && n >= 0 && n <= r.totalUnits), '票数无效。');
       r.types.forEach(t => validateType(w, t));
       const members = r.types.flatMap(t => t.members);
       check(new Set(members).size === members.length && r.types.every(t => t.members.length === t.count) && r.totalUnits === r.types.reduce((s, t) => s + t.count * units(t.weight), 0), '历史理事或总票权无效。');
+      if (r.version === 2) {
+        const uint = n => Number.isInteger(n) && n >= 0 && n <= 0xffffffff;
+        check(same(r.parameters, hallParameters) && uint(r.ballotSeed) && uint(r.tieSeed), '殿堂评分参数或随机依据无效。');
+        check(r.previousVotes && Object.keys(r.previousVotes).length === members.length && members.every(id => Array.isArray(r.previousVotes[id]) && new Set(r.previousVotes[id]).size === r.previousVotes[id].length && r.previousVotes[id].length <= 3 && r.previousVotes[id].every(h => ids.has(h))), '殿堂延续依据无效。');
+      }
     }
-    const sums = new Map(), seenVotes = new Set();
+    const sums = new Map(), seenVotes = new Set(), evaluators = new Map(), typeMaps = new Map(), candidateSets = new Map(), memberSets = new Map();
+    for (const r of rounds.values()) {
+      typeMaps.set(r.id, new Map(r.types.map(t => [t.id, t]))); candidateSets.set(r.id, new Set(r.candidates.map(h => h.id)));
+      memberSets.set(r.id, new Map(r.types.map(t => [t.id, new Set(t.members)])));
+    }
     for (const v of records.councilVotes || []) {
-      const r = rounds.get(v.roundId), type = r?.types.find(t => t.id === v.typeId);
+      const r = rounds.get(v.roundId), type = typeMaps.get(v.roundId)?.get(v.typeId);
       check(!seenVotes.has(`${v.roundId}:${v.memberId}`), '同一轮理事选票重复。'); seenVotes.add(`${v.roundId}:${v.memberId}`);
-      check(r && type?.members.includes(v.memberId) && v.weightUnits === units(type.weight) && v.year === r.year && v.slots.length === (r.awardId === 'hall' ? 3 : 1), '选票关联无效。');
-      const selected = v.slots.filter(s => s.horseId), ids = new Set(r.candidates.map(h => h.id));
-      check(new Set(selected.map(s => s.horseId)).size === selected.length && v.slots.every(s => Object.hasOwn(motives, s.motive)) && selected.every(s => ids.has(s.horseId) && Number.isFinite(s.factor) && s.factor >= .25 && s.factor <= 4), '选票重复支持或爱好依据无效。');
-      const summary = sums.get(r.id) || { count: 0, votes: {} }; summary.count++;
-      for (const s of selected) summary.votes[s.horseId] = (summary.votes[s.horseId] || 0) + v.weightUnits;
+      check(r && memberSets.get(r.id).get(v.typeId)?.has(v.memberId) && v.weightUnits === units(type.weight) && v.year === r.year && v.slots.length === (r.awardId === 'hall' ? 3 : 1), '选票关联无效。');
+      const selected = v.slots.filter(s => s.horseId), ids = candidateSets.get(r.id);
+      check(new Set(selected.map(s => s.horseId)).size === selected.length && selected.every(s => ids.has(s.horseId)), '选票重复支持或候选无效。');
+      if (r.version === 2) {
+        if (!evaluators.has(r.id)) evaluators.set(r.id, createHallEvaluator(r));
+        check(same(v.slots, evaluators.get(r.id)(type, v.memberId)), '殿堂选票评分或弃权依据不一致。');
+      }
+      else check(v.slots.every(s => Object.hasOwn(motives, s.motive)) && selected.every(s => Number.isFinite(s.factor) && s.factor >= .25 && s.factor <= 4), '选票爱好依据无效。');
+      const summary = sums.get(r.id) || { count: 0, votes: {}, byType: Object.fromEntries(r.types.map(t => [t.id, {}])) }; summary.count++;
+      for (const s of selected) { summary.votes[s.horseId] = (summary.votes[s.horseId] || 0) + v.weightUnits; const group = summary.byType[v.typeId]; group[s.horseId] = (group[s.horseId] || 0) + v.weightUnits; }
       sums.set(r.id, summary);
+      if (r.version === 2 && summary.count === r.types.reduce((n, t) => n + t.count, 0)) evaluators.delete(r.id);
     }
     for (const r of rounds.values()) { const s = sums.get(r.id) || { count: 0, votes: {} }; check(s.count === r.types.reduce((sum, t) => sum + t.count, 0) && Object.entries(r.tallies).every(([id, n]) => n === (s.votes[id] || 0)), '选票不完整或总票数不一致。'); }
+    for (const r of rounds.values()) if (r.version === 2) check(same(r.byType, sums.get(r.id)?.byType), '类型分票与选票不一致。');
     for (const e of records.hallEvents || []) check(horses.has(e.horseId) && ['induct', 'revoke'].includes(e.action) && (!e.roundId || rounds.has(e.roundId)), '殿堂记录关联无效。');
     for (const a of records.awards || []) check(!a.scope || a.scope === 'central' || w.honors.associations[a.scope], '地方奖项所属马会无效。');
     for (const [key, latest] of Object.entries(w.honors.latest)) { const r = rounds.get(latest.id); check(r && `${r.scope}:${r.awardId}` === key && r.year === year(w) && JSON.stringify(r.tallies) === JSON.stringify(latest.tallies) && r.totalUnits === latest.totalUnits && r.threshold === latest.threshold, '当前评议轮次与历史不一致。'); }
@@ -284,6 +393,6 @@
     for (const p of w.honorProfiles) if (p.induction) { const event = events.get(p.induction.id); check(event?.action === 'induct' && event.horseId === p.id && JSON.stringify(event) === JSON.stringify(p.induction), '殿堂身份缺少对应授予记录。'); }
     for (const [key, draft] of Object.entries(w.honors.drafts)) check(Object.keys(w.honors.associations).some(scope => W().AWARDS.some(a => key === `${scope}:${a.id}`)) && (!draft.horseId || horses.has(draft.horseId)), '地方奖项草稿关联无效。');
   }
-  ns.ChairmanHonors = { motives, affinities, initialize, register, synchronize, migrate, profile, getVotingProfile, getHonorCandidates, affinityMultiplier,
+  ns.ChairmanHonors = { motives, affinities, hallParameters, hallReasons, hallMetrics, hallQuality, defaultHallMotives, createHallEvaluator, initialize, register, synchronize, migrate, profile, getVotingProfile, getHonorCandidates, affinityMultiplier,
     validateType, edit, evidenceSignature, buildCouncilBallot, passes, confirmHallInductions, automatic, runAutomatic, consume, applyBallotSuggestions, finalizeAnnualHonors, validate, validateHistory };
 })();

@@ -6,20 +6,20 @@
   <title>赛马生涯模拟</title>
   <link rel="stylesheet" href="css/styles.css?v=20260920-changelog-panel">
   <link rel="stylesheet" href="css/era.css?v=20260720-era-v5">
-  <link rel="stylesheet" href="css/chairman.css?v=20260921-series">
-  <link rel="stylesheet" href="css/home.css?v=20260920-home-images">
+  <link rel="stylesheet" href="css/chairman.css?v=20260921-editor">
+  <link rel="stylesheet" href="css/home.css?v=20260922-save-notice">
   <link rel="stylesheet" href="css/scenery.css?v=20260920-dusk">
-  <link rel="stylesheet" href="css/game-theme.css?v=20260920-dusk-modes">
-  <link rel="stylesheet" href="css/chairman-workbench.css?v=20260921-workbench">
+  <link rel="stylesheet" href="css/game-theme.css?v=20260922-trainer-prose">
+  <link rel="stylesheet" href="css/chairman-workbench.css?v=20260921-editor">
   <link rel="icon" href="assets/home/logo.svg" type="image/svg+xml">
   <link rel="preload" as="image" type="image/webp" media="(max-width: 639px)" href="assets/home/racing-hero-mobile.32ed156b66.webp" fetchpriority="high">
   <link rel="preload" as="image" type="image/webp" media="(min-width: 640px)" imagesrcset="assets/home/racing-hero-1280.1693b82dc7.webp 1280w, assets/home/racing-hero-1920.63f61e69c0.webp 1920w" imagesizes="(min-width: 1504px) 1440px, (max-width: 760px) calc(100vw - 32px), calc(100vw - 64px)" fetchpriority="high">
 </head>
 <body>
   <div class="app-meta-widget">
-    <button class="app-meta-button" id="changelogToggleBtn" type="button" aria-expanded="false" aria-label="查看 v0.14d 更新日志">
-      <strong id="appVersion">v0.14d</strong>
-      <small id="appUpdatedAt">更新于 2026.09.21 13:00</small>
+    <button class="app-meta-button" id="changelogToggleBtn" type="button" aria-expanded="false" aria-label="查看 v0.15 更新日志">
+      <strong id="appVersion">v0.15</strong>
+      <small id="appUpdatedAt">更新于 2026.09.22 16:24</small>
     </button>
     <section class="changelog-panel" id="changelogPanel" hidden>
       <div class="changelog-header">
@@ -46,6 +46,7 @@
   <script src="js/data/jockeys.js"></script>
   <script src="js/data/races/registry.js"></script>
   <script src="js/data/races/core.js"></script>
+  <script src="js/data/jra-course-catalogue.js?v=20260922-phase2"></script>
   <script src="js/data/races/Japan/conditions.js"></script>
   <script src="js/data/races/Japan/open.js"></script>
   <script src="js/data/races/Japan/g3.js"></script>
@@ -66,8 +67,9 @@
   <script src="js/data/races/HongKong/g1.js"></script>
   <script src="js/data/races/Argentina/g1.js"></script>
   <script src="js/data/races.js"></script>
+  <script src="js/data/race-course-profiles.js?v=20260922-phase2"></script>
   <script src="js/data/race-names.js"></script>
-  <script src="js/data/help.js?v=20260716-opponent-year"></script>
+  <script src="js/data/help.js?v=20260922-trainer-prose"></script>
   <script src="js/data/changelog.js?v=20260718-rogue-item-price"></script>
   <script src="js/data/historical-horses/registry.js"></script>
   <script src="js/data/historical-horses/index.js"></script>
@@ -78,44 +80,52 @@
   <script src="js/rules/western-progression.js"></script>
   <script src="js/rules/time.js"></script>
   <script src="js/rules/race-progression.js"></script>
-  <script src="js/rules/debut-lock.js"></script>
+  <script src="js/rules/debut-lock.js?v=20260922-trainer-prose"></script>
   <script src="js/rules/maturity.js?v=20260920-breeding"></script>
   <script src="js/rules/temperament.js"></script>
   <script src="js/rules/jockey-rules.js"></script>
   <script src="js/rules/injury-rules.js"></script>
   <script src="js/rules/race-fatigue.js"></script>
-  <script src="js/rules/horse-generator.js?v=20260920-breeding"></script>
+  <script src="js/rules/track-aptitude.js?v=20260922-phase3"></script>
+  <script src="js/rules/horse-generator.js?v=20260922-phase3"></script>
   <script src="js/rules/historical-opponents.js"></script>
   <script src="js/rules/race-simulator.js?v=20260920-ratings"></script>
-  <script src="js/rules/comments.js?v=20260718-rogue-item-price"></script>
-  <script src="js/rules/post-race-comments.js"></script>
-  <script src="js/rules/adaptation-hints.js"></script>
+  <script src="js/rules/comments.js?v=20260922-trainer-prose"></script>
+  <script src="js/rules/post-race-comments.js?v=20260922-trainer-prose"></script>
+  <script src="js/rules/adaptation-hints.js?v=20260922-trainer-prose"></script>
   <script src="js/rules/career.js?v=20260719-era-stage1"></script>
   <script src="js/rules/achievements.js"></script>
   <script src="js/rules/roguelike.js?v=20260718-rogue-item-price"></script>
   <script src="js/rules/era-narrative.js?v=20260720-era-v5"></script>
-  <script src="js/rules/era.js?v=20260720-era-v5"></script>
-  <script src="js/ui/render.js?v=20260920-home-images"></script>
+  <script src="js/rules/era.js?v=20260922-trainer-prose"></script>
+  <script src="js/ui/render.js?v=20260922-save-notice"></script>
   <script src="js/ui/home-art.js?v=20260920-home-images"></script>
-  <script src="js/ui/era-render.js?v=20260720-era-v5"></script>
+  <script src="js/ui/era-render.js?v=20260922-trainer-prose"></script>
   <script src="js/data/chairman-pedigrees.js?v=20260920-ratings"></script>
-  <script src="js/rules/chairman-ratings.js?v=20260921-series"></script>
-  <script src="js/rules/chairman-scheduling.js?v=20260921-series"></script>
-  <script src="js/rules/chairman.js?v=20260921-series"></script>
-  <script src="js/rules/chairman-breeding.js?v=20260921-series"></script>
-  <script src="js/rules/chairman-office.js?v=20260921-workbench"></script>
-  <script src="js/rules/chairman-honors.js?v=20260921-series"></script>
-  <script src="js/rules/chairman-series.js?v=20260921-series"></script>
-  <script src="js/chairman-packages.js?v=20260921-series"></script>
-  <script src="js/chairman-content-ui.js?v=20260921-workbench"></script>
-  <script src="js/chairman-storage.js?v=20260921-series"></script>
-  <script src="js/chairman-history.js?v=20260921-series"></script>
-  <script src="js/chairman-csv.js?v=20260921-series"></script>
-  <script src="js/chairman-ui.js?v=20260921-workbench"></script>
-  <script src="js/chairman-office-ui.js?v=20260921-workbench"></script>
-  <script src="js/chairman-breeding-ui.js?v=20260921-workbench"></script>
-  <script src="js/chairman-honors-ui.js?v=20260921-workbench"></script>
-  <script src="js/chairman-app.js?v=20260921-workbench"></script>
-  <script src="js/app.js?v=20260920-breeding"></script>
+  <script src="js/rules/chairman-ratings.js?v=20260921-editor"></script>
+  <script src="js/rules/chairman-scheduling.js?v=20260921-editor"></script>
+  <script src="js/rules/chairman.js?v=20260921-editor"></script>
+  <script src="js/rules/chairman-breeding.js?v=20260921-editor"></script>
+  <script src="js/rules/chairman-office.js?v=20260921-editor"></script>
+  <script src="js/rules/chairman-honors.js?v=20260921-editor"></script>
+  <script src="js/rules/chairman-series.js?v=20260921-editor"></script>
+  <script src="js/chairman-packages.js?v=20260921-editor"></script>
+  <script src="js/rules/chairman-editor.js?v=20260921-editor"></script>
+  <script src="js/data/chairman-venue-records.js?v=20260921-world"></script>
+  <script src="js/data/chairman-venues.js?v=20260921-world"></script>
+  <script src="js/rules/chairman-world.js?v=20260921-world"></script>
+  <script src="js/chairman-world-packages.js?v=20260921-world"></script>
+  <script src="js/chairman-content-ui.js?v=20260921-editor"></script>
+  <script src="js/chairman-editor-ui.js?v=20260921-editor"></script>
+  <script src="js/chairman-storage.js?v=20260921-editor"></script>
+  <script src="js/chairman-history.js?v=20260921-editor"></script>
+  <script src="js/chairman-csv.js?v=20260921-editor"></script>
+  <script src="js/chairman-ui.js?v=20260921-editor"></script>
+  <script src="js/chairman-office-ui.js?v=20260921-editor"></script>
+  <script src="js/chairman-breeding-ui.js?v=20260921-editor"></script>
+  <script src="js/chairman-honors-ui.js?v=20260921-editor"></script>
+  <script src="js/chairman-world-ui.js?v=20260921-world"></script>
+  <script src="js/chairman-app.js?v=20260921-editor"></script>
+  <script src="js/app.js?v=20260922-trainer-prose"></script>
 </body>
 </html>

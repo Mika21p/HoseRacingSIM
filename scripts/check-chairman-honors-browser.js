@@ -1,11 +1,20 @@
 const { chromium } = require('playwright');
 const fs = require('node:fs');
+const http = require('node:http'), path = require('node:path');
 (async () => {
   const browser = await chromium.launch({ headless: true, executablePath: process.env.CHAIRMAN_TEST_CHROME || 'C:/Program Files/Google/Chrome/Application/chrome.exe' });
+  const root = path.resolve('dist'), server = http.createServer((req, res) => {
+    const file = path.resolve(root, '.' + decodeURIComponent(new URL(req.url, 'http://local').pathname));
+    if (file !== root && !file.startsWith(root + path.sep)) { res.writeHead(403).end(); return; }
+    const target = fs.existsSync(file) && fs.statSync(file).isDirectory() ? path.join(file, 'index.html') : file;
+    fs.readFile(target, (error, data) => { if (error) { res.writeHead(404).end(); return; }
+      res.setHeader('Content-Type', ({ '.js': 'text/javascript', '.css': 'text/css', '.html': 'text/html', '.json': 'application/json', '.svg': 'image/svg+xml' })[path.extname(target)] || 'application/octet-stream'); res.end(data); });
+  });
+  await new Promise(resolve => server.listen(0, '127.0.0.1', resolve));
   const page = await browser.newPage({ viewport: { width: 1440, height: 900 } }), errors = [], report = {};
   page.on('pageerror', e => errors.push(String(e)));
   try {
-    await page.goto(process.env.CHAIRMAN_TEST_URL || 'http://127.0.0.1:4173/dist/'); await page.waitForSelector('#chairmanLaunch');
+    await page.goto(process.env.CHAIRMAN_TEST_URL || `http://127.0.0.1:${server.address().port}/`); await page.waitForSelector('#chairmanLaunch');
     await page.evaluate(async () => {
       const n = window.Keiba, W = n.ChairmanRules, H = n.ChairmanHonors, w = W.createWorld({ blank: true, seed: 571, id: 'honors-browser' });
       W.seeded(w, () => { for (let i = 0; i < 6; i++) {
@@ -19,11 +28,20 @@ const fs = require('node:fs');
     const {click,submit,filter}=require('./chairman-browser-controls').controls(page);
     await click('#chairmanLaunch'); await click('[data-action=openWorld][data-id=honors-browser]'); await click('[data-action=tab][data-id=hall]');
     await click('[data-action=honorView][data-id=council]'); await click('[data-action=honorEditType]');
+    if (await page.locator('[name="motive.random"]').inputValue() !== '0' || await page.locator('[name="motive.g1"]').inputValue() !== '40') throw new Error('Central defaults are not achievement based');
     await page.locator('[name=name]').fill('玩家短途草地理事'); await page.locator('[name=count]').fill('12'); await page.locator('[name="affinity.短途"]').fill('80'); await page.locator('[name="affinity.草地"]').fill('60');
     await page.screenshot({ path: 'artifacts/honors-editor-desktop.png', fullPage: true });
     await click('.cm-dialog-footer button[type=submit]');
     await click('[data-action=honorView][data-id=candidates]'); await click('[data-action=honorGenerateHall]');
     await page.screenshot({ path: 'artifacts/honors-votes-desktop.png', fullPage: true });
+    if (!(await page.locator('.cm-dialog').textContent()).includes('综合评分择优')) throw new Error('New hall mechanism label missing');
+    await click('[data-action=honorVotes]');
+    if (!(await page.locator('.cm-dialog').textContent()).includes('最终排序分')) throw new Error('Hall score explanation missing');
+    await page.setViewportSize({ width: 390, height: 844 });
+    await page.screenshot({ path: 'artifacts/honors-v2-ballots-mobile.png', fullPage: false });
+    if (await page.evaluate(() => document.documentElement.scrollWidth > innerWidth)) throw new Error('Ballot details overflow on mobile');
+    await page.setViewportSize({ width: 1440, height: 900 });
+    await click('[data-action=honorRevote]'); await click('[data-action=honorConfirmRevote]');
     await click('dialog [data-action=honorInduct]'); await page.locator('[name=comment]').fill('主席核准记录'); await submit('[data-form=honorInduct]');
     await click('[data-action=honorView][data-id=history]');
     await filter('[data-form=honorHistoryFilter]');await page.locator('[name=historyKind]').selectOption('hallEvents'); await submit('[data-form=honorHistoryFilter]');
@@ -45,8 +63,15 @@ const fs = require('node:fs');
     await click('[data-action=close]'); await page.reload(); await page.waitForSelector('#chairmanLaunch'); await click('#chairmanLaunch'); await click('[data-action=openWorld][data-id=honors-browser]');
     await click('[data-action=tab][data-id=hall]'); await click('[data-action=honorView][data-id=inducted]');
     if (!await page.locator('.cm-body').textContent().then(s => s.includes('评议测试马'))) throw new Error('Induction missing after refresh'); report.reload = true;
+    await page.locator('.cm-world-bar details summary').click(); await click('.cm-floating-menu [data-action=exit]');
+    const legacyId = await page.evaluate(async snapshot => { const s = await window.Keiba.ChairmanStorage.open(); const w = await s.importWorld(snapshot); await s.close(); return w.id; }, JSON.parse(fs.readFileSync('tests/fixtures/chairman-hall-v1.json', 'utf8')));
+    await click('#chairmanLaunch'); await click(`[data-action=openWorld][data-id="${legacyId}"]`);
+    await click('[data-action=tab][data-id=hall]'); await click('[data-action=honorView][data-id=history]'); await click('[data-action=honorRound]');
+    if (!(await page.locator('.cm-dialog').textContent()).includes('历史抽选规则')) throw new Error('Legacy hall label missing');
+    await click('[data-action=honorVotes]'); if (!(await page.locator('.cm-dialog').textContent()).includes('基础')) throw new Error('Legacy ballot details missing');
+    report.legacy = true; await click('[data-action=close]');
     if (process.argv.includes('--large')) {
-      await click('[data-action=exit]');
+      await page.locator('.cm-world-bar details summary').click(); await click('.cm-floating-menu [data-action=exit]');
       report.large = await page.evaluate(async () => {
         const n = window.Keiba, W = n.ChairmanRules, H = n.ChairmanHonors; let w = W.createWorld({ seed: 7, blank: true, id: 'honors-large' });
         const begin = performance.now();
@@ -74,5 +99,5 @@ const fs = require('node:fs');
     }
     report.errors = errors; if (errors.length) throw new Error(errors.join('\n'));
     fs.writeFileSync('artifacts/honors-browser.json', JSON.stringify(report, null, 2)); console.log(JSON.stringify(report));
-  } finally { await browser.close(); }
+  } finally { await browser.close(); await new Promise(resolve => server.close(resolve)); }
 })().catch(e => { console.error(e); process.exitCode = 1; });

@@ -28,11 +28,12 @@ async function app(t, options = {}) {
   w.scrollTo = ({ top }) => Object.defineProperty(w, 'scrollY', { value: top || 0, configurable: true });
   w.HTMLDialogElement.prototype.showModal = function () { this.open = true; };
   w.HTMLDialogElement.prototype.close = function () { this.open = false; this.dispatchEvent(new w.Event('close')); };
-  for (const f of ['chairman-storage', 'chairman-history', 'chairman-ui', 'chairman-office-ui', 'chairman-breeding-ui', 'chairman-honors-ui', 'chairman-content-ui', 'chairman-app']) w.eval(source(`js/${f}.js`));
-  const W = ns.ChairmanRules, store = await ns.ChairmanStorage.open(); let world = W.createWorld({ seed: 5701, horseCount: 160, ...options });
+  for (const f of ['chairman-storage', 'chairman-history', 'chairman-ui', 'chairman-office-ui', 'chairman-breeding-ui', 'chairman-honors-ui', 'chairman-content-ui', 'chairman-editor-ui', 'chairman-app']) w.eval(source(`js/${f}.js`));
+  const { prepare, ...worldOptions } = options;
+  const W = ns.ChairmanRules, store = await ns.ChairmanStorage.open(); let world = W.createWorld({ seed: 5701, horseCount: 160, ...worldOptions });
   world.races.filter(r=>r.month===1 && r.half===1).forEach(r=>{r.raceClass="g3";r.grade="G3";}); W.planEntries(world);
   await store.acquire(world.id); await store.commitChanges(null, { world });
-  const out = W.advanceHalfMonth(world); await store.commitChanges(world, out); world = out.world; await store.release();
+  const out = W.advanceHalfMonth(world); if (prepare) prepare(out.world); await store.commitChanges(world, out); world = out.world; await store.release();
   const errors = []; w.console.error = (err) => errors.push(err);
   const wait = async () => { await new Promise(r => setTimeout(r, 10)); for (let i = 0; i < 400 && w.document.querySelector('.cm-busy'); i++) await new Promise(r => setTimeout(r, 5)); assert.equal(w.document.querySelector('.cm-busy'), null, 'UI operation finishes'); if (errors.length) throw errors.shift(); };
   const click = async (selector, root = w.document) => { const el = root.querySelector(selector); assert.ok(el, selector); el.click(); await wait(); return el; };
@@ -195,10 +196,12 @@ test('paging, search submission, advanced state and list scroll survive detail a
 });
 
 test('player council editor, hall nomination, vote inspection and local award drafts work through shared UI', async (t) => {
-  const { w, store, world, click, wait, body, dialog } = await app(t);
+  const { w, store, world, click, wait, body, dialog } = await app(t, { prepare: w => { w.horses.find(h => h.lifetime.starts > 0).annual.manual = 140; } });
   await click('[data-action=tab][data-id=hall]'); await click('[data-action=honorView][data-id=council]');
   assert.match(body.textContent, /尚未配置评议会/); await click('[data-action=honorEditType]', body);
   let form = dialog.querySelector('form'); form.elements.name.value = '短途泥地观察员'; form.elements.count.value = '7';
+  assert.equal(form.elements['motive.g1'].value, '40'); assert.equal(form.elements['motive.random'].value, '0');
+  assert.match(form.textContent, /随机只扰动接近的排序/);
   const slider = form.querySelector('[data-affinity-slider="短途"]'); slider.value = '80'; slider.dispatchEvent(new w.Event('input', { bubbles: true }));
   assert.equal(form.elements['affinity.短途'].value, '80'); form.elements['affinity.泥地'].value = '60';
   const save = dialog.querySelector('.cm-dialog-footer button[type=submit]'); assert.equal(save.form, form); save.click(); await wait();
@@ -211,6 +214,7 @@ test('player council editor, hall nomination, vote inspection and local award dr
   await click(`[data-action=honorNominate][data-id="${runner.id}"]`, dialog);
   await click('[data-action=honorGenerateHall]');
   assert.match(dialog.textContent, /门槛60%/); assert.doesNotMatch(dialog.innerHTML, /courseGrades|peakStart|breedingStrength/);
+  assert.match(dialog.textContent, /综合评分择优/);
   const inductionButton = dialog.querySelector('[data-action=honorInduct]'); assert.ok(inductionButton); await click('[data-action=honorInduct]', dialog);
   form = dialog.querySelector('form'); form.elements.comment.value = '值得铭记的生涯'; form.requestSubmit(); await wait();
   assert.equal((await store.load(world.id)).honorProfiles.find(p => p.id === runner.id).induction.comment, '值得铭记的生涯');
@@ -269,4 +273,18 @@ test('pending overview counts and results accept both unapproved and partially a
  const none=await store.historyPage(world,{scoring:'none',resultStatus:'completed'},0),partial=await store.historyPage(world,{scoring:'partial',resultStatus:'completed'},0);
  assert.ok(none.total+partial.total>0);assert.ok(body.querySelector('[data-action=pendingScores]').textContent.includes(`${none.total+partial.total}场`));
  await click('[data-action=pendingScores]',body);assert.ok(body.querySelectorAll('tbody tr').length>0);assert.deepEqual([...body.querySelector('[name=scoring]').selectedOptions].map(o=>o.value),['none','partial']);
+});
+
+
+test('world editor reveals and edits ordinary horses, retains drafts, edits templates and purges hidden DOM on close',async t=>{
+ const {w,ns,store,world,click,wait,body,dialog}=await app(t,{horseCount:20,breeding:true});
+ await click('[data-action=tab][data-id=settings]');await click('[data-action=worldEditorToggle]',body);await click('[data-action=worldEditEnable]',dialog);
+ await click('[data-action=tab][data-id=horses]');await click('[data-action=horse]',body);const horseId=dialog.querySelector('[data-action=worldEditHorse]').dataset.id;
+ await click('[data-action=horseView][data-view=real]',dialog);assert.match(dialog.textContent,/基础能力/);await click('[data-action=worldEditHorse]',dialog);
+ let form=dialog.querySelector('[data-form=worldEdit]');form.elements.name.value='编辑模式测试马';form.elements.name.dispatchEvent(new w.Event('input',{bubbles:true}));form.elements.strength.value='94';form.elements.strength.dispatchEvent(new w.Event('input',{bubbles:true}));
+ await click('[data-action=close]',dialog);await click('[data-action=worldEditKeep]',dialog);await click('[data-action=horse][data-id="'+horseId+'"]',body);await click('[data-action=worldEditHorse]',dialog);form=dialog.querySelector('[data-form=worldEdit]');assert.equal(form.elements.strength.value,'94');form.requestSubmit();await wait();assert.match(dialog.textContent,/历史赛果/);await click('[data-action=worldEditApply]',dialog);
+ let saved=await store.load(world.id);assert.equal(saved.horses.find(h=>h.id===horseId).strength,94);assert.equal(saved.horses.find(h=>h.id===horseId).origin,'ai');
+ await click('[data-action=breedView][data-id=library]');await click('[data-action=pedigree]',body);await click('[data-action=worldEditTemplate]',dialog);form=dialog.querySelector('[data-form=worldEdit]');form.elements.displayName.value='种马库编辑测试';form.elements.displayName.dispatchEvent(new w.Event('input',{bubbles:true}));form.requestSubmit();await wait();await click('[data-action=worldEditApply]',dialog);saved=await store.load(world.id);assert.ok(ns.ChairmanEditor.templates(saved).some(h=>h.displayName==='种马库编辑测试'));
+ await click('[data-action=worldEditorToggle]');assert.equal(dialog.innerHTML,'');assert.equal(w.document.querySelector('[data-action=worldEditHorse]'),null);
+ await click('[data-action=tab][data-id=horses]');await click('[data-action=horse][data-id="'+horseId+'"]',body);assert.equal(dialog.querySelector('[data-view=real]'),null);assert.doesNotMatch(dialog.textContent,/基础能力|配种实力.*94/);assert.match(dialog.textContent,/属性未公开/);
 });

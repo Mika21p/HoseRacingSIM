@@ -49,8 +49,8 @@
   const HORSE_NAME_LANGUAGE_KEY = "keiba-horse-name-language-v1";
   const RACE_NAME_MODE_KEY = "keiba-race-name-mode-v1";
   const LEGEND_INTRO_DISMISSED_KEY = "keiba-legend-intro-dismissed-v1";
-  const SAVE_VERSION = 2;
-  const ERA_SAVE_VERSION = 2;
+  const SAVE_VERSION = 3;
+  const ERA_SAVE_VERSION = 3;
   const saveStatus = {
     storageAvailable: true,
     savedAt: null,
@@ -457,9 +457,7 @@
   }
 
   function commentsHtml(comments) {
-    return (comments || []).map((comment) => `
-      <div class="rogue-comment"><span>${escapeHtml(comment.label || comment.item)}</span><p>${escapeHtml(comment.text)}</p></div>
-    `).join("");
+    return ns.UI.trainerCommentCards(comments, "rogue");
   }
 
   function commentGroupHtml(comments, key, label, review) {
@@ -567,10 +565,10 @@
       <div class="rogue-selected-summary"><strong>${escapeHtml(selected.trainerName)}</strong><span>${escapeHtml(selected.regionLabel)} · ${escapeHtml(selected.horse.gender)} · ${escapeHtml(selected.horse.coat)}</span><span>${escapeHtml(selected.horse.sireName)} × ${escapeHtml(selected.horse.damName)}</span></div>
       <label class="rogue-name-field">马名<input id="rogueHorseName" type="text" maxlength="30" value="${name}"></label>
       <section class="rogue-section">
-        <div><p class="eyebrow">幼驹调教</p><h2>使用一张幼驹调教券，或直接跳过</h2><p class="muted">日本会在日本草地/泥地中随机提升一项，欧洲提升欧洲草地，北美会在美国草地/泥地中随机提升一项。只按G→C→B→A提升；前后等级保持隐藏，A不会提升为S。</p></div>
+        <div><p class="eyebrow">幼驹调教</p><h2>使用一张幼驹调教券，或直接跳过</h2><p class="muted">可选择草地、泥地或两者随机提升一项。只按G→C→B→A提升；前后等级保持隐藏，A不会提升为S。</p></div>
         ${run.adaptationResolved
           ? `<div class="rogue-resolved"><strong>${run.services.adaptation ? "幼驹调教已完成" : "已跳过幼驹调教"}</strong></div>`
-          : `<div class="rogue-adaptation-actions">${directionButton("japan", "日本适应")}${directionButton("europe", "欧洲适应")}${directionButton("northAmerica", "北美适应")}<button type="button" data-rogue-adaptation-skip>不购买并继续</button></div>`}
+          : `<div class="rogue-adaptation-actions">${directionButton("grass", "草地适应")}${directionButton("dirt", "泥地适应")}${directionButton("balanced", "随机场地")}<button type="button" data-rogue-adaptation-skip>不购买并继续</button></div>`}
       </section>
       ${run.adaptationResolved ? `<section class="rogue-section"><div><p class="eyebrow">本局挑战</p><h2>选择后不可更换</h2></div><div class="rogue-challenge-grid">${challengeOptionsHtml(run)}</div></section>` : ""}
     `;
@@ -1296,7 +1294,7 @@
     }
     try {
       const payload = JSON.parse(raw);
-      if (!payload || ![1, SAVE_VERSION].includes(payload.version) || !payload.state) {
+      if (!payload || payload.version !== SAVE_VERSION || !payload.state) {
         throw new Error("Unsupported save payload.");
       }
       const restoredCareer = normalizeRestoredCareer(payload.state.career, payload.version);
@@ -1327,7 +1325,13 @@
 
   function hasSavedGame() {
     const storage = getStorage();
-    return !!(storage && storage.getItem(SAVE_KEY));
+    if (!storage) return false;
+    try {
+      const payload = JSON.parse(storage.getItem(SAVE_KEY) || "null");
+      return !!(payload && payload.version === SAVE_VERSION && payload.state);
+    } catch (error) {
+      return false;
+    }
   }
 
   function formatSavedAt(savedAt) {
@@ -1380,7 +1384,13 @@
     }
     try {
       const raw = storage.getItem(ROGUE_SAVE_KEY);
-      state.rogueSave = ns.RoguelikeRules.normalizeSave(raw ? JSON.parse(raw) : null);
+      const parsed = raw ? JSON.parse(raw) : null;
+      if (parsed && parsed.version !== ns.RoguelikeRules.PROFILE_VERSION) {
+        storage.removeItem(ROGUE_SAVE_KEY);
+        state.rogueSave = ns.RoguelikeRules.createSave();
+        return false;
+      }
+      state.rogueSave = ns.RoguelikeRules.normalizeSave(parsed);
       return !!raw;
     } catch (error) {
       console.warn("Failed to load roguelike save.", error);
@@ -1413,7 +1423,7 @@
     }
     try {
       const payload = JSON.parse(raw);
-      if (!payload || ![1, ERA_SAVE_VERSION].includes(payload.version) || (!payload.run && !payload.entrySetup)) {
+      if (!payload || payload.version !== ERA_SAVE_VERSION || (!payload.run && !payload.entrySetup)) {
         throw new Error("Unsupported era save payload.");
       }
       state.eraEntrySetup = payload.version >= 2 && payload.entrySetup
@@ -1424,9 +1434,10 @@
       return true;
     } catch (error) {
       console.warn("Failed to load era save.", error);
+      storage.removeItem(ERA_SAVE_KEY);
       state.eraEntrySetup = null;
       state.eraRun = null;
-      state.eraSaveMessage = "剧情模式存档无法读取；其他模式存档未受影响。可重新开始以覆盖该存档。";
+      state.eraSaveMessage = "剧情模式旧规则存档已清除；可重新开始。";
       return false;
     }
   }
@@ -1687,19 +1698,11 @@
       peakStart: value("debugPeakStart"),
       peakEnd: value("debugPeakEnd"),
       heavyType: value("debugHeavyType"),
-      grassJapan: value("debugGrassJapan"),
-      grassHongKong: value("debugGrassHongKong"),
-      grassUsa: value("debugGrassUsa"),
-      grassEurope: value("debugGrassEurope"),
-      grassOther: value("debugGrassOther"),
-      dirtJapan: value("debugDirtJapan"),
-      dirtMiddleEast: value("debugDirtMiddleEast"),
-      dirtUsa: value("debugDirtUsa"),
-      courseTokyo: value("debugCourseTokyo"),
-      courseNakayama: value("debugCourseNakayama"),
-      courseKyoto: value("debugCourseKyoto"),
-      courseHanshin: value("debugCourseHanshin"),
-      courseOther: value("debugCourseOther")
+      surfaceGrass: value("debugSurfaceGrass"),
+      surfaceDirt: value("debugSurfaceDirt"),
+      trackBurst: value("debugTrackBurst"),
+      trackSustained: value("debugTrackSustained"),
+      trackAttrition: value("debugTrackAttrition")
     };
   }
 

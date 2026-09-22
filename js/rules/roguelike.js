@@ -2,7 +2,7 @@
   const ns = (window.Keiba = window.Keiba || {});
   const R = ns.Random;
 
-  const PROFILE_VERSION = 2;
+  const PROFILE_VERSION = 3;
   const STAGES = ["bronze", "silver", "gold"];
   const STAGE_LABELS = { none: "未完成", bronze: "铜级", silver: "银级", gold: "金级" };
   const STAGE_REWARDS = { none: 10, bronze: 30, silver: 50, gold: 70 };
@@ -20,7 +20,7 @@
     champion: Object.freeze({ id: "champion", category: "refresh", label: "拍买马王券", price: SERVICE_PRICES.champion, description: "重新生成实力 81～100、主要场地至少 A 的候选。" }),
     reappraise: Object.freeze({ id: "reappraise", category: "review", label: "再次鉴定券", price: SERVICE_PRICES.reappraise, description: "由原练马师重新给出一组独立评语。" }),
     authoritative: Object.freeze({ id: "authoritative", category: "review", label: "权威复核券", price: SERVICE_PRICES.authoritative, description: "生成一组可靠程度提升一级的复核评语。" }),
-    adaptation: Object.freeze({ id: "adaptation", category: "adaptation", label: "幼驹调教券", price: SERVICE_PRICES.adaptation, description: "选马后将指定赛区的一项可提升适性随机提高一级。" })
+    adaptation: Object.freeze({ id: "adaptation", category: "adaptation", label: "幼驹调教券", price: SERVICE_PRICES.adaptation, description: "选马后将草地或泥地的一项可提升适性随机提高一级。" })
   });
   const CONSUMABLE_IDS = Object.keys(CONSUMABLE_PRODUCTS);
   const PERMANENT_PRICES = { obrien: 80, pletcher: 80, veterinarian: 180 };
@@ -245,6 +245,9 @@
   }
 
   function normalizeSave(source) {
+    if (source && source.version !== PROFILE_VERSION) {
+      throw new Error("不支持的肉鸽存档版本。");
+    }
     const save = source && typeof source === "object" ? source : createSave();
     const base = createProfile();
     save.version = PROFILE_VERSION;
@@ -293,20 +296,14 @@
   }
 
   function hasReasonableRoute(horse) {
-    const regions = [];
-    Object.entries(horse.grass || {}).forEach(([region, grade]) => {
-      if (hasGradeA(grade)) regions.push({ surface: "草地", region });
-    });
-    Object.entries(horse.dirt || {}).forEach(([region, grade]) => {
-      if (hasGradeA(grade)) regions.push({ surface: "泥地", region });
-    });
-    if (regions.length === 0) return false;
-    return regions.some((route) => (ns.Races || []).some((race) => {
-      const region = race.surfaceRegion || "日本";
+    const surfaces = Object.entries(horse.surfaceGrades || {})
+      .filter(([, grade]) => hasGradeA(grade))
+      .map(([key]) => key === "dirt" ? "泥地" : "草地");
+    if (surfaces.length === 0) return false;
+    return surfaces.some((surface) => (ns.Races || []).some((race) => {
       const sexOkay = !race.sexRestriction || race.sexRestriction === horse.gender;
       return sexOkay
-        && race.surface === route.surface
-        && region === route.region
+        && race.surface === surface
         && race.distance >= horse.distMin
         && race.distance <= horse.distMax;
     }));
@@ -476,12 +473,10 @@
   }
 
   function eligibleAdaptationFields(horse, direction) {
-    const fields = direction === "japan"
-      ? [{ group: "grass", region: "日本" }, { group: "dirt", region: "日本" }]
-      : (direction === "europe"
-        ? [{ group: "grass", region: "欧洲" }]
-        : [{ group: "grass", region: "美国" }, { group: "dirt", region: "美国" }]);
-    return fields.filter((field) => ["G", "C", "B"].includes((horse[field.group] || {})[field.region]));
+    const fields = direction === "grass"
+      ? ["grass"]
+      : (direction === "dirt" ? ["dirt"] : ["grass", "dirt"]);
+    return fields.filter((surface) => ["G", "C", "B"].includes((horse.surfaceGrades || {})[surface]));
   }
 
   function skipAdaptation(save) {
@@ -502,8 +497,8 @@
     if (eligible.length === 0) return { ok: false, reason: "该方向的对应适性已经全部达到A或S。" };
     const picked = R.pickOne(eligible);
     const grades = { G: "C", C: "B", B: "A" };
-    const before = horse[picked.group][picked.region];
-    horse[picked.group][picked.region] = grades[before];
+    const before = horse.surfaceGrades[picked];
+    horse.surfaceGrades[picked] = grades[before];
     run.services.adaptation = { direction, field: picked, before, after: grades[before], consumed: 1 };
     run.adaptationResolved = true;
     finishConsumableUse(save, run, "adaptation");

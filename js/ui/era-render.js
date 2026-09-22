@@ -220,17 +220,12 @@
   function renderTrainerComments(run, compact) {
     const comments = Array.isArray(run.career.commentDetails) ? run.career.commentDetails : [];
     return `
-      <section class="era-trainer-comments ${compact ? "is-encounter" : ""}" aria-label="练马师基本准确评语">
+      <section class="era-trainer-comments ${compact ? "is-encounter" : ""}" aria-label="出道前评估">
         <header>
-          <div><small>TRAINER'S NOTES</small><h3>佐藤悠太的五项评估</h3></div>
-          <span>基本准确</span>
+          <div><small>TRAINER'S NOTES</small><h3>佐藤悠太的出道前评估</h3></div>
+          <span>六项观察</span>
         </header>
-        ${comments.map((comment, index) => `
-          <article class="era-trainer-comment comment-tone-${(index % 5) + 1}">
-            <div><b>${escapeHtml(comment.label || comment.item || `评语 ${index + 1}`)}</b><small>${escapeHtml(comment.accuracyLabel || "基本准确")}</small></div>
-            <p>${escapeHtml(comment.text)}</p>
-          </article>
-        `).join("") || `<p class="muted">练马师评语正在整理。</p>`}
+        <div class="trainer-notes-grid">${ns.UI.trainerCommentCards(comments, "era")}</div>
       </section>
     `;
   }

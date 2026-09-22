@@ -1,9 +1,10 @@
 (function () {
   const ns = (window.Keiba = window.Keiba || {});
 
-  const HINT_VERSION = 2;
+  const HINT_VERSION = 4;
 
   const STATUS = {
+    strong: "strong",
     fit: "fit",
     possible: "possible",
     unfit: "unfit",
@@ -11,6 +12,7 @@
   };
 
   const STATUS_LABELS = {
+    strong: "擅长",
     fit: "适应",
     possible: "可能适应",
     unfit: "不适应",
@@ -24,8 +26,8 @@
   };
 
   const CONFIDENCE_LABELS = {
-    certain: "确",
-    suspected: "疑",
+    certain: "赛后确认",
+    suspected: "练马师判断",
     unknown: ""
   };
 
@@ -62,61 +64,16 @@
       ]
     },
     {
-      id: "grass",
-      label: "草地适性",
-      items: [
-        { id: "japan", label: "日本草地" },
-        { id: "hongkong", label: "香港草地" },
-        { id: "europe", label: "欧洲草地" },
-        { id: "america", label: "美国草地" },
-        { id: "other", label: "其他草地" }
-      ]
+      id: "surface",
+      label: "草泥适性",
+      items: [{ id: "grass", label: "草地" }, { id: "dirt", label: "泥地" }]
     },
     {
-      id: "dirt",
-      label: "泥地适性",
-      items: [
-        { id: "japan", label: "日本泥地" },
-        { id: "america", label: "美国泥地" },
-        { id: "middleEast", label: "中东泥地" }
-      ]
+      id: "track",
+      label: "赛场类型",
+      items: [{ id: "burst", label: "瞬发" }, { id: "sustained", label: "持久" }, { id: "attrition", label: "消耗" }]
     }
   ];
-
-  const GRASS_REGION_LABEL_TO_ID = {
-    "日本": "japan",
-    "香港": "hongkong",
-    "欧洲": "europe",
-    "美国": "america",
-    "北美": "america",
-    "阿根廷": "america",
-    "澳洲": "other",
-    "澳大利亚": "other",
-    "中东": "other",
-    "其他": "other"
-  };
-
-  const DIRT_REGION_LABEL_TO_ID = {
-    "日本": "japan",
-    "美国": "america",
-    "北美": "america",
-    "阿根廷": "america",
-    "中东": "middleEast"
-  };
-
-  const LEGACY_GROWTH_IDS = {
-    age2: ["age2", "early"],
-    age3: ["age3", "classic"],
-    age4: ["age4", "older"],
-    age5plus: ["age5plus", "older"],
-    decline: ["decline"]
-  };
-
-  const LEGACY_SECTION_IDS = {
-    grass: {
-      other: ["other", "middleEast"]
-    }
-  };
 
   function emptyCell() {
     return { status: STATUS.unknown, confidence: CONFIDENCE.unknown };
@@ -164,33 +121,8 @@
     return createCell(value.status, value.confidence);
   }
 
-  function cellRank(cell) {
-    const normalized = normalizeCell(cell);
-    if (normalized.status === STATUS.unknown) return 0;
-    if (normalized.status === STATUS.unfit && normalized.confidence === CONFIDENCE.certain) return 60;
-    if (normalized.status === STATUS.fit && normalized.confidence === CONFIDENCE.certain) return 50;
-    if (normalized.status === STATUS.unfit && normalized.confidence === CONFIDENCE.suspected) return 40;
-    if (normalized.status === STATUS.fit && normalized.confidence === CONFIDENCE.suspected) return 30;
-    if (normalized.status === STATUS.possible && normalized.confidence === CONFIDENCE.certain) return 25;
-    if (normalized.status === STATUS.possible && normalized.confidence === CONFIDENCE.suspected) return 20;
-    return 0;
-  }
-
   function normalizeSectionItem(sourceSection, sectionId, itemId) {
-    if (!sourceSection) return emptyCell();
-    if (sectionId === "growth" && LEGACY_GROWTH_IDS[itemId]) {
-      const candidates = LEGACY_GROWTH_IDS[itemId];
-      return candidates
-        .map((key) => normalizeCell(sourceSection[key]))
-        .sort((a, b) => cellRank(b) - cellRank(a))[0] || emptyCell();
-    }
-    if (LEGACY_SECTION_IDS[sectionId] && LEGACY_SECTION_IDS[sectionId][itemId]) {
-      const candidates = LEGACY_SECTION_IDS[sectionId][itemId];
-      return candidates
-        .map((key) => normalizeCell(sourceSection[key]))
-        .sort((a, b) => cellRank(b) - cellRank(a))[0] || emptyCell();
-    }
-    return normalizeCell(sourceSection[itemId]);
+    return normalizeCell(sourceSection && sourceSection[itemId]);
   }
 
   function normalizeHints(hints) {
@@ -210,7 +142,7 @@
     const current = normalizeCell(hints[sectionId][itemId]);
     const next = createCell(status, opts.confidence);
     if (next.status === STATUS.unknown) return;
-    if (!opts.force && cellRank(next) < cellRank(current)) return;
+    if (!opts.force && current.confidence === CONFIDENCE.certain && next.confidence !== CONFIDENCE.certain) return;
     hints[sectionId][itemId] = next;
   }
 
@@ -288,49 +220,24 @@
     if (lock.distance) applyDistanceRange(hints, lock.distance);
   }
 
-  function surfaceRegionMap(sectionId) {
-    return sectionId === "dirt" ? DIRT_REGION_LABEL_TO_ID : GRASS_REGION_LABEL_TO_ID;
-  }
-
-  function surfaceItemId(sectionId, label) {
-    const map = surfaceRegionMap(sectionId);
-    const region = Object.keys(map).find((item) => String(label || "").indexOf(item) >= 0);
-    if (region) return map[region];
-    return sectionId === "grass" ? "other" : "japan";
-  }
-
-  function surfaceGroupId(label) {
-    if (label.indexOf("泥地") >= 0) return "dirt";
-    if (label.indexOf("草地") >= 0) return "grass";
-    return "";
-  }
-
-  function applySurfaceType(hints, surfaceType) {
-    if (surfaceType === "草地" || surfaceType === "二刀流") {
-      Object.keys(hints.grass).forEach((key) => {
-        setStatus(hints, "grass", key, STATUS.possible, { confidence: CONFIDENCE.suspected });
-      });
-    }
-    if (surfaceType === "泥地" || surfaceType === "二刀流") {
-      Object.keys(hints.dirt).forEach((key) => {
-        setStatus(hints, "dirt", key, STATUS.possible, { confidence: CONFIDENCE.suspected });
-      });
-    }
-  }
-
-  function applySurfaceGrade(hints, gradeInfo) {
-    if (!gradeInfo || !gradeInfo.surface) return;
-    const sectionId = surfaceGroupId(gradeInfo.surface);
-    const itemId = surfaceItemId(sectionId, gradeInfo.surface);
-    if (!sectionId || !itemId || !hints[sectionId] || !Object.prototype.hasOwnProperty.call(hints[sectionId], itemId)) return;
-    const status = gradeInfo.grade === "C" || gradeInfo.grade === "G" ? STATUS.unfit : STATUS.fit;
-    setStatus(hints, sectionId, itemId, status, { confidence: CONFIDENCE.suspected });
-  }
-
-  function applySurfaceComment(hints, comment) {
-    if (!comment || !comment.claim) return;
-    applySurfaceType(hints, comment.claim.surfaceType);
-    (comment.claim.grades || []).forEach((grade) => applySurfaceGrade(hints, grade));
+  function applyAptitudeComment(hints, section, comment) {
+    const assessments = comment && comment.claim && comment.claim.assessments;
+    (assessments || []).forEach((assessment) => {
+      const good = section === "surface" ? ["A", "B"] : ["◎", "○"];
+      const valid = section === "surface" ? ["A", "B", "C", "G"] : ["◎", "○", "△"];
+      const grades = assessment.grades || [];
+      let status = STATUS.unknown;
+      if (assessment.judgment === "strong" && section === "track") status = STATUS.strong;
+      else if (assessment.judgment === "suitable") status = STATUS.fit;
+      else if (assessment.judgment === "unsuitable") status = STATUS.unfit;
+      else if (assessment.tendency === "suitable") status = STATUS.possible;
+      else if (assessment.tendency === "unsuitable") status = STATUS.unfit;
+      else if (grades.length && grades.every((grade) => valid.includes(grade))) {
+        status = grades.every((grade) => good.includes(grade)) ? STATUS.fit
+          : grades.every((grade) => !good.includes(grade)) ? STATUS.unfit : STATUS.possible;
+      }
+      setStatus(hints, section, assessment.target, status, { confidence: CONFIDENCE.suspected });
+    });
   }
 
   function growthTypesFromComment(comment) {
@@ -358,7 +265,8 @@
   function createInitial(commentDetails) {
     const hints = emptyHints();
     applyDistanceComment(hints, commentById(commentDetails, "distance"));
-    applySurfaceComment(hints, commentById(commentDetails, "surface"));
+    applyAptitudeComment(hints, "surface", commentById(commentDetails, "surface"));
+    applyAptitudeComment(hints, "track", commentById(commentDetails, "track"));
     applyGrowthComment(hints, commentById(commentDetails, "growth"));
     return hints;
   }
@@ -373,13 +281,6 @@
     if (resolved.age === 3) return "age3";
     if (resolved.age === 4) return "age4";
     return "age5plus";
-  }
-
-  function raceSurfaceItem(race) {
-    if (!race) return null;
-    const sectionId = race.surface === "泥地" ? "dirt" : (race.surface === "草地" ? "grass" : "");
-    const itemId = surfaceItemId(sectionId, race.surfaceRegion || "日本");
-    return sectionId ? { sectionId, itemId } : null;
   }
 
   function postRaceComment(raceResult, explicitComment) {
@@ -430,11 +331,6 @@
       if (distanceType) setStatus(hints, "distance", distanceType.id, STATUS.fit, { confidence });
     }
 
-    if (Number.isFinite(calc.surfaceMod) && calc.surfaceMod > -10) {
-      const surfaceItem = raceSurfaceItem(race);
-      if (surfaceItem) setStatus(hints, surfaceItem.sectionId, surfaceItem.itemId, STATUS.fit, { confidence });
-    }
-
     if (maturity.status === "成熟期") {
       const stage = timeToGrowthStage(hidden.schedule);
       if (stage) setStatus(hints, "growth", stage, STATUS.fit, { confidence });
@@ -456,10 +352,11 @@
       if (race && Number.isFinite(race.distance)) applyDistanceTooShort(hints, race.distance);
     } else if (comment.reason === "distance_too_long") {
       if (race && Number.isFinite(race.distance)) applyDistanceTooLong(hints, race.distance);
-    } else if (comment.reason === "surface_mismatch") {
-      const surfaceItem = raceSurfaceItem(race);
-      if (surfaceItem) {
-        setStatus(hints, surfaceItem.sectionId, surfaceItem.itemId, STATUS.unfit, { confidence: CONFIDENCE.certain });
+    } else if (comment.reason === "surface_mismatch" || comment.reason === "track_mismatch") {
+      const target = comment.target;
+      const expectedSection = comment.reason === "surface_mismatch" ? "surface" : "track";
+      if (target && target.section === expectedSection) {
+        setStatus(hints, target.section, target.item, STATUS.unfit, { confidence: CONFIDENCE.certain });
       }
     } else if (comment.reason === "immature") {
       const stage = timeToGrowthStage(raceResult.hidden && raceResult.hidden.schedule || career.currentTime);
@@ -503,7 +400,9 @@
           id: item.id,
           label: item.label,
           status: cell.status,
-          statusLabel: statusLabel(cell.status),
+          statusLabel: (section.id === "track" || section.id === "surface") && cell.status === STATUS.fit ? "合适"
+            : section.id === "track" && cell.status === STATUS.unfit ? "不擅长"
+            : section.id === "surface" && cell.status === STATUS.unfit ? "不合适" : statusLabel(cell.status),
           confidence: cell.confidence,
           confidenceLabel: confidenceLabel(cell.confidence)
         };

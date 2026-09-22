@@ -7,10 +7,11 @@
   const hash=o=>String(ns.ChairmanRatings.hash(JSON.stringify(o)));
   const raceFields=['id','name','raceClass','surface','distance','month','half','ageRule','sexRule','capacity','prizes','trackId'];
   const seriesFields=['id','name','title','raceIds','ageRule','bonus','honorWeight'];
-  const nodeFields=['id','sourceKey','name','originalName','aliases','pinyin','romanizedName','gender','coat','birthYear','historicalBirthYear','fatherId','motherId','region','sourceUrl','grade'];
+  const nodeFields=['id','sourceKey','name','originalName','aliases','pinyin','romanizedName','gender','coat','birthYear','historicalBirthYear','fatherId','motherId','region','sourceUrl','grade','playerModified'];
   const bands={'较低':[1,39],'普通':[40,59],'良好':[60,74],'优秀':[75,89],'顶级':[90,100]};
-  function envelope(kind,id,data){return {format:'keiba-chairman-content',version:1,kind,id,revision:hash(data),...data};}
+  function envelope(kind,id,data){return {format:'keiba-chairman-content',version:2,kind,id,revision:hash(data),...data};}
   function exportEvents(w,options={}){
+    if(w.worldSystemVersion===2)return ns.ChairmanWorldPackages.exportEvents(w,options);
     const series=w.series.filter(s=>!s.deleted&&(!options.seriesIds||options.seriesIds.includes(s.id))&&(options.seriesIds||!options.raceIds));
     const ids=new Set([...(options.raceIds||[]),...series.flatMap(s=>s.raceIds)]),races=w.races.filter(r=>!r.deleted&&(!options.raceIds&&!options.seriesIds||ids.has(r.id)));
     check(races.length,'没有可导出的比赛。');const tracks=w.tracks.filter(t=>races.some(r=>r.trackId===t.id)),regions=W().regions(w).filter(r=>tracks.some(t=>t.region===r.name));
@@ -18,14 +19,14 @@
   }
   function exportFamily(w,ids){
     check(Array.isArray(ids)&&ids.length,'请选择家族主体。');
-    const worldMap=new Map(B().all(w).map(h=>[h.id,h])),local=new Map((w.familyTemplates||[]).map(h=>[h.id,h])),base=new Map((ns.ChairmanPedigrees?.records||[]).map(h=>[h.id,h]));
+    const worldMap=new Map(B().all(w).map(h=>[h.id,h])),local=new Map((ns.ChairmanEditor?.familyTemplates(w)||w.familyTemplates||[]).map(h=>[h.id,h])),base=new Map((ns.ChairmanEditor?.staticTemplates(w)||ns.ChairmanPedigrees?.records||[]).map(h=>[h.id,h]));
     const nodes=new Map(),stack=[...ids];
     while(stack.length){const id=stack.pop();if(nodes.has(id))continue;
       const h=worldMap.get(id)||local.get(id)||base.get(id);check(h,`血统引用缺失：${id}`);
       const isWorld=worldMap.has(id),isLocal=local.has(id),pub=isWorld?B().publicHorse(w,h):h;
       const row={id,sourceKey:identity(h)||h.sourceKey||(isWorld?`world:${w.id}:${id}`:`jbis:${id}`),name:h.name||h.displayName||h.originalName,originalName:h.originalName||h.name||h.displayName,
         aliases:h.aliases||[],pinyin:h.pinyin||'',romanizedName:h.romanizedName||h.originalName||h.name||'',gender:h.gender,coat:h.coat||'',birthYear:h.birthYear,
-        historicalBirthYear:h.historicalBirthYear??(!isWorld&&!isLocal?h.birthYear:null),fatherId:h.fatherId||'',motherId:h.motherId||'',region:h.homeRegion||h.region||'',sourceUrl:h.sourceUrl||'',grade:bands[pub.grade]?pub.grade:'未公开'};
+        historicalBirthYear:h.historicalBirthYear??(!isWorld&&!isLocal?h.birthYear:null),fatherId:h.fatherId||'',motherId:h.motherId||'',region:h.homeRegion||h.region||'',sourceUrl:h.sourceUrl||'',grade:bands[pub.grade]?pub.grade:'未公开',playerModified:!!(h.playerModified||h.editedByWorld)};
       nodes.set(id,row);if(row.fatherId)stack.push(row.fatherId);if(row.motherId)stack.push(row.motherId);
     }
     const data={roots:ids,nodes:[...nodes.values()].sort((a,b)=>a.id.localeCompare(b.id))};validateFamily(data);
@@ -46,12 +47,12 @@
     check(queue.length===data.nodes.length,'家系存在循环。');return queue;
   }
   function validatePackage(p){
-    check(p&&p.format==='keiba-chairman-content'&&p.version===1&&['events','family'].includes(p.kind)&&typeof p.id==='string'&&p.id&&typeof p.revision==='string','内容包格式或版本不支持。');
+    check(p&&p.format==='keiba-chairman-content'&&[1,2].includes(p.version)&&['events','family'].includes(p.kind)&&typeof p.id==='string'&&p.id&&typeof p.revision==='string','内容包格式或版本不支持。');
     if(p.kind==='family')validateFamily(p);else for(const key of ['regions','tracks','races','series'])check(Array.isArray(p[key])&&new Set(p[key].map(v=>v.id)).size===p[key].length,`${key}数据缺失或编号重复。`);
   }
   // Preview is a pure draft operation. Only the final output may be committed.
   function* previewSteps(world,p,options={}){
-    validatePackage(p);let w=clone(world);S().initialize(w);const changes=[],warnings=[],errors=[],maps={},mode=options.mode||'skip',bindings=options.mappings||{},renames=options.renames||{};
+    validatePackage(p);if(p.kind==='events'&&(p.worldSystemVersion===2||world.worldSystemVersion===2))return yield* ns.ChairmanWorldPackages.previewSteps(world,p,options);let w=clone(world);S().initialize(w);const changes=[],warnings=[],errors=[],maps={},mode=options.mode||'skip',bindings=options.mappings||{},renames=options.renames||{};
     const mint=prefix=>`${prefix}-${w.nextId++}`;
     function mapped(kind,row,collection){
       const key=`${p.id}:${kind}:${row.id}`,source=w.sourceMappings.find(r=>r.id===key),bound=bindings[`${kind}:${row.id}`];
@@ -73,7 +74,7 @@
       }
       for(let i=0;i<p.nodes.length;i++){
         const row=p.nodes[i],m=ids.get(row.id);if(!m.skip){const value={...pick(row,nodeFields),id:m.id,fatherId:row.fatherId?ids.get(row.fatherId).id:'',motherId:row.motherId?ids.get(row.motherId).id:'',sourceKey:mode==='copy'?`${row.sourceKey}:copy:${m.id}`:row.sourceKey,packageId:p.id,packageRevision:p.revision,core:p.roots.includes(row.id),source:'imported',status:'template'};
-          if(m.existing)Object.assign(m.existing,value);else w.familyTemplates.push(value);
+          if(m.existing)Object.assign(m.existing,value);else w.familyTemplates.push(value);const override=w.templateOverrides?.find(o=>o.id===m.id);if(override)override.baseline=clone(value);
         }if(i%100===0)yield {done:i,total:p.nodes.length,name:'校验家系模板'};
       }
       validateFamily({roots:w.familyTemplates.filter(t=>t.core).map(t=>t.id),nodes:w.familyTemplates});
@@ -100,7 +101,7 @@
   function introduce(world,id,options={}){
     check(world.breeding,'请先启用自动繁殖。');
     return W().mutate(world,w=>{
-      S().initialize(w);const byId=new Map(w.familyTemplates.map(t=>[t.id,t])),root=byId.get(id);check(root,'家系模板不存在。');
+      S().initialize(w);const byId=new Map((ns.ChairmanEditor?.templates(w)||w.familyTemplates).map(t=>[t.id,{...t,name:t.displayName||t.name||t.originalName,sourceKey:t.sourceKey||'jbis:'+t.id}])),root=byId.get(id);check(root&&!root.disabled,'家系模板不存在或已停用。');
       const age=Number(options.age??10),region=options.region||W().regionNames(w)[0];check(Number.isSafeInteger(age)&&age>=3,'引入年龄须为至少三岁的整数。');W().regionBase(w,region);
       const archive=root.gender==='骟马';check(archive||age<(root.gender==='牡马'?25:22),'此年龄已达到繁殖引退上限。');
       const existing=new Map(B().all(w).filter(h=>identity(h)).map(h=>[identity(h),h]));check(!existing.has(root.sourceKey),'该来源个体已经存在，不能重复引入或恢复年轻。');
@@ -112,9 +113,10 @@
         for(const k of ordered){const t=byId.get(k);if(existing.has(t.sourceKey)){const h=existing.get(t.sourceKey);check((h.fatherId||'')===(t.fatherId?ids.get(t.fatherId):'')&&(h.motherId||'')===(t.motherId?ids.get(t.motherId):''),'复用祖先的亲缘关系不一致。');continue;}
           const common={id:ids.get(k),name:t.name,originalName:t.originalName||t.name,aliases:clone(t.aliases||[]),romanizedName:t.romanizedName||t.name,pinyin:t.pinyin||'',gender:t.gender,coat:t.coat||'',birthYear:t.birthYear+shift,historicalBirthYear:t.historicalBirthYear??null,homeRegion:region,sourceKind:'imported-family',familySourceKey:t.sourceKey,familyTemplateId:t.id,templateId:t.sourceKey.startsWith('jbis:')&&ns.ChairmanPedigrees.records.some(r=>'jbis:'+r.id===t.sourceKey)?t.sourceKey.slice(5):'',sourceUrl:t.sourceUrl||'',fatherId:t.fatherId?ids.get(t.fatherId):'',motherId:t.motherId?ids.get(t.motherId):''};
           if(k!==id||archive){w.pedigrees.push({...common,status:'ancestor',origin:'ai'});continue;}
-          const band=bands[t.grade],strength=band?ns.Random.rollRange(...band):null;
+          const band=bands[t.grade],strength=t.game?.breedingBase!=null?Math.max(1,Math.min(100,t.game.breedingBase+ns.Random.rollRange(-5,5))):band?ns.Random.rollRange(...band):null;
           const h=W().addHorse(w,{...common,origin:'ai',status:'retired',retiredYear:W().date(w.turn).year,...(strength!=null?{breedingStrength:strength}:{})});
           if(strength==null){const parents=[common.fatherId,common.motherId].map(id=>B().get(w,id)?.breeding?.strength??50);const a=Math.max(1,Math.min(100,1+99*(h.strength-62)/38));h.breeding.strength=Math.round(.7*ns.Random.roll(100)+.2*(parents[0]+parents[1])/2+.1*a);}
+          if(t.game?.distance){h.coreDist=t.game.distance;h.distMin=Math.max(1,h.coreDist-400);h.distMax=h.coreDist+400;h.distType=W().category(h.coreDist);}if(t.game?.surface){h.surfaceGrades[t.game.surface==='泥地'?'dirt':'grass']='A';}if(t.game?.growthType){h.growthType=t.game.growthType;const peak=ns.HorseRules.generatePeak(h.growthType);h.peakStart=peak.start;h.peakEnd=peak.end;}
           h.breeding.status='candidate';h.breeding.pinned=!!options.pinned;h.breeding.joinedYear=W().date(w.turn).year;
           if(options.pinned){h.breeding.status='active';h.breeding.everActive=true;}
         }
@@ -127,7 +129,7 @@
     check(w.contentState.version===1&&Number.isInteger(w.contentState.rngState)&&Array.isArray(w.familyTemplates)&&Array.isArray(w.sourceMappings),'内容资料状态无效。');
     if(w.familyTemplates.length)validateFamily({roots:w.familyTemplates.filter(t=>t.core).map(t=>t.id),nodes:w.familyTemplates});
     check(new Set(w.sourceMappings.map(r=>r.id)).size===w.sourceMappings.length,'内容包来源映射重复。');
-    const collections={region:W().regions(w),track:w.tracks,race:w.races,series:w.series};for(const r of w.sourceMappings)check(collections[r.kind]?.some(v=>v.id===r.localId),'内容包映射引用不存在的对象。');
+    const collections={region:W().regions(w),track:w.tracks,race:w.races,series:w.series,meeting:w.meetingGroups||[]};for(const r of w.sourceMappings)check(collections[r.kind]?.some(v=>v.id===r.localId),'内容包映射引用不存在的对象。');
     const sources=new Set();for(const h of B().all(w))if(identity(h)){check(!sources.has(identity(h)),'同一家系来源被重复实例化。');sources.add(identity(h));}
   }
   ns.ChairmanPackages={exportEvents,exportFamily,validatePackage,validateFamily,previewSteps,preview,apply,introduce,validateWorld,bands};

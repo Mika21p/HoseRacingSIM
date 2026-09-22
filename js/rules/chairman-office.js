@@ -8,14 +8,14 @@
   const matches = (selected, value) => !selected || !selected.length || (Array.isArray(selected) ? selected.includes(String(value)) : String(selected) === String(value));
   function horseMatches(h, p) {
     return String(h.horseName || h.name).includes(p.search || "") && matches(p.age, h.age >= 4 ? "4+" : h.age)
-      && matches(p.gender, h.gender) && matches(p.region, h.homeRegion || "未记录")
+      && matches(p.gender, h.gender) && (matches(p.region, h.homeRegionId || h.homeRegion || "未记录") || matches(p.region,h.homeRegion))
       && matches(p.status, h.status) && matches(p.origin, h.origin)
       && (!p.honor || (p.honor === 'local' ? h.localAwards > 0 : p.honor === 'central' ? h.centralAwards > 0 : p.honor === 'hall' ? !!h.inducted : false))
       && (!p.year || h.year === Number(p.year)) && (p.minimum === "" || p.minimum == null || h.wtr != null && h.wtr >= Number(p.minimum));
   }
   function raceMatches(row, p, lastTurn) {
     const r = row.race || row;
-    return (row.name || r.name).includes(p.search || "") && matches(p.region, r.surfaceRegion || r.region)
+    return (row.name || r.name).includes(p.search || "") && (matches(p.region, r.regionId || r.surfaceRegion || r.region) || matches(p.region,r.surfaceRegion || r.region))
       && matches(p.surface, r.surface) && matches(p.category, W.category(r.distance)) && matches(p.raceClass, r.raceClass)
       && (!p.distance || r.distance === Number(p.distance)) && matches(p.ageRule, r.ageRule) && matches(p.sexRule, r.sexRule)
       && (!p.month || r.month === Number(p.month)) && (!p.half || r.half === Number(p.half))
@@ -25,7 +25,7 @@
   }
   function publicHorse(world, h, lifetime) {
     const s = lifetime ? h.lifetime : h.annual;
-    return { id: h.id, horseId: h.id, horseName: h.name, age: W.ageOf(world, h), gender: h.gender, homeRegion: h.homeRegion,
+    return { id: h.id, horseId: h.id, horseName: h.name, age: W.ageOf(world, h), gender: h.gender, homeRegion: h.homeRegion, ...(world.worldSystemVersion===2?{homeRegionId:h.homeRegionId}:{}),
       status: h.status, origin: h.origin, year: W.date(world.turn).year, starts: s.starts, wins: s.wins, g1: s.g1,
       prize: s.prize, wtr: W.rating(h), tf: h.annual.tf, manual: h.annual.manual, suggested: h.annual.suggested };
   }
@@ -52,7 +52,7 @@
     });
   }
   function raceScores(world, occurrence, performances, values, yearRows, archives, reset) {
-    assert(occurrence.raceClass !== "op", "普通赛不开放人工评分。");
+    assert(["g1","g2","g3"].includes(occurrence.raceClass), "普通赛不开放人工评分。");
     return W.mutate(world, (w, out) => {
       const changed = new Map();
       for (const p of performances) {

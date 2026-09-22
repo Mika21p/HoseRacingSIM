@@ -3,7 +3,7 @@ const { loadChairmanRules } = require('./helpers/project-loader');
 test('five seeded worlds complete twenty years of councils, local awards and hall recognition', t => {
   const { rules: n } = loadChairmanRules(), W = n.ChairmanRules, H = n.ChairmanHonors, report = [];
   for (const seed of [123, 43127, 995173, 77, 20260920]) {
-    let w = W.createWorld({ seed }); const started = Date.now(), stats = { seed, rounds: 0, ballots: 0, centralAwards: 0, localAwards: 0, inductions: 0 };
+    let w = W.createWorld({ seed }); const started = Date.now(), stats = { seed, rounds: 0, ballots: 0, centralAwards: 0, localAwards: 0, inductions: 0, hallYears: [] };
     for (const scope of ['central', 'japan', 'europe', 'northAmerica']) {
       w = H.edit(w, 'type', { name: `${scope}玩家理事`, scope, regionId: scope === 'central' ? 'japan' : scope, enabled: true, count: scope === 'central' ? 30 : 12, weight: 1.25,
         motives: { g1: 20, rating: 20, prize: 10, winRate: 10, honor: 10, local: 5, continuity: 10, random: 10, abstain: 5 },
@@ -20,6 +20,17 @@ test('five seeded worlds complete twenty years of councils, local awards and hal
         for (const h of r.candidates) assert.ok(expected.has(h.id) || r.awardId === 'hall' && H.profile(w, h.id).induction);
       }
       for (const event of end.hallEvents || []) { assert.ok(!inducted.has(event.horseId)); inducted.add(event.horseId); stats.inductions++; }
+      const hall = end.councilRounds.find(r => r.awardId === 'hall'), counts = Object.values(hall.tallies).sort((a, b) => b - a), cast = counts.reduce((s, n) => s + n, 0);
+      const votes = end.councilVotes.filter(v => v.roundId === hall.id);
+      const reasons = {}; for (const v of votes) for (const s of v.slots) reasons[s.reason] = (reasons[s.reason] || 0) + 1;
+      const hallStats = { year: y, candidates: hall.candidates.length, recognizedByQuality: hall.candidates.filter(h => H.hallQuality(h) >= 60).length,
+        supported: counts.filter(n => n > 0).length, highestSupport: hall.totalUnits ? (counts[0] || 0) / hall.totalUnits : 0,
+        topThreeVoteShare: cast ? counts.slice(0, 3).reduce((s, n) => s + n, 0) / cast : 0,
+        unfilledSlotRate: hall.totalUnits ? 1 - cast / (3 * hall.totalUnits) : 1,
+        inductions: (end.hallEvents || []).filter(e => e.action === 'induct').length, reasons };
+      stats.hallYears.push(hallStats);
+      const replay = H.createHallEvaluator(hall), types = new Map(hall.types.map(t => [t.id, t]));
+      for (const v of votes) assert.deepEqual(v.slots, replay(types.get(v.typeId), v.memberId));
       w = H.applyBallotSuggestions(w, end.councilRounds.filter(r => r.awardId !== 'hall')).world;
       const out = W.finishYear(w); w = out.world;
       for (const a of out.awards) { assert.ok(!awards.has(a.id)); awards.add(a.id); if (!a.scope || a.scope === 'central') stats.centralAwards++; else stats.localAwards++; }

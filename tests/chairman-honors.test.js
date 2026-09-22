@@ -45,13 +45,13 @@ test('public performance affinity changes votes measurably, zero preferences are
   const biased = vote(W, H, pref, 'central', 'representative');
   const preferred = w.horses[1].id, r = biased.councilRounds[0];
   assert.ok(r.tallies[preferred] / r.totalUnits > .90); assert.ok(before.councilRounds[0].tallies[preferred] / r.totalUnits < .56);
-  const altered = W.clone(pref); altered.horses.forEach(h => { h.strength = 1; h.grass = {}; h.peakStart = ''; h.breeding = { strength: 100 }; });
+  const altered = W.clone(pref); altered.horses.forEach(h => { h.strength = 1; h.surfaceGrades = { grass: "G", dirt: "G" }; h.peakStart = ''; h.breeding = { strength: 100 }; });
   assert.deepEqual(plain(vote(W, H, altered, 'central', 'representative').councilVotes), plain(biased.councilVotes));
   assert.equal(biased.world.rngState, pref.rngState); assert.equal(biased.world.aiRngState, pref.aiRngState);
   assert.deepEqual(plain(vote(W, H, pref, 'central', 'representative').councilVotes), plain(biased.councilVotes));
 });
 test('hall ballots have at most three distinct supporters, weighted abstentions stay in denominator and thresholds are exact', () => {
-  const { W, H, w } = fixture(7); w.horses.forEach(h => h.status = 'retired');
+  const { W, H, w } = fixture(7); w.horses.forEach(h => { h.status = 'retired'; h.lifetime.g1 = h.lifetime.wins = 6; });
   let world = H.edit(w, 'type', type(H, { count: 20, weight: .25 })).world;
   world = H.edit(world, 'type', type(H, { name: '弃权者', count: 20, weight: .75, motives: { ...type(H).motives, random: 0, abstain: 100 } })).world;
   const out = vote(W, H, world), r = out.councilRounds[0]; assert.equal(r.totalUnits, 2000);
@@ -127,7 +127,7 @@ test('councils, votes, local awards and migration snapshots persist atomically a
     const out = vote(W, H, world, 'central', 'representative');
     await assert.rejects(store.commitChanges(world, out, { failForTest: true }), /事务中断/); assert.equal((await store.load(world.id)).honors.latest['central:representative'], undefined);
     await store.commitChanges(world, out, { checkpoint: 'turn' }); world = out.world;
-    const saved = await store.exportWorld(world.id); store.validateSnapshot(saved); assert.equal(saved.version, 6);
+    const saved = await store.exportWorld(world.id); store.validateSnapshot(saved); assert.equal(saved.version, 9);
     const bad = plain(saved); bad.records.councilVotes.pop(); assert.throws(() => store.validateSnapshot(bad), /不完整/);
     const removed = H.edit(world, 'deleteType', { id: world.councilTypes[0].id }); await store.commitChanges(world, removed); world = await store.load(world.id); assert.equal(world.councilTypes.length, 0);
     assert.equal((await store.queryHonorHistory(world.id, 'councilVotes', { roundId: out.councilRounds[0].id })).total, 4);

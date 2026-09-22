@@ -3,6 +3,7 @@
   const splitFiles = [
     "./races/registry.js",
     "./races/core.js",
+    "./jra-course-catalogue.js",
     "./races/Japan/conditions.js",
     "./races/Japan/open.js",
     "./races/Japan/g3.js",

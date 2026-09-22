@@ -165,7 +165,7 @@ test('breeding entities, annual births and RNG commit atomically and replay afte
     await assert.rejects(store.commitChanges(w, out, { failForTest: true, checkpoint: 'year' }));
     assert.equal((await store.load(w.id)).turn, w.turn);
     await store.commitChanges(w, out, { checkpoint: 'year' });
-    const saved = await store.exportWorld(w.id); assert.equal(saved.version, 6); assert.equal(saved.records.breedingEvents.length, 3);
+    const saved = await store.exportWorld(w.id); assert.equal(saved.version, 9); assert.equal(saved.records.breedingEvents.length, 3);
     assert.ok(store.validateSnapshot(saved));
     const bad = W.clone(saved); bad.records.breedingEvents[0].motherId = 'missing'; assert.throws(() => store.validateSnapshot(bad), /关联/);
     const points = await store.query('checkpoints', w.id); const point = points.rows.find((p) => p.turn === 23);

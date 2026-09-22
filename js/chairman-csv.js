@@ -9,9 +9,8 @@
     field("distMin", "距离下限米", "number"), field("coreDist", "核心距离米", "number"), field("distMax", "距离上限米", "number"),
     field("growthType", "成长类型"), field("peakStart", "巅峰开始"), field("peakEnd", "巅峰结束"),
     field("fatherId", "父马编号"), field("motherId", "母马编号"), field("sireId", "父系模板"), field("damId", "母系模板"),
-    ...["日本", "香港", "美国", "欧洲", "其他"].map((key) => field(`grass.${key}`, `草地${key}`)),
-    ...["日本", "中东", "美国"].map((key) => field(`dirt.${key}`, `泥地${key}`)),
-    ...["东京", "中山", "京都", "阪神", "其他地方"].map((key) => field(`courseGrades.${key}`, `赛道${key}`))];
+    field("surfaceGrades.grass", "草地适性"), field("surfaceGrades.dirt", "泥地适性"),
+    field("trackAptitudes.burst", "瞬发适性"), field("trackAptitudes.sustained", "持久适性"), field("trackAptitudes.attrition", "消耗适性")];
   const RACE = [field("id", "编号"), field("name", "比赛名"), field("raceClass", "格付"), field("trackId", "马场编号"), field("trackName", "马场"),
     field("surface", "场地"), field("distance", "距离米", "number"), field("month", "月份", "number"), field("half", "半月", "half"),
     field("ageRule", "年龄条件"), field("sexRule", "性别条件"), field("capacity", "参赛上限", "number"),
@@ -117,7 +116,8 @@
         else if (kind === "race") value = { id: targetId, name: "", raceClass: "op", ageRule: "2+", sexRule: "all", surface: "草地",
           month: 1, half: 1, distance: 1600, capacity: 16, prizes: W.defaultPrizes("op"), deleted: false };
         else {
-          const generated = W.addHorse(w, { id: targetId, origin: "custom", age: 2 });
+          const homeColumn=headers.indexOf('所属地区'),home=homeColumn>=0?row.values[homeColumn].trim():'';
+          const generated = W.addHorse(w, { id: targetId, origin: "custom", age: 2, ...(w.worldSystemVersion===2&&home?{homeRegion:home}:{}) });
           w.horses.pop(); w.totalHorses--; value = generated;
         }
         let trackName = "", suppliedTrackId = "";
@@ -149,6 +149,7 @@
             try{value=W.setHorseAge(w,value);}catch(error){errors.push('第'+row.line+'行：'+error.message);continue;}
           }
           if (!existing || value.homeRegion !== existing.homeRegion) value.locationRegion = value.homeRegion;
+          if(w.worldSystemVersion===2){const area=ns.ChairmanWorld.region(w,value.homeRegion);if(!area||area.disabled){errors.push(`第${row.line}行：请选择启用地区。`);continue;}value.homeRegionId=area.id;value.locationRegionId=area.id;}
           for (const key of ["fatherId", "motherId"]) if (value[key]) {
             const external = headers.includes("来源世界") ? row.values[headers.indexOf("来源世界")] !== w.id : !(existing && existing[key] === value[key]);
             if (remap.has(value[key])) value[key] = remap.get(value[key]);

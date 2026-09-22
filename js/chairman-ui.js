@@ -11,6 +11,7 @@
   function node(tag, cls, text) { const el = document.createElement(tag); if (cls) el.className = cls; if (text != null) el.textContent = text; return el; }
   let worldKey = "lobby";
   const filterStates = new Map(), rowStates = new Map(), viewStates = new Map();
+  function clearPrivate(){filterStates.clear();rowStates.clear();viewStates.clear();closeMenu(false);}
   function context(id) { worldKey = id || "lobby"; }
   function scopeKey(scope) { return `${worldKey}:${scope.closest('[data-view-key]')?.dataset.viewKey || scope.dataset.viewKey || 'main'}`; }
   function formValues(form) { const out = {}; for (const el of form.querySelectorAll('[name]')) { if (el.disabled) continue; out[el.name] = el.multiple ? [...el.selectedOptions].map(o => o.value) : el.type === 'checkbox' ? el.checked : el.value; } return out; }
@@ -168,8 +169,8 @@
   function navigation(current){return `<div class="cm-nav-brand"><img src="assets/home/chairman.svg" alt="" width="30" height="30"><div><strong>国际马会</strong><small>主席工作台</small></div></div>${groups.map(g=>`<section class="cm-nav-group"><button type="button" data-action="workbenchGroup" data-id="${g.id}" aria-expanded="${g.id===current.group}" ${g.id===current.group?'aria-current="true"':''}><span aria-hidden="true">${g.icon}</span>${g.label}</button><div class="cm-group-links" ${g.id===current.group?'':'hidden'}>${routes.filter(r=>r.group===g.id).map(r=>routeButton(r,current)).join('')}</div></section>`).join('')}`;}
   function pageSwitch(current){const g=groups.find(g=>g.id===current.group);return more(routes.filter(r=>r.group===current.group).map(r=>routeButton(r,current)).join(''),'切换页面');}
   function enhanceViews(scope){for(const area of scope.querySelectorAll('.cm-tabs')){if(area.dataset.viewSelect)continue;area.dataset.viewSelect='true';const label=node('label','cm-view-select',area.querySelector('[data-action=calendarView]')?'赛事范围':'当前视图'),select=document.createElement('select');for(const b of area.querySelectorAll(':scope > button')){const o=new Option(b.textContent,String(select.options.length),false,b.hasAttribute('aria-current'));select.add(o);}select.addEventListener('change',()=>area.querySelectorAll(':scope > button')[Number(select.value)]?.click());label.append(select);area.before(label);area.hidden=true;}}
-  const queryForms=new Set(['officeFilter','breedFilter','seriesFilter','honorFilter','honorHistoryFilter','candidateSearch','honorCandidateSearch','honorNominationSearch','awardYear','breedBoard','honorScope','honorAwardScope','honorHistoryScope','filter']);
-  const writeActions=new Set('advance fast finish editHorse editRace editTrack editRegion retire deleteRace confirmEdit autoRating generate applyCSV prepPreview prepApply saveSlot confirmSaveSlot restore confirmRestore loadSlot confirmLoadSlot annualAuto saveOneScore saveRaceScores useTfBenchmark defaultWtrDraft replaceRecommendations confirmReplaceRecommendations resetRaceScores confirmResetScores hideResult hideCancelled confirmHideCancelled pickAward breedEnable breedFoundation breedIntroduce breedApplyCreation breedApplyIntroduction breedMate breedCancel breedPin breedRetire honorEditType honorCopyType honorDeleteType honorConfirmDeleteType honorAssociation honorSettings honorExclude honorAnnualVotes honorGenerateHall honorNominate honorInduct honorRevoke honorRevote honorConfirmRevote honorApplyRound honorApplySuggestions honorPickLocal contentImport contentApply familyIntroduce familyApply seriesEdit seriesCopy seriesStop seriesConfirm seriesConfirmStop'.split(' '));
+  const queryForms=new Set(['world:filter','world:sourceFilter','officeFilter','breedFilter','seriesFilter','honorFilter','honorHistoryFilter','candidateSearch','honorCandidateSearch','honorNominationSearch','awardYear','breedBoard','honorScope','honorAwardScope','honorHistoryScope','filter']);
+  const writeActions=new Set('world:qualification world:source world:referencePreview world:referenceApply world:confirm world:region world:track world:race world:meeting world:traffic world:populate advance fast finish editHorse editRace editTrack editRegion retire deleteRace confirmEdit autoRating generate applyCSV prepPreview prepApply saveSlot confirmSaveSlot restore confirmRestore loadSlot confirmLoadSlot annualAuto saveOneScore saveRaceScores useTfBenchmark defaultWtrDraft replaceRecommendations confirmReplaceRecommendations resetRaceScores confirmResetScores hideResult hideCancelled confirmHideCancelled pickAward breedEnable breedFoundation breedIntroduce breedApplyCreation breedApplyIntroduction breedMate breedCancel breedPin breedRetire honorEditType honorCopyType honorDeleteType honorConfirmDeleteType honorAssociation honorSettings honorExclude honorAnnualVotes honorGenerateHall honorNominate honorInduct honorRevoke honorRevote honorConfirmRevote honorApplyRound honorApplySuggestions honorPickLocal contentImport contentApply familyIntroduce familyApply seriesEdit seriesCopy seriesStop seriesConfirm seriesConfirmStop worldEditorToggle worldEditEnable worldEditDiscardDisable worldEditHorse worldEditTemplate worldEditParent worldEditApply worldEditUndo worldTemplateReset'.split(' '));
   function access(scope,writable){
     if(writable)return;
     const reason='当前为只读：请在游戏与备份中重新取得编辑权。';
@@ -182,7 +183,7 @@
     enhanceTables(scope);
     enhanceViews(scope);
     wireMenus(scope);
-    for (const form of scope.querySelectorAll('form[data-form="horse"],form[data-form="race"],form[data-form="track"],form[data-form="breedMating"],form[data-form="honorType"]')) {
+    for (const form of scope.querySelectorAll('form[data-form="horse"],form[data-form="race"],form[data-form="track"],form[data-form="breedMating"],form[data-form="honorType"],form[data-form="worldEdit"],form[data-form^="world:"]:not([data-form="world:filter"]):not([data-form="world:sourceFilter"])')) {
       if (!form.id) form.id = "cm-edit-form";
       const actions = form.querySelector(":scope > .cm-actions,:scope > .cm-sticky-actions") || form.querySelector(":scope > button:not([type=button])");
       if (actions) { let group = actions; if (actions.tagName === "BUTTON") { group = node("div", "cm-sticky-actions"); actions.replaceWith(group); group.append(actions); } else group.classList.add("cm-sticky-actions"); for (const button of group.querySelectorAll("button")) if (button.type === "submit") { button.setAttribute("form", form.id); button.classList.add("cm-primary"); } }
@@ -190,7 +191,7 @@
     for (const form of scope.querySelectorAll('form[data-form="horse"]')) {
       if (form.dataset.grouped) continue; form.dataset.grouped = "1";
       const grid = form.querySelector(".cm-form-grid"); if (!grid) continue;
-      const groups = [["身份", /^(name|gender|age|birthYear|homeRegion|owner|coat)$/], ["竞赛参数", /^(strength|weight|distMin|coreDist|distMax)$/], ["成长与适性", /^(growthType|peakStart|peakEnd|temperamentLabel|heavyType|grass\.|dirt\.|courseGrades\.)/], ["血统与繁殖", /./]];
+      const groups = [["身份", /^(name|gender|age|birthYear|homeRegion|owner|coat)$/], ["竞赛参数", /^(strength|weight|distMin|coreDist|distMax)$/], ["成长与适性", /^(growthType|peakStart|peakEnd|temperamentLabel|heavyType|surfaceGrades\.|trackAptitudes\.)/], ["血统与繁殖", /./]];
       const labels = [...grid.children];
       for (const [title, pattern] of groups) {
         const fieldset = node("fieldset", "cm-editor-group"), legend = node("legend", "", title), fields = node("div", "cm-form-grid"); fieldset.append(legend, fields);
@@ -215,5 +216,5 @@
     for (const [id, el] of Object.entries(sections)) { el.hidden = id !== view; scope.append(el); }
     const capacity = sections.storage.querySelector("p:last-child"); if (capacity?.textContent.includes("配额")) { const d = node("details", "cm-help"); d.append(node("summary", "", "容量详情")); capacity.replaceWith(d); d.append(capacity); }
   }
-  ns.ChairmanUI = { access, groups, routes, routeFor, routePatch, navigation, pageSwitch, useLayout, context, capture, restore, closeMenu, wireMenus, escape: e, more, help, toolbar, tabs, enhance, settings };
+  ns.ChairmanUI = { clearPrivate, access, groups, routes, routeFor, routePatch, navigation, pageSwitch, useLayout, context, capture, restore, closeMenu, wireMenus, escape: e, more, help, toolbar, tabs, enhance, settings };
 })();

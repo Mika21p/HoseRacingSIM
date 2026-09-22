@@ -6,7 +6,7 @@
   const COAT_FALLBACKS = ["鹿毛", "黑鹿毛", "栗毛", "青鹿毛"];
   const TEMPERAMENTS = ["普通", "普通", "沉稳", "沉稳", "冷静"];
   const HEAVY_TYPES = ["不佳", "普通", "普通", "普通", "擅长"];
-  const PLAYER_COMMENT_IDS = ["strength", "surface", "distance", "growth", "temperament"];
+  const PLAYER_COMMENT_IDS = ["strength", "surface", "track", "distance", "growth", "temperament"];
 
   function randomRange(min, max) {
     return ns.Random ? ns.Random.rollRange(min, max) : min + Math.floor(Math.random() * (max - min + 1));
@@ -249,8 +249,6 @@
     const coats = ns.HorseRules && Array.isArray(ns.HorseRules.COATS)
       ? ns.HorseRules.COATS.map((coat) => coat.name)
       : COAT_FALLBACKS;
-    const featuredCourses = ["东京", "中山", "京都"];
-    const bestCourse = randomOne(featuredCourses);
     const safeName = String(name || "").trim().slice(0, 30) || "你的赛马";
     const randomId = window.crypto && typeof window.crypto.randomUUID === "function"
       ? window.crypto.randomUUID()
@@ -274,16 +272,11 @@
       temperamentLabel: randomOne(TEMPERAMENTS),
       temperament: 50,
       surfacePref: template.surfacePref,
-      grass: { 日本: "A", 香港: "B", 美国: "B", 欧洲: "B", 其他: "B" },
-      dirt: { 日本: "C", 中东: "C", 美国: "C" },
+      surfaceGrades: template.surfacePref === "泥地"
+        ? { grass: "C", dirt: "A" }
+        : { grass: "A", dirt: "C" },
+      trackAptitudes: { burst: "○", sustained: "○", attrition: "△" },
       heavyType: randomOne(HEAVY_TYPES),
-      courseGrades: {
-        东京: bestCourse === "东京" ? "S" : "A",
-        中山: bestCourse === "中山" ? "S" : "A",
-        京都: bestCourse === "京都" ? "S" : "A",
-        阪神: "A",
-        其他地方: "B"
-      },
       coreDist: template.coreDist,
       distType: "中长距离",
       distMin: template.distMin,

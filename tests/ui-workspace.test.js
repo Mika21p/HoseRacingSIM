@@ -40,7 +40,7 @@ test("workspace state remains UI-only and opens the result after a race", () => 
   assert.match(app, /normalizeLegendOpponentYears\(career\)/);
   assert.match(app, /renderLastRaceComment/);
   assert.match(app, /closeRaceResult\(\{ section: "history" \}\)/);
-  assert.doesNotMatch(app, /SAVE_VERSION = 3/);
+  assert.match(app, /SAVE_VERSION = 3/);
 });
 
 test("race details default open while comments use a name-leading toggle", () => {
@@ -59,14 +59,14 @@ test("home, global metadata and mobile navigation are wired", () => {
   const changelog = read("js/data/changelog.js");
   const styles = read("css/styles.css");
   assert.match(index, /styles\.css\?v=20260920-changelog-panel/);
-  assert.match(index, /render\.js\?v=20260920-home-images/);
-  assert.match(index, /app\.js\?v=20260920-breeding/);
+  assert.match(index, /render\.js\?v=20260922-trainer-prose/);
+  assert.match(index, /app\.js\?v=20260922-trainer-prose/);
   assert.match(index, /golden-road-1998\.js\?v=20260720-era-v5/);
   assert.match(index, /race-simulator\.js\?v=20260920-ratings/);
   assert.match(index, /era-narrative\.js\?v=20260720-era-v5/);
-  assert.match(index, /era\.js\?v=20260720-era-v5/);
+  assert.match(index, /era\.js\?v=20260922-trainer-prose/);
   assert.match(index, /id="appVersion"/);
-  assert.match(changelog, /version: "v0\.14d"/);
+  assert.match(changelog, /version: "v0\.15"/);
   assert.match(changelog, /nonConditionRaces: 622/);
   assert.match(render, /class="home-mode-grid"/);
   assert.match(render, /class="home-support-row"/);
@@ -133,7 +133,7 @@ test("roguelike UI keeps an isolated save and the confirmed normal strength form
   assert.doesNotMatch(app, /data-rogue-refresh=/);
   assert.doesNotMatch(app, /data-rogue-review=/);
   assert.match(horseRules, /R\.rollMulti\(2, 15\) \+ 60/);
-  assert.match(rogueRules, /PROFILE_VERSION = 2/);
+  assert.match(rogueRules, /PROFILE_VERSION = 3/);
   assert.match(rogueRules, /CONSUMABLE_PRODUCTS/);
   assert.match(rogueRules, /purchaseConsumable/);
   assert.match(rogueRules, /useRefreshConsumable/);

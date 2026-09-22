@@ -8,7 +8,7 @@
   const all = (w) => [...w.horses, ...(w.pedigrees || [])];
   const map = (w) => new Map(all(w).map((h) => [h.id, h]));
   const get = (w, id) => w.horses.find((h) => h.id === id) || (w.pedigrees || []).find((h) => h.id === id);
-  const templates = () => ns.ChairmanPedigrees?.records || [];
+  const templates = w => ns.ChairmanEditor?.staticTemplates(w) || ns.ChairmanPedigrees?.records || [];
   function seeded(w, action) {
     if (activeRandom.has(w)) return action();
     const random = R.seeded(w.breeding.rngState); activeRandom.add(w);
@@ -65,6 +65,7 @@
     return [f, m];
   }
   function quotas(w) {
+    if (w.worldSystemVersion === 2) return Object.fromEntries(w.regions.filter(r=>!r.disabled&&r.autoPopulate).map(r=>[r.name,r.annualTarget]));
     const homes = W().populationRegions(w), total = w.settings.annualNewHorses;
     return Object.fromEntries(homes.map((name, i) => [name, Math.floor(total / homes.length) + (i < total % homes.length ? 1 : 0)]));
   }
@@ -125,12 +126,13 @@
     h.breeding.strength = template ? R.clamp((template.game?.breedingBase ?? 50) + R.rollRange(-5, 5), 1, 100) : h.breeding.strength;
     h.breeding.status = "active"; h.breeding.everActive = true; h.breeding.joinedYear = year(w);
     if (template?.game?.distance) { h.coreDist = template.game.distance; h.distMin = Math.max(1000, h.coreDist - 400); h.distMax = h.coreDist + 400; }
-    if (template?.game?.surface) { const key = template.game.surface === "泥地" ? "dirt" : "grass", base = W().regionBase(w, region); h[key][base] = "A"; }
+    if (template?.game?.surface) { const key = template.game.surface === "泥地" ? "dirt" : "grass"; h.surfaceGrades[key] = "A"; }
     if (template?.game?.growthType) { h.growthType = template.game.growthType; const peak = ns.HorseRules.generatePeak(h.growthType); h.peakStart = peak.start; h.peakEnd = peak.end; }
+    if(template?.playerModified){if(template.coat)h.coat=template.coat;if(template.game?.distance){h.distMin=Math.max(1,h.coreDist-400);h.distType=W().category(h.coreDist);}if(template.game?.surface==='泥地'&&W().regionBase(w,region)==='欧洲')h.surfaceGrades.dirt='A';}
     return h;
   }
   function attachAncestors(w, roots) {
-    const source = new Map(templates().map((h) => [h.id, h])), placed = new Map(all(w).filter((h) => h.templateId).map((h) => [h.templateId, h]));
+    const source = new Map((ns.ChairmanEditor?.templates(w)||templates(w)).map((h) => [h.id, h])), placed = new Map(all(w).filter((h) => h.templateId||h.familyTemplateId).map((h) => [h.templateId||h.familyTemplateId, h]));
     function visit(tid, latest, path = new Set()) {
       if (!tid || !source.has(tid)) return "";
       assert(!path.has(tid), "基础资料血统循环。");
@@ -148,9 +150,9 @@
         return h.id;
       }
       if (!h) {
-        h = { id: `ancestor-${w.nextId++}`, templateId: tid, name: t.displayName || t.originalName, originalName: t.originalName,
+        h = { id: `ancestor-${w.nextId++}`, templateId: t.source==='imported'?'':tid,...(t.source==='imported'?{familyTemplateId:tid,familySourceKey:t.sourceKey}:{}),name: t.displayName || t.name || t.originalName, originalName: t.originalName,
           aliases: t.aliases || [], pinyin: t.pinyin || "", romanizedName: t.romanizedName || t.originalName, gender: t.gender, historicalBirthYear: t.birthYear,
-          birthYear: latest, fatherId: "", motherId: "", status: "ancestor", sourceKind: "historical", sourceUrl: t.sourceUrl, templateVersion: w.breeding.templateVersion };
+          birthYear: latest, fatherId: "", motherId: "", status: "ancestor", sourceKind: t.source==='imported'?'imported-family':"historical", sourceUrl: t.sourceUrl, templateVersion: w.breeding.templateVersion };
         w.pedigrees.push(h); placed.set(tid, h);
       }
       h.birthYear = Math.min(h.birthYear, latest);
@@ -164,7 +166,7 @@
   function foundation(w, region, sourceRegion) {
     return seeded(w, () => {
       assert(W().regionNames(w).includes(region), "地区不存在。");
-      const source = sourceRegion || W().regionBase(w, region), data = templates(), bySource = new Map(data.map((t) => [t.id, t]));
+      const source = sourceRegion || W().regionBase(w, region), data = templates(w).filter(t=>!t.disabled), bySource = new Map(data.map((t) => [t.id, t]));
     const existing = all(w).filter((h) => h.templateId), selected = existing.filter((h) => h.breeding).map((h) => h.templateId), used = new Set(existing.map((h) => h.templateId)), roots = [], lineages = new Map();
       function lineage(id) { if (lineages.has(id)) return lineages.get(id); const seen = new Set(), todo = [id]; while (todo.length) { const t = bySource.get(todo.pop()); for (const p of [t?.fatherId, t?.motherId]) if (p && !seen.has(p)) { seen.add(p); todo.push(p); } } lineages.set(id, seen); return seen; }
       for (const gender of ["牡马", "牝马"]) {
@@ -211,7 +213,7 @@
     return seeded(w, () => {
       const result = { ...value }, roots = [];
       for (const [key, gender] of [["fatherId", "牡马"], ["motherId", "牝马"]]) if (String(result[key] || "").startsWith("template:")) {
-        const tid = result[key].slice(9), t = templates().find((h) => h.id === tid && h.core && h.gender === gender);
+        const tid = result[key].slice(9), t = templates(w).find((h) => h.id === tid && h.core && !h.disabled && h.gender === gender);
         assert(t, "基础父母资料不存在或性别不符。");
         const h = founder(w, value.homeRegion || "日本", gender, t); roots.push(h); result[key] = h.id;
       }
@@ -246,11 +248,12 @@
       return result;
     });
   }
-  function inherited(w, f, m) {
-    const h = ns.HorseRules.generateHorse({ gameMode: "normal", sireId: "random", damId: "random" });
+  function inherited(w, f, m, homeRegion) {
+    const h = ns.HorseRules.generateHorse({ gameMode: "normal", sireId: "random", damId: "random", ...(w.worldSystemVersion === 2 ? {chairmanProfile:ns.ChairmanWorld.profile(w,homeRegion||m.homeRegion)} : {}) });
     delete h.id; delete h.name; delete h.career; delete h.gender;
     h.strength = R.clamp(Math.round(h.strength + (((f?.breeding?.strength ?? 50) + (m?.breeding?.strength ?? 50)) / 2 - 50) / 10), 62, 100);
-    for (const keys of [["grass", "dirt", "surfacePref"], ["distMin", "coreDist", "distMax", "distType"], ["courseGrades"], ["temperamentLabel", "temperament", "heavyType"]]) {
+    inheritAptitudes(h, f, m);
+    for (const keys of [["distMin", "coreDist", "distMax", "distType"], ["temperamentLabel", "temperament", "heavyType"]]) {
       const roll = R.next(), p = roll < .3 ? f : roll < .6 ? m : null;
       if (p) for (const key of keys) h[key] = clone(p[key]);
     }
@@ -259,6 +262,17 @@
       h.growthType = parent.growthType;
       const peak = ns.HorseRules.generatePeak(h.growthType); h.peakStart = peak.start; h.peakEnd = peak.end;
     }
+    return h;
+  }
+  function inheritAptitudes(h, father, mother) {
+    for (const [group, keys] of [['surfaceGrades', ['grass', 'dirt']], ['trackAptitudes', ['burst', 'sustained', 'attrition']]]) {
+      for (const key of keys) {
+        const roll = R.next(), parent = roll < .4 ? father : roll < .8 ? mother : null;
+        if (parent?.[group]?.[key] != null) h[group][key] = parent[group][key];
+      }
+    }
+    h.trackAptitudes = ns.HorseRules.constrainTrackAptitudes(h.trackAptitudes);
+    h.surfacePref = ns.HorseRules.deriveSurfacePreference(h.surfaceGrades);
     return h;
   }
   function closeYear(w, out) {
@@ -272,13 +286,13 @@
       const locked = pairs.map((p, i) => {
         const f = nodes.get(p.fatherId) || get(w, p.fatherId), m = nodes.get(p.motherId) || get(w, p.motherId);
         return { ...p, id: `${y}:mating:${i}`, year: y, birthYear: y + 1, fatherName: f.name, motherName: m.name,
-          fatherSnapshot: geneticSnapshot(f), motherSnapshot: geneticSnapshot(m), offspring: inherited(w, f, m) };
+          fatherSnapshot: geneticSnapshot(f), motherSnapshot: geneticSnapshot(m), offspring: inherited(w, f, m, p.homeRegion), ...(w.worldSystemVersion === 2 ? {homeRegionId:ns.ChairmanWorld.region(w,p.homeRegion).id,generationVersion:ns.ChairmanWorld.region(w,p.homeRegion).generationVersion||1,generationProfile:ns.ChairmanWorld.profile(w,p.homeRegion)} : {}) };
       });
       w.breeding.completedYear = y; w.breeding.manual = [];
       return locked;
     });
   }
-  function geneticSnapshot(h) { const keys = ["id", "name", "strength", "grass", "dirt", "surfacePref", "distMin", "coreDist", "distMax", "distType", "courseGrades", "growthType", "temperamentLabel", "temperament", "heavyType"]; return { ...Object.fromEntries(keys.map((k) => [k, clone(h[k])])), breeding: { strength: h.breeding.strength } }; }
+  function geneticSnapshot(h) { const keys = ["id", "name", "strength", "surfaceGrades", "trackAptitudes", "surfacePref", "distMin", "coreDist", "distMax", "distType", "growthType", "temperamentLabel", "temperament", "heavyType"]; return { ...Object.fromEntries(keys.map((k) => [k, clone(h[k])])), breeding: { strength: h.breeding.strength } }; }
   function startYear(w, out, locked) {
     if (!w.breeding) return;
     seeded(w, () => {
@@ -287,7 +301,7 @@
       out.breedingEvents = [];
       for (const p of locked || []) {
         const h = W().addHorse(w, { ...p.offspring, name: undefined, age: 0, birthYear: year(w), fatherId: p.fatherId, motherId: p.motherId,
-          homeRegion: p.homeRegion, owner: p.owner || get(w, p.motherId).owner, status: "juvenile", origin: "ai", sourceKind: "bred" });
+          homeRegion: p.homeRegion, homeRegionId:p.homeRegionId, generationProfile:p.generationProfile,generationVersion:p.generationVersion, owner: p.owner || get(w, p.motherId).owner, status: "juvenile", origin: "ai", sourceKind: "bred" });
         // addHorse owns identity and naming, not the intermediate generator object.
         h.name ||= `新生${h.id}`;
         const { offspring, ...event } = p; out.breedingEvents.push({ ...event, horseId: h.id, horseName: h.name });
@@ -316,7 +330,7 @@
       fatherId: h.fatherId || "", motherId: h.motherId || "", region: h.homeRegion || "", status: h.status,
       source: h.sourceKind || (h.origin === "custom" ? "custom" : "ai"), templateId: h.templateId || "", sourceUrl: h.sourceUrl || "",
       breedingStatus: b?.status || "none", grade: b?.everActive || h.origin === "custom" ? grade(b?.strength ?? 50) : "未公开",
-      pinned: !!b?.pinned, championYears: b?.championYears || [], ...(h.origin === "custom" ? { breedingStrength: b?.strength ?? null } : {}) };
+      ...(ns.ChairmanEditor?.enabled(w)?{strength:h.strength}:{}),pinned: !!b?.pinned, championYears: b?.championYears || [], ...((h.origin === "custom" || ns.ChairmanEditor?.enabled(w)) ? { breedingStrength: b?.strength ?? null } : {}) };
   }
   const normalize = (s) => String(s || "").normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[\s'’._-]/g, "");
   const pinyinCollator = new Intl.Collator("zh-Hans-CN-u-co-pinyin");
@@ -330,16 +344,16 @@
   }
   function query(w, options = {}) {
     const p = options, byId = map(w), favorite = new Set(w.ui.breedingFavorites || []);
-    let rows = p.view === "library" ? templates().filter((h) => !p.instantiable || h.core).map((h) => ({ id: h.id, templateId: h.id, core: !!h.core, name: h.displayName || h.originalName, originalName: h.originalName,
+    let rows = p.view === "library" ? templates(w).filter((h) => !p.instantiable || h.core && !h.disabled).map((h) => ({ id: h.id, templateId: h.id, core: !!h.core, name: h.displayName || h.originalName, originalName: h.originalName,
       aliases: h.aliases || [], pinyin: h.pinyin || "", romanizedName: h.romanizedName || h.originalName, birthYear: h.birthYear, historicalBirthYear: h.birthYear, gender: h.gender, region: h.region,
-      fatherId: h.fatherId, motherId: h.motherId, regionTags: h.regionTags || [], status: "template", source: "historical", breedingStatus: h.core ? "template" : "ancestor", grade: "未公开", sourceUrl: h.sourceUrl }))
+      fatherId: h.fatherId, motherId: h.motherId, regionTags: h.regionTags || [], status: "template", source: "historical", breedingStatus: h.core ? "template" : "ancestor", grade: "未公开", disabled:!!h.disabled, playerModified:!!h.playerModified, sourceUrl: h.sourceUrl }))
       : all(w).map((h) => publicHorse(w, h));
-    if(p.view==='library') rows.push(...(w.familyTemplates||[]).map(t=>({...t,templateId:t.id,originalName:t.originalName||t.name,pinyin:t.pinyin||'',romanizedName:t.romanizedName||t.name,aliases:t.aliases||[],source:'imported',status:'template',breedingStatus:'template'})));
+    if(p.view==='library') rows.push(...(ns.ChairmanEditor?.familyTemplates(w)||w.familyTemplates||[]).filter(t=>!p.instantiable||t.core&&!t.disabled).map(t=>({... (ns.ChairmanEditor?.publicTemplate(w,t)||t),templateId:t.id,originalName:t.originalName||t.name,pinyin:t.pinyin||'',romanizedName:t.romanizedName||t.name,aliases:t.aliases||[],source:'imported',status:'template',breedingStatus:'template'})));
     if (p.view === "active" && !p.breedingStatus) rows = rows.filter((h) => h.breedingStatus === "active");
     if (p.view === "candidate") rows = rows.filter((h) => ["candidate", "none"].includes(h.breedingStatus) && available(w, byId.get(h.id)));
     if (p.view === "young") rows = rows.filter((h) => h.status === "juvenile");
     if (p.ancestor) { const ids = descendants(w, p.ancestor, p.relation || "direct"); rows = rows.filter((h) => ids.has(h.id)); }
-    rows = rows.filter((h) => (!p.search || [h.name, h.originalName, h.id, h.pinyin, ...h.aliases].some((s) => normalize(s).includes(normalize(p.search))))
+    rows = rows.filter((h) => (!p.search || [h.name, h.originalName, h.id, h.pinyin, h.romanizedName, ...h.aliases].some((s) => normalize(s).includes(normalize(p.search))))
       && (!p.gender || h.gender === p.gender) && (!p.region || h.region === p.region || h.regionTags?.includes(p.region)) && (!p.source || h.source === p.source)
       && (!p.status || h.status === p.status) && (!p.breedingStatus || p.breedingStatus === "all" || h.breedingStatus === p.breedingStatus) && (!p.grade || h.grade === p.grade)
       && (!p.decade || Math.floor((h.historicalBirthYear ?? h.birthYear) / 10) * 10 === Number(p.decade))
@@ -347,7 +361,7 @@
       && (!p.used || (w.ui.breedingUsed || []).includes(h.id)));
     function letter(h) { const ch = initial(p.alphabet === "pinyin" ? h.pinyin || h.name : h.romanizedName); return /^[A-Z]$/.test(ch) ? ch : /^[0-9]$/.test(ch) ? "0-9" : "其他"; }
     const letters = [...new Set(rows.map(letter))].sort(); if (p.letter) rows = rows.filter((h) => letter(h) === p.letter);
-    rows.sort((a, b) => (p.alphabet === "pinyin" ? pinyinCollator.compare(a.pinyin || a.name, b.pinyin || b.name) : a.romanizedName.localeCompare(b.romanizedName, "en")) || a.id.localeCompare(b.id));
+    rows.sort((a, b) => ns.ChairmanEditor?.enabled(w)&&p.sort==="strength"?(b.strength??-Infinity)-(a.strength??-Infinity)||a.id.localeCompare(b.id):ns.ChairmanEditor?.enabled(w)&&p.sort==="breedingStrength"?(b.breedingStrength??-Infinity)-(a.breedingStrength??-Infinity)||a.id.localeCompare(b.id):(p.alphabet === "pinyin" ? pinyinCollator.compare(a.pinyin || a.name, b.pinyin || b.name) : a.romanizedName.localeCompare(b.romanizedName, "en")) || a.id.localeCompare(b.id));
     const limit = Math.min(50, Math.max(1, Number(p.limit) || 50)), offset = Math.min(Math.max(0, Number(p.offset) || 0), Math.max(0, Math.floor((rows.length - 1) / limit) * limit));
     return { rows: rows.slice(offset, offset + limit), total: rows.length, offset, letters, more: offset + limit < rows.length };
   }
@@ -367,7 +381,7 @@
         assert(w.breeding, "请先启用自动繁殖。");
         seeded(w, () => {
           if (action === "foundation") { foundation(w, value.region, value.source); selectBreeders(w); }
-          else if (action === "introduce") { const t = templates().find((h) => h.id === value.templateId && h.core); assert(t, "基础资料不存在。"); const h = founder(w, value.region, t.gender, t); attachAncestors(w, [h]); h.breeding.pinned = true; }
+          else if (action === "introduce") { const t = templates(w).find((h) => h.id === value.templateId && h.core && !h.disabled); assert(t, "基础资料不存在。"); const h = founder(w, value.region, t.gender, t); attachAncestors(w, [h]); h.breeding.pinned = true; }
           else if (action === "pin" || action === "retire") {
             const h = get(w, value.id); assert(h?.breeding, "繁殖个体不存在。");
             if (action === "retire") { h.breeding.status = "retired"; h.breeding.pinned = false; h.breeding.retiredYear = year(w); }
@@ -417,6 +431,6 @@
     assert(Array.isArray(w.breeding.manual), "指定配种记录无效。");
     const ms = new Set(); for (const p of w.breeding.manual) { assert(byId.has(p.fatherId) && byId.has(p.motherId) && !ms.has(p.motherId), "指定配种关联无效或重复。"); ms.add(p.motherId); }
   }
-  ns.ChairmanBreeding = { all, get, seeded, grade, initial, recordRating, initialize, ancestors, related, available, legalPair, quotas, reputations,
+  ns.ChairmanBreeding = { inheritAptitudes, all, get, seeded, grade, initial, recordRating, initialize, ancestors, related, available, legalPair, quotas, reputations,
     selectBreeders, founder, foundation, enable, resolveParents, plan, inherited, closeYear, startYear, childStats, publicHorse, query, descendants, edit, validate };
 })();

@@ -18,6 +18,78 @@
     linear-gradient(160deg, #293e46, #1b352e 58%, #12251f);
 }
 
+/* Trainer notes share one visual language across career, candidates and story. */
+.trainer-comments, .trainer-notes-grid, .rogue-comment-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+.trainer-comment-group-title, .trainer-notes-empty { grid-column: 1 / -1; }
+.era-trainer-comments, .rogue-comment-group { container-type: inline-size; }
+@container (max-width: 560px) {
+  .trainer-notes-grid, .rogue-comment-list { grid-template-columns: minmax(0, 1fr); }
+}
+.trainer-comment-group-title { padding: 12px 0 3px; border-bottom: 1px solid var(--dusk-border); }
+.trainer-note.trainer-comment, .trainer-note.rogue-comment, .trainer-note.era-trainer-comment {
+  display: block;
+  min-width: 0;
+  margin: 0;
+  padding: 16px 18px;
+  border: 1px solid var(--dusk-border);
+  border-left: 3px solid var(--dusk-accent);
+  border-radius: 10px;
+  background: linear-gradient(135deg, #29443a, var(--dusk-inset));
+  color: var(--dusk-text);
+}
+.trainer-note .trainer-note-label {
+  display: block;
+  margin: 0 0 9px;
+  color: var(--dusk-accent);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: .04em;
+}
+.trainer-note p {
+  margin: 0;
+  color: var(--dusk-text);
+  font-size: 14px;
+  line-height: 1.85;
+  overflow-wrap: anywhere;
+}
+.post-race-comment-card, .history-comment-card {
+  border: 1px solid var(--dusk-border);
+  border-left: 3px solid var(--dusk-mint);
+  border-radius: 10px;
+  padding: 16px 18px;
+  background: var(--dusk-inset);
+  overflow-wrap: anywhere;
+}
+.post-race-comment-card > span, .history-comment-card > span { color: var(--dusk-mint); }
+.post-race-comment-card p, .history-comment-card p { color: var(--dusk-text); line-height: 1.85; }
+.adaptation-board { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.adaptation-item { flex-wrap: wrap; padding: 5px 0; }
+.adaptation-status { flex-wrap: wrap; max-width: 100%; line-height: 1.35; }
+.adaptation-status-strong { border-color: var(--dusk-accent); background: #34372b; color: var(--dusk-accent); }
+.adaptation-confidence { width: auto; height: auto; padding: 3px 5px; line-height: 1.3; font-weight: 500; }
+.compact-adaptation-list .adaptation-status { white-space: normal; }
+.trainer-comments-toggle-row button:focus-visible, .adaptation-toggle-row button:focus-visible,
+.rogue-comment-group-heading button:focus-visible, .history-comment-toggle:focus-visible {
+  outline: 2px solid var(--dusk-accent);
+  outline-offset: 3px;
+}
+@media (max-width: 760px) {
+  .trainer-comments, .trainer-notes-grid, .rogue-comment-list, .adaptation-board { grid-template-columns: minmax(0, 1fr); }
+  .trainer-note.trainer-comment, .trainer-note.rogue-comment, .trainer-note.era-trainer-comment { padding: 13px 14px; }
+  .rogue-comment-group:not(.is-expanded) .trainer-note p {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    white-space: normal;
+  }
+  .rogue-comment-group.is-expanded .trainer-note p { display: block; white-space: normal; }
+}
+
 body {
   color: var(--dusk-text);
   background-color: #12251f;

@@ -31,7 +31,7 @@ test('new series never claims past wins and rejects incompatible conditions with
 });
 test('AI pursuit boosts next station, protects travel/rest for fallback choices and does not reveal hidden traits',()=>{
   const f=fixture(),{W,S}=f;let w=finishLeg(f,f.w,0).world;w.turn=1;const h=w.horses[0];h.lastRaceTurn=0;W.planEntries(w);assert.equal(h.seriesTarget.wins,1);assert.equal(h.booked.raceId,f.ids[1]);
-  const changed=W.clone(w);changed.horses[0].strength=62;changed.horses[0].grass.日本='G';changed.aiRngState=w.aiRngState;W.planEntries(changed);assert.equal(changed.horses[0].booked.raceId,f.ids[1]);
+  const changed=W.clone(w);changed.horses[0].strength=62;changed.horses[0].surfaceGrades.grass='G';changed.aiRngState=w.aiRngState;W.planEntries(changed);assert.equal(changed.horses[0].booked.raceId,f.ids[1]);
   const injured=W.clone(w);injured.horses[0].restUntil=9;W.planEntries(injured);assert.equal(injured.horses[0].seriesTarget,null);assert.equal(injured.horses[0].booked,null);
 });
 test('series title qualifies a retired participant and adds only honor metric, preserving rating and frozen evidence',()=>{
@@ -50,7 +50,7 @@ test('events package preserves races, tracks and series and supports repeats, co
 test('family template export removes hidden traits, deduplicates ancestors, introduces independently and never restores youth',()=>{
   const f=fixture(true),{W,n}=f,P=n.ChairmanPackages;let w=f.w;
   W.seeded(w,()=>{const father=W.addHorse(w,{name:'家系父',age:12,gender:'牡马'}),mother=W.addHorse(w,{name:'家系母',age:10,gender:'牝马'});w.horses[0].fatherId=father.id;w.horses[0].motherId=mother.id;w.horses[0].gender='牡马';w.horses[0].breeding.everActive=true;w.horses[0].breeding.strength=80;});
-  const p=P.exportFamily(w,[w.horses[0].id]),text=JSON.stringify(p);assert.equal(p.nodes.length,3);assert.doesNotMatch(text,/strength|peakStart|grass|courseGrades|rngState|manualRating/);
+  const p=P.exportFamily(w,[w.horses[0].id]),text=JSON.stringify(p);assert.equal(p.nodes.length,3);assert.doesNotMatch(text,/strength|peakStart|surfaceGrades|trackAptitudes|rngState|manualRating/);
   let target=W.createWorld({blank:true,seed:3,breeding:true});target=P.apply(target,P.preview(target,p),true).world;assert.equal(target.horses.length,0);assert.equal(target.familyTemplates.length,3);
   const id=target.familyTemplates.find(t=>t.core).id,before=[target.rngState,target.aiRngState,target.breeding.rngState,target.honors.rngState],introduced=P.introduce(target,id,{age:10,region:'日本',pinned:true});
   assert.deepEqual([introduced.world.rngState,introduced.world.aiRngState,introduced.world.breeding.rngState,introduced.world.honors.rngState],before);const h=introduced.world.horses[0];assert.equal(W.ageOf(introduced.world,h),10);assert.equal(h.lifetime.starts,0);assert.equal(h.origin,'ai');assert.ok(h.breeding.strength>=75&&h.breeding.strength<=89);assert.equal(introduced.world.pedigrees.length,2);assert.throws(()=>P.introduce(introduced.world,id),/已经存在/);assert.deepEqual(plain(P.introduce(target,id,{age:10,region:'日本',pinned:true})),plain(introduced));
@@ -63,7 +63,7 @@ test('new stores, migration recovery, reward rollback, backup and export include
       if(i===2){await assert.rejects(store.commitChanges(w,out,{failForTest:true}),/中断/);assert.equal((await store.load(w.id)).horses[0].seriesTitles,undefined);}
       await store.commitChanges(w,out);w=out.world;
     }
-    const snapshot=await store.exportWorld(w.id);assert.equal(snapshot.version,6);assert.equal(store.db.version,7);store.validateSnapshot(snapshot);assert.equal(snapshot.records.seriesRewards.length,1);await store.saveSlot(w.id,1);const restored=await store.loadSlot(1,true);assert.equal(restored.horses[0].seriesTitles.length,1);
+    const snapshot=await store.exportWorld(w.id);assert.equal(snapshot.version,9);assert.equal(store.db.version,9);store.validateSnapshot(snapshot);assert.equal(snapshot.records.seriesRewards.length,1);await store.saveSlot(w.id,1);const restored=await store.loadSlot(1,true);assert.equal(restored.horses[0].seriesTitles.length,1);
     let old=W.createWorld({blank:true});delete old.seriesState;delete old.contentState;delete old.familyTemplates;delete old.series;delete old.sourceMappings;await store.acquire(old.id);await store.commitChanges(null,{world:old});old=await store.load(old.id);assert.ok(old.seriesState);assert.ok((await store.query('checkpoints',old.id)).rows.some(r=>r.kind==='content'));
   }finally{await store.close();}
 });

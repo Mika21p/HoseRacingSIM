@@ -51,10 +51,22 @@
   };
   P.historyPage = function (world, prefs, offset, extra) {
     const e = extra || {};
-    return this.scanPage("occurrences", world.id, { index: e.raceId ? "byRace" : e.trackId ? "byTrack" : "byGradedDisplay",
-      range: range(e.raceId ? [world.id, e.raceId] : e.trackId ? [world.id, e.trackId] : [world.id, 1]),
+    return this.scanPage("occurrences", world.id, { index: e.raceId ? "byRace" : e.trackId ? "byTrack" : world.worldSystemVersion === 2 ? "byDisplay" : "byGradedDisplay",
+      range: range(e.raceId ? [world.id, e.raceId] : e.trackId ? [world.id, e.trackId] : world.worldSystemVersion === 2 ? [world.id] : [world.id, 1]),
       reverse: !!(e.raceId || e.trackId), offset,
-      filter: (r) => r.raceClass !== "op" && O.raceMatches(r, prefs, world.lastCompletedTurn) && (!e.g1 || r.raceClass === "g1") });
+      filter: (r) => (world.worldSystemVersion === 2 || r.raceClass !== "op") && O.raceMatches(r, prefs, world.lastCompletedTurn) && (!e.g1 || r.raceClass === "g1") });
+  };
+  // Completed editions live in the history store. Resolve them before consulting
+  // mutable definitions, including fixed venues and races stopped in later years.
+  P.raceEdition = async function (world, definition, year) {
+    const recorded = year <= W.date(world.turn).year ? await this.get('occurrences', world.id, `${year}:${definition.id}`) : null;
+    return recorded ? { ...recorded.race, occurrenceId: recorded.id, editionStatus: recorded.status, venueFrozen: true } : ns.ChairmanWorld.resolveRace(world, definition, year);
+  };
+  P.raceEditions = async function (world, year) {
+    const currentYear=W.date(world.turn).year;
+    const rows=year<=currentYear ? await new Promise((resolve,reject)=>{const req=this.db.transaction('occurrences').objectStore('occurrences').index('byYear').getAll([world.id,year]);req.onsuccess=()=>resolve(req.result);req.onerror=()=>reject(req.error);}) : [];
+    const records=new Map(rows.map(r=>[r.raceId,r]));
+    return world.races.filter(r=>records.has(r.id)||year>=currentYear&&!r.deleted&&year>=(r.notBeforeYear||1)).map(r=>{const saved=records.get(r.id);return saved?{...saved.race,occurrenceId:saved.id,editionStatus:saved.status,venueFrozen:true}:ns.ChairmanWorld.resolveRace(world,r,year);});
   };
   P.queryHonorHistory = function (worldId, key, prefs = {}) {
     const year = Number(prefs.year), bounds = window.IDBKeyRange;
@@ -95,7 +107,7 @@
   };
   P.scoreOutput = async function (world, occurrenceId, values, reset) {
     const occurrence = await this.get("occurrences", world.id, occurrenceId);
-    if (!occurrence || occurrence.raceClass === "op" || occurrence.status !== "completed") throw new Error("该届赛事没有可评分的成绩。");
+    if (!occurrence || !["g1","g2","g3"].includes(occurrence.raceClass) || occurrence.status !== "completed") throw new Error("该届赛事没有可评分的成绩。");
     const all = (await this.query("performances", world.id, { occurrenceId, limit: Number.MAX_SAFE_INTEGER })).rows;
     for (const id of Object.keys(values)) if (!all.some((p) => p.id === id)) throw new Error("评分不属于当前赛事。");
     const horseIds = [...new Set(all.filter((p) => reset || Object.hasOwn(values, p.id)).map((p) => p.horseId))];
@@ -109,7 +121,7 @@
   };
   P.draftOutput = async function (world, occurrenceId, values, metadata) {
     const occurrence = await this.get("occurrences", world.id, occurrenceId);
-    if (!occurrence || occurrence.raceClass === "op" || occurrence.status !== "completed") throw new Error("没有对应的已完成比赛。");
+    if (!occurrence || !["g1","g2","g3"].includes(occurrence.raceClass) || occurrence.status !== "completed") throw new Error("没有对应的已完成比赛。");
     const old = await this.get("scoreDrafts", world.id, occurrenceId);
     if (metadata?.benchmarkScore != null) O.score(metadata.benchmarkScore);
     for (const v of Object.values(metadata?.recommendations || {})) O.score(v);
@@ -122,7 +134,7 @@
   };
   P.recommendOutput = async function(world, occurrenceId, benchmarkId, value, options) {
     const occurrence=await this.get('occurrences',world.id,occurrenceId);
-    if(!occurrence || occurrence.raceClass==='op' || occurrence.status!=='completed') throw new Error('仅可为已完成重赏生成推荐。');
+    if(!occurrence || !['g1','g2','g3'].includes(occurrence.raceClass) || occurrence.status!=='completed') throw new Error('仅可为已完成重赏生成推荐。');
     const rows=(await this.query('performances',world.id,{occurrenceId,limit:Number.MAX_SAFE_INTEGER})).rows;
     const old=await this.get('scoreDrafts',world.id,occurrenceId), S=ns.ChairmanRatings, opts=options||{};
     const anchor=rows.find(p=>p.horseId===(benchmarkId||occurrence.tfBenchmarkId)&&!p.retired) || rows.find(p=>p.rank===1);

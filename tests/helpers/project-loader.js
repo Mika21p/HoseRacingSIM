@@ -38,10 +38,12 @@ function loadProjectData() {
   runProjectFile(context, "js/data/jockeys.js");
   runProjectFile(context, "js/data/races/registry.js");
   runProjectFile(context, "js/data/races/core.js");
+  runProjectFile(context, "js/data/jra-course-catalogue.js");
 
   const raceFiles = listJavaScriptFiles("js/data/races")
     .filter((file) => !["registry.js", "core.js"].includes(path.basename(file)));
   raceFiles.forEach((file) => runProjectFile(context, file));
+  runProjectFile(context, "js/data/race-course-profiles.js");
 
   runProjectFile(context, "js/data/historical-horses/registry.js");
   const horseRegistrations = [];
@@ -84,6 +86,20 @@ function loadCoreRules() {
   };
 }
 
+function loadTrackAptitudeLabRules() {
+  const project = loadCoreRules();
+  [
+    "js/rules/time.js",
+    "js/rules/maturity.js",
+    "js/rules/temperament.js",
+    "js/rules/track-aptitude.js",
+    "js/rules/horse-generator.js",
+    "js/data/course-profiles.js",
+    "js/track-aptitude-lab.js"
+  ].forEach((file) => runProjectFile(project.context, file));
+  return project;
+}
+
 function loadRoguelikeRules() {
   const project = loadProjectData();
   const { context } = project;
@@ -94,6 +110,7 @@ function loadRoguelikeRules() {
     "js/data/races.js",
     "js/rules/time.js",
     "js/rules/region-rules.js",
+    "js/rules/track-aptitude.js",
     "js/rules/horse-generator.js",
     "js/rules/comments.js",
     "js/rules/career.js",
@@ -123,6 +140,7 @@ function loadEraRules() {
     "js/rules/jockey-rules.js",
     "js/rules/injury-rules.js",
     "js/rules/race-fatigue.js",
+    "js/rules/track-aptitude.js",
     "js/rules/horse-generator.js",
     "js/rules/comments.js",
     "js/rules/historical-opponents.js",
@@ -142,7 +160,7 @@ function loadChangelogData() {
 
 function loadChairmanRules() {
   const project = loadEraRules();
-  ["js/data/chairman-pedigrees.js", "js/rules/chairman-ratings.js", "js/rules/chairman-scheduling.js", "js/rules/chairman.js", "js/rules/chairman-breeding.js", "js/rules/chairman-office.js", "js/rules/chairman-honors.js", "js/chairman-csv.js", "js/rules/chairman-series.js", "js/chairman-packages.js"].forEach((file) => runProjectFile(project.context, file));
+  ["js/data/chairman-pedigrees.js", "js/rules/chairman-ratings.js", "js/rules/chairman-scheduling.js", "js/rules/chairman.js", "js/rules/chairman-breeding.js", "js/rules/chairman-office.js", "js/rules/chairman-honors.js", "js/chairman-csv.js", "js/rules/chairman-series.js", "js/chairman-packages.js", "js/rules/chairman-editor.js", "js/data/chairman-venue-records.js", "js/data/chairman-venues.js", "js/rules/chairman-world.js", "js/chairman-world-packages.js"].forEach((file) => runProjectFile(project.context, file));
   return project;
 }
 
@@ -151,6 +169,7 @@ module.exports = {
   listJavaScriptFiles,
   loadProjectData,
   loadCoreRules,
+  loadTrackAptitudeLabRules,
   loadRoguelikeRules,
   loadEraRules,
   loadChairmanRules,

@@ -1,4 +1,5 @@
 /* Homepage only: illustrated racing lobby. Gameplay layouts keep their own styles. */
+.home-screen .home-save-notice { margin:0 0 16px; padding:10px 14px; border-left:3px solid #dcb579; border-radius:4px; background:#dcb57912; color:#f1d5a3; font-size:13px; line-height:1.7; }
 .app-shell:has(> .home-screen:not([hidden])) {
   width: min(1440px, calc(100% - 64px));
   margin: 0 auto;

@@ -1,35 +1,29 @@
-const fs = require("node:fs"), path = require("node:path");
-const { loadChairmanRules, projectRoot } = require("../tests/helpers/project-loader");
-const { rules } = loadChairmanRules(), W = rules.ChairmanRules;
-const seed = 995173, years = 5, regions = {}, grades = {}, gaps = [], last = new Map();
-let world = W.createWorld({ seed, id: "chairman-observation" }), starts = 0, retiredRuns = 0, pressured = 0, g1Starts = 0, availableHorseTurns = 0, idleHorseTurns = 0;
-const began = performance.now();
-for (let y = 1; y <= years; y++) {
-  while (world.phase !== "yearEnd") {
-    for (const h of world.horses) if (h.status === "active" && h.restUntil <= world.turn) {
-      availableHorseTurns++; if (!h.booked && world.turn - (h.lastRaceTurn ?? 0) >= 6) idleHorseTurns++;
-    }
-    const out = W.advanceHalfMonth(world); world = out.world;
-    for (const r of out.occurrences) {
-      const stats = regions[r.race.surfaceRegion] || (regions[r.race.surfaceRegion] = { total: 0, cancelled: 0, full: 0 });
-      stats.total++; if (r.status === "cancelled") stats.cancelled++; if (r.count >= r.race.capacity) stats.full++;
-      const g = grades[r.raceClass] || (grades[r.raceClass] = { total: 0, full: 0, scores: [] }); g.total++; if (r.count >= r.race.capacity) g.full++;
-    }
-    for (const p of out.performances) {
-      starts++; if (p.retired) retiredRuns++; if (p.pressure > 0) pressured++; if (p.raceClass === "g1") g1Starts++;
-      if (last.has(p.horseId)) gaps.push(p.turn - last.get(p.horseId)); last.set(p.horseId, p.turn);
-      if (p.tf != null) grades[p.raceClass].scores.push(p.tf);
-    }
+const fs=require('node:fs'),{performance}=require('node:perf_hooks');
+const {loadChairmanRules}=require('../tests/helpers/project-loader');
+const opt=Object.fromEntries(process.argv.slice(2).map(v=>v.replace(/^--/,'').split('=')));
+const seeds=(opt.seeds||'123,43127,995173,77,20260921').split(',').map(Number),years=Number(opt.years||20);
+const scenarios=opt.packs==='japan'?[['japan']]:opt.packs==='combined'?[['japan','usa','britain','france','ireland','germany','italy']]:[['japan'],['japan','usa','britain','france','ireland','germany','italy']];
+const fingerprint=require('node:crypto').createHash('sha256').update(['js/rules/chairman-world.js','js/rules/chairman.js','js/rules/chairman-breeding.js','js/rules/horse-generator.js','js/data/chairman-venue-records.js','js/data/chairman-venues.js'].map(f=>fs.readFileSync(f,'utf8')).join('')).digest('hex');
+const n=loadChairmanRules().rules,W=n.ChairmanRules,report={generatedAt:new Date().toISOString(),years,seeds,runs:[]};
+fs.mkdirSync('artifacts',{recursive:true});const filename=`artifacts/chairman-world-${opt.packs||'all'}-${years}years${opt.tag?'-'+opt.tag:''}.json`;
+for(const regionKeys of scenarios)for(const seed of seeds){
+ const start=performance.now();let w=W.createWorld({worldType:'reference',regionKeys,seed}),ms=[],count=0;
+ const run={seed,fingerprint,regionKeys,initialActive:w.horses.filter(h=>h.status==='active').length,years:[]};report.runs.push(run);
+ for(let y=1;y<=years;y++){
+  const totals=Object.fromEntries(w.regions.map(r=>[r.id,{name:r.name,scheduled:0,completed:0,g1:0,g1Runners:0}]));
+  while(w.phase!=='yearEnd'){
+   const before=performance.now(),out=W.advanceHalfMonth(w);ms.push(performance.now()-before);w=out.world;
+   const used=new Set();for(const p of out.performances){if(used.has(p.horseId))throw Error('同半月重复出赛');used.add(p.horseId);count++;}
+   for(const r of out.occurrences){if(r.race.support)continue;const t=totals[r.race.regionId];t.scheduled++;t.completed+=r.status==='completed'?1:0;if(r.raceClass==='g1'){t.g1++;t.g1Runners+=r.count;}}
   }
-  world = W.finishYear(world).world;
+  const rows=Object.values(totals).map(r=>({...r,completion:r.completed/Math.max(1,r.scheduled),g1Average:r.g1Runners/Math.max(1,r.g1)}));
+  run.years.push({year:y,regions:rows,active:w.horses.filter(h=>h.status==='active').length});
+  const out=W.finishYear(w);w=out.world;W.validateWorld(w);
+  run.elapsedMs=Math.round(performance.now()-start);run.performances=count;run.totalHorses=w.horses.length;const ordered=ms.slice().sort((a,b)=>a-b);run.halfMonthMs={median:Math.round(ordered[Math.floor(ordered.length/2)]),p95:Math.round(ordered[Math.floor(ordered.length*.95)]),max:Math.round(ordered.at(-1))};
+  fs.writeFileSync(filename,JSON.stringify(report,null,2));
+  console.log(regionKeys.length===1?'Japan':'Combined',seed,y,rows.map(r=>`${r.name}:${(r.completion*100).toFixed(1)}% G1:${r.g1Average.toFixed(1)}`).join(' '));
+ }
+ const st=performance.now(),serialized=JSON.stringify(w);run.worldSerializeMs=Math.round(performance.now()-st);run.worldMiB=+(Buffer.byteLength(serialized)/1048576).toFixed(2);
 }
-for (const g of Object.values(grades)) {
-  const a = g.scores.sort((a, b) => a - b), quantile = (p) => a[Math.floor((a.length - 1) * p)] ?? null;
-  g.tf = { count: a.length, min: a[0] ?? null, p10: quantile(.1), median: quantile(.5), p90: quantile(.9), max: a.at(-1) ?? null }; delete g.scores;
-}
-const report = { seed, years, halfMonths: 120, starts, retiredRuns, g1Starts, pressureEvents: pressured,
-  pressureRate: g1Starts ? pressured / g1Starts : 0, minimumGapHalfMonths: Math.min(...gaps), meanGapHalfMonths: gaps.reduce((a, b) => a + b, 0) / gaps.length,
-  availableHorseTurns, idleUnbookedAtLeastSixTurns: idleHorseTurns, idleDefinition: "可出赛、无报名且距上次出赛至少6个半月的马匹回合；不是独立马匹人数",
-  regions, grades, activeAtEnd: world.horses.filter((h) => h.status === "active").length, elapsedMs: Math.round(performance.now() - began) };
-fs.writeFileSync(path.join(projectRoot, "docs/主席模式第二轮模拟观察.json"), JSON.stringify(report, null, 2) + "\n");
-console.log(JSON.stringify(report, null, 2));
+report.passed=report.runs.every(r=>r.years.filter(y=>y.year>=3).every(y=>y.regions.every(r=>r.completion>=.9&&(!r.g1||r.g1Average>=8))));
+fs.writeFileSync(filename,JSON.stringify(report,null,2));console.log(filename,'targets:',report.passed?'PASS':'REQUIRES TUNING');

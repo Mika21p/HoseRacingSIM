@@ -175,7 +175,7 @@ test("entry setup freezes one private candidate and exposes only the route previ
   const restoredSetup = ns.EraRules.normalizeEntrySetup(json(entrySetup));
   assert.deepEqual(json(restoredSetup.candidates[0].horse), frozen.horse);
   assert.deepEqual(json(restoredSetup.candidates[0].commentDetails), frozen.commentDetails);
-  assert.equal(frozen.commentDetails.length, 5);
+  assert.equal(frozen.commentDetails.length, 6);
   assert.ok(frozen.commentDetails.every((comment) => comment.accuracy === "close"));
   assert.throws(() => ns.EraRules.selectEntryCandidate(restoredSetup, "missing-entry"), /Unknown era entry candidate/);
 
@@ -220,7 +220,7 @@ test("encounter choices are transient, assessment is fixed-close, and naming unl
 
   scene = ns.EraRules.getCurrentScene(run);
   assert.equal(scene.nodeId, "encounter-trainer-assessment");
-  assert.equal(run.career.commentDetails.length, 5);
+  assert.equal(run.career.commentDetails.length, 6);
   assert.ok(run.career.commentDetails.every((comment) => comment.accuracy === "close"));
   ns.EraRules.resolveSceneChoice(run, scene.id, "continue");
   scene = ns.EraRules.getCurrentScene(run);
@@ -297,10 +297,10 @@ test("era player template always preserves the road-route identity", () => {
     assert.ok(horse.strength >= 81 && horse.strength <= 85);
     assert.equal(horse.strengthLabel, "剧情模板 81-85");
     assert.equal(horse.debugMode, undefined);
-    assert.equal(run.career.commentDetails.length, 5);
+    assert.equal(run.career.commentDetails.length, 6);
     assert.deepEqual(
       json(run.career.commentDetails.map((comment) => comment.id)),
-      ["strength", "surface", "distance", "growth", "temperament"]
+      ["strength", "surface", "track", "distance", "growth", "temperament"]
     );
     assert.ok(run.career.commentDetails.every((comment) => comment.accuracy === "close" && comment.accuracyLabel === "基本准确"));
     assert.deepEqual(json(run.career.comments), json(run.career.commentDetails.map((comment) => comment.text)));
@@ -762,7 +762,7 @@ test("version-one saves gain a safe player reference and rebuild a mixed narrati
   assert.equal(restored.version, 5);
   assert.equal(restored.era.playerReference, "马主");
   assert.equal(restored.era.onboarding.phase, "complete");
-  assert.equal(restored.career.commentDetails.length, 5);
+  assert.equal(restored.career.commentDetails.length, 6);
   assert.ok(restored.career.commentDetails.every((comment) => comment.accuracy === "close"));
   assert.equal(restored.era.news[0].read, false);
   assert.ok(!restored.era.narrative.pendingScenes.some((scene) => scene.id === "news:legacy-unread"));
@@ -803,8 +803,8 @@ test("era UI uses an owner viewpoint with encounter, newspaper and mobile drawer
   assert.match(eraUi, /data-era-newspaper-drawer/);
   assert.match(eraUi, /scenario\.seasonTitle/);
   assert.doesNotMatch(eraUi, /1998竞马编辑部/);
-  assert.match(eraUi, /佐藤悠太的五项评估/);
-  assert.match(eraUi, /comment\.accuracyLabel/);
+  assert.match(eraUi, /佐藤悠太的出道前评估/);
+  assert.doesNotMatch(eraUi, /comment\.accuracyLabel/);
   assert.match(eraUi, /outlineBody\(preview\)/);
   assert.match(eraUi, /outlineBody\(response\)/);
   assert.match(eraUi, /run\.era\.onboarding\.step >= 2/);

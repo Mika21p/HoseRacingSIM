@@ -52,11 +52,7 @@
       shortName: "佐藤",
       regionId: "japan",
       strengthBias: "under",
-      sharperItems: ["distance"],
-      focusSurfaces: [
-        { group: "grass", region: "日本", label: "日本草地" },
-        { group: "dirt", region: "日本", label: "日本泥地" }
-      ]
+      sharperItems: ["distance"]
     },
     {
       id: "obrien",
@@ -64,11 +60,7 @@
       shortName: "岳伯仁",
       regionId: "europe",
       strengthBias: "over",
-      sharperItems: ["growth", "temperament"],
-      focusSurfaces: [
-        { group: "grass", region: "欧洲", label: "欧洲草地" },
-        { group: "dirt", region: "美国", label: "美国泥地" }
-      ]
+      sharperItems: ["growth", "temperament"]
     },
     {
       id: "pletcher",
@@ -76,11 +68,7 @@
       shortName: "普莱彻",
       regionId: "northAmerica",
       strengthBias: "over",
-      sharperItems: ["surface", "strength"],
-      focusSurfaces: [
-        { group: "dirt", region: "美国", label: "北美泥地" },
-        { group: "grass", region: "美国", label: "北美草地" }
-      ]
+      sharperItems: ["surface", "strength"]
     }
   ];
 
@@ -103,15 +91,6 @@
 
   const GROWTH_TYPES = ["早熟", "普早", "普迟", "晚熟"];
   const TEMPERAMENT_TYPES = ["极端暴躁", "暴躁", "胆小", "普通", "沉稳", "冷静", "极其聪明"];
-  const SURFACE_TYPES = ["草地", "泥地", "二刀流"];
-  const GRADE_LABELS = {
-    S: "擅长",
-    A: "适应",
-    B: "尚可",
-    C: "不佳",
-    G: "不行"
-  };
-
   function getTrainer(trainerId) {
     return TRAINERS.find((trainer) => trainer.id === trainerId) || TRAINERS[0];
   }
@@ -271,130 +250,94 @@
     );
   }
 
-  function gradeText(grade) {
-    return GRADE_LABELS[grade] || "不好判断";
-  }
-
-  function surfaceTypeLabel(type) {
-    return type === "二刀流" ? "二刀流" : `${type}马`;
-  }
-
-  function surfacesForType(type) {
-    if (type === "草地") return ["草地"];
-    if (type === "泥地") return ["泥地"];
-    if (type === "二刀流") return ["草地", "泥地"];
-    return [];
-  }
-
-  function surfaceGrade(horse, focus) {
-    const source = focus.group === "dirt" ? horse.dirt : horse.grass;
-    return (source && source[focus.region]) || "B";
-  }
-
-  function wrongSurfaceType(actual) {
-    return nonMatchingValue(actual, SURFACE_TYPES);
-  }
-
   function surfaceComment(horse, trainer, forcedAccuracy) {
-    const accuracy = forcedAccuracy || chooseAccuracy(trainer, "surface", horse.gameMode);
-    const actualType = horse.surfacePref || "草地";
-    const typeText = surfaceTypeLabel(actualType);
-    const first = trainer.focusSurfaces[0];
-    const second = trainer.focusSurfaces[1];
-    const firstGrade = surfaceGrade(horse, first);
-    const secondGrade = surfaceGrade(horse, second);
+    return aptitudeComment(horse, trainer, "surface", forcedAccuracy);
+  }
 
-    if (accuracy === "precise") {
-      const text = textVariant([
-        "{first}{firstGrade}，{second}{secondGrade}。整体看，它更像{type}。",
-        "{first}跑起来应该{firstGrade}，{second}也能看出是{secondGrade}。总的来说，它更偏{type}。"
-      ], {
-        first: first.label,
-        firstGrade: gradeText(firstGrade),
-        second: second.label,
-        secondGrade: gradeText(secondGrade),
-        type: typeText
-      });
-      return detail(
-        "surface",
-        "场地",
-        accuracy,
-        text,
-        {
-          surfaceType: actualType,
-          grades: [
-            { surface: first.label, grade: firstGrade },
-            { surface: second.label, grade: secondGrade }
-          ]
-        },
-        { surfaces: surfacesForType(actualType) }
-      );
+  const APTITUDE_GROUPS = {
+    surface: {
+      label: "草泥适性", field: "surfaceGrades", grades: ["A", "B", "C", "G"],
+      targets: { grass: "草地", dirt: "泥地" }, good: ["A", "B"]
+    },
+    track: {
+      label: "赛场类型", field: "trackAptitudes", grades: ["◎", "○", "△"],
+      targets: { burst: "瞬发", sustained: "持久", attrition: "消耗" }, good: ["◎", "○"]
     }
+  };
 
-    if (accuracy === "close") {
-      const picked = R.roll(2) === 1 ? first : second;
-      const grade = picked === first ? firstGrade : secondGrade;
-      const text = textVariant([
-        "{surface}这边我看是{grade}。大方向上，它应该是{type}。",
-        "{surface}这一项，我看大概是{grade}。整体路子还是按{type}来走。"
-      ], {
-        surface: picked.label,
-        grade: gradeText(grade),
-        type: typeText
-      });
-      return detail(
-        "surface",
-        "场地",
-        accuracy,
-        text,
-        {
-          surfaceType: actualType,
-          grades: [{ surface: picked.label, grade }]
-        },
-        { surfaces: surfacesForType(actualType) }
-      );
+  const APTITUDE_PHRASES = {
+    grass: {
+      suitable: ["草地上跑起来比较自在", "草地这边看着合适"],
+      unsuitable: ["草地恐怕不是它舒服的地方", "草地上它可能不太能跑顺"]
+    },
+    dirt: {
+      suitable: ["泥地上它能应付得来", "泥地这边看着合适"],
+      unsuitable: ["泥地恐怕不太合它", "泥地上它可能不太能跑顺"]
+    },
+    burst: {
+      strong: ["前面留些余力、最后再决胜，最能发挥它的长处", "把胜负留到最后一段，是它最拿手的跑法"],
+      suitable: ["前面缓一缓、留到最后决胜，它也能应付", "等到最后一段再决胜，这样的展开合它的特点"],
+      unsuitable: ["大家都留到最后才突然提速，恐怕不太合它", "胜负只看最后一段的突然加速，它可能会吃亏"]
+    },
+    sustained: {
+      strong: ["提前发动、一路维持到终点，最能发挥它的长处", "从较早的地方开始持续提速，是它拿手的展开"],
+      suitable: ["提前一些发动、把高速维持到终点，它也能应付", "决胜从较早的地方开始，它能适应这样的展开"],
+      unsuitable: ["还没到最后一段就开始持续提速，恐怕不太合它", "需要提前发动、一路维持高速的比赛，它可能会吃亏"]
+    },
+    attrition: {
+      strong: ["从前段就一直紧着跑的比赛，最能发挥它的长处", "开头就进入激烈竞争、一路没有多少喘息，是它拿手的展开"],
+      suitable: ["从前段就持续紧逼、少有喘息的比赛，它也能应付", "开头就要一直跟紧的比赛，它能适应这样的展开"],
+      unsuitable: ["从开头就一路紧逼、没多少喘息，恐怕不太合它", "比赛前段就一直紧着跑，它可能会吃亏"]
     }
+  };
 
-    if (accuracy === "fuzzy") {
-      const text = textVariant([
-        "场地大方向先按{type}来想，具体哪块场地最合脚还得再跑。",
-        "场地先往{type}这个方向想，细分到哪一块最舒服，还得等它正式跑一场。"
-      ], { type: typeText });
-      return detail(
-        "surface",
-        "场地",
-        accuracy,
-        text,
-        { surfaceType: actualType },
-        { surfaces: surfacesForType(actualType) }
-      );
+  // 只保存评语表达出来的判断；覆盖数量决定信息量，遗漏目标保持未知。
+  // 模糊与误判共用文案，认知层不读取内部 accuracy 来判断真假。
+  function aptitudeComment(horse, trainer, id, forcedAccuracy) {
+    const group = APTITUDE_GROUPS[id];
+    const accuracy = forcedAccuracy || chooseAccuracy(trainer, id, horse.gameMode);
+    const available = Object.keys(group.targets).filter((target) => group.grades.includes((horse[group.field] || {})[target]));
+    if (accuracy === "unknown" || !available.length) {
+      return detail(id, group.label, accuracy, id === "surface"
+        ? "草地和泥地哪边更合适，现在还看不清，先通过实战观察。"
+        : "它喜欢怎样的比赛展开，现在还摸不准，先别急着定下路线。", null);
     }
-
-    if (accuracy === "unknown") {
-      return detail(
-        "surface",
-        "场地",
-        accuracy,
-        pickOne([
-          "场地这块现在还看不明白，草地和泥地都不能太早下判断。",
-          "场地适性现在还没露出来，草地泥地都先别急着定性。"
-        ])
-      );
+    let targets = available.slice();
+    if (accuracy !== "precise") {
+      if (id === "surface" && accuracy === "close") {
+        const suitable = targets.filter((target) => group.good.includes(horse[group.field][target]));
+        targets = [pickOne(suitable.length ? suitable : targets)];
+      } else {
+        const count = id === "track" && accuracy === "close" ? 2 : 1;
+        const pool = targets.slice();
+        targets = [];
+        while (targets.length < count && pool.length) {
+          targets.push(pool.splice(R.rollRange(0, pool.length - 1), 1)[0]);
+        }
+        targets.sort((left, right) => available.indexOf(left) - available.indexOf(right));
+      }
     }
-
-    const wrongType = wrongSurfaceType(actualType);
-    const wrongText = textVariant([
-      "场地大方向先按{type}来想，具体哪块场地最合脚还得再跑。",
-      "场地先往{type}这个方向想，细分到哪一块最舒服，还得等它正式跑一场。"
-    ], { type: surfaceTypeLabel(wrongType) });
-    return detail(
-      "surface",
-      "场地",
-      accuracy,
-      wrongText,
-      { surfaceType: wrongType },
-      { surfaces: surfacesForType(wrongType) }
-    );
+    const assessments = targets.map((target) => {
+      const grade = horse[group.field][target];
+      let judgment = id === "track" && grade === "◎" ? "strong"
+        : group.good.includes(grade) ? "suitable" : "unsuitable";
+      if (accuracy === "wrong") {
+        judgment = judgment === "unsuitable"
+          ? (id === "track" ? pickOne(["strong", "suitable"]) : "suitable") : "unsuitable";
+      }
+      return { target, judgment };
+    });
+    const clauses = assessments.map((item) => pickOne(APTITUDE_PHRASES[item.target][item.judgment]));
+    const tentative = accuracy === "fuzzy" || accuracy === "wrong";
+    const introduction = tentative ? "从调教看，" : "这孩子的特点，我目前看是这样：";
+    const ending = targets.length < available.length
+      ? (id === "surface" ? "另一种场地还得再观察。" : "其他比赛展开还得再观察。") : "";
+    const text = introduction + clauses.join("；") + "。" + ending;
+    // 笼统观察不硬性限制报名；误判与模糊判断在行为上也保持一致。
+    const recommended = id === "surface" && !tentative
+      ? assessments.filter((item) => item.judgment === "suitable").map((item) => group.targets[item.target]) : [];
+    return detail(id, group.label, accuracy, text, { assessments },
+      recommended.length ? { surfaces: recommended } : null);
   }
 
   function getDistanceType(distance) {
@@ -723,6 +666,7 @@
     return [
       strengthComment(horse, trainer, forced.strength),
       surfaceComment(horse, trainer, forced.surface),
+      aptitudeComment(horse, trainer, "track", forced.track),
       distanceComment(horse, trainer, forced.distance),
       growthComment(horse, trainer, forced.growth),
       temperamentComment(horse, trainer, forced.temperament)

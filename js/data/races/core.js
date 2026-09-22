@@ -119,14 +119,18 @@
     const isNew = kind === "new";
     const surfaceId = surface === "草地" ? "turf" : "dirt";
     const className = isNew ? "新马战" : "未胜利战";
+    const schedule = ns.JraCourseCatalogue?.normalizeGeneratedRace(plan, surface, course, distance, index);
+    if (!schedule) throw new Error("生成中央条件赛前必须加载 JRA 赛程目录。");
     return withDisplayNames({
-      id: `${kind}-${surfaceId}-${plan.age}-${plan.month}-${halfSuffix(plan.half)}-${COURSE_IDS[course] || "local"}-${distance}-${index}`,
-      name: `${course}${surface}${distance}m${className}`,
+      id: `${kind}-${surfaceId}-${plan.age}-${plan.month}-${halfSuffix(plan.half)}-${COURSE_IDS[schedule.course] || "local"}-${distance}-${index}`,
+      name: `${schedule.course}${surface}${distance}m${className}`,
       grade: isNew ? "新马" : "未胜利",
       raceClass: isNew ? "new" : "maiden",
       surface,
       surfaceRegion: "日本",
-      course,
+      course: schedule.course,
+      courseRouteId: schedule.routeId,
+      courseRouteName: schedule.routeName,
       distance,
       month: plan.month,
       half: plan.half,
@@ -144,14 +148,18 @@
     };
     const label = labels[raceClass];
     const surfaceId = surface === "草地" ? "turf" : "dirt";
+    const schedule = ns.JraCourseCatalogue?.normalizeGeneratedRace(plan, surface, course, distance, index);
+    if (!schedule) throw new Error("生成中央条件赛前必须加载 JRA 赛程目录。");
     return withDisplayNames({
-      id: `${raceClass}-${surfaceId}-${plan.age}-${plan.month}-${halfSuffix(plan.half)}-${COURSE_IDS[course] || "local"}-${distance}-${index}`,
-      name: `${course}${surface}${distance}m${label.name}`,
+      id: `${raceClass}-${surfaceId}-${plan.age}-${plan.month}-${halfSuffix(plan.half)}-${COURSE_IDS[schedule.course] || "local"}-${distance}-${index}`,
+      name: `${schedule.course}${surface}${distance}m${label.name}`,
       grade: label.grade,
       raceClass,
       surface,
       surfaceRegion: "日本",
-      course,
+      course: schedule.course,
+      courseRouteId: schedule.routeId,
+      courseRouteName: schedule.routeName,
       distance,
       month: plan.month,
       half: plan.half,
@@ -182,6 +190,11 @@
       ageRestriction: restriction
     };
     if (spec.sexRestriction) race.sexRestriction = spec.sexRestriction;
+    // 赛程适性档案在第二阶段由赛后加载的统一映射补齐；这里仍保留显式提供的路线信息，
+    // 让自定义赛事可以直接引用同一条“赛马场 + 表面 + 距离 + 路线”档案。
+    if (spec.courseProfileId) race.courseProfileId = spec.courseProfileId;
+    if (spec.courseRouteId) race.courseRouteId = spec.courseRouteId;
+    if (spec.courseRouteName) race.courseRouteName = spec.courseRouteName;
     return race;
   }
 

@@ -75,7 +75,7 @@
     const row = { turn:p.turn, tf:p.tf, raceClass:p.raceClass, rank:p.rank, retired:!!p.retired, surface:p.surface, distance:p.distance,
       region:p.surfaceRegion, count, age:p.age, year:p.year, raceId:p.raceId };
     h.recentForm = [...(h.recentForm || []).filter(r=>r.turn>=p.turn-12 && r.turn!==p.turn), row].slice(-12);
-    if (p.raceClass === 'op') { const s = h.background || (h.background={starts:0,wins:0,prize:0,lastTf:null}); s.starts++; if(p.rank===1)s.wins++; s.prize+=p.prize; if(p.tf!=null)s.lastTf=p.tf; }
+    if (!['g1','g2','g3'].includes(p.raceClass)) { const s = h.background || (h.background={starts:0,wins:0,prize:0,lastTf:null}); s.starts++; if(p.rank===1)s.wins++; s.prize+=p.prize; if(p.tf!=null)s.lastTf=p.tf; }
   }
   function calibration(world) {
     const horses=world.horses.filter(h=>h.status==='active').map(h=>({id:h.id,value:recent(h,world.turn+1).value})).filter(h=>h.value!=null);

@@ -1161,6 +1161,8 @@
       const calc = ns.HorseRules.calcRaceAbility(runner.horse, race, {
         currentTime: runner.time,
         maturityDecline: runner.decline || 0,
+        maturity: runner.maturity,
+        temperamentMod: runner.temperamentMod,
         noAbilityFloor: true,
         trackCondition,
         racePenaltyMod: preRaceAbilityMod(runner.condition)
@@ -1174,6 +1176,10 @@
       applyPreRaceAccident(result, runner.condition);
       result.injury = retirementInjury(result, runner.condition);
       result.pressure = pressure;
+      if (opts.includeAbilityCalculations) {
+        result.calculation = calc;
+        result.entryAbility = calc.ability - pressure;
+      }
       return result;
     });
     const ordered = orderedFieldResults(results);
@@ -1188,6 +1194,11 @@
         retired: result.retired, phase: result.retiredPhase, injury: result.injury,
         total: result.total, tf: null,
         pressure: result.pressure,
+        ...(opts.includeAbilityCalculations ? {
+          calculation: result.calculation,
+          entryAbility: result.entryAbility,
+          phases: result.phases
+        } : {}),
         margin: result.retired || !winner ? null : (winner.total - result.total) / pointsPerLength,
         marginLabel: result.retired || result === winner ? "" : createMarginLabel((winner.total - result.total) / pointsPerLength,
           result.total === winner.total ? "player-loss" : "")

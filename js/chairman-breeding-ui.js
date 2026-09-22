@@ -4,14 +4,14 @@
   const labels = { none: "未留种", candidate: "待用", active: "繁殖中", retired: "繁殖引退", template: "基础资料", juvenile: "幼驹", ancestor: "祖先档案" };
   ns.ChairmanBreedingUI = { create(c) {
     const { escape: e, button: b, input, select, modal } = c;
-    const name = (id) => B.get(c.world, id)?.name || c.world.familyTemplates?.find(h=>h.id===id)?.name || ns.ChairmanPedigrees.records.find((h) => h.id === id)?.originalName || "未记录";
+    const name = (id) => {const h=B.get(c.world,id)||(ns.ChairmanEditor?.templates(c.world)||ns.ChairmanPedigrees.records).find(h=>h.id===id);return h?.displayName||h?.name||h?.originalName||"未记录";};
     const link = (id, text) => id ? b("pedigree", text || name(id), id, 'class="cm-link"') : "未记录";
     const data = (form) => Object.fromEntries(new FormData(form));
     async function prefs(values) { if (c.store.writable) await c.commit(W.edit(c.world, "ui", values)); else Object.assign(c.world.ui, values); }
     const page = (result, action = "breedPage") => `<div class="cm-pagination">${b(action, "上一页", Math.max(0, result.offset - 50), result.offset ? "" : "disabled")}<span>共${result.total}条 · 第${Math.floor(result.offset / 50) + 1}页</span>${b(action, "下一页", result.offset + 50, result.more ? "" : "disabled")}</div>`;
     const sources = [["", "全部"], ["historical", "史实基础资料"], ["foundation", "架空始祖"], ["bred", "自动繁殖"], ["external", "外来二岁马"], ["custom", "自建"], ["ai", "随机马"], ["imported", "导入家系"], ["imported-family", "家系引入"] ];
     function rows(result) {
-      return `<div class="cm-table-wrap"><table data-table="breeding" data-primary-columns="0,1,4" data-name-column="0"><thead><tr><th>名字</th><th>出生／性别／地区</th><th>父</th><th>母</th><th>来源／状态／配种档位</th><th>收藏</th></tr></thead><tbody>${result.rows.map((h) => `<tr data-row-id="${e(h.id)}"><td>${link(h.id, h.name)}</td><td>${h.source === "imported" ? "模板" : h.status === "template" ? "史实" : "游戏"}${h.birthYear}年 · ${e(h.gender)}<small>${e(h.region)}</small></td><td>${link(h.fatherId)}</td><td>${link(h.motherId)}</td><td>${e(sources.find((s) => s[0] === h.source)?.[1] || h.source)}<small>${e(labels[h.breedingStatus] || labels[h.status] || h.status)} · ${e(h.grade)}</small></td><td>${b("breedFavorite", (c.world.ui.breedingFavorites || []).includes(h.id) ? "★ 已收藏" : "☆ 收藏", h.id)}</td></tr>`).join("")}</tbody></table></div>`;
+      return `<div class="cm-table-wrap"><table data-table="breeding" data-primary-columns="0,1,4" data-name-column="0"><thead><tr><th>名字</th><th>出生／性别／地区</th><th>父</th><th>母</th><th>来源／状态／配种档位</th><th>收藏</th></tr></thead><tbody>${result.rows.map((h) => `<tr data-row-id="${e(h.id)}"><td>${link(h.id, h.name)}${h.playerModified?"<small>玩家修改</small>":""}${h.disabled?"<small>已停用</small>":""}${ns.ChairmanEditor?.enabled(c.world)&&h.strength!=null?`<small>能力 ${h.strength} · 配种 ${h.breedingStrength??"—"}</small>`:""}</td><td>${h.source === "imported" ? "模板" : h.status === "template" ? "史实" : "游戏"}${h.birthYear}年 · ${e(h.gender)}<small>${e(h.region)}</small></td><td>${link(h.fatherId)}</td><td>${link(h.motherId)}</td><td>${e(sources.find((s) => s[0] === h.source)?.[1] || h.source)}<small>${e(labels[h.breedingStatus] || labels[h.status] || h.status)} · ${e(h.grade)}</small></td><td>${b("breedFavorite", (c.world.ui.breedingFavorites || []).includes(h.id) ? "★ 已收藏" : "☆ 收藏", h.id)}</td></tr>`).join("")}</tbody></table></div>`;
     }
     async function render(tab) {
       if (tab !== "breeding") return false;
@@ -24,7 +24,7 @@
       if (view === "plans") {
         const copy = W.clone(w); let planned = [], error = "";
         try { planned = B.plan(copy); } catch (err) { error = err.message; }
-        html += `${UI.toolbar("年度配种", `指定${w.breeding.manual.length}组 · 共${planned.length}组`, b("breedMate", "指定配种", "", 'class="cm-primary"'))}${UI.help("指定优先；同母同年限一驹。预览不消耗随机数，年末锁定。超过目标的指定配种全部保留。")}${error ? `<p class="cm-error">${e(error)}。请修正指定配种后结束年度。</p>${w.breeding.manual.map((p) => `<p>${link(p.fatherId)} × ${link(p.motherId)} ${b("breedCancel", "取消指定", p.motherId)}</p>`).join("")}` : ""}`;
+        html += `${UI.toolbar("年度配种", `指定${w.breeding.manual.length}组 · 共${planned.length}组`, b("breedMate", "指定配种", "", 'class="cm-primary"'))}${UI.help("指定优先；同母同年限一驹。预览不消耗随机数，年末锁定。超过目标的指定配种全部保留。草地、泥地和瞬发／持久／消耗逐项融合：各项40%取父方、40%取母方、20%取出生地区随机值。三类型会约束到既有七种组合，不自然产生◎◎◎；40／40／20是组合约束前的来源概率。草泥不保证至少一项A。年末冻结后代，读档与地区设置修改不会重抽。")}${error ? `<p class="cm-error">${e(error)}。请修正指定配种后结束年度。</p>${w.breeding.manual.map((p) => `<p>${link(p.fatherId)} × ${link(p.motherId)} ${b("breedCancel", "取消指定", p.motherId)}</p>`).join("")}` : ""}`;
         const offset = Math.min(Number(p.offset) || 0, Math.max(0, Math.floor((planned.length - 1) / 50) * 50));
         html += `<div class="cm-table-wrap"><table><thead><tr><th>父本</th><th>母本</th><th>地区</th><th>安排</th><th></th></tr></thead><tbody>${planned.slice(offset, offset + 50).map((p) => `<tr><td>${B.get(w, p.fatherId) ? link(p.fatherId) : e(B.get(copy, p.fatherId).name)}</td><td>${B.get(w, p.motherId) ? link(p.motherId) : e(B.get(copy, p.motherId).name)}</td><td>${e(p.homeRegion)}</td><td>${p.manual ? '<span class="cm-badge">指定</span>' : "自动"}</td><td>${p.manual ? b("breedCancel", "取消指定", p.motherId) : ""}</td></tr>`).join("")}</tbody></table></div>`;
         html += page({ total: planned.length, offset, more: offset + 50 < planned.length });
@@ -37,7 +37,7 @@
         html += `<div class="cm-table-wrap"><table><thead><tr><th>排名</th><th>繁殖马</th><th>子代奖金万</th><th>获胜／出赛子代</th></tr></thead><tbody>${(boards.find(([id]) => id === board) || boards[0])[2].slice(0, 10).map((h, i) => `<tr><td>${i + 1}</td><td>${link(h.horseId || h.id, h.name)} ${h.champion ? '<span class="cm-badge">冠军种马</span>' : ""}</td><td>${h.prize.toFixed(1)}</td><td>${h.winners} / ${h.starters}</td></tr>`).join("") || '<tr><td colspan="4">暂无出赛子代</td></tr>'}</tbody></table></div>`;
       } else {
         const result = B.query(w, { ...p, view });
-        html += `<form data-form="breedFilter" class="cm-filters">${input("search", "名字 / 别名 / 编号", p.search || "")}${select("letter","首字母筛选",[["","全部字母"],...result.letters],p.letter||"")}${select("alphabet", "首字母", [["original", "原名"], ["pinyin", "中文拼音"]], p.alphabet || "original")}${select("gender", "性别", [["", "全部"], "牡马", "牝马", "骟马"], p.gender || "")}${select("region", "地区", [["", "全部"], ...W.regionNames(w)], p.region || "")}${input("decade", "出生年代（例如1980）", p.decade || "", "number")}${select("source", "来源", sources, p.source || "")}${select("grade", "公开配种档位", [["", "全部"], "较低", "普通", "良好", "优秀", "顶级", "未公开"], p.grade || "")}${select("status", "生命周期", [["", "全部"], ["active", "竞赛中"], ["retired", "竞赛退役"], ["juvenile", "幼驹"], ["ancestor", "祖先"]], p.status || "")}${select("breedingStatus", "繁殖状态", [["", "按当前视图"], ["all", "全部档案"], ...Object.entries(labels).filter(([k]) => ["none", "active", "candidate", "retired"].includes(k))], p.breedingStatus || "")}${[ ["favorites", "收藏"], ["recent", "最近查看"], ["used", "最近配种"]].map(([key, label]) => `<label class="cm-check"><input type="checkbox" name="${key}" value="1" ${p[key] ? "checked" : ""}>${label}</label>`).join("")}<button>查询并保存筛选</button>${b("breedClear", "清除筛选")}</form>`;
+        html += `<form data-form="breedFilter" class="cm-filters">${input("search", "名字 / 别名 / 编号", p.search || "")}${ns.ChairmanEditor?.enabled(w)&&view!=="library"?select("sort","排序",[["","名称"],["strength","真实能力"],["breedingStrength","配种实力"]],p.sort||""):""}${select("letter","首字母筛选",[["","全部字母"],...result.letters],p.letter||"")}${select("alphabet", "首字母", [["original", "原名"], ["pinyin", "中文拼音"]], p.alphabet || "original")}${select("gender", "性别", [["", "全部"], "牡马", "牝马", "骟马"], p.gender || "")}${select("region", "地区", [["", "全部"], ...W.regionNames(w)], p.region || "")}${input("decade", "出生年代（例如1980）", p.decade || "", "number")}${select("source", "来源", sources, p.source || "")}${select("grade", "公开配种档位", [["", "全部"], "较低", "普通", "良好", "优秀", "顶级", "未公开"], p.grade || "")}${select("status", "生命周期", [["", "全部"], ["active", "竞赛中"], ["retired", "竞赛退役"], ["juvenile", "幼驹"], ["ancestor", "祖先"]], p.status || "")}${select("breedingStatus", "繁殖状态", [["", "按当前视图"], ["all", "全部档案"], ...Object.entries(labels).filter(([k]) => ["none", "active", "candidate", "retired"].includes(k))], p.breedingStatus || "")}${[ ["favorites", "收藏"], ["recent", "最近查看"], ["used", "最近配种"]].map(([key, label]) => `<label class="cm-check"><input type="checkbox" name="${key}" value="1" ${p[key] ? "checked" : ""}>${label}</label>`).join("")}<button>查询并保存筛选</button>${b("breedClear", "清除筛选")}</form>`;
 
         html += result.total ? rows(result) + page(result) : `<div class="cm-empty">${view === "young" ? "尚无幼驹。完成年度配种并封存本年后可查看新生幼驹。" : view === "candidate" ? "当前没有待用马。可从马匹档案查看退役马的繁殖状态，或建立基础繁殖群。" : "当前条件下没有记录。请调整筛选并应用，或从基础血统库引入个体。"}</div>`;
       }
@@ -46,7 +46,7 @@
     function tree(id, level = 0, library = false) {
       const cells = [], depth = 3 - level, height = 2 ** depth;
       function walk(parent, col, row, span, path) {
-        const h = library ? ns.ChairmanPedigrees.records.find((v) => v.id === parent) : B.get(c.world, parent);
+        const h = library ? (ns.ChairmanEditor?.templates(c.world)||ns.ChairmanPedigrees.records).find((v) => v.id === parent) : B.get(c.world, parent);
         for (const [i, key] of ["fatherId", "motherId"].entries()) { const at = row + i * span / 2, label = path + (i ? "母" : "父");
           cells.push(`<div class="cm-pedigree-cell cm-lineage-${at < height / 2 ? "father" : "mother"}" style="grid-column:${col};grid-row:${at + 1}/span ${span / 2}"><small>${label}</small>${link(h?.[key])}</div>`);
           if (col < depth) walk(h?.[key], col + 1, at, span / 2, label);
@@ -56,7 +56,7 @@
     }
     const relations = new Map();
     async function content(id, view = "pedigree", offset = 0) {
-      const w = c.world, t = ns.ChairmanPedigrees.records.find((h) => h.id === id), raw = B.get(w, id), h = raw ? B.publicHorse(w, raw) : t;
+      const w = c.world, t = (ns.ChairmanEditor?.templates(c.world)||ns.ChairmanPedigrees.records).find((h) => h.id === id), raw = B.get(w, id), h = raw ? B.publicHorse(w, raw) : t;
       if (!h) throw new Error("此亲缘尚未核实，资料未收录。");
       const relation = relations.get(id) || "direct";
       let html = "";
@@ -69,14 +69,14 @@
         for (const [title, getter] of [["本年WTR前十", W.rating], ["历代WTR前十", (h) => Math.max(h.breeding?.bestWtr ?? -Infinity, W.rating(h) ?? -Infinity)]]) html += `<section><h3>${title}</h3>${active.filter((h) => getter(h) != null && Number.isFinite(getter(h))).sort((a, b) => getter(b) - getter(a)).slice(0, 10).map((h) => `<p>${link(h.id)} · ${ns.ChairmanRatings.integer(getter(h))}</p>`).join("") || "暂无评分"}</section>`;
         return html + '</div></details>';
       }
-      html += `<div class="cm-toolbar"><div>${raw?.breeding ? `${e(labels[h.breedingStatus])} · 配种实力 ${e(h.grade)}${h.breedingStrength != null ? `（自建值${h.breedingStrength}）` : ""} · 冠军种马 ${h.championYears.length}次` : "基础血统资料"}</div>${UI.more(b("contentExportFamily","导出家族模板包",id)+b("breedFavorite", (w.ui.breedingFavorites || []).includes(id) ? "★ 已收藏" : "☆ 收藏", id) + (raw && B.available(w, raw) ? b("breedPin", h.pinned ? "取消指定保留" : "指定保留", id) + b("breedRetire", "勒令繁殖引退", id) : "") + (t?.core ? b("breedIntroduce", "引入世界（预览）", id) : ""))}</div>${tree(id, 0, !!t)}<details class="cm-help"><summary>资料与来源</summary><p>${e(h.originalName || h.name)} · ${e((h.aliases || []).join("、"))}</p><p>编号 ${e(h.id)} · ${raw ? "游戏" : "史实"}${h.birthYear}年出生 · ${e(h.gender)}</p>${raw?.historicalBirthYear ? `<p>史实出生年 ${raw.historicalBirthYear}</p>` : ""}${h.sourceUrl && /^https:\/\/www\.jbis\.(jp|or\.jp)\/horse\/\d+\//.test(h.sourceUrl) ? `<a href="${e(h.sourceUrl)}" target="_blank" rel="noopener">JBIS来源资料</a>` : ""}</details>`;
-      return html;
+      html += `<div class="cm-toolbar"><div>${raw?.breeding ? `${e(labels[h.breedingStatus])} · 配种实力 ${e(h.grade)}${h.breedingStrength != null ? `（精确值${h.breedingStrength}）` : ""} · 冠军种马 ${h.championYears.length}次` : "基础血统资料"}</div>${UI.more((ns.ChairmanEditor?.enabled(w)?b(raw?"worldEditHorse":"worldEditTemplate",raw?"编辑马匹":"编辑库资料",id)+(raw?b("worldEditReal","真实参数",id):""):"")+b("contentExportFamily","导出家族模板包",id)+b("breedFavorite", (w.ui.breedingFavorites || []).includes(id) ? "★ 已收藏" : "☆ 收藏", id) + (raw && B.available(w, raw) ? b("breedPin", h.pinned ? "取消指定保留" : "指定保留", id) + b("breedRetire", "勒令繁殖引退", id) : "") + (t?.core&&!t.disabled ? b("breedIntroduce", "引入世界（预览）", id) : ""))}</div>${tree(id, 0, !!t)}<details class="cm-help"><summary>资料与来源</summary><p>${e(h.originalName || h.name)} · ${e((h.aliases || []).join("、"))}</p><p>编号 ${e(h.id)} · ${raw ? "游戏" : "史实"}${h.birthYear}年出生 · ${e(h.gender)}</p>${raw?.historicalBirthYear ? `<p>史实出生年 ${raw.historicalBirthYear}</p>` : ""}${h.sourceUrl && /^https:\/\/www\.jbis\.(jp|or\.jp)\/horse\/\d+\//.test(h.sourceUrl) ? `<a href="${e(h.sourceUrl)}" target="_blank" rel="noopener">JBIS来源资料</a>` : ""}</details>`;
+      if(t?.playerModified)html+='<small>玩家修改；原始来源资料仅供对照。</small>';if(t&&ns.ChairmanEditor?.enabled(w))html+=`<details><summary>生成预设（未来引入）</summary><p>配种基准 ${e(t.game?.breedingBase??'默认')} · 参考距离 ${e(t.game?.distance??'随机')} · ${e(t.game?.surface||'默认场地')} · ${e(t.game?.growthType||'随机成长')}</p></details>`; return html;
     }
     async function detail(id, offset = 0, relation = "direct", view = "pedigree") {
       relations.set(id, relation);
       await prefs({ breedingRecent: [...new Set([id, ...(c.world.ui.breedingRecent || [])])].slice(0, 30) });
       if (c.world.horses.some((h) => h.id === id)) return ns.ChairmanApp.horseDetail(id, offset, view);
-      const h = B.get(c.world, id) || ns.ChairmanPedigrees.records.find((h) => h.id === id);
+      const h = B.get(c.world, id) || (ns.ChairmanEditor?.templates(c.world)||ns.ChairmanPedigrees.records).find((h) => h.id === id);
       modal(h?.displayName || h?.name || h?.originalName || "血统档案", `<div class="cm-tabs">${b("pedigree", "血统", id)}${B.get(c.world, id) ? b("breedDescendants", "后代", id, 'data-relation="direct"') : ""}</div>${await content(id, view, offset)}`, { key: `pedigree:${id}`, render: () => detail(id, offset, relation, view) });
     }
     function parentFields(form, values = {}) {
@@ -128,7 +128,7 @@
     }
     async function submit(form) {
       const kind = form.dataset.form, p = data(form), w = c.world;
-      if (kind === "breedFilter") { await prefs({ breedingFilter: { view: w.ui.breedingFilter?.view || "active", ...p, offset: 0 } }); await c.render(); }
+      if (kind === "breedFilter") { p.normalSort=["strength","breedingStrength"].includes(p.sort)?w.ui.breedingFilter?.normalSort??"":p.sort||"";await prefs({ breedingFilter: { view: w.ui.breedingFilter?.view || "active", ...p, offset: 0 } }); await c.render(); }
       else if (kind === "breedBoard") { await prefs({ breedingFilter: { view: "boards", year: p.year } }); await c.render(); }
       else if (kind === "breedMating") { await c.commit(B.edit(w, "mating", p)); c.dialog.close(); await c.render(); }
       else if (kind === "breedFoundation" || kind === "breedIntroduce") {

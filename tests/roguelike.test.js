@@ -73,7 +73,7 @@ test("candidate generation records actual parents and a usable route", () => {
   assert.notEqual(candidate.horse.damId, "random");
   assert.ok(candidate.horse.strength >= 62 && candidate.horse.strength <= 90);
   assert.equal(rules.RoguelikeRules.hasReasonableRoute(candidate.horse), true);
-  assert.equal(candidate.initialComments.length, 5);
+  assert.equal(candidate.initialComments.length, 6);
 });
 
 test("consumable shop preserves inventory across saves and locks after candidate generation", () => {
@@ -149,19 +149,19 @@ test("adaptation consumes inventory only after a valid effect and skipping is fr
   assert.equal(rules.RoguelikeRules.purchaseConsumable(save, "adaptation").ok, true);
   save.run = rules.RoguelikeRules.createRun(save.profile);
   const candidate = save.run.candidates[0];
-  candidate.horse.grass["日本"] = "A";
-  candidate.horse.dirt["日本"] = "A";
+  candidate.horse.surfaceGrades.grass = "A";
+  candidate.horse.surfaceGrades.dirt = "A";
   assert.equal(rules.RoguelikeRules.selectCandidate(save, candidate.id).ok, true);
-  assert.equal(rules.RoguelikeRules.useAdaptationConsumable(save, "japan").ok, false);
+  assert.equal(rules.RoguelikeRules.useAdaptationConsumable(save, "balanced").ok, false);
   assert.equal(save.profile.consumables.adaptation, 1);
   assert.equal(save.run.consumablesUsed.adaptation, false);
-  candidate.horse.grass["日本"] = "G";
-  candidate.horse.dirt["日本"] = "G";
-  const adapted = rules.RoguelikeRules.useAdaptationConsumable(save, "japan");
+  candidate.horse.surfaceGrades.grass = "G";
+  candidate.horse.surfaceGrades.dirt = "G";
+  const adapted = rules.RoguelikeRules.useAdaptationConsumable(save, "balanced");
   assert.equal(adapted.ok, true);
   assert.equal(save.profile.consumables.adaptation, 0);
   assert.equal(save.run.challengeOptions.length, 3);
-  assert.equal([save.run.selectedCandidate.horse.grass["日本"], save.run.selectedCandidate.horse.dirt["日本"]].filter((grade) => grade === "C").length, 1);
+  assert.equal([save.run.selectedCandidate.horse.surfaceGrades.grass, save.run.selectedCandidate.horse.surfaceGrades.dirt].filter((grade) => grade === "C").length, 1);
 
   const skipped = rules.RoguelikeRules.createSave();
   skipped.profile.consumables.adaptation = 2;
@@ -172,7 +172,7 @@ test("adaptation consumes inventory only after a valid effect and skipping is fr
   assert.equal(skipped.run.consumablesUsed.adaptation, false);
 });
 
-test("legacy service purchases migrate to used consumables without refunds", () => {
+test("previous-rule roguelike saves are rejected", () => {
   const legacyCandidate = rules.RoguelikeRules.generateCandidate("sato-yuta", "normal");
   legacyCandidate.reviewComments = legacyCandidate.initialComments;
   legacyCandidate.reviewLabel = "权威复核";
@@ -190,15 +190,7 @@ test("legacy service purchases migrate to used consumables without refunds", () 
       spentCoins: 130
     }
   };
-  const migrated = rules.RoguelikeRules.normalizeSave(legacy);
-  assert.equal(migrated.version, 2);
-  assert.equal(migrated.profile.honorCoins, 77);
-  assert.equal(JSON.stringify(migrated.profile.consumables), JSON.stringify({ reroll: 0, selected: 0, champion: 0, reappraise: 0, authoritative: 0, adaptation: 0 }));
-  assert.equal(migrated.run.consumablesUsed.selected, true);
-  assert.equal(migrated.run.consumablesUsed.authoritative, true);
-  assert.equal(migrated.run.services.refresh.length, 1);
-  assert.equal(migrated.run.services.review.length, 1);
-  assert.equal(migrated.run.candidates[0].reviewLabel, "权威复核");
+  assert.throws(() => rules.RoguelikeRules.normalizeSave(legacy), /不支持的肉鸽存档版本/);
 });
 
 test("stable challenge uses the final top-two 5/5/8 requirements", () => {

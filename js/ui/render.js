@@ -1,6 +1,21 @@
 (function () {
   const ns = (window.Keiba = window.Keiba || {});
 
+  function escapeCommentText(value) {
+    return String(value == null ? "" : value).replace(/[&<>"']/g, (char) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[char]));
+  }
+
+  function trainerCommentCards(comments, variant) {
+    const className = variant === "rogue" ? "rogue-comment" : variant === "era" ? "era-trainer-comment" : "trainer-comment";
+    if (!comments || !comments.length) return '<p class="muted trainer-notes-empty">练马师还没有留下评估，先通过调教和比赛逐步观察。</p>';
+    return comments.map((comment, index) => `
+      <article class="${className} trainer-note">
+        <span class="trainer-note-label">${escapeCommentText(comment.label || comment.item || `评语 ${index + 1}`)}</span>
+        <p>${escapeCommentText(comment.text)}</p>
+      </article>
+    `).join("");
+  }
+
   function optionList(items, selectedId) {
     return items.map((item) => `<option value="${item.id}" ${item.id === selectedId ? "selected" : ""}>${item.name}</option>`).join("");
   }
@@ -644,8 +659,8 @@
       : ns.Jockeys || [];
     const excellentJockeyMinAbility = ns.JockeyRules ? ns.JockeyRules.PLAYER_EXCELLENT_MIN_ABILITY : 70;
     const trainers = ns.CommentRules ? ns.CommentRules.getTrainerOptions() : [];
-    const grades = ["S", "A", "B", "C", "G"];
-    const courseGrades = ["S", "A", "B"];
+    const surfaceGrades = ["A", "B", "C", "G"];
+    const trackAptitudeGrades = ["◎", "○", "△"];
     const seasons = [
       "二岁夏", "二岁秋", "二岁冬",
       "三岁春", "三岁夏", "三岁秋", "三岁冬",
@@ -676,6 +691,7 @@
           <span class="home-art-caption" aria-hidden="true">THE TRACK IS YOURS.</span>
         </section>
         <div class="home-mode-heading"><div><p class="home-kicker">CHOOSE YOUR JOURNEY</p><h2>选择你的赛马之旅</h2></div><span>五种玩法，无限可能</span></div>
+        <p class="home-save-notice" role="note">小提示：规则已更新，旧存档已失效，请开始新游戏。</p>
         <div class="home-mode-grid">
           <section class="home-mode-card home-mode-career" aria-labelledby="homeCareerTitle">
             <div class="home-card-top"><img src="assets/home/career.svg" width="44" height="44" alt=""><span class="home-card-index">01 / CAREER</span></div>
@@ -923,26 +939,18 @@
             </div>
           </div>
           <div class="debug-section">
-            <h3>场地适性</h3>
+            <h3>草泥适性</h3>
             <div class="debug-grid">
-              ${debugGradeSelect("debugGrassJapan", "日本草地", "A", grades)}
-              ${debugGradeSelect("debugGrassHongKong", "香港草地", "B", grades)}
-              ${debugGradeSelect("debugGrassUsa", "美国草地", "B", grades)}
-              ${debugGradeSelect("debugGrassEurope", "欧洲草地", "B", grades)}
-              ${debugGradeSelect("debugGrassOther", "其他草地", "B", grades)}
-              ${debugGradeSelect("debugDirtJapan", "日本泥地", "B", grades)}
-              ${debugGradeSelect("debugDirtMiddleEast", "中东泥地", "B", grades)}
-              ${debugGradeSelect("debugDirtUsa", "美国泥地", "B", grades)}
+              ${debugGradeSelect("debugSurfaceGrass", "草地", "A", surfaceGrades)}
+              ${debugGradeSelect("debugSurfaceDirt", "泥地", "C", surfaceGrades)}
             </div>
           </div>
           <div class="debug-section">
-            <h3>日本赛场适性</h3>
+            <h3>赛场类型适性</h3>
             <div class="debug-grid">
-              ${debugGradeSelect("debugCourseTokyo", "东京", "A", courseGrades)}
-              ${debugGradeSelect("debugCourseNakayama", "中山", "A", courseGrades)}
-              ${debugGradeSelect("debugCourseKyoto", "京都", "A", courseGrades)}
-              ${debugGradeSelect("debugCourseHanshin", "阪神", "A", courseGrades)}
-              ${debugGradeSelect("debugCourseOther", "其他地方", "A", courseGrades)}
+              ${debugGradeSelect("debugTrackBurst", "瞬发", "○", trackAptitudeGrades)}
+              ${debugGradeSelect("debugTrackSustained", "持久", "○", trackAptitudeGrades)}
+              ${debugGradeSelect("debugTrackAttrition", "消耗", "△", trackAptitudeGrades)}
             </div>
           </div>
         </div>
@@ -1134,7 +1142,7 @@
         <span><small>场地</small><b>${publicResult.trackCondition || hidden.trackCondition || "-"}</b></span>
         <span><small>主要对手</small><b>${opponentName || "随机对手"}</b></span>
       </div>
-      <div class="post-race-comment-card race-result-comment"><span>${(career.lastRaceComment && career.lastRaceComment.label) || "练马师回顾"}</span><p>${commentText}</p></div>
+      <div class="post-race-comment-card race-result-comment"><span>${(career.lastRaceComment && career.lastRaceComment.label) || "练马师回顾"}</span><p>${escapeCommentText(commentText)}</p></div>
       <div class="race-result-actions">
         <button class="secondary" id="raceResultReturnBtn" type="button">返回行动</button>
         <button id="raceResultHistoryBtn" type="button">查看完整记录</button>
@@ -1213,20 +1221,10 @@
       ${transferText ? `<div class="race-row stable-action-row">${transferText}</div>` : ""}
       <div class="trainer-comments" id="trainerComments" ${commentsCollapsed ? "hidden" : ""}>
         ${rogueInitialComments.length ? `<p class="eyebrow trainer-comment-group-title">初次评估</p>` : ""}
-        ${(rogueInitialComments.length ? rogueInitialComments : comments).map((comment, index) => `
-          <div class="trainer-comment comment-tone-${(index % 5) + 1}">
-            <span>${comment.label || comment.item || `评语 ${index + 1}`}</span>
-            <p>${comment.text}</p>
-          </div>
-        `).join("")}
+        ${trainerCommentCards(rogueInitialComments.length ? rogueInitialComments : comments)}
         ${rogueReviewComments.length ? `
           <p class="eyebrow trainer-comment-group-title">${career.roguelike.reviewLabel || "复核评估"}</p>
-          ${rogueReviewComments.map((comment, index) => `
-            <div class="trainer-comment comment-tone-${(index % 5) + 1}">
-              <span>${comment.label || comment.item || `评语 ${index + 1}`}</span>
-              <p>${comment.text}</p>
-            </div>
-          `).join("")}
+          ${trainerCommentCards(rogueReviewComments)}
         ` : ""}
       </div>
       <div class="race-row trainer-comments-toggle-row">
@@ -1270,8 +1268,8 @@
         <p class="eyebrow">上场比赛评语</p>
       </div>
       <div class="post-race-comment-card">
-        <span>${career.lastRaceComment.label || "练马师回顾"}</span>
-        <p>${career.lastRaceComment.text}</p>
+        <span>练马师回顾${career.lastRaceComment.raceName ? ` · ${escapeCommentText(career.lastRaceComment.raceName)}` : ""}</span>
+        <p>${escapeCommentText(career.lastRaceComment.text)}</p>
       </div>
     `;
   }
@@ -1291,7 +1289,7 @@
       <div class="section-title-row adaptation-title-row">
         <div>
           <p class="eyebrow">适应性提示</p>
-          <p class="muted">基于练马师评语与赛后确定反馈整理，可能存在误判。</p>
+          <p class="muted">练马师判断可能有误，赛后确认只针对指出的具体问题；未知不代表不适应。</p>
         </div>
       </div>
       <div class="adaptation-board" id="adaptationHintsBoard" ${collapsed ? "hidden" : ""}>
@@ -1481,8 +1479,8 @@
         <tr class="history-comment-row">
           <td colspan="${revealScores ? 8 : 7}">
             <div class="history-comment-card">
-              <span>练马师评语</span>
-              <p>${commentText}</p>
+              <span>练马师赛后回顾</span>
+              <p>${escapeCommentText(commentText)}</p>
             </div>
           </td>
         </tr>
@@ -1501,7 +1499,7 @@
       const cardComment = isCommentExpanded ? `
         <div class="history-comment-card history-card-comment">
           <span>练马师评语</span>
-          <p>${commentText}</p>
+          <p>${escapeCommentText(commentText)}</p>
         </div>
       ` : "";
       const cardScore = revealScores && scoreLineText
@@ -1591,16 +1589,12 @@
           </div>
           <div class="aptitude-grid">
             <div>
-              <h3>草地适性</h3>
-              <div class="grade-list">${renderGradeList(h.grass)}</div>
+              <h3>草泥适性</h3>
+              <div class="grade-list">${renderGradeList(h.surfaceGrades)}</div>
             </div>
             <div>
-              <h3>泥地适性</h3>
-              <div class="grade-list">${renderGradeList(h.dirt)}</div>
-            </div>
-            <div>
-              <h3>日本赛场适性</h3>
-              <div class="grade-list">${renderGradeList(h.courseGrades)}</div>
+              <h3>赛场类型适性</h3>
+              <div class="grade-list">${renderGradeList(h.trackAptitudes)}</div>
             </div>
           </div>
         </div>
@@ -1636,6 +1630,7 @@
   }
 
   ns.UI = {
+    trainerCommentCards,
     renderSetup,
     renderChangelog,
     renderWorkspaceStatus,

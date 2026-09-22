@@ -2,7 +2,7 @@
   const ns = (window.Keiba = window.Keiba || {});
 
   function surfaceKey(race) {
-    return `${race.surface}${race.surfaceRegion || "日本"}`;
+    return race.surface;
   }
 
   function isDistanceAllowed(lock, race) {

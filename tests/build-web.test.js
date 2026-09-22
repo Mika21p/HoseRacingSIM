@@ -90,6 +90,13 @@ test("production build preserves historical-horse data and loads one bundle", as
     assert.deepEqual(fs.readFileSync(path.join(result.outputRoot, relative)), fs.readFileSync(path.join(projectRoot, relative)));
   }
   assert.ok(fs.existsSync(path.join(result.outputRoot, "css", "home.css")));
+  assert.ok(fs.existsSync(path.join(result.outputRoot, "track-aptitude-lab.html")));
+  assert.ok(fs.existsSync(path.join(result.outputRoot, "css", "track-aptitude-lab.css")));
+  assert.ok(fs.existsSync(path.join(result.outputRoot, "js", "track-aptitude-lab.js")));
+  assert.ok(fs.existsSync(path.join(result.outputRoot, "js", "data", "jra-course-catalogue.js")));
+  assert.ok(fs.existsSync(path.join(result.outputRoot, "js", "data", "race-course-profiles.js")));
+  assert.match(productionIndex, /js\/data\/jra-course-catalogue\.js\?v=20260922-phase2/);
+  assert.match(productionIndex, /js\/data\/race-course-profiles\.js\?v=20260922-phase2/);
   assert.match(
     productionIndex,
     new RegExp(`js/data/historical-horses/index\\.js\\?v=${result.hash}`)

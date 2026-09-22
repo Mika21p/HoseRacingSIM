@@ -34,8 +34,12 @@
         "有点可惜，看上去身体状态已经开始往下走了。"
       ],
       surface_mismatch: [
-        "这个场地它跑得不顺，步子一直没完全打开。",
-        "今天这个场地条件不太合它，跑起来一直没顺住。"
+        "这次在{target}上，它跑得不够自在，下次可以换一种场地看看。",
+        "{target}确实不太合它，步子一直没跑顺，选下一场时得留意这一点。"
+      ],
+      track_mismatch: [
+        "这场{pattern}，这样的展开不太合它，下次可以换个比赛路子。",
+        "今天{pattern}，不是它舒服的比赛方式，选下一场时得留意这一点。"
       ],
       heavy_mismatch: [
         "今天这个马场太吃力，它在重场下明显跑不开。",
@@ -57,9 +61,9 @@
         "今天没看出明显不合的地方，回去还是看它下一场能不能跑回来。"
       ],
       has_issue: [
-        "今天不是单纯输给对手，条件上确实有些不合它。",
-        "这场看起来跑得不舒服，下次得重新看看条件。",
-        "从结果上来看，今天发挥的确实有问题，受到影响了。"
+        "今天看着不太顺，可能有些条件不合它，还需要再观察。",
+        "这场似乎跑得不舒服，下次可以重新看看条件，但还不能确定是哪一项。",
+        "可能有比赛条件影响了发挥，目前还不足以指出具体原因。"
       ]
     },
     empty: {
@@ -112,8 +116,15 @@
   function adaptationOk(calc) {
     if (!calc) return false;
     const maturity = calc.maturity || {};
-    return calc.distancePenalty <= 0
-      && calc.surfaceMod > -10
+    const aptitude = calc.trackAptitude;
+    return !!aptitude
+      && Number.isFinite(calc.distancePenalty) && calc.distancePenalty <= 0
+      && ["grass", "dirt"].includes(aptitude.surface)
+      && ["A", "B"].includes(aptitude.surfaceGrade)
+      && Number.isFinite(aptitude.surfaceMod) && aptitude.surfaceMod > -10
+      && ["burst", "sustained", "attrition"].includes(aptitude.trackType)
+      && ["◎", "○"].includes(aptitude.trackAptitudeGrade)
+      && Number.isFinite(aptitude.trackAptitudeMod)
       && maturity.status === "成熟期";
   }
 
@@ -130,38 +141,36 @@
     const playerTotal = player ? player.total : null;
     const opponentTotal = opponentRun ? opponentRun.total : null;
 
-    if (race.distance < horse.distMin && calc.distancePenalty >= 3) {
-      return { reason: "distance_too_short", issueState: "has_issue", severity: calc.distancePenalty };
-    }
+    const issues = [];
+    const addIssue = (reason, severity, target) => issues.push({ reason, issueState: "has_issue", severity, target: target || null });
+    if (race.distance < horse.distMin && calc.distancePenalty >= 3) addIssue("distance_too_short", calc.distancePenalty);
+    if (race.distance > horse.distMax && calc.distancePenalty >= 3) addIssue("distance_too_long", calc.distancePenalty);
 
-    if (race.distance > horse.distMax && calc.distancePenalty >= 3) {
-      return { reason: "distance_too_long", issueState: "has_issue", severity: calc.distancePenalty };
+    // 只读取本场冻结的摘要；赛程库和马匹当前适性以后都可能发生变化。
+    const aptitude = calc.trackAptitude || {};
+    const surfaceLabels = { grass: "草地", dirt: "泥地" };
+    const typeLabels = { burst: "瞬发", sustained: "持久", attrition: "消耗" };
+    if (surfaceLabels[aptitude.surface] && ["C", "G"].includes(aptitude.surfaceGrade) && aptitude.surfaceMod <= -10) {
+      addIssue("surface_mismatch", Math.abs(aptitude.surfaceMod), { section: "surface", item: aptitude.surface, label: surfaceLabels[aptitude.surface] });
     }
-
-    if (calc.surfaceMod <= -10) {
-      return {
-        reason: "surface_mismatch",
-        issueState: "has_issue",
-        severity: Math.abs(calc.surfaceMod || 0)
-      };
+    if (typeLabels[aptitude.trackType] && aptitude.trackAptitudeGrade === "△" && aptitude.trackAptitudeMod < 0) {
+      addIssue("track_mismatch", Math.abs(aptitude.trackAptitudeMod), { section: "track", item: aptitude.trackType, label: typeLabels[aptitude.trackType] });
     }
 
     const badTrackCondition = calc.trackCondition === "重" || calc.trackCondition === "不良";
     if (badTrackCondition && calc.heavyMod <= -2) {
-      return {
-        reason: "heavy_mismatch",
-        issueState: "has_issue",
-        severity: Math.abs(calc.heavyMod || 0)
-      };
+      addIssue("heavy_mismatch", Math.abs(calc.heavyMod));
     }
 
     if (maturity.status === "未成熟" && maturity.strengthDelta <= -2) {
-      return { reason: "immature", issueState: "has_issue", severity: Math.abs(maturity.strengthDelta) };
+      addIssue("immature", Math.abs(maturity.strengthDelta));
     }
 
     if (maturity.status === "衰退期" && maturity.strengthDelta <= -2) {
-      return { reason: "declining", issueState: "has_issue", severity: Math.abs(maturity.strengthDelta) };
+      addIssue("declining", Math.abs(maturity.strengthDelta));
     }
+
+    if (issues.length) return { ...issues[0], issueCount: issues.length };
 
     if (adaptationOk(calc) && Number.isFinite(opponentAbility) && opponentAbility - horse.strength >= 5) {
       return { reason: "outclassed", issueState: "no_issue", severity: opponentAbility - horse.strength };
@@ -171,7 +180,7 @@
       return { reason: "off_day", issueState: "no_issue", severity: opponentTotal - playerTotal };
     }
 
-    return { reason: "off_day", issueState: "no_issue", severity: 0 };
+    return { reason: null, issueState: "unknown", severity: 0 };
   }
 
   function buildComment(raceResult, mode, reason, issueState, text) {
@@ -224,16 +233,23 @@
     }
 
     const diagnosis = diagnoseLoss(career, raceResult);
+    if (diagnosis.issueState === "unknown") {
+      return buildComment(raceResult, "empty", null, "unknown", "这场还没有足够的信息判断原因，先观察下一场的表现。");
+    }
     const mode = chooseMode(career.gameMode);
 
     if (mode === "clear" && diagnosis.reason && TEXTS.clear[diagnosis.reason]) {
-      return buildComment(
+      const patterns = { burst: "大家留到最后一段才突然提速", sustained: "还没到最后一段就开始持续提速", attrition: "从前段就一直紧着跑，没多少喘息" };
+      const text = pickOne(TEXTS.clear[diagnosis.reason])
+        .replace("{target}", diagnosis.target ? diagnosis.target.label : "本场")
+        .replace("{pattern}", diagnosis.target ? patterns[diagnosis.target.item] : "");
+      return { ...buildComment(
         raceResult,
         mode,
         diagnosis.reason,
         diagnosis.issueState,
-        pickOne(TEXTS.clear[diagnosis.reason])
-      );
+        text + (diagnosis.issueCount > 1 ? "本场还有其他不利因素，不能把失利只归于这一项。" : "")
+      ), target: diagnosis.target || null };
     }
 
     if (mode === "broad") {

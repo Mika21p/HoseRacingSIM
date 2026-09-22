@@ -4,7 +4,7 @@ const { loadChairmanRules } = require("./helpers/project-loader");
 const { rules: ns } = loadChairmanRules();
 const W = ns.ChairmanRules, C = ns.ChairmanCSV;
 const plain = (v) => JSON.parse(JSON.stringify(v));
-test("legacy simulation matches the pre-chairman deterministic baseline", () => {
+test("赛场适性规则下的模拟结果保持确定性", () => {
   const vm = require("node:vm"), crypto = require("node:crypto"), project = loadChairmanRules();
   let state = 123456;
   project.context.testRandom = () => { state = (Math.imul(1664525, state) + 1013904223) >>> 0; return state / 4294967296; };
@@ -14,7 +14,7 @@ test("legacy simulation matches the pre-chairman deterministic baseline", () => 
     const horse = r.HorseRules.generateHorse({ gameMode: "normal" }), race = r.RaceRegistry.all().find((v) => v.id === id);
     results.push(r.RaceRules.simulateRace(horse, race, { currentTime: r.TimeRules.fromIndex(r.TimeRules.toIndex(3, 6, 1)) }));
   }
-  assert.equal(crypto.createHash("sha256").update(JSON.stringify(results)).digest("hex"), "e739745633f8de9d8d846701580219e91d875f8075e7c17721090dfeb0fd2bb3");
+  assert.equal(crypto.createHash("sha256").update(JSON.stringify(results)).digest("hex"), "280c2c0bd82abc3a1f022795e6d5c78e74a2f5576f20c0eec9657062c74fc9cd");
 });
 function make(count = 36) { return W.createWorld({ id: "test-world", seed: 37119, horseCount: count }); }
 test("chairman preset preserves source races and balanced generations", () => {
@@ -56,7 +56,7 @@ test("all runner phases preserve ties and separately mark withdrawals", () => {
   assert.ok(allOut.results.every((r) => r.retired && r.tf === null));
 });
 test("60 floors are disabled only with the explicit new-mode option", () => {
-  const w = make(1), h = { ...w.horses[0], strength: 62, peakStart: "五岁夏", peakEnd: "七岁冬", grass: { 日本: "G" }, courseGrades: { 东京: "B" }, distMin: 3000, distMax: 3200, coreDist: 3000 };
+  const w = make(1), h = { ...w.horses[0], strength: 62, peakStart: "五岁夏", peakEnd: "七岁冬", surfaceGrades: { grass: "G", dirt: "G" }, trackAptitudes: { burst: "△", sustained: "△", attrition: "△" }, distMin: 3000, distMax: 3200, coreDist: 3000 };
   const race = { distance: 1000, surface: "草地", surfaceRegion: "日本", course: "东京" };
   const opts = { currentTime: W.timeFor(w, h), temperamentMod: { mod: 0 }, trackCondition: "良" };
   assert.equal(ns.HorseRules.calcRaceAbility(h, race, opts).ability, 60);
@@ -66,7 +66,7 @@ test("60 floors are disabled only with the explicit new-mode option", () => {
 });
 test("AI ignores hidden adaptations, respects rest, distance in time and field capacity", () => {
   const w = make(300), other = W.clone(w);
-  other.horses.forEach((h) => { h.strength = 1; h.grass = { 日本: "G", 香港: "G", 美国: "G", 欧洲: "G", 其他: "G" }; h.distMin = 9000; h.distMax = 10000; h.peakStart = "七岁春"; });
+  other.horses.forEach((h) => { h.strength = 1; h.surfaceGrades = { grass: "G", dirt: "G" }; h.distMin = 9000; h.distMax = 10000; h.peakStart = "七岁春"; });
   W.seeded(w, () => W.planEntries(w)); W.seeded(other, () => W.planEntries(other));
   assert.deepEqual(plain(w.horses.map((h) => h.booked)), plain(other.horses.map((h) => h.booked)));
   const counts = new Map();

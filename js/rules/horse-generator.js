@@ -2,7 +2,6 @@
   const ns = (window.Keiba = window.Keiba || {});
   const R = ns.Random;
 
-  const GRADES = ["S", "A", "B", "C", "G"];
   const COATS = [
     { name: "鹿毛", en: "Bay", base: 45, color: "#D2691E" },
     { name: "栗毛", en: "Chestnut", base: 30, color: "#CD853F" },
@@ -16,7 +15,20 @@
     { name: "泥地", base: 35 },
     { name: "二刀流", base: 5 }
   ];
-  const SURFACE_BLOODLINE_MULTIPLIER = 1.2;
+  const FORMAL_SURFACE_GRADES = ["A", "B", "C", "G"];
+  // 赛场类型适性不从基础能力推导。组合先按稀有度抽取，再随机对应到三种比赛形态，
+  // 以保证专精型和泛用型都能自然出现。
+  const TRACK_APTITUDE_TEMPLATES = [
+    { grades: ["○", "○", "△"], weight: 45 },
+    { grades: ["◎", "△", "△"], weight: 30 },
+    { grades: ["◎", "○", "△"], weight: 13 },
+    { grades: ["○", "○", "○"], weight: 6 },
+    { grades: ["◎", "○", "○"], weight: 3 },
+    { grades: ["◎", "◎", "△"], weight: 2 },
+    { grades: ["◎", "◎", "○"], weight: 1 }
+  ];
+  const TRACK_APTITUDE_KEYS = ["burst", "sustained", "attrition"];
+  const SURFACE_PREFERENCE_BLOODLINE_MULTIPLIER = 1.2;
   const DISTS = [
     { dist: 1200, type: "短途", base: 20 },
     { dist: 1600, type: "英里", base: 20 },
@@ -36,8 +48,6 @@
   const DIRT_DISTANCE_MIN_WEIGHT = 1;
   const DIRT_DISTANCE_MAX_WEIGHT = { 2400: 15, 3000: 4, 3600: 1 };
   const MIN_EFFECTIVE_RACE_ABILITY = 60;
-  const GRASS_REGIONS = ["日本", "香港", "美国", "欧洲", "其他"];
-  const DIRT_REGIONS = ["日本", "中东", "美国"];
   const GROWTH_TYPES = ["早熟", "普早", "普迟", "晚熟"];
   const SURFACE_MIN_PCT = { 草地: 15, 泥地: 15, 二刀流: 5 };
   const SURFACE_MAX_PCT = { 草地: 80, 泥地: 80, 二刀流: 12 };
@@ -70,30 +80,6 @@
     "晚熟": ["五岁冬", "六岁夏", "六岁冬", "六岁冬", "七岁冬"]
   };
 
-  function gradeFromD10(value) {
-    if (value >= 10) return "S";
-    if (value >= 7) return "A";
-    if (value >= 5) return "B";
-    if (value >= 3) return "C";
-    return "G";
-  }
-
-  function clampGrade(grade, min, max) {
-    const idx = GRADES.indexOf(grade);
-    const minIdx = min ? GRADES.indexOf(min) : GRADES.length - 1;
-    const maxIdx = max ? GRADES.indexOf(max) : 0;
-    return GRADES[Math.max(maxIdx, Math.min(minIdx, idx))];
-  }
-
-  function shiftGrade(base, delta) {
-    const idx = GRADES.indexOf(base);
-    return GRADES[Math.max(0, Math.min(GRADES.length - 1, idx - delta))];
-  }
-
-  function gradeMod(grade, table) {
-    return table[grade] || 0;
-  }
-
   function getSireBloodline(id) {
     const list = ns.SireBloodlines || ns.Bloodlines || [];
     return list.find((item) => item.id === id) || list[0] || {};
@@ -114,21 +100,10 @@
     });
   }
 
-  function addNestedMap(target, source) {
-    Object.entries(source || {}).forEach(([group, values]) => {
-      target[group] = target[group] || {};
-      addMap(target[group], values);
-    });
-  }
-
   function clampMap(target, min, max) {
     Object.keys(target).forEach((key) => {
       target[key] = R.clamp(target[key], min, max);
     });
-  }
-
-  function clampNestedMap(target, min, max) {
-    Object.values(target).forEach((values) => clampMap(values, min, max));
   }
 
   function mergeWeightRange(left, right) {
@@ -151,7 +126,6 @@
     const effects = {
       strengthType: pickStrengthType(sire, dam),
       surfaceWeights: {},
-      surfaceMods: { grass: {}, dirt: {} },
       distanceMods: {},
       growthMods: {},
       temperament: R.clamp((sire.temperament || 0) + (dam.temperament || 0), -2, 2),
@@ -161,23 +135,17 @@
         up: R.clamp(((sire.rangeBias && sire.rangeBias.up) || 0) + ((dam.rangeBias && dam.rangeBias.up) || 0), -1, 1),
         down: R.clamp(((sire.rangeBias && sire.rangeBias.down) || 0) + ((dam.rangeBias && dam.rangeBias.down) || 0), -1, 1),
         narrow: R.clamp(((sire.rangeBias && sire.rangeBias.narrow) || 0) + ((dam.rangeBias && dam.rangeBias.narrow) || 0), 0, 1)
-      },
-      courseMods: {}
+      }
     };
 
     addMap(effects.surfaceWeights, sire.surfaceWeights);
     addMap(effects.surfaceWeights, dam.surfaceWeights);
-    addNestedMap(effects.surfaceMods, sire.surfaceMods);
-    clampNestedMap(effects.surfaceMods, -2, 2);
     addMap(effects.distanceMods, sire.distanceMods);
     addMap(effects.distanceMods, dam.distanceMods);
     clampMap(effects.distanceMods, -8, 18);
     addMap(effects.growthMods, sire.growthMods);
     addMap(effects.growthMods, dam.growthMods);
     clampMap(effects.growthMods, -14, 16);
-    addMap(effects.courseMods, sire.courseMods);
-    addMap(effects.courseMods, dam.courseMods);
-    clampMap(effects.courseMods, -1, 1);
     return effects;
   }
 
@@ -221,7 +189,7 @@
   function pickSurface(effects) {
     const raw = {};
     SURFACES.forEach((surface) => {
-      raw[surface.name] = Math.max(1, surface.base + (effects.surfaceWeights[surface.name] || 0) * SURFACE_BLOODLINE_MULTIPLIER);
+      raw[surface.name] = Math.max(1, surface.base + (effects.surfaceWeights[surface.name] || 0) * SURFACE_PREFERENCE_BLOODLINE_MULTIPLIER);
     });
     const weights = clampDistribution(raw, SURFACE_MIN_PCT, SURFACE_MAX_PCT);
     return R.weightedPick(SURFACES, (surface) => weights[surface.name] || 0).name;
@@ -255,162 +223,79 @@
     return value;
   }
 
-  function pickWeightedEntry(entries) {
-    return R.weightedPick(entries, (entry) => entry.weight);
+  function surfaceGradeFromTable(table) {
+    return R.weightedPick(Object.keys(table), (grade) => table[grade]);
   }
 
-  function rollPercentTable(entries) {
-    return pickWeightedEntry(entries).value;
+  function generateSurfaceGrades(surfacePref) {
+    const tables = surfacePref === "泥地"
+      ? {
+          grass: { A: 5, B: 15, C: 45, G: 35 },
+          dirt: { A: 75, B: 18, C: 6, G: 1 }
+        }
+      : (surfacePref === "二刀流"
+        ? {
+            grass: { A: 68, B: 25, C: 6, G: 1 },
+            dirt: { A: 68, B: 25, C: 6, G: 1 }
+          }
+        : {
+            grass: { A: 75, B: 18, C: 6, G: 1 },
+            dirt: { A: 5, B: 15, C: 45, G: 35 }
+          });
+    return {
+      grass: surfaceGradeFromTable(tables.grass),
+      dirt: surfaceGradeFromTable(tables.dirt)
+    };
   }
 
-  function strongGrade(sRate) {
-    return R.roll(100) <= sRate ? "S" : "A";
+  function surfaceGradeScore(grade) {
+    return FORMAL_SURFACE_GRADES.indexOf(grade);
   }
 
-  function lowGrade() {
-    return R.roll(2) === 1 ? "C" : "G";
+  function deriveSurfacePreference(surfaceGrades) {
+    const grass = surfaceGradeScore(surfaceGrades.grass);
+    const dirt = surfaceGradeScore(surfaceGrades.dirt);
+    if (Math.abs(grass - dirt) <= 1) return "二刀流";
+    return grass < dirt ? "草地" : "泥地";
   }
 
-  function nonStrongMainGrade() {
-    const roll = R.roll(100);
-    if (roll <= 65) return "B";
-    return "C";
-  }
-
-  function dualNonStrongGrade() {
-    const roll = R.roll(100);
-    if (roll <= 70) return "B";
-    return "C";
-  }
-
-  function regionWeight(mod) {
-    if (mod >= 2) return 22;
-    if (mod >= 1) return 15;
-    if (mod <= -2) return 5;
-    if (mod <= -1) return 7;
-    return 10;
-  }
-
-  function pickRegions(regions, group, effects, count) {
-    const picked = [];
-    const pool = regions.slice();
-    while (pool.length > 0 && picked.length < count) {
-      const region = R.weightedPick(pool, (item) => regionWeight((effects.surfaceMods[group] || {})[item] || 0));
-      picked.push(region);
-      pool.splice(pool.indexOf(region), 1);
-    }
-    return picked;
-  }
-
-  function assignMainSurfaceGrades(regions, group, effects, strongCount, sRate, nonStrongGradeFn) {
-    const grades = {};
-    const strongRegions = pickRegions(regions, group, effects, strongCount);
-    regions.forEach((region) => {
-      grades[region] = strongRegions.includes(region) ? strongGrade(sRate) : nonStrongGradeFn();
-    });
-    return grades;
-  }
-
-  function secondaryGradeType(table) {
-    return rollPercentTable(table);
-  }
-
-  function assignSecondaryGrades(regions, group, effects, gradeType) {
-    const grades = {};
-    regions.forEach((region) => {
-      grades[region] = lowGrade();
-    });
-    if (gradeType !== "none") {
-      const region = pickRegions(regions, group, effects, 1)[0];
-      grades[region] = gradeType;
-    }
-    return grades;
-  }
-
-  function generateGrassSurfaceGrades(effects) {
-    const strongCount = rollPercentTable([
-      { value: 2, weight: 50 },
-      { value: 3, weight: 40 },
-      { value: 1, weight: 7 },
-      { value: 4, weight: 3 }
-    ]);
-    const grass = assignMainSurfaceGrades(GRASS_REGIONS, "grass", effects, strongCount, 15, nonStrongMainGrade);
-    const dirt = assignSecondaryGrades(DIRT_REGIONS, "dirt", effects, secondaryGradeType([
-      { value: "none", weight: 62 },
-      { value: "B", weight: 26 },
-      { value: "A", weight: 10 },
-      { value: "S", weight: 2 }
-    ]));
-    return { grass, dirt };
-  }
-
-  function generateDirtSurfaceGrades(effects) {
-    const strongCount = rollPercentTable([
-      { value: 1, weight: 45 },
-      { value: 2, weight: 45 },
-      { value: 3, weight: 10 }
-    ]);
-    const strongRegions = pickRegions(DIRT_REGIONS, "dirt", effects, strongCount);
-    const dirt = {};
-    DIRT_REGIONS.forEach((region) => {
-      if (strongRegions.includes(region)) {
-        dirt[region] = strongGrade(15);
-      } else {
-        dirt[region] = nonStrongMainGrade();
+  function generateTrackAptitudes(weights) {
+    const template = R.weightedPick(TRACK_APTITUDE_TEMPLATES, (item) => item.weight);
+    const grades = template.grades.slice();
+    const result = {};
+    if (weights) {
+      const keys = TRACK_APTITUDE_KEYS.slice();
+      grades.sort((a, b) => ['◎', '○', '△'].indexOf(a) - ['◎', '○', '△'].indexOf(b));
+      for (const grade of grades) {
+        const key = keys.some(k => weights[k] > 0) ? R.weightedPick(keys.filter(k => weights[k] > 0), k => weights[k]) : R.pickOne(keys);
+        result[key] = grade;
+        keys.splice(keys.indexOf(key), 1);
       }
-    });
-
-    const grass = assignSecondaryGrades(GRASS_REGIONS, "grass", effects, secondaryGradeType([
-      { value: "none", weight: 58 },
-      { value: "B", weight: 28 },
-      { value: "A", weight: 12 },
-      { value: "S", weight: 2 }
-    ]));
-    return { grass, dirt };
-  }
-
-  function generateDualSurfaceGrades(effects) {
-    const pattern = rollPercentTable([
-      { value: "one-each", weight: 55 },
-      { value: "one-side-two", weight: 30 },
-      { value: "both-two", weight: 12 },
-      { value: "three-and-two", weight: 3 }
-    ]);
-    let grassStrong = 1;
-    let dirtStrong = 1;
-    if (pattern === "one-side-two") {
-      if (R.roll(2) === 1) grassStrong = 2;
-      else dirtStrong = 2;
-    } else if (pattern === "both-two") {
-      grassStrong = 2;
-      dirtStrong = 2;
-    } else if (pattern === "three-and-two") {
-      if (R.roll(2) === 1) {
-        grassStrong = 3;
-        dirtStrong = 2;
-      } else {
-        grassStrong = 2;
-        dirtStrong = 3;
-      }
+      return Object.fromEntries(TRACK_APTITUDE_KEYS.map(k => [k, result[k]]));
     }
-
-    const grassStrongRegions = pickRegions(GRASS_REGIONS, "grass", effects, grassStrong);
-    const dirtStrongRegions = pickRegions(DIRT_REGIONS, "dirt", effects, dirtStrong);
-    const grass = {};
-    const dirt = {};
-    GRASS_REGIONS.forEach((region) => {
-      grass[region] = grassStrongRegions.includes(region) ? strongGrade(18) : dualNonStrongGrade();
+    TRACK_APTITUDE_KEYS.forEach((key) => {
+      const index = R.rollRange(0, grades.length - 1);
+      result[key] = grades.splice(index, 1)[0];
     });
-    DIRT_REGIONS.forEach((region) => {
-      dirt[region] = dirtStrongRegions.includes(region) ? strongGrade(18) : dualNonStrongGrade();
-    });
-    return { grass, dirt };
+    return result;
   }
 
-  function generateSurfaceGrades(surfacePref, effects) {
-    if (surfacePref === "泥地") return generateDirtSurfaceGrades(effects);
-    if (surfacePref === "二刀流") return generateDualSurfaceGrades(effects);
-    return generateGrassSurfaceGrades(effects);
+  // Projection preserves every legal genotype; ties retain the original template prior.
+  function constrainTrackAptitudes(raw) {
+    const score = { '△': 0, '○': 1, '◎': 2 };
+    const candidates = TRACK_APTITUDE_TEMPLATES.flatMap(template => {
+      const permutations = new Map();
+      for (const order of [[0,1,2],[0,2,1],[1,0,2],[1,2,0],[2,0,1],[2,1,0]]) {
+        const grades = order.map(i => template.grades[i]);
+        permutations.set(grades.join(''), grades);
+      }
+      return [...permutations.values()].map(grades => ({ grades, weight: template.weight / permutations.size,
+        distance: TRACK_APTITUDE_KEYS.reduce((sum, key, i) => sum + (score[raw[key]] - score[grades[i]]) ** 2, 0) }));
+    });
+    const minimum = Math.min(...candidates.map(c => c.distance));
+    if (minimum === 0) return { ...raw };
+    const selected = R.weightedPick(candidates.filter(c => c.distance === minimum), c => c.weight);
+    return Object.fromEntries(TRACK_APTITUDE_KEYS.map((key, i) => [key, selected.grades[i]]));
   }
 
   function pickTemperamentLabel(level) {
@@ -459,13 +344,6 @@
       weights[type] = Math.max(8, 25 + (effects.growthMods[type] || 0));
     });
     return R.weightedPick(GROWTH_TYPES, (type) => weights[type]);
-  }
-
-  function rollCourseGrade(mod) {
-    const value = R.roll(10) + R.clamp(mod || 0, -1, 1);
-    if (value >= 9) return "S";
-    if (value >= 3) return "A";
-    return "B";
   }
 
   function stepFromRoll(value) {
@@ -582,21 +460,19 @@
       }
     }
     const temperament = temperamentValue(temperamentLabel);
-    const surfacePref = pickSurface(effects);
-    const surfaceGrades = generateSurfaceGrades(surfacePref, effects);
-    const grass = surfaceGrades.grass;
-    const dirt = surfaceGrades.dirt;
+    const profile = opts.chairmanProfile;
+    const selectedSurfacePreference = profile
+      ? R.weightedPick(SURFACES, (surface) => profile.surfaceWeights[surface.name]).name
+      : pickSurface(effects);
+    const surfaceGrades = generateSurfaceGrades(selectedSurfacePreference);
+    const surfacePref = deriveSurfacePreference(surfaceGrades);
+    const trackAptitudes = generateTrackAptitudes(profile?.trackTypeWeights);
 
     const heavyType = pickHeavyType(effects.heavy);
 
-    const courses = ["东京", "中山", "京都", "阪神", "其他地方"];
-    const courseGrades = {};
-    courses.forEach((course) => {
-      courseGrades[course] = rollCourseGrade(effects.courseMods[course]);
-    });
-    if (!Object.values(courseGrades).includes("A")) courseGrades[R.pickOne(courses)] = "A";
-
-    const distPick = pickDistance(effects, surfacePref);
+    const distPick = profile
+      ? R.weightedPick(selectedSurfacePreference === "泥地" ? DISTS_DIRT : DISTS, (distance) => profile.distanceWeights[selectedSurfacePreference === "泥地" ? "dirt" : "grass"][DISTS.findIndex((item) => item.dist === distance.dist)])
+      : pickDistance(effects, selectedSurfacePreference);
     const stepUnit = distPick.dist >= 3000 ? 400 : 200;
     let upStep = adjustedStep(effects.rangeBias.up);
     let downStep = adjustedStep(effects.rangeBias.down);
@@ -633,10 +509,9 @@
       temperament,
       temperamentLabel,
       surfacePref,
-      grass,
-      dirt,
+      surfaceGrades,
+      trackAptitudes,
       heavyType,
-      courseGrades,
       coreDist: distPick.dist,
       distType: distPick.type,
       distMin,
@@ -664,26 +539,16 @@
     horse.weight = R.clamp(Number(opts.weight) || horse.weight, 350, 620);
     horse.temperamentLabel = temperamentLabel;
     horse.temperament = temperamentValue(temperamentLabel);
-    horse.surfacePref = opts.surfacePref || horse.surfacePref;
-    horse.grass = {
-      日本: opts.grassJapan || horse.grass.日本,
-      香港: opts.grassHongKong || horse.grass.香港,
-      美国: opts.grassUsa || horse.grass.美国,
-      欧洲: opts.grassEurope || horse.grass.欧洲,
-      其他: opts.grassOther || horse.grass.其他
+    horse.surfaceGrades = {
+      grass: opts.surfaceGrass || horse.surfaceGrades.grass,
+      dirt: opts.surfaceDirt || horse.surfaceGrades.dirt
     };
-    horse.dirt = {
-      日本: opts.dirtJapan || horse.dirt.日本,
-      中东: opts.dirtMiddleEast || horse.dirt.中东,
-      美国: opts.dirtUsa || horse.dirt.美国
+    horse.trackAptitudes = {
+      burst: opts.trackBurst || horse.trackAptitudes.burst,
+      sustained: opts.trackSustained || horse.trackAptitudes.sustained,
+      attrition: opts.trackAttrition || horse.trackAptitudes.attrition
     };
-    horse.courseGrades = {
-      东京: opts.courseTokyo || horse.courseGrades.东京,
-      中山: opts.courseNakayama || horse.courseGrades.中山,
-      京都: opts.courseKyoto || horse.courseGrades.京都,
-      阪神: opts.courseHanshin || horse.courseGrades.阪神,
-      其他地方: opts.courseOther || horse.courseGrades.其他地方
-    };
+    horse.surfacePref = deriveSurfacePreference(horse.surfaceGrades);
     horse.heavyType = opts.heavyType || horse.heavyType;
     horse.coreDist = coreDist;
     horse.distMin = Math.min(distMin, coreDist);
@@ -695,15 +560,9 @@
     return horse;
   }
 
-  function effectiveSurfaceRegion(race) {
-    const region = race.surfaceRegion || "日本";
-    return region === "阿根廷" ? "美国" : region;
-  }
-
   function getSurfaceGrade(horse, race) {
-    const region = effectiveSurfaceRegion(race);
-    if (race.surface === "泥地") return horse.dirt[region] || horse.dirt.日本 || "B";
-    return horse.grass[region] || horse.grass.其他 || horse.grass.日本 || "B";
+    const surfaceKey = ns.TrackAptitudeRules.surfaceKeyFor(race && race.surface);
+    return (horse.surfaceGrades && horse.surfaceGrades[surfaceKey]) || "B";
   }
 
   function getHeavyMod(heavyType, condition) {
@@ -716,6 +575,45 @@
     return (table[heavyType] && table[heavyType][condition]) || 0;
   }
 
+  function calcTrackAptitudeAbility(horse, race, maturity, options) {
+    const opts = options || {};
+    if (!ns.TrackAptitudeRules) throw new Error("赛场适性规则尚未加载。");
+    const profile = ns.TrackAptitudeRules.resolveRuntimeCourseProfile(race, { year: opts.year });
+    if (!profile) {
+      throw new Error(`比赛${race && (race.name || race.id) ? `“${race.name || race.id}”` : ""}尚未配置赛程属性。`);
+    }
+    ns.TrackAptitudeRules.requireCourseProfile({ ...race, courseProfile: profile });
+    const aptitude = ns.TrackAptitudeRules.calculateModifiers(horse, profile);
+    const distancePenalty = calcDistancePenalty(race.distance, horse.distMin, horse.distMax);
+    const trackCondition = opts.trackCondition || "良";
+    const heavyMod = getHeavyMod(horse.heavyType, trackCondition);
+    const temperamentMod = opts.temperamentMod || ns.TemperamentRules.rollRaceMod(horse.temperamentLabel);
+    const racePenaltyMod = Number.isFinite(opts.racePenaltyMod) ? opts.racePenaltyMod : 0;
+    const rawAbility = maturity.adjustedStrength + aptitude.modifier + heavyMod + temperamentMod.mod - distancePenalty + racePenaltyMod;
+    const ability = opts.noAbilityFloor ? rawAbility : Math.max(MIN_EFFECTIVE_RACE_ABILITY, rawAbility);
+    return {
+      ability,
+      rawAbility,
+      abilityFloorApplied: ability !== rawAbility,
+      maturity,
+      temperamentMod,
+      surfaceLabel: aptitude.surfaceLabel,
+      surfaceRegion: "",
+      surfaceGrade: aptitude.surfaceGrade,
+      surfaceMod: aptitude.surfaceMod,
+      courseGrade: "",
+      courseMod: 0,
+      distancePenalty,
+      trackCondition,
+      heavyMod,
+      racePenaltyMod,
+      ruleVersion: aptitude.ruleVersion,
+      courseProfileId: aptitude.courseProfileId,
+      trackAptitude: aptitude,
+      trackAptitudeMod: aptitude.trackAptitudeMod
+    };
+  }
+
   function calcRaceAbility(horse, race, options) {
     const opts = options || {};
     const maturity = opts.maturity || ns.MaturityRules.evaluate(
@@ -724,49 +622,22 @@
       opts.maturityDecline || 0,
       opts
     );
-    const surfaceGrade = getSurfaceGrade(horse, race);
-    const surfaceRegion = race.surfaceRegion || "日本";
-    const surfaceLabel = `${surfaceRegion}${race.surface}`;
-    const isJapaneseRace = !race.surfaceRegion || race.surfaceRegion === "日本";
-    const courseGrade = isJapaneseRace
-      ? horse.courseGrades[race.course] || horse.courseGrades["其他地方"] || "A"
-      : "A";
-    const distancePenalty = calcDistancePenalty(race.distance, horse.distMin, horse.distMax);
-    const surfaceMod = gradeMod(surfaceGrade, { S: 5, A: 0, B: -5, C: -10, G: -25 });
-    const courseMod = gradeMod(courseGrade, { S: 4, A: 0, B: -4 });
-    const trackCondition = opts.trackCondition || "良";
-    const heavyMod = getHeavyMod(horse.heavyType, trackCondition);
-    const temperamentMod = opts.temperamentMod || ns.TemperamentRules.rollRaceMod(horse.temperamentLabel);
-    const racePenaltyMod = Number.isFinite(opts.racePenaltyMod) ? opts.racePenaltyMod : 0;
-    const rawAbility = maturity.adjustedStrength + surfaceMod + courseMod + heavyMod + temperamentMod.mod - distancePenalty + racePenaltyMod;
-    const ability = opts.noAbilityFloor ? rawAbility : Math.max(MIN_EFFECTIVE_RACE_ABILITY, rawAbility);
-    return {
-      ability,
-      rawAbility,
-      abilityFloorApplied: ability !== rawAbility,
-      maturity,
-      temperamentMod,
-      surfaceLabel,
-      surfaceRegion,
-      surfaceGrade,
-      surfaceMod,
-      courseGrade,
-      courseMod,
-      distancePenalty,
-      trackCondition,
-      heavyMod,
-      racePenaltyMod
-    };
+    return calcTrackAptitudeAbility(horse, race, maturity, opts);
   }
 
   ns.HorseRules = {
     generatePeak(type) { return { start: R.pickOne(PEAK_START_MAP[type] || PEAK_START_MAP["普早"]), end: R.pickOne(PEAK_END_MAP[type] || PEAK_END_MAP["普早"]) }; },
-    GRADES,
+    SURFACE_GRADES: FORMAL_SURFACE_GRADES,
+    temperamentValue,
     COATS,
     generateHorse,
+    generateTrackAptitudes,
+    constrainTrackAptitudes,
+    deriveSurfacePreference,
     rollProfileStrength,
     applyDebugOverrides,
     calcDistancePenalty,
+    getSurfaceGrade,
     calcRaceAbility,
     MIN_EFFECTIVE_RACE_ABILITY
   };

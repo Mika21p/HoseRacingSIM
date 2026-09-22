@@ -19,11 +19,12 @@
     const races=v.raceIds.map(id=>w.races.find(r=>r.id===id));
     check(races.every(r=>r&&!r.deleted&&['g1','g2','g3'].includes(r.raceClass)),'分站必须是未停办的G1、G2或G3。');
     check([2,3,4,5,6].some(a=>ageOK(v.ageRule,a)&&races.every(r=>ageOK(r.ageRule,a)))&&['牡马','牝马','骟马'].some(s=>races.every(r=>sexOK(r.sexRule,s))),'分站年龄或性别条件不存在共同合法参赛对象。');
-    const sorted=races.slice().sort((a,b)=>turn(1,a)-turn(1,b)||a.id.localeCompare(b.id)),warnings=[];
+    const resolved=w.worldSystemVersion===2?races.map(r=>W().engineRace(w,r,Math.max(year(w),v.startYear||year(w)))):races;
+    const sorted=resolved.slice().sort((a,b)=>turn(1,a)-turn(1,b)||a.id.localeCompare(b.id)),warnings=[];
     for(let i=1;i<sorted.length;i++){
       const a=sorted[i-1],b=sorted[i],gap=turn(1,b)-turn(1,a),at=w.tracks.find(t=>t.id===a.trackId),bt=w.tracks.find(t=>t.id===b.trackId);
       if(gap<3)warnings.push(`${a.name}→${b.name}仅间隔${gap}个半月，无法满足正常参赛间隔。`);
-      else if(at.region!==bt.region&&gap<5)warnings.push(`${a.name}→${b.name}涉及跨地区行程，可能缺少准备时间。`);
+      else if(w.worldSystemVersion===2?gap<ns.ChairmanWorld.travelTurns(w,a.regionId,b.regionId):at.region!==bt.region&&gap<5)warnings.push(`${a.name}→${b.name}涉及跨地区行程，可能缺少准备时间。`);
     }
     const key=v.raceIds.slice().sort().join('|');
     if(w.series.some(s=>s.id!==v.id&&!s.deleted&&s.raceIds.slice().sort().join('|')===key))warnings.push('已有完全相同分站的系列；奖金会分别发放，殿堂荣誉只取最高权重。');
@@ -40,7 +41,9 @@
       if(races.some(r=>!r||r.deleted))return [];
       const s={id:`${y}:${d.id}`,seriesId:d.id,year:y,name:d.name,title:d.title,ageRule:d.ageRule,bonus:d.bonus,honorWeight:d.honorWeight,
         races:races.map(r=>copy(W().engineRace(w,r,y))),results:existing?.results||[],frozen:false,settled:false};
-      s.frozen=races.some(r=>pinned(w,r.id,y)||lockDue&&turn(y,r)<=w.turn);return [s];
+      s.frozen=races.some(r=>pinned(w,r.id,y)||lockDue&&turn(y,r)<=w.turn);
+      if(s.frozen&&w.worldSystemVersion===2)for(const r of races)ns.ChairmanWorld.freeze(w,r.id,y);
+      return [s];
     });
   }
   function edit(world,value,options={}){
