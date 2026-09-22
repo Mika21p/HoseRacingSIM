@@ -252,7 +252,7 @@
     const h = ns.HorseRules.generateHorse({ gameMode: "normal", sireId: "random", damId: "random", ...(w.worldSystemVersion === 2 ? {chairmanProfile:ns.ChairmanWorld.profile(w,homeRegion||m.homeRegion)} : {}) });
     delete h.id; delete h.name; delete h.career; delete h.gender;
     h.strength = R.clamp(Math.round(h.strength + (((f?.breeding?.strength ?? 50) + (m?.breeding?.strength ?? 50)) / 2 - 50) / 10), 62, 100);
-    inheritAptitudes(h, f, m);
+    inheritAptitudes(h, f, m, w.worldSystemVersion === 2 ? ns.ChairmanWorld.profile(w,homeRegion||m.homeRegion).surfaceWeights : undefined);
     for (const keys of [["distMin", "coreDist", "distMax", "distType"], ["temperamentLabel", "temperament", "heavyType"]]) {
       const roll = R.next(), p = roll < .3 ? f : roll < .6 ? m : null;
       if (p) for (const key of keys) h[key] = clone(p[key]);
@@ -264,7 +264,7 @@
     }
     return h;
   }
-  function inheritAptitudes(h, father, mother) {
+  function inheritAptitudes(h, father, mother, surfaceWeights) {
     for (const [group, keys] of [['surfaceGrades', ['grass', 'dirt']], ['trackAptitudes', ['burst', 'sustained', 'attrition']]]) {
       for (const key of keys) {
         const roll = R.next(), parent = roll < .4 ? father : roll < .8 ? mother : null;
@@ -272,6 +272,7 @@
       }
     }
     h.trackAptitudes = ns.HorseRules.constrainTrackAptitudes(h.trackAptitudes);
+    h.surfaceGrades = ns.HorseRules.ensureSurfaceFloor(h.surfaceGrades, [father, mother], surfaceWeights);
     h.surfacePref = ns.HorseRules.deriveSurfacePreference(h.surfaceGrades);
     return h;
   }

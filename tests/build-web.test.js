@@ -96,7 +96,7 @@ test("production build preserves historical-horse data and loads one bundle", as
   assert.ok(fs.existsSync(path.join(result.outputRoot, "js", "data", "jra-course-catalogue.js")));
   assert.ok(fs.existsSync(path.join(result.outputRoot, "js", "data", "race-course-profiles.js")));
   assert.match(productionIndex, /js\/data\/jra-course-catalogue\.js\?v=20260922-phase2/);
-  assert.match(productionIndex, /js\/data\/race-course-profiles\.js\?v=20260922-phase2/);
+  assert.match(productionIndex, /js\/data\/race-course-profiles\.js\?v=20260922-venue-names/);
   assert.match(
     productionIndex,
     new RegExp(`js/data/historical-horses/index\\.js\\?v=${result.hash}`)

@@ -189,7 +189,7 @@
     { id: "prix-de-la-seine", country: "法国", nameOriginal: "Prix de la Seine", nameZh: "塞纳锦标", month: 5, half: 2, distance: 2200, ageRule: "3岁", sexRestriction: "牝马" },
     { id: "prix-matchem", country: "法国", nameOriginal: "Prix Matchem", nameZh: "马彻姆锦标", month: 6, half: 1, distance: 1800, ageRule: "3岁" },
     { id: "prix-la-fleche", country: "法国", nameOriginal: "Prix La Fleche", nameZh: "拉弗莱什锦标", month: 6, half: 1, distance: 1000, ageRule: "2岁" },
-    { id: "prix-andre-baboin", country: "法国", nameOriginal: "Prix Andre Baboin", nameZh: "安德烈·巴博安锦标", month: 10, half: 2, distance: 2000, ageRule: "3岁以上" },
+    { id: "prix-andre-baboin", country: "法国", nameOriginal: "Prix Andre Baboin", nameZh: "安德烈·巴博安锦标", month: 10, half: 1, distance: 1900, ageRule: "3岁以上" },
     { id: "prix-isonomy", country: "法国", nameOriginal: "Prix Isonomy", nameZh: "伊索诺米锦标", month: 10, half: 2, distance: 1600, ageRule: "2岁" },
     { id: "prix-yacowlef", country: "法国", nameOriginal: "Prix Yacowlef", nameZh: "雅科夫列夫锦标", month: 7, half: 1, distance: 1000, ageRule: "2岁" },
     { id: "prix-herod", country: "法国", nameOriginal: "Prix Herod", nameZh: "希律锦标", month: 11, half: 2, distance: 1400, ageRule: "2岁" },

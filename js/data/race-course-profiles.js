@@ -116,6 +116,7 @@
   const venueTurfTypeByTrackKey = Object.freeze({
     'santa-anita': 'burst', 'del-mar': 'burst', keeneland: 'burst', 'churchill-downs': 'burst', belmont: 'burst', aqueduct: 'burst', saratoga: 'burst', gulfstream: 'burst', monmouth: 'burst', colonial: 'burst', laurel: 'burst', 'penn-national': 'burst',
     'kentucky-downs': 'sustained',
+    musselburgh: 'sustained', 'bordeaux-le-bouscat': 'sustained',
     ascot: 'sustained', epsom: 'sustained', newmarket: 'sustained', goodwood: 'sustained', sandown: 'sustained', haydock: 'sustained',
     york: 'burst', doncaster: 'burst', newbury: 'burst',
     longchamp: 'burst', chantilly: 'burst', deauville: 'burst', 'saint-cloud': 'sustained',
@@ -132,6 +133,8 @@
   // 这里的实际场地来源于赛事主办方或赛场资料；没有唯一举办地的生成条件赛只会使用
   // 名称中明确写出的“巡回赛场模板”，绝不把国家名称伪装为真实马场。
   const supplementalTracks = Object.freeze({
+    musselburgh: { name: 'Musselburgh', aliases: ['穆塞尔堡'], sourceUrl: 'https://www.musselburgh-racecourse.co.uk/news-story/musselburgh-boosts-flat-season-with-new-80000-goliath-cup-listed-staying-race--revamped-easter-saturday-meeting-now-exceeds-300000-prize-money' },
+    'bordeaux-le-bouscat': { name: 'Bordeaux-Le Bouscat', aliases: ['波尔多勒布斯卡'], sourceUrl: 'https://www.france-galop.com/sites/default/files/inline-files/24agenda08_new.pdf' },
     kawasaki: { name: '川崎', family: 'local-dirt', sourceUrl: 'https://www.nankankeiba.com/course_info/21.do' },
     funabashi: { name: '船桥', family: 'local-dirt', sourceUrl: 'https://www.nankankeiba.com/course_info/' },
     oi: { name: '大井', family: 'local-dirt', sourceUrl: 'https://www.nankankeiba.com/info/download/2025/pdf/fy2025_nankanjushobook.pdf' },
@@ -145,15 +148,15 @@
     saga: { name: '佐贺', family: 'local-dirt', sourceUrl: 'https://www.sagakeiba.net/racecourse/' },
     'jbc-rotating': { name: 'JBC地方交流轮换赛场', family: 'local-dirt', sourceUrl: '', template: true },
     'sha-tin': { name: '沙田', family: 'sha-tin', sourceUrl: 'https://racing.hkjc.com/racing/english/racing-info/racing_course.asp' },
-    flemington: { name: '弗莱明顿', family: 'flemington', sourceUrl: 'https://www.racingvictoria.com.au/racing/feature-race-conditions' },
-    'moonee-valley': { name: '满利谷', family: 'moonee-valley', sourceUrl: 'https://www.racingvictoria.com.au/racing/feature-race-conditions' },
-    caulfield: { name: '考菲尔德', family: 'caulfield', sourceUrl: 'https://www.racingvictoria.com.au/racing/feature-race-conditions' },
-    randwick: { name: '兰德威克', family: 'randwick', sourceUrl: 'https://www.racingnsw.com.au/' },
-    rosehill: { name: '玫瑰岗', family: 'rosehill', sourceUrl: 'https://www.racingnsw.com.au/' },
-    morphettville: { name: '莫菲特维尔', family: 'morphettville', sourceUrl: 'https://www.racing.com/' },
-    meydan: { name: '美丹', family: 'meydan', sourceUrl: 'https://dubairacingclub.com/' },
-    'king-abdulaziz': { name: '阿卜杜勒阿齐兹国王赛马场', family: 'saudi', sourceUrl: 'https://jcsa.sa/en' },
-    'san-isidro': { name: '圣伊西德罗', family: 'san-isidro', sourceUrl: 'https://hipodromosanisidro.com/' },
+    flemington: { name: 'Flemington', aliases: ['弗莱明顿'], family: 'flemington', sourceUrl: 'https://www.racingvictoria.com.au/racing/feature-race-conditions' },
+    'moonee-valley': { name: 'Moonee Valley', aliases: ['满利谷'], family: 'moonee-valley', sourceUrl: 'https://www.racingvictoria.com.au/racing/feature-race-conditions' },
+    caulfield: { name: 'Caulfield', aliases: ['考菲尔德'], family: 'caulfield', sourceUrl: 'https://www.racingvictoria.com.au/racing/feature-race-conditions' },
+    randwick: { name: 'Randwick', aliases: ['兰德威克'], family: 'randwick', sourceUrl: 'https://www.racingnsw.com.au/' },
+    rosehill: { name: 'Rosehill', aliases: ['玫瑰岗'], family: 'rosehill', sourceUrl: 'https://www.racingnsw.com.au/' },
+    morphettville: { name: 'Morphettville', aliases: ['莫菲特维尔'], family: 'morphettville', sourceUrl: 'https://www.racing.com/' },
+    meydan: { name: 'Meydan', aliases: ['美丹'], family: 'meydan', sourceUrl: 'https://dubairacingclub.com/' },
+    'king-abdulaziz': { name: 'King Abdulaziz Racecourse', aliases: ['阿卜杜勒阿齐兹国王赛马场'], family: 'saudi', sourceUrl: 'https://jcsa.sa/en' },
+    'san-isidro': { name: 'San Isidro', aliases: ['圣伊西德罗'], family: 'san-isidro', sourceUrl: 'https://hipodromosanisidro.com/' },
     'us-circuit-turf': { name: '北美草地巡回赛场', family: 'us-circuit-turf', sourceUrl: '', template: true },
     'us-circuit-dirt': { name: '北美泥地巡回赛场', family: 'us-circuit-dirt', sourceUrl: '', template: true },
     'europe-circuit-ireland': { name: '爱尔兰草地巡回赛场', family: 'europe-circuit', sourceUrl: '', template: true },
@@ -184,7 +187,7 @@
     'dubai-turf': 'meydan', 'singspiel-stakes': 'meydan', 'dubai-sheema-classic': 'meydan', 'dubai-city-of-gold': 'meydan',
     'dubai-golden-shaheen': 'meydan', 'uae-2000-guineas': 'meydan', 'firebreak-stakes': 'meydan',
     'al-maktoum-challenge': 'meydan', 'uae-derby': 'meydan', 'dubai-world-cup': 'meydan',
-    'europe-listed-prix-andre-baboin': 'europe-circuit-france', 'europe-listed-goliath-cup-stakes': 'europe-circuit-britain'
+    'europe-listed-prix-andre-baboin': 'bordeaux-le-bouscat', 'europe-listed-goliath-cup-stakes': 'musselburgh'
   });
 
   // 届次举办地组与主席模式的 BC 采用同一模型：同组赛事在同一年共用实际赛场，
@@ -607,7 +610,7 @@
     if (!track) return null;
     return {
       venueKey: trackKey,
-      courseName: track.sourceVenueName || track.originalName || track.name,
+      courseName: track.originalName || track.sourceVenueName || track.name,
       sourceUrl: track.sourceUrl || '',
       status: 'confirmed'
     };
@@ -626,7 +629,7 @@
       id: profileId,
       trackId: venue.venueKey,
       trackKey: venue.venueKey,
-      trackName: venue.courseName || track?.sourceVenueName || venue.venueKey,
+      trackName: track?.originalName || venue.courseName || venue.venueKey,
       courseConfigId: `venue:${venue.venueKey}:${surfaceCode}:${race.distance}:${routeId}`,
       routeId,
       routeName: venue.courseName || '标准路线',

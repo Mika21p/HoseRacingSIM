@@ -3,9 +3,9 @@
 
   ns.Changelog = ns.Changelog || {};
   ns.Changelog.meta = {
-    version: "v0.15",
-    updatedAt: "2026-09-22T16:24:42+08:00",
-    displayUpdatedAt: "2026.09.22 16:24"
+    version: "v0.15a",
+    updatedAt: "2026-09-22T19:53:09+08:00",
+    displayUpdatedAt: "2026.09.22 19:53"
   };
   ns.Changelog.contentStats = Object.freeze({
     nonConditionRaces: 622,
@@ -23,6 +23,7 @@
   };
 
   ns.Changelog.entries = [
+    { date: "2026.9.22", version: "v0.15a", title: "赛场适性与赛程资料优化", items: ["优化赛场适性继承与场地判断，补齐现实赛程资料，并修正主席世界的地区与赛事显示。"] },
     { date: "2026.9.22", version: "v0.15", title: "赛场适性与世界编辑", items: ["新增赛场适性与世界编辑系统，补充地区赛程资料，并让比赛场地、成长评语和自定义世界更有层次。"] },
     { date: "2026.9.21", version: "v0.14d", title: "主席模式内容与工作台扩展", items: ["新增评议会与殿堂、连冠系列和内容分享，并整理主席工作台与游戏管理流程。"] },
     { date: "2026.9.20", version: "v0.14c", title: "主席模式评分与排赛优化", items: ["优化赛事评分、马匹排赛和年轻马准备赛，让比赛安排与赛后评价更加稳定。"] },

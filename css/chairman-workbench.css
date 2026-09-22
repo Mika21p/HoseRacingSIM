@@ -1,4 +1,10 @@
 /* Chairman workbench layout. Loaded after the shared dusk palette. */
+#chairmanApp .cm-world-regions { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; }
+#chairmanApp .cm-world-region { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); gap:12px; align-items:center; padding:14px; border:1px solid #456258; border-radius:10px; background:#1a3029; }
+#chairmanApp .cm-world-region.is-selected { border-color:#dcb579; background:#294137; }
+#chairmanApp .cm-world-region small { display:block; margin-top:6px; color:#b4c9bd; line-height:1.5; }
+#chairmanApp .cm-world-region .cm-check { font-size:16px; font-weight:600; }
+@media(max-width:700px) { #chairmanApp .cm-world-regions { grid-template-columns:minmax(0,1fr); } }
 #chairmanApp .cm-form-extra { margin:14px 0; padding:12px 14px; border:1px solid #456258; border-radius:10px; }
 #chairmanApp .cm-form-extra>summary { cursor:pointer; color:#f1d5a3; font-weight:600; }
 #chairmanApp .cm-form-extra[open]>summary { margin-bottom:14px; }

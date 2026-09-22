@@ -186,12 +186,16 @@
     return result;
   }
 
-  function pickSurface(effects) {
+  function surfaceWeightsForEffects(effects) {
     const raw = {};
     SURFACES.forEach((surface) => {
       raw[surface.name] = Math.max(1, surface.base + (effects.surfaceWeights[surface.name] || 0) * SURFACE_PREFERENCE_BLOODLINE_MULTIPLIER);
     });
-    const weights = clampDistribution(raw, SURFACE_MIN_PCT, SURFACE_MAX_PCT);
+    return clampDistribution(raw, SURFACE_MIN_PCT, SURFACE_MAX_PCT);
+  }
+
+  function pickSurface(effects) {
+    const weights = surfaceWeightsForEffects(effects);
     return R.weightedPick(SURFACES, (surface) => weights[surface.name] || 0).name;
   }
 
@@ -252,11 +256,28 @@
     return FORMAL_SURFACE_GRADES.indexOf(grade);
   }
 
+  // 仅在新生成／遗传结算时调用，不在读档和展示时补抽。
+  function ensureSurfaceFloor(surfaceGrades, parents = [], weights = { 草地: 60, 泥地: 35, 二刀流: 5 }) {
+    const grades = { ...surfaceGrades }, keys = ["grass", "dirt"];
+    if (keys.some(key => grades[key] === "A")) return grades;
+    const best = Math.min(...keys.map(key => surfaceGradeScore(grades[key])));
+    let choices = keys.filter(key => surfaceGradeScore(grades[key]) === best);
+    const support = key => parents.filter(parent => ["A", "B"].includes(parent?.surfaceGrades?.[key])).length;
+    const mostSupport = Math.max(...choices.map(support));
+    choices = choices.filter(key => support(key) === mostSupport);
+    const weight = key => (weights[key === "grass" ? "草地" : "泥地"] || 0) + (weights["二刀流"] || 0) / 2;
+    const weightedChoices = choices.filter(key => weight(key) > 0);
+    const target = choices.length === 1 ? choices[0] : weightedChoices.length
+      ? R.weightedPick(weightedChoices, weight) : R.pickOne(choices);
+    grades[target] = R.next() < .9 ? "A" : "B";
+    return grades;
+  }
+
   function deriveSurfacePreference(surfaceGrades) {
     const grass = surfaceGradeScore(surfaceGrades.grass);
     const dirt = surfaceGradeScore(surfaceGrades.dirt);
-    if (Math.abs(grass - dirt) <= 1) return "二刀流";
-    return grass < dirt ? "草地" : "泥地";
+    if (grass <= 1 && dirt <= 1) return "二刀流";
+    return grass <= dirt ? "草地" : "泥地";
   }
 
   function generateTrackAptitudes(weights) {
@@ -464,7 +485,7 @@
     const selectedSurfacePreference = profile
       ? R.weightedPick(SURFACES, (surface) => profile.surfaceWeights[surface.name]).name
       : pickSurface(effects);
-    const surfaceGrades = generateSurfaceGrades(selectedSurfacePreference);
+    const surfaceGrades = ensureSurfaceFloor(generateSurfaceGrades(selectedSurfacePreference), [], profile?.surfaceWeights || surfaceWeightsForEffects(effects));
     const surfacePref = deriveSurfacePreference(surfaceGrades);
     const trackAptitudes = generateTrackAptitudes(profile?.trackTypeWeights);
 
@@ -634,6 +655,7 @@
     generateTrackAptitudes,
     constrainTrackAptitudes,
     deriveSurfacePreference,
+    ensureSurfaceFloor,
     rollProfileStrength,
     applyDebugOverrides,
     calcDistancePenalty,

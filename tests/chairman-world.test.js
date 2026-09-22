@@ -100,7 +100,8 @@ test('births freeze regional version and genotype, explicit parents and current 
 test('reference refresh previews differences, preserves edits and pending venue selection is explicitly player supplied',()=>{
  let {w,V,n}=setup(['britain','france'],4);const r=w.races.find(r=>r.sourceRecord);w=V.edit(w,'race',{id:r.id,name:'本世界自定名'}).world;
  const gen=n.ChairmanWorldPackages.referencePreview(w);let p;for(;;){const x=gen.next();if(x.done){p=x.value;break;}}assert.equal(w.races.find(x=>x.id===r.id).name,'本世界自定名');w=n.ChairmanPackages.apply(w,p,true).world;assert.equal(w.races.find(x=>x.id===r.id).name,'本世界自定名');
- const pending=w.referenceAudit.find(r=>r.status==='pending');w=V.edit(w,'source',{sourceId:pending.sourceId,trackId:w.tracks.find(t=>t.surfaces.includes('草地')).id}).world;assert.equal(w.races.find(r=>r.sourceId===pending.sourceId).sourceRecord.status,'modified');assert.equal(w.referenceAudit.find(r=>r.sourceId===pending.sourceId).status,'modified');
+ // Synthetic missing-venue fixture: the bundled catalogue now has no pending entries.
+ const pending=w.referenceAudit.find(r=>r.sourceId==='europe-listed-goliath-cup-stakes');pending.status='pending';const removed=w.races.find(r=>r.sourceId===pending.sourceId);w.sourceMappings=w.sourceMappings.filter(m=>m.kind!=='race'||m.localId!==removed.id);w.races=w.races.filter(r=>r.id!==removed.id);w=V.edit(w,'source',{sourceId:pending.sourceId,trackId:w.tracks.find(t=>t.surfaces.includes('草地')).id}).world;assert.equal(w.races.find(r=>r.sourceId===pending.sourceId).sourceRecord.status,'modified');assert.equal(w.referenceAudit.find(r=>r.sourceId===pending.sourceId).status,'modified');
  const refresh=n.ChairmanWorldPackages.referencePreview(w);for(;;){const x=refresh.next();if(x.done){w=n.ChairmanPackages.apply(w,x.value,true).world;break;}}assert.equal(w.referenceAudit.find(r=>r.sourceId===pending.sourceId).status,'modified');assert.equal(w.races.filter(r=>r.sourceId===pending.sourceId).length,1);
 });
 
@@ -150,4 +151,17 @@ test('full event packs keep supplemental races distinct when separate countries 
  const custom=target.races.find(r=>r.support),distance=custom.distance+100;target=first.V.edit(target,'race',{id:custom.id,distance}).world;target=P.apply(target,P.preview(target,P.exportEvents(first.w),{mode:'update'}),true).world;assert.equal(target.races.find(r=>r.id===custom.id).distance,distance);
  for(const region of target.regions)assert.ok(target.races.some(r=>r.support&&target.tracks.find(t=>t.id===r.trackId).regionId===region.id));
  first.W.validateWorld(target);
+});
+
+test('Goliath and Andre Baboin have actual venues shared by ordinary and chairman races',()=>{
+ const {w,V,n}=setup(['britain','france'],0);
+ assert.equal(n.ChairmanVenues.catalogue().filter(r=>r.status==='pending').length,0);
+ for(const [id,key,distance,month,half] of [['europe-listed-goliath-cup-stakes','musselburgh',2800,4,1],['europe-listed-prix-andre-baboin','bordeaux-le-bouscat',1900,10,1]]){
+  const source=n.RaceRegistry.all().find(r=>r.id===id),race=w.races.find(r=>r.sourceId===id),actual=V.resolveRace(w,race,1),profile=n.RaceCourseProfiles.resolveForRace(source);
+  assert.equal(w.tracks.find(t=>t.id===race.trackId).key,key);
+  assert.equal(source.distance,distance);assert.equal(source.month,month);assert.equal(source.half,half);
+  assert.equal(profile.trackKey,key);assert.equal(actual.courseProfile.trackKey,key);
+  assert.equal(actual.courseProfile.distance,distance);assert.equal(actual.courseProfile.type,profile.type);assert.equal(actual.courseProfile.intensity,1);
+ }
+ const gold=n.RaceRegistry.all().find(r=>r.id==='ascot-gold-cup');assert.equal(gold.distance,4000);assert.equal(gold.raceClass,'g1');assert.equal(gold.month,6);
 });

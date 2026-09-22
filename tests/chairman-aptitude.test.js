@@ -32,7 +32,7 @@ test('five inherited dimensions independently take father, mother, or regional c
  const random={surfaceGrades:{grass:'G',dirt:'C'},trackAptitudes:{burst:'○',sustained:'△',attrition:'◎'}};
  for(const [roll,parent] of [[.1,f],[.5,m],[.9,random]]) {
   const h=R.withSource(()=>roll,()=>B.inheritAptitudes(clone(random),f,m));
-  assert.deepEqual(clone(h.surfaceGrades),parent.surfaceGrades);assert.deepEqual(clone(h.trackAptitudes),parent.trackAptitudes);
+  assert.deepEqual(clone(h.surfaceGrades),roll===.1?f.surfaceGrades:roll===.5?{grass:"C",dirt:"A"}:{grass:"G",dirt:"B"});assert.deepEqual(clone(h.trackAptitudes),parent.trackAptitudes);
   assert.equal(h.surfacePref,n.HorseRules.deriveSurfacePreference(h.surfaceGrades));
  }
  const rolls=[.1,.5,.1,.5,.9],h=R.withSource(()=>rolls.shift()??.1,()=>B.inheritAptitudes(clone(random),f,m));
@@ -90,4 +90,33 @@ test('event packages remap frozen profiles and retain region weights and manual 
  const actual=V.resolveRace(target,target.races[0]);assert.equal(actual.courseProfile.type,'sustained');assert.equal(actual.courseProfile.trackId,actual.trackId);assert.match(actual.courseProfile.id,/other-world/);
  assert.equal(target.regions[0].generation.trackTypeWeights.burst,7);assert.equal(target.tracks.find(t=>t.id===actual.trackId).courseProfiles[0].intensity,2);
  assert.equal(target.venueAssignments.find(a=>a.frozen).trackSnapshot.id,actual.trackId);V.validate(target);
+});
+
+test('surface floor preserves A, covers 90/10 boundary and follows grade, parents, then region',()=>{
+ const {n}=setup([]),H=n.HorseRules,R=n.Random;
+ const run=(g,roll,parents=[],weights)=>clone(R.withSource(()=>roll,()=>H.ensureSurfaceFloor(g,parents,weights)));
+ assert.deepEqual(run({grass:'A',dirt:'G'},.99),{grass:'A',dirt:'G'});
+ assert.deepEqual(run({grass:'C',dirt:'G'},.89999),{grass:'A',dirt:'G'});
+ assert.deepEqual(run({grass:'C',dirt:'G'},.9),{grass:'B',dirt:'G'});
+ const parents=[{surfaceGrades:{grass:'G',dirt:'A'}},{surfaceGrades:{grass:'G',dirt:'B'}}];
+ assert.deepEqual(run({grass:'C',dirt:'C'},.1,parents,{草地:100,泥地:0,二刀流:0}),{grass:'C',dirt:'A'});
+ assert.deepEqual(run({grass:'C',dirt:'G'},.1,parents),{grass:'A',dirt:'G'});
+ assert.deepEqual(run({grass:'G',dirt:'G'},.5,[],{草地:0,泥地:100,二刀流:0}),{grass:'G',dirt:'A'});
+ for(const grass of ['A','B','C','G'])for(const dirt of ['A','B','C','G'])for(const roll of [.1,.95]){
+  const input={grass,dirt},out=run(input,roll);assert.ok(Object.values(out).some(g=>['A','B'].includes(g)));
+  assert.deepEqual(input,{grass,dirt});
+  assert.equal(H.deriveSurfacePreference(out)==='二刀流',['A','B'].includes(out.grass)&&['A','B'].includes(out.dirt));
+ }
+ assert.notEqual(H.deriveSurfacePreference({grass:'C',dirt:'C'}),'二刀流');
+});
+
+test('new horses and complementary inherited weaknesses receive deterministic surface floors',()=>{
+ const {n}=setup([]),H=n.HorseRules,R=n.Random;
+ for(const gameMode of ['normal','legend','roguelike'])for(let seed=1;seed<=100;seed++){
+  const h=R.withSource(R.seeded(seed),()=>H.generateHorse({gameMode}));
+  assert.ok(Object.values(h.surfaceGrades).some(g=>['A','B'].includes(g)));
+ }
+ const f={surfaceGrades:{grass:'A',dirt:'G'},trackAptitudes:{burst:'◎',sustained:'○',attrition:'△'}},m={surfaceGrades:{grass:'G',dirt:'A'},trackAptitudes:f.trackAptitudes};
+ const produce=()=>{const rolls=[.5,.1,.1,.1,.1,.5,.95];return R.withSource(()=>rolls.shift()??.95,()=>n.ChairmanBreeding.inheritAptitudes(clone(f),f,m,{草地:0,泥地:100,二刀流:0}));};
+ const h=produce();assert.deepEqual(clone(h.surfaceGrades),{grass:'G',dirt:'B'});assert.equal(h.surfacePref,'泥地');assert.deepEqual(clone(produce()),clone(h));
 });

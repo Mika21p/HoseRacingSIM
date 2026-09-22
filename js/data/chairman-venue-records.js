@@ -1,4 +1,16 @@
 (function(){ window.Keiba.ChairmanVenueRecords = {
+  "europe-listed-goliath-cup-stakes": {
+    "venue": "Musselburgh",
+    "sourceUrl": "https://www.musselburgh-racecourse.co.uk/news-story/musselburgh-boosts-flat-season-with-new-80000-goliath-cup-listed-staying-race--revamped-easter-saturday-meeting-now-exceeds-300000-prize-money",
+    "checkedAt": "2026-09-22",
+    "note": "2026年新增的Listed赛，4月4日、1英里6弗隆、4岁以上；由Further Flight Stakes转移并更名，不是雅士谷金杯。"
+  },
+  "europe-listed-prix-andre-baboin": {
+    "venue": "Bordeaux-Le Bouscat",
+    "sourceUrl": "https://www.france-galop.com/sites/default/files/inline-files/24agenda08_new.pdf",
+    "checkedAt": "2026-09-22",
+    "note": "现实轮换赛事；2021—2025年波尔多勒布斯卡举办2次，为这五年最多。游戏固定采用该场2024年版本：10月上半月、草地1900米，不表示现实永久固定。"
+  },
   "america-listed-swale-stakes": {
     "venue": "Gulfstream Park",
     "page": 112,

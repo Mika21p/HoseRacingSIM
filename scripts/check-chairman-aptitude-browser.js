@@ -10,7 +10,14 @@ const {chromium}=require('playwright'),fs=require('node:fs'),http=require('node:
 
 
  await click('#chairmanLaunch');await click('[data-action=new][data-id=preset]');
- await page.locator('[name="population:japan"]').fill('24');await page.locator('[name=seed]').fill('321');await page.locator('[name="annualTarget:japan"]').fill('6');await submit();await submit();
+ await page.locator('[name="population:japan"]').fill('24');if(await page.locator('[name=seed]').isVisible())throw Error('Advanced seed should start collapsed');
+ if(!(await page.locator('[data-new-horses=japan]').innerText()).includes('6匹'))throw Error('Default annual count did not follow population');
+ await page.locator('[name=worldType]').selectOption('blank');if(await page.locator('[data-reference-packs]').isVisible())throw Error('Blank world exposes region settings');
+ await page.locator('[name=worldType]').selectOption('reference');
+ await page.locator('[name="region:britain"]').check();if(await page.locator('[name="population:britain"]').isDisabled())throw Error('Selected region population disabled');await page.locator('[name="region:britain"]').uncheck();
+ await page.screenshot({path:'artifacts/chairman-create-simple-desktop.png'});await page.setViewportSize({width:390,height:844});await page.screenshot({path:'artifacts/chairman-create-simple-mobile.png'});
+ if(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth))throw Error('Wizard overflows mobile');await page.setViewportSize({width:1440,height:900});
+ await page.locator('[data-world-advanced] > summary').click();await page.locator('[name=seed]').fill('321');await page.locator('[name="annualTarget:japan"]').fill('6');await submit();await submit();
  const saved=async()=>page.evaluate(async()=>{const s=await window.Keiba.ChairmanStorage.open();try{const rows=await s.listWorlds();return await s.load(rows[0].id);}finally{await s.close();}});
  await click('[data-route=calendar]');await click('[data-action="world:view"][data-id=tracks]');await click('[data-action="world:track"][data-id=""]');
  if(await page.locator('.cm-dialog [name=sourceUrl]').isVisible())throw Error('Optional track details should start collapsed');
