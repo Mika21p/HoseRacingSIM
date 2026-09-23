@@ -350,6 +350,7 @@
       fatherId: h.fatherId, motherId: h.motherId, regionTags: h.regionTags || [], status: "template", source: "historical", breedingStatus: h.core ? "template" : "ancestor", grade: "未公开", disabled:!!h.disabled, playerModified:!!h.playerModified, sourceUrl: h.sourceUrl }))
       : all(w).map((h) => publicHorse(w, h));
     if(p.view==='library') rows.push(...(ns.ChairmanEditor?.familyTemplates(w)||w.familyTemplates||[]).filter(t=>!p.instantiable||t.core&&!t.disabled).map(t=>({... (ns.ChairmanEditor?.publicTemplate(w,t)||t),templateId:t.id,originalName:t.originalName||t.name,pinyin:t.pinyin||'',romanizedName:t.romanizedName||t.name,aliases:t.aliases||[],source:'imported',status:'template',breedingStatus:'template'})));
+    if (p.matingEligible) rows = rows.filter((h) => byId.has(h.id) && available(w, byId.get(h.id)));
     if (p.view === "active" && !p.breedingStatus) rows = rows.filter((h) => h.breedingStatus === "active");
     if (p.view === "candidate") rows = rows.filter((h) => ["candidate", "none"].includes(h.breedingStatus) && available(w, byId.get(h.id)));
     if (p.view === "young") rows = rows.filter((h) => h.status === "juvenile");

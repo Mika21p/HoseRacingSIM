@@ -25,6 +25,10 @@ test("career UI keeps history inside the action workspace and exposes overlays",
   assert.match(render, /id="setupOverlay"/);
   assert.match(render, /id="homeScreen"/);
   assert.match(render, /data-return-home/);
+  assert.match(render, /workspace-return-button/);
+  assert.match(render, /返回模式选择/);
+  assert.match(render, /aria-label="返回模式选择页（离开当前游戏模式）"/);
+  assert.doesNotMatch(render, /data-return-home[\s\S]{0,160}>[\s\S]{0,160}首页/);
   assert.match(render, /id="raceResultDialog"/);
   assert.match(render, /id="helpPanel"/);
 });
@@ -58,8 +62,8 @@ test("home, global metadata and mobile navigation are wired", () => {
   const render = read("js/ui/render.js");
   const changelog = read("js/data/changelog.js");
   const styles = read("css/styles.css");
-  assert.match(index, /styles\.css\?v=20260920-changelog-panel/);
-  assert.match(index, /render\.js\?v=20260922-trainer-prose/);
+  assert.match(index, /styles\.css\?v=20260922-mode-selector-nav/);
+  assert.match(index, /render\.js\?v=20260922-mode-selector-nav/);
   assert.match(index, /app\.js\?v=20260922-trainer-prose/);
   assert.match(index, /golden-road-1998\.js\?v=20260720-era-v5/);
   assert.match(index, /race-simulator\.js\?v=20260920-ratings/);
@@ -89,6 +93,8 @@ test("home, global metadata and mobile navigation are wired", () => {
   assert.match(render, /class="site-footer"/);
   assert.doesNotMatch(index, /class="site-footer"/);
   assert.match(styles, /\.workspace-nav/);
+  assert.match(styles, /\.workspace-nav-button\.workspace-return-button/);
+  assert.match(styles, /\.workspace-return-label/);
   assert.match(styles, /height: 100dvh/);
   assert.match(styles, /grid-template-columns: repeat\(5, minmax\(0, 1fr\)\)/);
   assert.match(styles, /grid-template-columns: repeat\(6, minmax\(0, 1fr\)\)/);

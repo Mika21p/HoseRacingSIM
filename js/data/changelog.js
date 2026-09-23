@@ -3,9 +3,9 @@
 
   ns.Changelog = ns.Changelog || {};
   ns.Changelog.meta = {
-    version: "v0.15a",
-    updatedAt: "2026-09-22T19:53:09+08:00",
-    displayUpdatedAt: "2026.09.22 19:53"
+    version: "v0.15b",
+    updatedAt: "2026-09-23T08:42:16+08:00",
+    displayUpdatedAt: "2026.09.23 08:42"
   };
   ns.Changelog.contentStats = Object.freeze({
     nonConditionRaces: 622,
@@ -23,6 +23,7 @@
   };
 
   ns.Changelog.entries = [
+    { date: "2026.9.23", version: "v0.15b", title: "配种操作与模式切换优化", items: ["主席模式配种现在更容易找到合适亲本，也可随时返回模式选择页；移动端操作同步调整。"] },
     { date: "2026.9.22", version: "v0.15a", title: "赛场适性与赛程资料优化", items: ["优化赛场适性继承与场地判断，补齐现实赛程资料，并修正主席世界的地区与赛事显示。"] },
     { date: "2026.9.22", version: "v0.15", title: "赛场适性与世界编辑", items: ["新增赛场适性与世界编辑系统，补充地区赛程资料，并让比赛场地、成长评语和自定义世界更有层次。"] },
     { date: "2026.9.21", version: "v0.14d", title: "主席模式内容与工作台扩展", items: ["新增评议会与殿堂、连冠系列和内容分享，并整理主席工作台与游戏管理流程。"] },

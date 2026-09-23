@@ -83,6 +83,18 @@
       for (const key of ["fatherId", "motherId"]) {
         const el = form.elements[key]; if (!el) continue;
         const gender = key === "fatherId" ? "牡马" : "牝马", listId = `breed-options-${key}`;
+        if (form.dataset.form === "breedMating") {
+          el.insertAdjacentHTML("beforebegin", `<input type="search" data-parent-search="${key}" aria-label="搜索${gender}亲本" placeholder="搜索名字 / 别名 / 编号"><select name="${key}" aria-label="选择${gender}亲本" required></select><small data-parent-count="${key}" role="status"></small>`);
+          el.remove();
+          form.elements[key].addEventListener("change", () => previewParents(form));
+          fillParent(form, key, "", gender);
+          const current = B.get(c.world, values[key]);
+          if (current && B.available(c.world, current)) {
+            if (![...form.elements[key].options].some(o => o.value === current.id)) form.elements[key].insertAdjacentHTML("beforeend", `<option value="${e(current.id)}">${e(current.name)} · ${e(current.id)}</option>`);
+            form.elements[key].value = current.id;
+          }
+          continue;
+        }
         el.setAttribute("list", listId); el.setAttribute("aria-label", key === "fatherId" ? "父马编号" : "母马编号");
         el.insertAdjacentHTML("afterend", `<input type="search" data-parent-search="${key}" aria-label="搜索${gender}亲本" placeholder="搜索名字 / 别名 / 编号"><datalist id="${listId}"></datalist>`);
         fillParent(form, key, "", gender);
@@ -91,6 +103,16 @@
       previewParents(form);
     }
     function fillParent(form, key, search, gender) {
+      if (form.dataset.form === "breedMating") {
+        const field = form.elements[key], selected = field.value;
+        const result = B.query(c.world, { search, gender, matingEligible: true, limit: 50 });
+        const rows = [...result.rows], current = B.get(c.world, selected);
+        if (current && B.available(c.world, current) && !rows.some(h => h.id === selected)) rows.unshift(B.publicHorse(c.world, current));
+        field.innerHTML = `<option value="">请选择${gender === "牡马" ? "父马" : "母马"}</option>` + rows.map(h => `<option value="${e(h.id)}">${e(h.name)} · ${W.ageOf(c.world, h)}岁 · ${e(h.region)} · ${e(h.id)}</option>`).join("");
+        field.value = selected;
+        form.querySelector(`[data-parent-count="${key}"]`).textContent = result.total ? `找到${result.total}匹可配种亲本${result.more ? "，显示前50匹，请继续输入筛选" : ""}；选择后才会加入配种。` : "没有符合条件的亲本。可先退役赛马，或从基础血统库引入／建立基础繁殖群。";
+        return;
+      }
       const source = form.dataset.form === "horse" ? B.query(c.world, { view: "library", instantiable: true, search, gender, limit: 25 }).rows : [];
       const result = B.query(c.world, { search, gender, limit: source.length ? 25 : 50 });
       form.querySelector(`#breed-options-${key}`).innerHTML = result.rows.map((h) => `<option value="${e(h.id)}">${e(h.name)} · 游戏${h.birthYear}年 · ${e(h.region)}</option>`).join("") + source.map((h) => `<option value="template:${e(h.id)}">基础资料：${e(h.name)} · 史实${h.birthYear}年 · ${e(h.region)}</option>`).join("");
@@ -99,6 +121,12 @@
     function changed(el) {
       if (el.dataset.parentSearch) fillParent(el.form, el.dataset.parentSearch, el.value, el.dataset.parentSearch === "fatherId" ? "牡马" : "牝马");
       if (["fatherId", "motherId"].includes(el.name)) previewParents(el.form);
+    }
+    function matingForm(values = {}) {
+      let form;
+      modal("指定配种", `<form data-form="breedMating">${input("fatherId", "父马", "")}${input("motherId", "母马", "")}${select("homeRegion", "幼驹地区", W.regionNames(c.world), values.homeRegion || "日本")}${input("owner", "幼驹马主（空白随母）", values.owner || "")}<p>搜索后在下拉列表选择亲本。仅列出已竞赛退役、年满3岁且未繁殖引退的马；母马须未满22岁，父马须未满25岁。同母已有指定将被替换，近亲关系在保存时校验。</p><button>保存指定配种</button></form>`, { key: "breedMating", form: true, render: () => matingForm(data(form)) });
+      form = c.dialog.querySelector("form");
+      parentFields(form, values);
     }
     async function click(action, id, el) {
       const w = c.world, p = w.ui.breedingFilter || { view: "active" };
@@ -115,7 +143,7 @@
       else if (action === "breedPin" || action === "breedRetire") { await c.commit(B.edit(w, action === "breedPin" ? "pin" : "retire", { id })); await detail(id); }
       else if (action === "breedCancel") { await c.commit(B.edit(w, "cancelMating", { id })); await c.render(); }
       else if (action === "breedFoundation" || action === "breedIntroduce") modal(action === "breedFoundation" ? "建立基础繁殖群" : "引入基础个体", `<form data-form="${action}">${input("templateId", "资料编号", id || "")}${select("region", "引入地区", W.regionNames(w), "日本")}${action === "breedFoundation" ? select("source", "来源包", [["", "按地区参考环境"], ...W.REGIONS, ["mixed", "混合"]], "") : ""}<p>引入年龄为8～14岁，祖先共享已有身份。同一资料只实例化一次，年代或亲缘冲突将阻止引入。</p><button>预览具体名单</button></form>`);
-      else if (action === "breedMate") { modal("指定配种", `<form data-form="breedMating">${input("fatherId", "父马编号", "")}${input("motherId", "母马编号", "")}${select("homeRegion", "幼驹地区", W.regionNames(w), "日本")}${input("owner", "幼驹马主（空白随母）", "")}<p>搜索后选择稳定编号；同母已有指定将被替换。近亲关系与年龄在保存时校验。</p><button>保存指定配种</button></form>`); parentFields(c.dialog.querySelector("form")); }
+      else if (action === "breedMate") matingForm();
       else if (action === "breedApplyCreation") { if (!creation || creation.base !== w.revision) throw new Error("世界已变化，请重新预览。"); await c.commit(creation.out); creation = null; c.dialog.close(); await c.render(); }
       else if (action === "breedApplyIntroduction") { if (!introduction || introduction.base !== w.revision) throw new Error("世界已变化，请重新预览。"); await c.commit(introduction.out); introduction = null; c.dialog.close(); await c.render(); }
       else return false;

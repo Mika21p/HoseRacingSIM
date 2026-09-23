@@ -4316,6 +4316,23 @@ th {
   text-align: left;
 }
 
+.workspace-nav-button.workspace-return-button {
+  margin-bottom: 5px;
+  border: 1px solid #4e695f;
+  background: #1a312b;
+  color: #c5ddd1;
+}
+
+.workspace-nav-button.workspace-return-button .workspace-nav-icon {
+  color: #c7ecdc;
+}
+
+.workspace-nav-button.workspace-return-button:hover,
+.workspace-nav-button.workspace-return-button:focus-visible {
+  background: #29483d;
+  color: #f4fbf7;
+}
+
 .workspace-nav-button:hover,
 .workspace-nav-button:focus-visible {
   background: #20283a;
@@ -4917,6 +4934,17 @@ body.has-career .changelog-widget > div {
     font-size: 11px;
   }
 
+  .workspace-nav-button.workspace-return-button {
+    margin-bottom: 0;
+    border-color: #527264;
+    box-shadow: inset 0 2px 0 #88b49e;
+  }
+
+  .workspace-return-label {
+    white-space: nowrap;
+    font-size: 9px;
+  }
+
   .workspace-nav-button.is-active {
     box-shadow: inset 0 3px 0 #ff9f80;
   }
@@ -5302,6 +5330,11 @@ body.has-career .changelog-widget > div {
 }
 
 @media (max-width: 360px) {
+  .workspace-shell.is-rogue-career .workspace-return-label {
+    font-size: 7px;
+    letter-spacing: -.04em;
+  }
+
   .workspace-shell.is-rogue-career .workspace-nav-button {
     gap: 1px;
     padding-inline: 2px;

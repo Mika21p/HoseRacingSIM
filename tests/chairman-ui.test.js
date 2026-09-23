@@ -135,7 +135,21 @@ test('breeding views share horse archives, preserve private fields and save desi
   await click('[data-action=pedigree]', body); assert.equal(dialog.querySelectorAll('.cm-pedigree-cell').length, 14); assert.doesNotMatch(dialog.innerHTML, /breedingStrength|courseGrades|peakStart/); await click('[data-action=close]', dialog);
   await click('[data-action=breedView][data-id=boards]'); assert.equal(body.querySelectorAll('table').length, 1); await click('[data-action=breedBoardKind][data-id=dam]');
   await click('[data-action=breedView][data-id=plans]'); const plan = ns.ChairmanBreeding.plan(ns.ChairmanRules.clone(world)).find(p => ns.ChairmanBreeding.get(world, p.fatherId) && ns.ChairmanBreeding.get(world, p.motherId)); assert.ok(plan);
-  await click('[data-action=breedMate]', body); const mating = dialog.querySelector('form'); mating.elements.fatherId.value = plan.fatherId; mating.elements.motherId.value = plan.motherId; mating.elements.homeRegion.value = plan.homeRegion;
+  await click('[data-action=breedMate]', body); let mating = dialog.querySelector('form');
+  for (const key of ['fatherId', 'motherId']) {
+    const search = mating.querySelector(`[data-parent-search="${key}"]`);
+    search.value = plan[key]; search.dispatchEvent(new w.Event('input', { bubbles: true }));
+    const field = mating.elements[key]; assert.equal(field.tagName, 'SELECT'); assert.ok(field.required);
+    assert.equal(field.options.length, 2); assert.equal(field.options[1].value, plan[key]);
+    assert.ok(ns.ChairmanBreeding.available(world, ns.ChairmanBreeding.get(world, field.options[1].value)));
+    field.value = plan[key]; field.dispatchEvent(new w.Event('change', { bubbles: true }));
+  }
+  mating.elements.homeRegion.value = plan.homeRegion; mating.elements.owner.value = '指定配种测试马主';
+  await click('.cm-parent-preview [data-action=pedigree]', dialog); await click('[data-action=dialogBack]', dialog);
+  mating = dialog.querySelector('form'); assert.equal(mating.elements.fatherId.value, plan.fatherId); assert.equal(mating.elements.motherId.value, plan.motherId);
+  assert.equal(mating.elements.owner.value, '指定配种测试马主'); assert.equal(mating.querySelector('[data-parent-search=fatherId]').value, plan.fatherId);
+  const search = mating.querySelector('[data-parent-search=fatherId]'); search.value = '无匹配亲本'; search.dispatchEvent(new w.Event('input', { bubbles: true }));
+  assert.match(mating.querySelector('[data-parent-count=fatherId]').textContent, /没有符合条件/); assert.equal(mating.elements.fatherId.value, plan.fatherId);
   assert.equal(dialog.querySelector('.cm-dialog-footer button:not([type])').form, mating); mating.requestSubmit(); await wait();
   assert.equal((await store.load(world.id)).breeding.manual.length, 1); assert.ok(body.querySelector('[data-action=breedCancel]'));
   await click('[data-action=tab][data-id=horses]'); await click('[data-action=horse]', body); await click('[data-action=horseView][data-view=pedigree]', dialog); assert.equal(dialog.querySelectorAll('.cm-pedigree-cell').length, 14);

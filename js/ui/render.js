@@ -970,8 +970,8 @@
         <header class="workspace-status" id="workspaceStatus"></header>
         <div class="workspace-layout">
           <nav class="workspace-nav" aria-label="生涯页面">
-            <button class="workspace-nav-button" type="button" data-return-home>
-              <span class="workspace-nav-icon" aria-hidden="true">⌂</span><span>首页</span>
+            <button class="workspace-nav-button workspace-return-button" type="button" data-return-home aria-label="返回模式选择页（离开当前游戏模式）" title="返回模式选择页">
+              <span class="workspace-nav-icon" aria-hidden="true">↩</span><span class="workspace-return-label">返回模式选择</span>
             </button>
             <button class="workspace-nav-button is-active" type="button" data-workspace-view="action" data-workspace-section="race" aria-current="page">
               <span class="workspace-nav-icon" aria-hidden="true">▶</span><span>行动</span>

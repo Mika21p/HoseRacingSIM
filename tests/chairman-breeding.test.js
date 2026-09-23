@@ -43,6 +43,20 @@ test('random nonwinners can breed, geldings cannot, and age limits cannot be byp
   assert.equal(h.breeding.status, 'retired'); assert.equal(h.breeding.pinned, false); assert.equal(B.available(w, h), false);
 });
 
+test('manual parent search filters eligibility before pagination and includes unused retired horses', () => {
+  const { W, B, w } = setup();
+  for (let i = 0; i < 55; i++) W.addHorse(w, { name: '在役候选' + i, gender: '牡马', age: 4 });
+  const sire = W.addHorse(w, { name: '可选父马', gender: '牡马', age: 5, status: 'retired' });
+  const mare = W.addHorse(w, { name: '可选母马', gender: '牝马', age: 5, status: 'retired' });
+  W.addHorse(w, { gender: '牡马', age: 25, status: 'retired' });
+  const retired = W.addHorse(w, { gender: '牡马', age: 5, status: 'retired' }); retired.breeding.status = 'retired';
+  W.addHorse(w, { gender: '牝马', age: 2, status: 'retired' });
+  const sires = B.query(w, { gender: '牡马', matingEligible: true });
+  assert.equal(sires.total, 1); assert.equal(sires.rows[0].id, sire.id);
+  const mares = B.query(w, { gender: '牝马', matingEligible: true, search: mare.name });
+  assert.equal(mares.total, 1); assert.equal(mares.rows[0].id, mare.id);
+});
+
 test('template introductions keep shared identity and reject rejuvenating old ancestors', () => {
   const { B, w } = setup();
   let out = B.edit(w, 'introduce', { templateId: 'jbis-0001161935', region: '欧洲' });
