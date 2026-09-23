@@ -36,9 +36,11 @@
     return `<label>${label}<select id="${id}">${valueOptions(grades || ["S", "A", "B", "C", "G"], selected)}</select></label>`;
   }
 
+  const aptitudeLabels = { grass: "草地", dirt: "泥地", burst: "瞬发", sustained: "持久", attrition: "消耗" };
+
   function renderGradeList(items) {
     return Object.entries(items)
-      .map(([name, grade]) => `<span class="grade-chip grade-${grade}">${name} <b>${grade}</b></span>`)
+      .map(([name, grade]) => `<span class="grade-chip grade-${grade}">${aptitudeLabels[name] || name} <b>${grade}</b></span>`)
       .join("");
   }
 
