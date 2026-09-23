@@ -87,6 +87,7 @@
     document.body.classList.toggle("has-career", isCareerScreen);
     const homeScreen = document.getElementById("homeScreen");
     const homeContinueBtn = document.getElementById("homeContinueBtn");
+    const homeLegendContinueBtn = document.getElementById("homeLegendContinueBtn");
     const homeStartBtn = document.getElementById("homeStartBtn");
     const homeRogueContinueBtn = document.getElementById("homeRogueContinueBtn");
     const homeRogueStatus = document.getElementById("homeRogueStatus");
@@ -99,7 +100,10 @@
     const isRogueCareer = !!(state.career && state.career.gameMode === "roguelike");
     if (homeScreen) homeScreen.hidden = state.activeScreen !== "home";
     const hasStandardCareer = hasSavedGame();
-    if (homeContinueBtn) homeContinueBtn.hidden = !hasStandardCareer;
+    const savedMode = savedCareerMode();
+    // 普通生涯与传奇模式共用一份存档，继续入口只出现在与存档模式相符的卡片上。
+    if (homeContinueBtn) homeContinueBtn.hidden = !hasStandardCareer || savedMode === "legend";
+    if (homeLegendContinueBtn) homeLegendContinueBtn.hidden = savedMode !== "legend";
     if (homeStartBtn) homeStartBtn.textContent = hasStandardCareer ? "开始新生涯" : "开始生涯";
     if (setupOverlay) setupOverlay.hidden = state.activeScreen !== "setup";
     if (rogueOverlay) rogueOverlay.hidden = state.activeScreen !== "rogue";
@@ -1334,6 +1338,21 @@
     }
   }
 
+  // 本机生涯存档所属的模式（"normal" / "legend"），无有效存档时为 null。
+  // 首页用它区分两种模式共用存档时的状态文案与继续入口。
+  function savedCareerMode() {
+    const storage = getStorage();
+    if (!storage) return null;
+    try {
+      const payload = JSON.parse(storage.getItem(SAVE_KEY) || "null");
+      const career = payload && payload.version === SAVE_VERSION && payload.state && payload.state.career;
+      if (!career) return null;
+      return career.gameMode === "legend" ? "legend" : "normal";
+    } catch (error) {
+      return null;
+    }
+  }
+
   function formatSavedAt(savedAt) {
     if (!savedAt) return "";
     const date = new Date(savedAt);
@@ -1359,10 +1378,10 @@
       statusText = `已自动保存 · ${savedAtText}`;
     }
     if (panel) panel.hidden = false;
-    ["homeSaveStatus", "saveStatusText", "workspaceSaveStatusText", "workspaceStatusSave"].forEach((id) => {
+    ["saveStatusText", "workspaceSaveStatusText", "workspaceStatusSave"].forEach((id) => {
       const text = document.getElementById(id);
       if (!text) return;
-      if (rogueCareerActive && id !== "homeSaveStatus") {
+      if (rogueCareerActive) {
         text.textContent = id === "workspaceStatusSave" ? "肉鸽存档已保存" : "肉鸽模式使用独立自动存档";
         return;
       }
@@ -1370,6 +1389,15 @@
         ? statusText.split(" · ")[0]
         : statusText;
     });
+    // 普通生涯与传奇模式共用一份生涯存档，首页两张卡片分别说明这份存档属于哪种模式。
+    const savedMode = savedCareerMode();
+    const homeModeStatus = (mode) => (savedMode && savedMode !== mode
+      ? (mode === "legend" ? "本机存档为普通生涯" : "本机存档为传奇模式")
+      : statusText);
+    const homeSaveStatusText = document.getElementById("homeSaveStatus");
+    if (homeSaveStatusText) homeSaveStatusText.textContent = homeModeStatus("normal");
+    const homeLegendSaveStatusText = document.getElementById("homeLegendSaveStatus");
+    if (homeLegendSaveStatusText) homeLegendSaveStatusText.textContent = homeModeStatus("legend");
     ["clearSaveBtn", "workspaceClearSaveBtn"].forEach((id) => {
       const clearButton = document.getElementById(id);
       if (clearButton) clearButton.hidden = rogueCareerActive || !hasSavedGame();
@@ -1629,7 +1657,7 @@
   }
 
   function generate() {
-    if (state.career && !window.confirm("当前生涯会被新小马覆盖，确定继续吗？")) return;
+    if (state.career && !window.confirm(`当前${state.career.gameMode === "legend" ? "传奇模式" : "普通生涯"}的存档会被新小马覆盖，确定继续吗？`)) return;
     const name = document.getElementById("horseNameInput").value || "未命名小马";
     const sireId = document.getElementById("sireSelect").value;
     const damId = document.getElementById("damSelect").value;
@@ -2476,6 +2504,7 @@
     const homeContinueBtn = document.getElementById("homeContinueBtn");
     const homeStartBtn = document.getElementById("homeStartBtn");
     const homeLegendBtn = document.getElementById("homeLegendBtn");
+    const homeLegendContinueBtn = document.getElementById("homeLegendContinueBtn");
     const homeRogueBtn = document.getElementById("homeRogueBtn");
     const homeRogueContinueBtn = document.getElementById("homeRogueContinueBtn");
     const homeEraBtn = document.getElementById("homeEraBtn");
@@ -2534,6 +2563,7 @@
     if (homeLegendBtn) {
       homeLegendBtn.addEventListener("click", () => openStandardSetup(true));
     }
+    if (homeLegendContinueBtn) homeLegendContinueBtn.addEventListener("click", showStandardCareer);
     if (homeRogueBtn) homeRogueBtn.addEventListener("click", openRogue);
     if (homeRogueContinueBtn) homeRogueContinueBtn.addEventListener("click", continueRogue);
     if (homeEraBtn) homeEraBtn.addEventListener("click", openEra);

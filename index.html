@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="css/styles.css?v=20260922-mode-selector-nav">
   <link rel="stylesheet" href="css/era.css?v=20260720-era-v5">
   <link rel="stylesheet" href="css/chairman.css?v=20260921-editor">
-  <link rel="stylesheet" href="css/home.css?v=20260922-save-notice">
+  <link rel="stylesheet" href="css/home.css?v=20260923-home-copy">
   <link rel="stylesheet" href="css/scenery.css?v=20260920-dusk">
   <link rel="stylesheet" href="css/game-theme.css?v=20260922-trainer-prose">
   <link rel="stylesheet" href="css/chairman-workbench.css?v=20260922-create-simple">
@@ -17,9 +17,10 @@
 </head>
 <body>
   <div class="app-meta-widget">
-    <button class="app-meta-button" id="changelogToggleBtn" type="button" aria-expanded="false" aria-label="查看 v0.15b 更新日志">
-      <strong id="appVersion">v0.15b</strong>
-      <small id="appUpdatedAt">更新于 2026.09.23 08:42</small>
+    <!-- 版本号与更新时间由 js/app.js 的 renderAppMeta() 依据 js/data/changelog.js 覆盖，此处的值仅作为脚本未执行时的兜底。 -->
+    <button class="app-meta-button" id="changelogToggleBtn" type="button" aria-expanded="false" aria-label="查看 v0.15c 更新日志">
+      <strong id="appVersion">v0.15c</strong>
+      <small id="appUpdatedAt">更新于 2026.09.23 15:50</small>
     </button>
     <section class="changelog-panel" id="changelogPanel" hidden>
       <div class="changelog-header">
@@ -70,7 +71,8 @@
   <script src="js/data/race-course-profiles.js?v=20260922-venue-names"></script>
   <script src="js/data/race-names.js"></script>
   <script src="js/data/help.js?v=20260922-surface-floor"></script>
-  <script src="js/data/changelog.js?v=20260718-rogue-item-price"></script>
+  <script src="js/data/changelog.js?v=20260923-home-copy"></script>
+  <script src="js/data/home-modes.js?v=20260923-home-copy"></script>
   <script src="js/data/historical-horses/registry.js"></script>
   <script src="js/data/historical-horses/index.js"></script>
   <script src="js/data/era/registry.js?v=20260720-era-v5"></script>
@@ -98,7 +100,7 @@
   <script src="js/rules/roguelike.js?v=20260718-rogue-item-price"></script>
   <script src="js/rules/era-narrative.js?v=20260720-era-v5"></script>
   <script src="js/rules/era.js?v=20260922-trainer-prose"></script>
-  <script src="js/ui/render.js?v=20260923-aptitude-labels"></script>
+  <script src="js/ui/render.js?v=20260923-home-copy"></script>
   <script src="js/ui/home-art.js?v=20260920-home-images"></script>
   <script src="js/ui/era-render.js?v=20260922-trainer-prose"></script>
   <script src="js/data/chairman-pedigrees.js?v=20260920-ratings"></script>
@@ -125,7 +127,7 @@
   <script src="js/chairman-breeding-ui.js?v=20260922-surface-floor"></script>
   <script src="js/chairman-honors-ui.js?v=20260921-editor"></script>
   <script src="js/chairman-world-ui.js?v=20260922-venue-names"></script>
-  <script src="js/chairman-app.js?v=20260921-editor"></script>
-  <script src="js/app.js?v=20260922-trainer-prose"></script>
+  <script src="js/chairman-app.js?v=20260923-home-copy"></script>
+  <script src="js/app.js?v=20260923-home-copy"></script>
 </body>
 </html>
