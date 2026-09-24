@@ -2,6 +2,7 @@ const fs = require("node:fs");
 const path = require("node:path");
 const test = require("node:test");
 const assert = require("node:assert/strict");
+const vm = require("node:vm");
 
 const root = path.resolve(__dirname, "..");
 const read = (file) => fs.readFileSync(path.join(root, file), "utf8");
@@ -61,16 +62,19 @@ test("home, global metadata and mobile navigation are wired", () => {
   const index = read("index.html");
   const render = read("js/ui/render.js");
   const changelog = read("js/data/changelog.js");
+  const homeModes = read("js/data/home-modes.js");
   const styles = read("css/styles.css");
   assert.match(index, /styles\.css\?v=20260922-mode-selector-nav/);
   assert.match(index, /render\.js\?v=20260924-bloodline/);
   assert.match(index, /app\.js\?v=20260924-bloodline/);
+  assert.match(index, /home-modes\.js\?v=20260923-home-copy/);
   assert.match(index, /golden-road-1998\.js\?v=20260720-era-v5/);
   assert.match(index, /race-simulator\.js\?v=20260920-ratings/);
   assert.match(index, /era-narrative\.js\?v=20260720-era-v5/);
   assert.match(index, /era\.js\?v=20260922-trainer-prose/);
   assert.match(index, /id="appVersion"/);
-  assert.match(changelog, /version: "v0\.15a"/);
+  assert.match(changelog, /version: "v0\.16"/);
+  assert.match(changelog, /version: "v0\.15c"/);
   assert.match(changelog, /nonConditionRaces: 622/);
   assert.match(render, /class="home-mode-grid"/);
   assert.match(render, /class="home-support-row"/);
@@ -78,12 +82,15 @@ test("home, global metadata and mobile navigation are wired", () => {
   assert.match(render, /id="homeContinueBtn"/);
   assert.match(render, /id="homeStartBtn"/);
   assert.match(render, /id="homeLegendBtn"/);
+  assert.match(render, /id="homeLegendContinueBtn"/);
+  assert.match(render, /"homeLegendSaveStatus"/);
   assert.match(render, /id="homeRogueBtn"/);
   assert.match(render, /id="homeRogueContinueBtn"/);
-  assert.match(render, /id="homeRogueStatus"/);
-  assert.match(render, /培育赛马，规划竞赛生涯/);
-  assert.match(render, /迎战五匹史实强敌/);
-  assert.match(render, /从未知候选中押注传奇/);
+  assert.match(render, /"homeRogueStatus"/);
+  assert.match(render, /赛马育成模拟/);
+  assert.match(homeModes, /每场比赛迎战五匹名马/);
+  assert.match(homeModes, /从随机候选里寻找黑马/);
+  assert.doesNotMatch(render, /home-save-notice/);
   assert.doesNotMatch(render, />LEGEND<\/em>/);
   assert.match(render, /id="rogueOverlay"/);
   assert.match(render, /id="rogueChallengePanel"/);
@@ -101,6 +108,41 @@ test("home, global metadata and mobile navigation are wired", () => {
   assert.match(styles, /grid-template-columns: repeat\(3, minmax\(0, 1fr\)\)/);
   assert.doesNotMatch(styles, /\.home-rogue-feature\s*\{[^}]*grid-column/);
   assert.match(styles, /\.action-main-column > \.panel/);
+});
+
+test("home mode copy keeps one data source and a consistent shape", () => {
+  const context = vm.createContext({ window: { Keiba: {} } });
+  vm.runInContext(read("js/data/home-modes.js"), context, { filename: "js/data/home-modes.js" });
+  const modes = context.window.Keiba.HomeModes;
+  const length = (value) => [...value].length;
+
+  assert.deepEqual([...modes.ids], ["career", "legend", "rogue", "era", "chairman"]);
+  modes.ids.forEach((id) => {
+    const copy = modes.copy[id];
+    assert.ok(copy, `missing home mode copy for ${id}`);
+    assert.match(copy.index, /^0[1-5] \/ [A-Z]+$/, `${id} index format`);
+    assert.equal(length(copy.title), 4, `${id} title must be 4 characters`);
+    assert.ok([0, 3].includes(length(copy.badge)), `${id} badge must be empty or 3 characters`);
+    assert.ok(length(copy.tagline) >= 9 && length(copy.tagline) <= 11, `${id} tagline length`);
+    assert.doesNotMatch(copy.tagline, /[，。、；：！？]/, `${id} tagline must not use punctuation`);
+    assert.ok(length(copy.description) >= 26 && length(copy.description) <= 32, `${id} description length`);
+    assert.match(copy.description, /。$/, `${id} description must end with a full stop`);
+    assert.equal(copy.tags.length, 2, `${id} needs exactly two tags`);
+    copy.tags.forEach((tag) => assert.equal(length(tag), 4, `${id} tag "${tag}" must be 4 characters`));
+    assert.ok(copy.status === "暂无存档" || /^.+ · .+$/.test(copy.status), `${id} status must be a save state or "A · B"`);
+    ["startLabel", "resumeLabel"].forEach((key) => {
+      if (!copy[key]) return;
+      assert.ok(length(copy[key]) >= 4 && length(copy[key]) <= 6, `${id}.${key} length`);
+      assert.doesNotMatch(copy[key], /[\s/()（）]/, `${id}.${key} must not use spaces, slashes or brackets`);
+    });
+    assert.ok(fs.existsSync(path.join(root, copy.icon)), `${id} icon ${copy.icon} must exist`);
+  });
+
+  // 普通生涯与传奇模式共用一份存档，两张卡片都要能说明并继续这份存档。
+  assert.equal(modes.copy.legend.resumeLabel, "继续传奇生涯");
+  assert.equal(modes.copy.chairman.title, "主席模式");
+  assert.equal(modes.copy.chairman.badge, "开发中");
+  assert.equal(modes.copy.era.badge, "未完成");
 });
 
 test("feedback group copy supports modern and fallback clipboard paths", () => {

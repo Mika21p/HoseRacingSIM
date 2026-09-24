@@ -1,3 +1,5 @@
 dist/
 node_modules/
 .cache/
+.npm-cache/
+.test-*.log

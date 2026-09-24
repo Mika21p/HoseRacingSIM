@@ -1,5 +1,4 @@
 /* Homepage only: illustrated racing lobby. Gameplay layouts keep their own styles. */
-.home-screen .home-save-notice { margin:0 0 16px; padding:10px 14px; border-left:3px solid #dcb579; border-radius:4px; background:#dcb57912; color:#f1d5a3; font-size:13px; line-height:1.7; }
 .app-shell:has(> .home-screen:not([hidden])) {
   width: min(1440px, calc(100% - 64px));
   margin: 0 auto;
@@ -52,7 +51,7 @@ body:has(#app:not([hidden]) > .home-screen:not([hidden])) .app-meta-button { min
 .home-screen .home-card-top img { width: 44px; height: 44px; flex: 0 0 auto; }
 .home-screen .home-card-index { font-size: 9px; color: #95a9bc; letter-spacing: .07em; }
 .home-screen .home-mode-card h3 { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; font-size: 20px; line-height: 1.5; margin: 0 0 6px; }
-.home-screen .home-mode-badge { padding: 1px 5px; border: 1px solid #50647a; border-radius: 4px; font-size: 9px; color: #c0ccdb; font-weight: 500; white-space: nowrap; }
+.home-screen .home-mode-badge { padding: 1px 5px; border: 1px solid #7a6a4a; border-radius: 4px; background: #d8b46a14; font-size: 9px; color: #e2c68d; font-weight: 500; white-space: nowrap; }
 .home-screen .home-card-tagline { color: var(--mode-color); font-size: 11px; line-height: 1.6; margin: 0 0 12px; }
 .home-screen .home-card-description { margin: 0; color: #aabccd; font-size: 12px; line-height: 1.85; }
 .home-screen .home-card-tags { display: flex; flex-wrap: wrap; gap: 6px; margin: 16px 0 22px; }
@@ -69,6 +68,7 @@ body:has(#app:not([hidden]) > .home-screen:not([hidden])) .app-meta-button { min
 .home-screen .home-how-to { grid-template-columns: minmax(190px,.8fr) minmax(0,3fr); margin-top: 28px; padding: 22px 0; border-top: 1px solid #293b4d; border-bottom: 1px solid #293b4d; }
 .home-screen .home-section-heading .eyebrow { color: #7bcfc9; font-size: 10px; letter-spacing: .15em; margin: 0; }
 .home-screen .home-section-heading h2 { color: #dae5ef; font-size: 17px; max-width: 200px; line-height: 1.7; }
+.home-screen .home-how-to-note { margin: 8px 0 0; color: #7b8fa3; font-size: 11px; letter-spacing: .06em; }
 .home-screen .home-play-card { background: transparent; border: 0; border-radius: 0; padding: 4px 12px; min-height: 0; }
 .home-screen .home-play-card > span { color: #6c9dac; font-size: 19px; font-style: italic; }
 .home-screen .home-play-card h3 { color: #dce9f4; font-size: 14px; }
@@ -119,7 +119,6 @@ body:has(#app:not([hidden]) > .home-screen:not([hidden])) .app-meta-button { min
   .home-screen .home-banner-art { object-position: 72% center; opacity: .85; }
   .home-screen .home-banner::after { background: linear-gradient(90deg, #081726df 0%, #08172688 55%, #08172622), linear-gradient(0deg, #0d2436aa, transparent 50%); }
   .home-screen .home-banner-copy { padding: 24px 20px; max-width: 340px; }
-  .home-screen .home-banner .home-kicker { font-size: 7px; letter-spacing: .1em; }
   .home-screen .home-banner h1 { font-size: 37px; margin-top: 32px; }
   .home-screen .home-banner-lead { font-size: 11px; line-height: 1.9; }
   .home-screen .home-banner-caption { margin-top: 22px; font-size: 9px; }

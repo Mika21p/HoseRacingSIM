@@ -782,7 +782,9 @@ test("era UI uses an owner viewpoint with encounter, newspaper and mobile drawer
   const eraUi = fs.readFileSync(path.join(projectRoot, "js/ui/era-render.js"), "utf8");
   const app = fs.readFileSync(path.join(projectRoot, "js/app.js"), "utf8");
   const styles = fs.readFileSync(path.join(projectRoot, "css/era.css"), "utf8");
-  assert.match(render, /id="homeEraBtn"[^>]*>进入剧情模式/);
+  const homeModes = fs.readFileSync(path.join(projectRoot, "js/data/home-modes.js"), "utf8");
+  assert.match(render, /id="homeEraBtn"/);
+  assert.match(homeModes, /"进入剧情模式"/);
   assert.match(render, /id="eraOverlay"/);
   assert.match(app, /keiba-era-save-v1/);
   assert.match(app, /state\.activeScreen = "era"/);
