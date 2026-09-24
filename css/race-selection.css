@@ -1,0 +1,77 @@
+/* Compact registration list shared by normal, legend and roguelike. */
+#racePanel { min-width: 0; }
+.rs-filters { position: sticky; top: 0; z-index: 8; background: var(--dusk-panel, #203a33); padding: 8px 0; border-bottom: 1px solid #587269; }
+.rs-common-filters, .rs-filter-summary, .rs-month-tools, .rs-footer { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.rs-filter-summary { margin-top: 8px; font-size: 13px; }
+.rs-filter-summary button, .rs-month-tools button { padding: 5px 9px; font-size: 12px; }
+.rs-common-filters > .rs-filter { flex: 1 1 130px; min-width: 0; }
+.rs-filter .race-filter-options { z-index: 20; max-height: min(50vh, 360px); overflow-y: auto; }
+.rs-filter summary { padding: 8px 10px; }
+.rs-filter summary span { white-space: normal; overflow-wrap: anywhere; }
+.rs-more { flex: 0 0 auto; position: relative; }
+.rs-more > summary { cursor: pointer; padding: 8px 10px; border: 1px solid #668074; border-radius: 6px; }
+.rs-more-content { position: absolute; right: 0; top: 100%; margin-top: 6px; padding: 10px; width: min(350px, calc(100vw - 64px)); background: #203a33; border: 1px solid #668074; box-shadow: 0 8px 20px #0005; border-radius: 8px; }
+.rs-more-content > * + * { margin-top: 8px; }
+.rs-more-content .race-filter-options { position: static; width: auto; }
+.rs-filter-disabled { display: grid; gap: 4px; padding: 8px 10px; color: #b5c6be; border: 1px solid #486357; border-radius: 6px; font-size: 13px; }
+.rs-search-label { display: grid; gap: 4px; padding: 4px 0; width: 100%; }
+.rs-search-label input { min-width: 0; width: 100%; }
+.rs-track-country { display: block; flex-basis: 100%; color: #e2c483; padding: 6px 0 2px; }
+.rs-track-empty { font-size: 13px; }
+[data-track-option][hidden], [data-track-country][hidden], .rs-track-empty[hidden] { display: none !important; }
+.rs-notice { font-size: 13px; color: #c3d3cb; margin: 10px 0; }
+.rs-month-tools { justify-content: flex-end; margin-bottom: 8px; }
+.rs-columns, .rs-line { display: grid; grid-template-columns: 52px minmax(130px, 1.9fr) minmax(78px, .85fr) 60px minmax(100px, 1.15fr) 88px; align-items: center; gap: 8px; }
+.rs-columns { font-size: 12px; color: #b1c5bb; padding: 6px 8px; }
+.rs-month { border-top: 1px solid #66807470; }
+.rs-month > summary { cursor: pointer; padding: 9px 8px; color: #e4c18f; font-size: 14px; }
+.rs-month > summary small { margin-left: 10px; color: #b7c9c0; }
+.rs-line { padding: 8px; border-top: 1px solid #66807440; font-size: 13px; }
+.rs-line > * { min-width: 0; overflow-wrap: anywhere; }
+.rs-race { display: flex; align-items: baseline; gap: 6px; }
+.rs-race strong { min-width: 0; font-size: 14px; }
+.rs-race .badge { white-space: nowrap; padding: 2px 4px; font-size: 11px; }
+.rs-venue, .rs-date { color: #bed0c6; }
+.rs-choice { display: flex; flex-wrap: wrap; align-items: center; gap: 3px; justify-content: flex-end; }
+.rs-choice small { color: #e4c18f; font-size: 11px; }
+.rs-choice button { padding: 5px 9px; font-size: 12px; }
+.rs-entry:hover { background: #ffffff04; }
+.rs-entry.is-selected { background: #dac18d0c; box-shadow: inset 3px 0 #dcb579; }
+.rs-detail { margin: 0 8px 8px; padding: 12px; border: 1px solid #dcb57970; border-radius: 6px; background: #172f28; overflow-wrap: anywhere; }
+.rs-detail h3 { margin: 0 0 6px; font-size: 16px; }
+.rs-detail p { margin: 7px 0; font-size: 13px; }
+.rs-detail button { margin-top: 6px; }
+.rs-footer { padding-top: 14px; border-top: 1px solid #66807470; margin-top: 8px; }
+.rs-footer #retireBtn { margin-left: auto; }
+.rs-filters :focus-visible, .rs-month :focus-visible, .rs-footer :focus-visible, .rs-month-tools :focus-visible { outline: 2px solid #e4c18f; outline-offset: 3px; }
+@media (max-width: 900px) {
+ .rs-columns { display: none; }
+ .rs-line { grid-template-columns: 42px minmax(0, 1fr) auto; grid-template-areas: 'date race choice' 'surface surface surface' 'venue venue venue'; column-gap: 6px; row-gap: 4px; }
+ .rs-date { grid-area: date; font-size: 11px; }
+ .rs-race { grid-area: race; flex-wrap: wrap; gap: 4px; }
+ .rs-choice { grid-area: choice; max-width: 70px; }
+ .rs-surface { grid-row: 2; grid-column: 1 / 3; }
+ .rs-type { grid-row: 2; grid-column: 3; text-align: right; }
+ .rs-venue { grid-area: venue; font-size: 12px; }
+}
+@media (max-width: 540px) {
+ .rs-common-filters { gap: 5px; }
+ .rs-common-filters > .rs-filter { flex-basis: calc(33% - 5px); }
+ .rs-filter summary { padding: 7px; font-size: 12px; }
+ .rs-more { flex-basis: 100%; }
+ .rs-more > summary { padding: 5px 8px; font-size: 12px; }
+ .rs-more-content { width: 100%; box-sizing: border-box; }
+ .rs-filter .race-filter-options { max-width: calc(100vw - 64px); }
+ .rs-filters { position: relative; top: auto; }
+}
+
+.rs-meta { display: contents; }
+@media (max-width: 900px) {
+ .rs-line { grid-template-areas: 'date race choice' 'meta meta meta'; }
+ .rs-meta { grid-area: meta; display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; }
+ .rs-meta .rs-type { text-align: left; }
+ .rs-meta .rs-venue { overflow-wrap: anywhere; min-width: 0; }
+}
+
+#racePanel .rs-filter .race-filter-options { max-height: min(50vh, 360px); }
+#racePanel .rs-more-content .race-filter-options { position: static; inset: auto; width: auto; box-shadow: none; border-radius: 6px; padding: 8px; }

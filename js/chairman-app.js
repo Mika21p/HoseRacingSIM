@@ -20,7 +20,7 @@
     if (!window.Worker) throw new Error("此浏览器不支持后台文件处理，请使用支持Worker的浏览器。");
     if (stopping) throw new Error("操作已取消，当前世界未改变。");
     return new Promise((resolve, reject) => {
-      const worker = new Worker("js/chairman-worker.js?v=20260921-world"); activeWorker = worker;
+      const worker = new Worker("js/chairman-worker.js?v=20260924-genetics-v2-final"); activeWorker = worker;
       const end = () => { worker.terminate(); activeWorker = null; cancelWorker = null; };
       cancelWorker = () => { end(); reject(new Error("操作已取消，当前世界未改变。")); };
       worker.onmessage = ({ data }) => { if (data.progress) { notice(data.progress); return; } end(); if (data.error) reject(new Error(data.error)); else resolve(data.result); };

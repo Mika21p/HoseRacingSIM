@@ -16,7 +16,7 @@
   function project(w,h){
     const keys=[...identity,'id','origin','sourceKind','status','annual','lifetime','booked','target','seriesTarget','seriesTitles','locationRegion','restUntil','editedByWorld'];
     const p=Object.fromEntries(keys.filter(k=>h[k]!==undefined).map(k=>[k,copy(h[k])]));
-    if(enabled(w)||h.origin==='custom'){p.real=Object.fromEntries(traits.filter(k=>h[k]!==undefined).map(k=>[k,copy(h[k])]));p.real.breedingStrength=h.breeding?.strength??h.breedingStrength??null;p.real.decline=h.maturity?.decline??null;p.real.lastInjury=copy(h.lastInjury);}
+    if(enabled(w)||h.origin==='custom'){p.real=Object.fromEntries(traits.filter(k=>h[k]!==undefined).map(k=>[k,copy(h[k])]));if(enabled(w)){p.real.breedingStrength=h.breeding?.strength??h.breedingStrength??null;p.real.breedingStability=h.genetics?.stability??null;}p.real.decline=h.maturity?.decline??null;p.real.lastInjury=copy(h.lastInjury);}
     return p;
   }
   function diff(before,after,path=[],out=[]){
@@ -48,14 +48,15 @@
     const t=template(w,id);if(t.game)check(Object.keys(t.game).every(k=>['breedingBase','distance','surface','growthType','note'].includes(k)),'无效生成预设。');validateTemplates(w);
   }
   function patchHorse(w,id,patch){
-    const h=B().get(w,id);check(h,'个体不存在。');for(const k of Object.keys(patch))check([...identity,...traits,'age','breedingStrength'].includes(k),'不允许编辑字段：'+k);
+    const h=B().get(w,id);check(h,'个体不存在。');for(const k of Object.keys(patch))check([...identity,...traits,'age','breedingStrength','breedingStability'].includes(k),'不允许编辑字段：'+k);
     const old=copy(h),v=copy(patch),nodes=B().all(w),archive=h.status==='ancestor'&&!h.strength;
     if(v.age!=null){check(Number.isSafeInteger(v.age)&&v.age>=(h.status==='juvenile'?0:2),'当前年龄无效。');v.birthYear=W().date(w.turn).year-v.age;delete v.age;}
     if(h.status==='juvenile'&&v.birthYear!=null)check(v.birthYear===h.birthYear,'幼驹年龄由出生流程管理，不能提前出道。');
     if(v.birthYear!=null&&v.birthYear!==h.birthYear)check(!h.lifetime?.starts&&!nodes.some(c=>c.fatherId===id||c.motherId===id),'已有出赛或子代记录的马不能修改年龄。');
     if(v.gender&&v.gender!==h.gender&&h.breeding?.everActive)check(false,'已有繁殖身份，不能修改性别。');
     if(archive)check(Object.keys(v).every(k=>identity.includes(k)),'纯祖先档案无模拟参数。');
-    if(v.breedingStrength!=null){check(h.breeding&&Number.isInteger(v.breedingStrength)&&v.breedingStrength>=1&&v.breedingStrength<=100,'配种实力须为1～100整数，且已启用繁殖。');h.breeding.strength=v.breedingStrength;delete v.breedingStrength;}
+    if(v.breedingStability!=null){check(h.breeding,'尚未启用繁殖。');ns.ChairmanGenetics.setValues(w,h,null,v.breedingStability);delete v.breedingStability;}
+    if(v.breedingStrength!=null){check(h.breeding&&Number.isInteger(v.breedingStrength)&&v.breedingStrength>=1&&v.breedingStrength<=100,'配种实力须为1～100整数，且已启用繁殖。');ns.ChairmanGenetics.setValues(w,h,v.breedingStrength);delete v.breedingStrength;}
     if(h.sourceKind==='bred'&&['birthYear','fatherId','motherId'].some(k=>v[k]!==undefined&&!equal(v[k],h[k])))h.birthFacts||={birthYear:h.birthYear,fatherId:h.fatherId,motherId:h.motherId};
     if(w.worldSystemVersion===2&&v.homeRegion!=null){const area=ns.ChairmanWorld.region(w,v.homeRegion);check(area&&!area.disabled,'请选择启用地区。');h.homeRegionId=area.id;}
     Object.assign(h,v);check(typeof h.name==='string'&&h.name.trim(),'请填写马名。');if(h.aliases)check(Array.isArray(h.aliases)&&h.aliases.every(v=>typeof v==='string'),'别名无效。');

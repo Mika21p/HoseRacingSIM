@@ -49,11 +49,11 @@ test('events package preserves races, tracks and series and supports repeats, co
 });
 test('family template export removes hidden traits, deduplicates ancestors, introduces independently and never restores youth',()=>{
   const f=fixture(true),{W,n}=f,P=n.ChairmanPackages;let w=f.w;
-  W.seeded(w,()=>{const father=W.addHorse(w,{name:'家系父',age:12,gender:'牡马'}),mother=W.addHorse(w,{name:'家系母',age:10,gender:'牝马'});w.horses[0].fatherId=father.id;w.horses[0].motherId=mother.id;w.horses[0].gender='牡马';w.horses[0].breeding.everActive=true;w.horses[0].breeding.strength=80;});
+  W.seeded(w,()=>{const father=W.addHorse(w,{name:'家系父',age:12,gender:'牡马'}),mother=W.addHorse(w,{name:'家系母',age:10,gender:'牝马'});w.horses[0].fatherId=father.id;w.horses[0].motherId=mother.id;w.horses[0].gender='牡马';w.horses[0].breeding.everActive=true;n.ChairmanGenetics.setValues(w,w.horses[0],80);});
   const p=P.exportFamily(w,[w.horses[0].id]),text=JSON.stringify(p);assert.equal(p.nodes.length,3);assert.doesNotMatch(text,/strength|peakStart|surfaceGrades|trackAptitudes|rngState|manualRating/);
   let target=W.createWorld({blank:true,seed:3,breeding:true});target=P.apply(target,P.preview(target,p),true).world;assert.equal(target.horses.length,0);assert.equal(target.familyTemplates.length,3);
   const id=target.familyTemplates.find(t=>t.core).id,before=[target.rngState,target.aiRngState,target.breeding.rngState,target.honors.rngState],introduced=P.introduce(target,id,{age:10,region:'日本',pinned:true});
-  assert.deepEqual([introduced.world.rngState,introduced.world.aiRngState,introduced.world.breeding.rngState,introduced.world.honors.rngState],before);const h=introduced.world.horses[0];assert.equal(W.ageOf(introduced.world,h),10);assert.equal(h.lifetime.starts,0);assert.equal(h.origin,'ai');assert.ok(h.breeding.strength>=75&&h.breeding.strength<=89);assert.equal(introduced.world.pedigrees.length,2);assert.throws(()=>P.introduce(introduced.world,id),/已经存在/);assert.deepEqual(plain(P.introduce(target,id,{age:10,region:'日本',pinned:true})),plain(introduced));
+  assert.deepEqual([introduced.world.rngState,introduced.world.aiRngState,introduced.world.breeding.rngState,introduced.world.honors.rngState],before);const h=introduced.world.horses[0];assert.equal(W.ageOf(introduced.world,h),10);assert.equal(h.lifetime.starts,0);assert.equal(h.origin,'ai');assert.ok(h.breeding.strength>=25&&h.breeding.strength<=75);assert.equal(h.breeding.strength,h.genetics.quality);assert.equal(introduced.world.pedigrees.length,2);assert.throws(()=>P.introduce(introduced.world,id),/已经存在/);assert.deepEqual(plain(P.introduce(target,id,{age:10,region:'日本',pinned:true})),plain(introduced));
   const invalid=plain(p);invalid.nodes[0].fatherId=invalid.nodes[0].id;assert.throws(()=>P.preview(target,invalid),/年代|循环|性别/);
 });
 test('new stores, migration recovery, reward rollback, backup and export include series and family content',async()=>{
@@ -63,7 +63,7 @@ test('new stores, migration recovery, reward rollback, backup and export include
       if(i===2){await assert.rejects(store.commitChanges(w,out,{failForTest:true}),/中断/);assert.equal((await store.load(w.id)).horses[0].seriesTitles,undefined);}
       await store.commitChanges(w,out);w=out.world;
     }
-    const snapshot=await store.exportWorld(w.id);assert.equal(snapshot.version,9);assert.equal(store.db.version,9);store.validateSnapshot(snapshot);assert.equal(snapshot.records.seriesRewards.length,1);await store.saveSlot(w.id,1);const restored=await store.loadSlot(1,true);assert.equal(restored.horses[0].seriesTitles.length,1);
+    const snapshot=await store.exportWorld(w.id);assert.equal(snapshot.version,10);assert.equal(store.db.version,10);store.validateSnapshot(snapshot);assert.equal(snapshot.records.seriesRewards.length,1);await store.saveSlot(w.id,1);const restored=await store.loadSlot(1,true);assert.equal(restored.horses[0].seriesTitles.length,1);
     let old=W.createWorld({blank:true});delete old.seriesState;delete old.contentState;delete old.familyTemplates;delete old.series;delete old.sourceMappings;await store.acquire(old.id);await store.commitChanges(null,{world:old});old=await store.load(old.id);assert.ok(old.seriesState);assert.ok((await store.query('checkpoints',old.id)).rows.some(r=>r.kind==='content'));
   }finally{await store.close();}
 });

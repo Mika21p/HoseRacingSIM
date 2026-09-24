@@ -3,7 +3,7 @@
  *
  * 这里保存的是“赛马场 + 表面 + 距离 + 路线”的稳定分类，而不是某一届赛事的实际步速。
  * 具名赛事优先挂到实际赛场；资料只写国家的生成条件赛使用明确标注的巡回赛场模板。
- * 所有补充档案均为低置信度Ⅰ级，可由后续资料直接替换。
+ * 补充档案默认低置信度Ⅰ级；地区平衡方案按具体路线覆写，并标明游戏设计来源。
  */
 (function () {
   const ns = window.Keiba = window.Keiba || {};
@@ -13,6 +13,18 @@
   const CLASSIFICATION_SOURCE = 'user-provided-japanese-g1-baseline-2026-09-22';
   const CLASSIFICATION_ORDER = Object.freeze(['attrition', 'sustained', 'burst']);
   const DEFAULT_UNCERTAIN_INTENSITY = 1;
+  const BALANCE_SOURCE = 'regional-course-balance-2026-09-23';
+  const EUROPE_SUSTAINED_II = new Set([
+    'longchamp:2400', 'ascot:2400', 'epsom:2400', 'curragh:2400',
+    'sandown:2000', 'leopardstown:2000', 'ascot:2000', 'ascot:2004'
+  ]);
+  const US_TURF_TRACKS = new Set([
+    'santa-anita', 'del-mar', 'keeneland', 'churchill-downs', 'belmont', 'aqueduct',
+    'saratoga', 'gulfstream', 'monmouth', 'colonial', 'laurel', 'penn-national', 'kentucky-downs'
+  ]);
+  function balanceClassification(type, intensity, reason) {
+    return { type, intensity, reason, source: BALANCE_SOURCE };
+  }
   const VALID_TYPES = new Set(['burst', 'sustained', 'attrition']);
   const VALID_INTENSITIES = new Set([1, 2]);
   const VALID_SURFACES = new Set(['草地', '泥地']);
@@ -112,7 +124,7 @@
   });
 
   // 海外赛事先由已核实的实际举办地建立路线档案。这里是“马场键”的初判，
-  // 不按国家直接分类；所有此表产生的档案均为低置信度Ⅰ级，供后续逐场复核。
+  // 未被地区平衡路线覆写的赛场，沿用低置信度Ⅰ级初判。
   const venueTurfTypeByTrackKey = Object.freeze({
     'santa-anita': 'burst', 'del-mar': 'burst', keeneland: 'burst', 'churchill-downs': 'burst', belmont: 'burst', aqueduct: 'burst', saratoga: 'burst', gulfstream: 'burst', monmouth: 'burst', colonial: 'burst', laurel: 'burst', 'penn-national': 'burst',
     'kentucky-downs': 'sustained',
@@ -181,7 +193,7 @@
     'the-goodwood': 'morphettville', 'manikato-stakes': 'moonee-valley', 'doncaster-mile': 'randwick',
     'queen-elizabeth-stakes-aus': 'randwick', 'cox-plate': 'moonee-valley', 'caulfield-cup': 'caulfield',
     'victoria-derby': 'flemington', 'melbourne-cup': 'flemington',
-    'blue-point-sprint': 'king-abdulaziz', 'neom-turf-cup': 'king-abdulaziz', 'red-sea-turf-handicap': 'king-abdulaziz',
+    'blue-point-sprint': 'meydan', 'neom-turf-cup': 'king-abdulaziz', 'red-sea-turf-handicap': 'king-abdulaziz',
     'saudi-derby': 'king-abdulaziz', 'saudi-cup': 'king-abdulaziz',
     'al-quoz-sprint': 'meydan', 'al-fahidi-fort': 'meydan', 'cape-verdi': 'meydan', 'jebel-hatta': 'meydan',
     'dubai-turf': 'meydan', 'singspiel-stakes': 'meydan', 'dubai-sheema-classic': 'meydan', 'dubai-city-of-gold': 'meydan',
@@ -229,6 +241,9 @@
   if (!JRA_COURSE_IDENTITIES) throw new Error('赛程适性档案需要先加载 JRA 赛程目录。');
 
   function provisionalClassification(trackKey, surface, routeId, distance) {
+    if (trackKey === 'chukyo' && surface === '草地' && distance === 1600) {
+      return balanceClassification('burst', 1, '地区平衡设定：中京草1600提供瞬发英里支线，保留既有日本G1基线。');
+    }
     if (trackKey === 'tokyo') {
       if (surface === '草地') return { type: 'burst', intensity: 1, reason: '长直线、宽阔弯道和较晚决胜空间，按瞬发Ⅰ初判。' };
       return distance <= 1600
@@ -294,7 +309,7 @@
               status: 'provisional',
               confidence: 'low',
               classificationRuleVersion: CLASSIFICATION_RULE_VERSION,
-              classificationSource: 'jra-course-layout-initial-review-2026-09-22',
+              classificationSource: classification.source || 'jra-course-layout-initial-review-2026-09-22',
               classificationReason: classification.reason,
               sourceUrl: identity.sourceUrl
             }));
@@ -543,9 +558,21 @@
   }
 
   function venueClassification(venue, race) {
+    if (race.surface === '草地' && EUROPE_SUSTAINED_II.has(`${venue.venueKey}:${race.distance}`)) {
+      return balanceClassification('sustained', 2, '地区平衡设定：欧洲核心中距离路线采用持久Ⅱ，同路线各级赛事共用。');
+    }
+    if (race.surface === '草地' && (US_TURF_TRACKS.has(venue.venueKey) || venue.family === 'us-circuit-turf')) {
+      const burstRoute = ['keeneland:1600', 'belmont:1600', 'colonial:2000'].includes(`${venue.venueKey}:${race.distance}`);
+      const sustained = venue.venueKey === 'kentucky-downs' || race.distance > 2000 || (venue.family === 'us-circuit-turf' && race.distance >= 2000);
+      return balanceClassification(burstRoute ? 'burst' : sustained ? 'sustained' : 'attrition', 1,
+        '地区平衡设定：美国草地以消耗为主，长距离及部分巡回赛程持久，基兰1600、贝尔蒙特1600和殖民地2000保留瞬发支线。');
+    }
+    if (venue.venueKey === 'funabashi' && race.surface === '泥地' && race.distance === 1600) {
+      return balanceClassification('attrition', 1, '地区平衡设定：船桥泥1600补充消耗英里路线，其余地方中距离保留持久。');
+    }
     if (venue.family) {
       const fixedType = {
-        'us-circuit-turf': 'burst', flemington: 'burst', randwick: 'burst', 'san-isidro': 'burst',
+        flemington: 'burst', randwick: 'burst', 'san-isidro': 'burst',
         'moonee-valley': 'sustained', caulfield: 'sustained', rosehill: 'sustained', morphettville: 'sustained', saudi: 'sustained'
       }[venue.family];
       if (fixedType) return { type: fixedType, reason: venue.template
@@ -557,14 +584,14 @@
       if (venue.family === 'europe-circuit') return race.distance <= 1200
         ? { type: 'attrition', reason: '欧洲草地短途巡回赛场模板设定为早段持续压力，按消耗Ⅰ初判。' }
         : { type: 'sustained', reason: '欧洲草地标准巡回赛场模板设定为持续高速竞争，按持久Ⅰ初判。' };
-      if (venue.family === 'sha-tin') return race.distance <= 1200
-        ? { type: 'attrition', reason: '沙田短途路线按早段位置压力，作消耗Ⅰ初判。' }
-        : { type: 'burst', reason: '沙田草地长直线与较晚决胜空间，按瞬发Ⅰ初判。' };
+      if (venue.family === 'sha-tin') return balanceClassification(
+        race.distance <= 1200 ? 'attrition' : race.distance >= 2400 ? 'sustained' : 'burst', 1,
+        '地区平衡设定：沙田短途消耗、1400至2000瞬发、2400及以上持久。');
       if (venue.family === 'meydan') {
-        if (race.surface === '草地') return { type: 'burst', reason: '美丹草地路线按末段能力兑现，作瞬发Ⅰ初判。' };
-        return race.distance <= 1200
-          ? { type: 'attrition', reason: '美丹泥地短途按早段压力，作消耗Ⅰ初判。' }
-          : { type: 'sustained', reason: '美丹泥地中长路线按持续输出，作持久Ⅰ初判。' };
+        if (race.surface === '草地') return balanceClassification(
+          race.distance <= 1200 ? 'attrition' : race.distance >= 2400 ? 'sustained' : 'burst', 1,
+          '地区平衡设定：美丹草地短途消耗、英里至中距离瞬发、2400及以上持久。');
+        return balanceClassification('attrition', 1, '地区平衡设定：美丹泥地采用消耗主线，与日本中距离和沙特持久路线区分。');
       }
     }
     if (race.surface === '泥地') {
@@ -636,13 +663,13 @@
       surface: race.surface,
       distance: race.distance,
       type: classification.type,
-      intensity: 1,
+      intensity: classification.intensity || 1,
       status: 'provisional',
       confidence: 'low',
       classificationRuleVersion: CLASSIFICATION_RULE_VERSION,
-      classificationSource: venue.source === 'simulation-cycle'
+      classificationSource: classification.source || (venue.source === 'simulation-cycle'
         ? 'venue-group-simulation-cycle-v1'
-        : venue.template ? 'schedule-template-initial-review-2026-09-22' : 'verified-venue-initial-review-2026-09-22',
+        : venue.template ? 'schedule-template-initial-review-2026-09-22' : 'verified-venue-initial-review-2026-09-22'),
       classificationReason: classification.reason,
       sourceUrl: venue.sourceUrl || ''
     }));
@@ -887,7 +914,8 @@
     profileIdByRaceId,
     courseRouteByRaceId,
     courseRouteSourceByRaceId,
-    knownChairmanVenue
+    knownChairmanVenue,
+    trackAliases: key => [...(supplementalTracks[key]?.aliases || []), ...(ns.ChairmanVenues?.tracks.find(t => t.key === key)?.aliases || [])]
   });
 
   // 第二阶段只提供解析与审计，不在比赛库载入时写回引用字段。

@@ -49,11 +49,11 @@
       "nameZh": "蓝点短途锦标",
       "grade": "G2",
       "raceClass": "g2",
-      "month": 2,
+      "month": 1,
       "half": 2,
       "surface": "草地",
       "course": "其他地方",
-      "distance": 1000,
+      "distance": 1200,
       "ageRule": "3岁以上"
     },
     {

@@ -33,12 +33,14 @@
     horseNameLanguage: "zh",
     raceNameMode: "zh",
     activeFilterGroup: "",
+    raceSelection: {},
     filters: {
       grade: [],
       surface: [],
       distance: [],
       region: [],
-      japanCourse: [],
+      track: [],
+      type: [],
       avoidFatigueRisk: false
     }
   };
@@ -56,6 +58,7 @@
     savedAt: null,
     message: ""
   };
+  let selectionCareer = null;
   let savePaused = false;
   let legendIntroDismissedForSession = false;
   let resultReturnFocus = null;
@@ -75,6 +78,7 @@
   ];
 
   function refresh() {
+    if (selectionCareer !== state.career) { selectionCareer = state.career; state.raceSelection = {}; }
     if (state.career && ns.RegionRules) ns.RegionRules.ensureCareerState(state.career);
     const didNormalizeScheduledRace = normalizeScheduledRacePayload(state.career);
     const didClearExpiredRegistration = clearExpiredRegistration();
@@ -118,12 +122,16 @@
       workspaceShell.classList.toggle("is-rogue-career", isRogueCareer);
     }
     if (workspaceChallengeNav) workspaceChallengeNav.hidden = !isRogueCareer;
+    const bloodlineNav = document.getElementById("workspaceBloodlineNav");
+    if (bloodlineNav) bloodlineNav.hidden = isRogueCareer;
+    ns.CareerBloodlineUI.render(document.getElementById("bloodlinePanel"), state.career);
     ns.UI.renderWorkspaceStatus(document.getElementById("workspaceStatus"), state.career);
     ns.UI.renderHorse(document.getElementById("horsePanel"), state.career, {
       trainerCommentsCollapsed: state.trainerCommentsCollapsed
     });
     ns.UI.renderRaceSelector(document.getElementById("racePanel"), state.career, state.filters, {
       activeFilterGroup: state.activeFilterGroup,
+      selection: state.raceSelection,
       horseNameLanguage: state.horseNameLanguage,
       raceNameMode: state.raceNameMode
     });
@@ -175,7 +183,7 @@
   }
 
   function defaultFilters() {
-    return { grade: [], surface: [], distance: [], region: [], japanCourse: [], avoidFatigueRisk: false };
+    return ns.RaceSelection.normalize({});
   }
 
   function isMobileLayout() {
@@ -186,7 +194,7 @@
     const isRogueCareer = !!(state.career && state.career.gameMode === "roguelike");
     const allowedViews = isRogueCareer
       ? ["action", "horse", "challenge", "more"]
-      : ["action", "horse", "more"];
+      : ["action", "horse", "bloodline", "more"];
     const view = allowedViews.includes(state.activeView)
       ? state.activeView
       : "action";
@@ -215,7 +223,7 @@
     const isRogueCareer = !!(state.career && state.career.gameMode === "roguelike");
     const allowedViews = isRogueCareer
       ? ["action", "horse", "challenge", "more"]
-      : ["action", "horse", "more"];
+      : ["action", "horse", "bloodline", "more"];
     if (!allowedViews.includes(view)) return;
     const opts = options || {};
     state.activeView = view;
@@ -1076,51 +1084,7 @@
     resultReturnFocus = null;
   }
 
-  const REGION_FILTER_VALUES = ["japan", "america", "europe", "other"];
-  const JAPAN_COURSE_FILTER_VALUES = ["kyoto", "hanshin", "tokyo", "nakayama", "other"];
-  const LEGACY_COURSE_TO_JAPAN_COURSE = {
-    kyoto: "kyoto",
-    hanshin: "hanshin",
-    tokyo: "tokyo",
-    nakayama: "nakayama",
-    "other-japan": "other"
-  };
-
-  function validFilterValues(values, allowedValues) {
-    return values.filter((item) => allowedValues.includes(item));
-  }
-
-  function normalizeFilterGroup(value) {
-    if (Array.isArray(value)) {
-      return [...new Set(value.filter((item) => item && item !== "all"))];
-    }
-    if (!value || value === "all") return [];
-    return [value];
-  }
-
-  function normalizeFilters(filters) {
-    const source = filters || {};
-    let region = validFilterValues(normalizeFilterGroup(source.region), REGION_FILTER_VALUES);
-    let japanCourse = validFilterValues(normalizeFilterGroup(source.japanCourse), JAPAN_COURSE_FILTER_VALUES);
-    const legacyCourses = normalizeFilterGroup(source.course)
-      .map((item) => LEGACY_COURSE_TO_JAPAN_COURSE[item])
-      .filter(Boolean);
-
-    if (region.length === 0 && japanCourse.length === 0 && legacyCourses.length > 0) {
-      region = ["japan"];
-      japanCourse = [...new Set(legacyCourses)];
-    }
-    if (!region.includes("japan")) japanCourse = [];
-
-    return {
-      grade: normalizeFilterGroup(source.grade),
-      surface: normalizeFilterGroup(source.surface),
-      distance: normalizeFilterGroup(source.distance),
-      region,
-      japanCourse,
-      avoidFatigueRisk: !!source.avoidFatigueRisk
-    };
-  }
+  function normalizeFilters(filters) { return ns.RaceSelection.normalize(filters || {}); }
 
   function normalizeExpandedRaceRecords(records) {
     if (!records || typeof records !== "object" || Array.isArray(records)) return {};
@@ -1638,7 +1602,9 @@
     const mainJockeyId = document.getElementById("mainJockeySelect").value;
     const debugOptions = collectDebugOptions();
     if (debugOptions && !validateDebugOptions(debugOptions)) return;
-    const horse = ns.HorseRules.generateHorse({ name, sireId, damId, gameMode });
+    let horse;
+    try { horse = ns.CareerBloodline.generate({ name, sireId, damId, gameMode }); }
+    catch (error) { document.getElementById("pairBrief").textContent = error.message; return; }
     if (debugOptions) ns.HorseRules.applyDebugOverrides(horse, debugOptions);
     const trainer = ns.CommentRules.getTrainer(trainerId);
     const regionId = ns.RegionRules && ns.RegionRules.regionIdForTrainer
@@ -1909,12 +1875,9 @@
   }
 
   function selectedRacePlan() {
-    if (!state.career || state.career.retired) return;
-    const select = document.getElementById("raceSelect");
-    if (!select) return;
-    const raceId = select.value;
+    if (!state.career || state.career.retired || !state.raceSelection.selected) return;
     return ns.TimeRules.getAvailableRacePlans(state.career, ns.Races || [])
-      .find((item) => item.race.id === raceId);
+      .find(plan => ns.RaceSelection.key(plan) === state.raceSelection.selected && ns.RaceSelection.matches(plan, state.filters, state.career));
   }
 
   function registerRace() {
@@ -1956,6 +1919,8 @@
         return;
       }
     }
+    payload.race = { ...payload.race, venueDisplay: ns.RaceSelection.venue(payload.race) };
+    state.raceSelection = {};
     state.career.scheduledRace = payload;
     markScheduledTravelPreparation();
     refresh();
@@ -2152,44 +2117,41 @@
     refresh();
   }
 
+  function refreshRaceSelection() {
+    const focused = document.activeElement;
+    const marker = focused?.id ? '#' + CSS.escape(focused.id) : focused?.matches('[data-race-filter]')
+      ? `[data-race-filter="${focused.dataset.raceFilter}"][value="${CSS.escape(focused.value)}"]` : focused?.dataset.racePick
+      ? `[data-race-pick="${CSS.escape(focused.dataset.racePick)}"]` : focused?.dataset.filterRemove ? `[data-filter-remove="${CSS.escape(focused.dataset.filterRemove)}"][data-value="${CSS.escape(focused.dataset.value||'')}"]` : null;
+    const x = window.scrollX, y = window.scrollY;
+    refresh();
+    if (marker) (document.querySelector(marker) || document.querySelector('.rs-common-filters summary'))?.focus({ preventScroll: true });
+    window.scrollTo(x,y);
+  }
+
   function setRaceFilterValue(group, value, checked) {
     state.filters = normalizeFilters(state.filters);
-    if (group === "japanCourse" && !state.filters.region.includes("japan")) return;
-    const values = state.filters[group] || [];
-    state.filters[group] = checked
-      ? [...new Set(values.concat(value))]
-      : values.filter((item) => item !== value);
-    if (group === "region" && !state.filters.region.includes("japan")) {
-      state.filters.japanCourse = [];
-      if (state.activeFilterGroup === "japanCourse") state.activeFilterGroup = "region";
-    }
+    if (!Array.isArray(state.filters[group]) || group === 'track' && !state.filters.region.length) return;
+    const values = state.filters[group];
+    state.filters[group] = checked ? [...new Set([...values,value])] : values.filter(item=>item!==value);
+    state.raceSelection.notice = '';
     state.activeFilterGroup = group;
-    refresh();
-    saveGame();
+    refreshRaceSelection(); saveGame();
   }
 
   function setRaceFilterToggle(key, checked) {
-    state.filters = normalizeFilters(state.filters);
-    state.filters[key] = !!checked;
-    state.activeFilterGroup = "";
-    refresh();
-    saveGame();
+    state.filters = normalizeFilters(state.filters); state.filters[key] = !!checked;
+    state.raceSelection.notice = ''; refreshRaceSelection(); saveGame();
   }
 
   function clearRaceFilterGroup(group) {
-    state.filters = normalizeFilters(state.filters);
-    state.filters[group] = [];
-    if (group === "region") state.filters.japanCourse = [];
-    state.activeFilterGroup = group;
-    refresh();
-    saveGame();
+    state.filters = normalizeFilters(state.filters); state.filters[group] = [];
+    state.activeFilterGroup = group; state.raceSelection.notice = '';
+    refreshRaceSelection(); saveGame();
   }
 
   function clearAllRaceFilters() {
-    state.filters = defaultFilters();
-    state.activeFilterGroup = "";
-    refresh();
-    saveGame();
+    state.filters = defaultFilters(); state.activeFilterGroup = ''; state.raceSelection.trackSearch = ''; state.raceSelection.notice = '';
+    refreshRaceSelection(); saveGame();
   }
 
   function continueEra() {
@@ -2381,7 +2343,6 @@
 
   function bindDynamicEvents() {
     const registerRaceBtn = document.getElementById("registerRaceBtn");
-    const raceSelect = document.getElementById("raceSelect");
     const nextTurnBtn = document.getElementById("nextTurnBtn");
     const cancelRegistrationBtn = document.getElementById("cancelRegistrationBtn");
     const retireBtn = document.getElementById("retireBtn");
@@ -2398,28 +2359,36 @@
     const raceFilterBooleanToggles = Array.from(document.querySelectorAll("[data-race-filter-toggle]"));
     const raceFilterPanels = Array.from(document.querySelectorAll("[data-race-filter-group]"));
     const raceFilterClearButtons = Array.from(document.querySelectorAll("[data-filter-clear]"));
-    const raceCardButtons = Array.from(document.querySelectorAll("[data-race-card]"));
     const transferStableBtn = document.getElementById("transferStableBtn");
     const clearAllRaceFiltersBtn = document.getElementById("clearAllRaceFiltersBtn");
-    const syncRaceCardSelection = () => {
-      if (!raceSelect || raceCardButtons.length === 0) return;
-      raceCardButtons.forEach((button) => {
-        const active = button.dataset.raceCard === raceSelect.value;
-        button.classList.toggle("is-active", active);
-        button.setAttribute("aria-pressed", active ? "true" : "false");
-      });
-    };
     if (registerRaceBtn) registerRaceBtn.addEventListener("click", registerRace);
-    if (raceSelect && raceCardButtons.length) {
-      raceSelect.addEventListener("change", syncRaceCardSelection);
-      raceCardButtons.forEach((button) => {
-        button.addEventListener("click", () => {
-          raceSelect.value = button.dataset.raceCard;
-          syncRaceCardSelection();
-        });
-      });
-      syncRaceCardSelection();
-    }
+    document.querySelectorAll('[data-race-pick]').forEach(button => button.addEventListener('click', () => {
+      state.raceSelection.selected = button.dataset.racePick; state.raceSelection.revealSelection = true; state.raceSelection.notice = '';
+      state.raceSelection.moreOpen = false; state.activeFilterGroup = '';
+      refreshRaceSelection();
+    }));
+    document.querySelectorAll('[data-race-month]').forEach(details => details.addEventListener('toggle', () => {
+      if (details.isConnected) (state.raceSelection.months ||= {})[details.dataset.raceMonth] = details.open;
+    }));
+    document.querySelectorAll('[data-race-months]').forEach(button => button.addEventListener('click', () => {
+      document.querySelectorAll('[data-race-month]').forEach(details => { details.open = button.dataset.raceMonths === 'expand'; (state.raceSelection.months ||= {})[details.dataset.raceMonth] = details.open; });
+    }));
+    document.querySelectorAll('[data-filter-remove]').forEach(button=>button.addEventListener('click',()=> {
+      if(button.dataset.filterRemove==='avoidFatigueRisk')setRaceFilterToggle('avoidFatigueRisk',false);
+      else setRaceFilterValue(button.dataset.filterRemove,button.dataset.value,false);
+    }));
+    const more = document.getElementById('raceMoreFilters');
+    more?.addEventListener('toggle',()=>{if(more.isConnected)state.raceSelection.moreOpen=more.open;});
+    const trackSearch = document.getElementById('raceTrackSearch');
+    const searchTracks = () => {
+      const query = (state.raceSelection.trackSearch || '').trim().toLowerCase();
+      const options = [...document.querySelectorAll('[data-track-option]')];
+      options.forEach(el=>{el.hidden=!el.dataset.search.includes(query);});
+      document.querySelectorAll('[data-track-country]').forEach(el=>{el.hidden=!options.some(o=>!o.hidden&&o.dataset.country===el.dataset.trackCountry);});
+      const empty = document.querySelector('.rs-track-empty'); if(empty)empty.hidden=options.some(el=>!el.hidden);
+    };
+    trackSearch?.addEventListener('input',()=>{state.raceSelection.trackSearch=trackSearch.value;searchTracks();});
+    searchTracks();
     if (nextTurnBtn) nextTurnBtn.addEventListener("click", advanceTurn);
     if (cancelRegistrationBtn) cancelRegistrationBtn.addEventListener("click", cancelRegistration);
     if (retireBtn) retireBtn.addEventListener("click", retire);
@@ -2452,6 +2421,7 @@
     });
     raceFilterPanels.forEach((panel) => {
       panel.addEventListener("toggle", () => {
+        if (!panel.isConnected) return;
         if (panel.open) {
           raceFilterPanels.forEach((otherPanel) => {
             if (otherPanel !== panel) otherPanel.open = false;
@@ -2654,6 +2624,7 @@
       if (!gameModeToggleBtn || !gameModeSelect) return;
       const legendMode = mode === "legend";
       gameModeSelect.value = legendMode ? "legend" : "normal";
+      gameModeSelect.dispatchEvent(new Event("change"));
       gameModeToggleBtn.classList.toggle("is-active", legendMode);
       gameModeToggleBtn.setAttribute("aria-pressed", legendMode ? "true" : "false");
       const hint = legendMode
@@ -2818,6 +2789,7 @@
     ns.UI.renderChangelog(document.getElementById("changelogContent"));
     bindChangelogEvents();
     ns.UI.renderSetup(root);
+    ns.CareerBloodlineUI.bindSetup();
     document.getElementById("generateBtn").addEventListener("click", generate);
     bindSetupEvents();
     bindWorkspaceEvents();

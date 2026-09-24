@@ -8,7 +8,7 @@ const read = (file) => fs.readFileSync(path.join(root, file), "utf8");
 
 test("career UI keeps history inside the action workspace and exposes overlays", () => {
   const render = read("js/ui/render.js");
-  ["action", "horse", "challenge", "more"].forEach((view) => {
+  ["action", "horse", "bloodline", "challenge", "more"].forEach((view) => {
     assert.match(render, new RegExp(`data-workspace-view="${view}"`));
     assert.match(render, new RegExp(`data-workspace-panel="${view}"`));
   });
@@ -63,8 +63,8 @@ test("home, global metadata and mobile navigation are wired", () => {
   const changelog = read("js/data/changelog.js");
   const styles = read("css/styles.css");
   assert.match(index, /styles\.css\?v=20260922-mode-selector-nav/);
-  assert.match(index, /render\.js\?v=20260922-mode-selector-nav/);
-  assert.match(index, /app\.js\?v=20260922-trainer-prose/);
+  assert.match(index, /render\.js\?v=20260924-bloodline/);
+  assert.match(index, /app\.js\?v=20260924-bloodline/);
   assert.match(index, /golden-road-1998\.js\?v=20260720-era-v5/);
   assert.match(index, /race-simulator\.js\?v=20260920-ratings/);
   assert.match(index, /era-narrative\.js\?v=20260720-era-v5/);

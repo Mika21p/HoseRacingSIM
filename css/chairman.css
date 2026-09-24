@@ -219,8 +219,6 @@
  #chairmanApp .cm-dialog-footer { padding:8px 10px max(8px,env(safe-area-inset-bottom)); }
  #chairmanApp .cm-dialog-footer .cm-sticky-actions { flex:1; }
  #chairmanApp .cm-form-grid,#chairmanApp .cm-attributes { grid-template-columns:1fr; }
- #chairmanApp .cm-pedigree-grid { grid-template-columns:1fr; }
- #chairmanApp .cm-pedigree-cell { grid-column:1!important; grid-row:auto!important; }
  #chairmanApp .cm-score-table thead { display:none; }
  #chairmanApp .cm-score-table,#chairmanApp .cm-score-table tbody { display:block; }
  #chairmanApp .cm-score-table tr { display:grid; grid-template-columns:36px minmax(0,1fr) minmax(0,1fr); gap:4px; padding:8px 0; border-bottom:1px solid #42526c; }

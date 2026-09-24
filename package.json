@@ -8,7 +8,11 @@
   },
   "scripts": {
     "test": "npm run test:quick",
-    "test:quick": "node --test tests/chairman-aptitude.test.js tests/syntax.test.js tests/data-integrity.test.js tests/build-web.test.js tests/core-rules.test.js tests/trainer-comments.test.js tests/track-aptitude.test.js tests/track-aptitude-ui.test.js tests/race-course-profiles.test.js tests/roguelike.test.js tests/era.test.js tests/era-narrative.test.js tests/ui-workspace.test.js tests/chairman.test.js tests/chairman-storage.test.js tests/chairman-office.test.js tests/chairman-regions.test.js tests/chairman-breeding.test.js tests/chairman-ui.test.js tests/chairman-ratings.test.js tests/chairman-honors.test.js tests/chairman-hall-v2.test.js tests/chairman-feedback.test.js tests/chairman-series.test.js tests/chairman-editor.test.js tests/chairman-world.test.js",
+    "test:bloodline": "node --test tests/pedigree-tree.test.js tests/career-bloodline.test.js tests/bloodline-system.test.js tests/bloodline-catalog.test.js",
+    "audit:bloodline": "node scripts/analyze-bloodline-framework.js",
+    "audit:bloodline:pilot": "node scripts/analyze-bloodline-pilot.js",
+    "preview:bloodline": "node scripts/serve-bloodline-lab.js",
+    "test:quick": "node --test tests/pedigree-tree.test.js tests/career-bloodline.test.js tests/bloodline-system.test.js tests/bloodline-catalog.test.js tests/race-selection.test.js tests/chairman-aptitude.test.js tests/syntax.test.js tests/data-integrity.test.js tests/build-web.test.js tests/core-rules.test.js tests/trainer-comments.test.js tests/track-aptitude.test.js tests/track-aptitude-ui.test.js tests/race-course-profiles.test.js tests/roguelike.test.js tests/era.test.js tests/era-narrative.test.js tests/ui-workspace.test.js tests/chairman.test.js tests/chairman-storage.test.js tests/chairman-office.test.js tests/chairman-regions.test.js tests/chairman-breeding.test.js tests/chairman-genetics.test.js tests/chairman-ui.test.js tests/chairman-ratings.test.js tests/chairman-honors.test.js tests/chairman-hall-v2.test.js tests/chairman-feedback.test.js tests/chairman-series.test.js tests/chairman-editor.test.js tests/chairman-world.test.js",
     "test:chairman:long": "node --test tests/chairman-long.test.js",
     "test:series:long": "node --test tests/chairman-series-long.test.js",
     "test:honors:long": "node --test tests/chairman-honors-long.test.js",
@@ -20,7 +24,9 @@
     "hooks:install": "node scripts/install-hooks.js",
     "test:world": "node --test tests/chairman-world.test.js",
     "test:world:long": "node scripts/audit-chairman-world-suite.js",
-    "test:world:browser": "node scripts/check-chairman-world-browser.js"
+    "test:world:browser": "node scripts/check-chairman-world-browser.js",
+    "build:bloodline:catalog": "node scripts/build-bloodline-catalog.js",
+    "audit:bloodline:catalog": "node scripts/audit-bloodline-catalog.js"
   },
   "devDependencies": {
     "fake-indexeddb": "^6.2.5",

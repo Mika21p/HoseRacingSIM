@@ -147,7 +147,8 @@ function loadEraRules() {
     "js/rules/race-simulator.js",
     "js/rules/career.js",
     "js/rules/era-narrative.js",
-    "js/rules/era.js"
+    "js/rules/era.js",
+    "js/ui/race-selection.js"
   ].forEach((file) => runProjectFile(context, file));
   return { ...project, rules: context.window.Keiba };
 }
@@ -160,7 +161,7 @@ function loadChangelogData() {
 
 function loadChairmanRules() {
   const project = loadEraRules();
-  ["js/data/chairman-pedigrees.js", "js/rules/chairman-ratings.js", "js/rules/chairman-scheduling.js", "js/rules/chairman.js", "js/rules/chairman-breeding.js", "js/rules/chairman-office.js", "js/rules/chairman-honors.js", "js/chairman-csv.js", "js/rules/chairman-series.js", "js/chairman-packages.js", "js/rules/chairman-editor.js", "js/data/chairman-venue-records.js", "js/data/chairman-venues.js", "js/rules/chairman-world.js", "js/chairman-world-packages.js"].forEach((file) => runProjectFile(project.context, file));
+  ["js/data/chairman-pedigrees.js", "js/data/bloodline-catalog.js", "js/rules/bloodline-system.js", "js/rules/chairman-genetics.js", "js/rules/chairman-ratings.js", "js/rules/chairman-scheduling.js", "js/rules/chairman.js", "js/rules/chairman-breeding.js", "js/rules/chairman-office.js", "js/rules/chairman-honors.js", "js/chairman-csv.js", "js/rules/chairman-series.js", "js/chairman-packages.js", "js/rules/chairman-editor.js", "js/data/chairman-venue-records.js", "js/data/chairman-venues.js", "js/rules/chairman-world.js", "js/chairman-world-packages.js"].forEach((file) => runProjectFile(project.context, file));
   return project;
 }
 

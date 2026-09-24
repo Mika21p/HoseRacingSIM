@@ -140,7 +140,7 @@
   const groups = [
     {id:'overview',label:'总览',icon:'◈',items:[['overview','工作概览','overview']]},
     {id:'events',label:'赛事',icon:'⚑',items:[['calendar','赛历','calendar','calendar','races'],['results','赛果与评分','results'],['tracks','马场','calendar','calendar','tracks'],['regions','地区','calendar','calendar','regions'],['series','系列赛','calendar','calendar','series']]},
-    {id:'horses',label:'马匹',icon:'♞',items:[['horses','马匹档案','horses'],['library','基础血统库','breeding','breeding','library'],['active','繁殖群','breeding','breeding','active'],['candidate','待用马','breeding','breeding','candidate'],['plans','年度配种','breeding','breeding','plans'],['young','幼驹','breeding','breeding','young'],['breedBoards','繁殖榜单','breeding','breeding','boards']]},
+    {id:'horses',label:'马匹',icon:'♞',items:[['horses','马匹档案','horses'],['library','基础血统库','breeding','breeding','library'],['active','繁殖群','breeding','breeding','active'],['candidate','待用马','breeding','breeding','candidate'],['plans','年度配种','breeding','breeding','plans'],['young','幼驹','breeding','breeding','young'],['breedBoards','繁殖榜单','breeding','breeding','boards'],['maternalFamilies','母父与母系','breeding','breeding','families'],['breedingReport','年度繁殖报告','breeding','breeding','report']]},
     {id:'honors',label:'荣誉',icon:'✧',items:[['awards','年度奖项','awards'],['boards','评分与奖金榜','boards'],['hall','殿堂','hall','honors','candidates'],['council','评议会','hall','honors','council']]},
     {id:'manage',label:'管理',icon:'☷',items:[['settings','世界规则','settings','settings','rules'],['saves','游戏与备份','settings','settings','saves'],['storage','存储信息','settings','settings','storage']]}
   ];

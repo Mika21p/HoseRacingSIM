@@ -73,7 +73,7 @@ test('breeding migration preserves competition attributes and random stream, bla
   const result = B.edit(old, 'enable', { foundation: false }).world;
   assert.equal(old.breeding, undefined); assert.equal(result.rngState, old.rngState);
   for (let i = 0; i < old.horses.length; i++) {
-    const h = json(result.horses.find((h) => h.id === old.horses[i].id)); delete h.breeding;
+    const h = json(result.horses.find((h) => h.id === old.horses[i].id)); delete h.breeding; delete h.genetics;
     assert.deepEqual(h, json(old.horses[i]));
   }
   assert.equal(setup().w.pedigrees.length, 0);
@@ -113,12 +113,12 @@ test('breeding strength is fixed, bounded, hidden until public grade; offspring 
   const h = W.addHorse(w, { age: 2 }); const original = h.breeding.strength;
   h.strength = 100; h.annual.manual = 150; h.lifetime.g1 = 15; B.initialize(w, h);
   assert.equal(h.breeding.strength, original);
-  assert.equal(B.publicHorse(w, h).grade, '未公开'); assert.ok(!('breedingStrength' in B.publicHorse(w, h)));
-  h.breeding.everActive = true; assert.equal(B.publicHorse(w, h).grade, B.grade(original));
-  for (const n of [0, 101, 2.5, NaN]) assert.throws(() => W.addHorse(W.clone(w), { breedingStrength: n }), /配种实力/);
+  assert.equal(B.publicHorse(w, h).grade, '尚待子代验证'); assert.ok(!('breedingStrength' in B.publicHorse(w, h)));
+  h.breeding.everActive = true; assert.equal(B.publicHorse(w, h).grade, '尚待子代验证');
+  for (const n of [0, 101, 2.5, NaN]) assert.throws(() => W.addHorse(W.clone(w), { breedingStrength: n }), /繁殖素质|配种实力/);
   const custom = W.addHorse(w, { origin: 'custom', breedingStrength: 93 });
-  assert.equal(B.publicHorse(w, custom).breedingStrength, 93);
-  const csv = nsCSV(); assert.ok(!csv.includes(h.id)); assert.match(csv, /配种实力/); assert.match(csv, /93/);
+  assert.equal(B.publicHorse(w, custom).breedingStrength, undefined);
+  const csv = nsCSV(); assert.ok(!csv.includes(h.id)); assert.match(csv, /繁殖素质|配种实力/); assert.match(csv, /93/);
   function nsCSV() { return setup().rules.ChairmanCSV.exportRows(w, 'horse'); }
 });
 test('genetics uses one nonaccumulating ability modifier, both parents and fresh profile groups', () => {
@@ -179,7 +179,7 @@ test('breeding entities, annual births and RNG commit atomically and replay afte
     await assert.rejects(store.commitChanges(w, out, { failForTest: true, checkpoint: 'year' }));
     assert.equal((await store.load(w.id)).turn, w.turn);
     await store.commitChanges(w, out, { checkpoint: 'year' });
-    const saved = await store.exportWorld(w.id); assert.equal(saved.version, 9); assert.equal(saved.records.breedingEvents.length, 3);
+    const saved = await store.exportWorld(w.id); assert.equal(saved.version, 10); assert.equal(saved.records.breedingEvents.length, 3);
     assert.ok(store.validateSnapshot(saved));
     const bad = W.clone(saved); bad.records.breedingEvents[0].motherId = 'missing'; assert.throws(() => store.validateSnapshot(bad), /关联/);
     const points = await store.query('checkpoints', w.id); const point = points.rows.find((p) => p.turn === 23);
@@ -223,12 +223,12 @@ test('pre-breeding checkpoint restores disabled state, accepts old v1/v2 and re-
   } finally { await store.close(); }
 });
 
-test('CSV blank B uses final ability and resolved parents even when child precedes parents', () => {
+test('CSV blank Q is independent of parental edits and preserves resolved parents', () => {
   const { W, B, rules: n, w } = setup();
   const header = '模板版本,编号,马名,性别,出生年份,基础能力,父马编号,母马编号,配种实力\n';
   const csv = (b) => header + `1,kid,子代,牡马,-1,100,dad,mom,\n1,dad,父本,牡马,-8,62,,,${b}\n1,mom,母本,牝马,-8,62,,,${b}\n`;
   const low = n.ChairmanCSV.preview(w, 'horse', csv(1)), high = n.ChairmanCSV.preview(w, 'horse', csv(100));
   assert.deepEqual(json(low.errors), []); assert.deepEqual(json(high.errors), []);
   const a = low.output.world.horses.find((h) => h.name === '子代'), b = high.output.world.horses.find((h) => h.name === '子代');
-  assert.ok(b.breeding.strength - a.breeding.strength >= 19); W.validateWorld(high.output.world);
+  assert.equal(b.genetics.quality, a.genetics.quality); assert.equal(b.genetics.quality,b.breeding.strength); W.validateWorld(high.output.world);
 });

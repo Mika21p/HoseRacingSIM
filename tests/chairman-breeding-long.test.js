@@ -47,7 +47,9 @@ test('thirty actual generations regenerate B and retain multiple random families
         for (let i = 0; i < 100; i++) {
           const f = n.Random.pickOne(males), m = n.Random.pickOne(females);
           // This isolates genetic transmission; legality and population selection run in the twenty-year test.
-          const h = W.addHorse(w, { ...B.inherited(w, f, m), age: 2, fatherId: f.id, motherId: m.id, gender: i < 50 ? '牡马' : '牝马' });
+          const library=n.BloodlineSystem.createLibrary([f,m].map(h=>({id:h.id,name:h.name,gender:h.gender,genetics:h.genetics})));
+          const inherited=n.BloodlineSystem.createPair(library,f.id,m.id,'chairman').generate();delete inherited.id;
+          const h = W.addHorse(w, { ...inherited, age: 2, fatherId: f.id, motherId: m.id, gender: i < 50 ? '牡马' : '牝马' });
           family.set(h.id, family.get(f.id)); next.push(h);
         }
       });
@@ -66,7 +68,7 @@ test('thirty generations across seeds show overlapping B distributions without g
     const w = W.createWorld({ blank: true, seed, breeding: true });
     const f = W.addHorse(w, { gender: '牡马' }), m = W.addHorse(w, { gender: '牝马' });
     for (const strength of [20, 50, 90]) {
-      f.breeding.strength = m.breeding.strength = strength; const means = [], values = [];
+      n.ChairmanGenetics.setValues(w,f,strength,60);n.ChairmanGenetics.setValues(w,m,strength,60); const means = [], values = [];
       for (let generation = 0; generation < 30; generation++) {
         let sum = 0;
         B.seeded(w, () => { for (let i = 0; i < 200; i++) { const h = B.inherited(w, f, m); sum += h.strength; values.push(h.strength); f.strength = h.strength; m.strength = h.strength; } });

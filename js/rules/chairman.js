@@ -58,7 +58,7 @@
     return result;
   }
   function mutate(world, operation) {
-    const w = clone(world);
+    const w = world.breeding?.version>=2 ? ns.ChairmanGenetics.cloneForMutation(world) : clone(world);
     canonicalOrder(w);
     const out = { world: w, occurrences: [], performances: [], ratings: [], awards: [] };
     seeded(w, () => operation(w, out));
@@ -478,7 +478,7 @@
           initializeHorseTime(w, h, existing);
           validateHorse(w, h);
           Object.assign(existing, h);
-          if (value.breedingStrength != null && w.breeding) { existing.breeding.strength = value.breedingStrength; delete existing.breedingStrength; }
+          if (value.breedingStrength != null && w.breeding) { ns.ChairmanGenetics.setValues(w,existing,value.breedingStrength); delete existing.breedingStrength; }
         } else addHorse(w, { ...value, origin: "custom" });
         validateWorld(w);
       } else if (kind === "retire") {

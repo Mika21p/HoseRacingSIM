@@ -1,0 +1,28 @@
+:root { font-family: system-ui, sans-serif; color: #23372f; background: #f3f5ef; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+main { max-width: 1100px; padding: 36px 24px 64px; margin: auto; }
+h1 { margin-bottom: 8px; }
+h2 { font-size: 1.15rem; }
+p { line-height: 1.7; }
+.notice { color: #626d60; }
+.controls, .cards { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+label { display: grid; gap: 8px; font-weight: 600; }
+select, input, button { font: inherit; padding: 11px 14px; border: 1px solid #c5cebd; border-radius: 8px; }
+select, input { min-width: 0; width: 100%; background: white; color: inherit; }
+button { background: #245943; color: white; cursor: pointer; }
+button:disabled { opacity: .5; cursor: default; }
+button:focus-visible, select:focus-visible, input:focus-visible { outline: 3px solid #b68433; outline-offset: 3px; }
+.actions { display: flex; flex-wrap: wrap; gap: 12px; margin: 20px 0; }
+section, article { padding: 20px; border: 1px solid #d9dfd0; border-radius: 12px; background: #fff; margin: 18px 0; }
+.cards article { margin: 0; }
+.tag { display: inline-block; margin: 3px 8px 3px 0; padding: 5px 10px; background: #edf2e4; border-radius: 20px; }
+.tag { color: #245943; }
+.tag[aria-pressed="true"] { background: #245943; color: white; }
+.participant { background: #e2f1db; outline: 2px solid #7b9a68; outline-offset: -2px; }
+.table-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid #e6eadd; white-space: nowrap; }
+.repeat { color: #8a4619; background: #fff5e7; }
+.error { color: #a02d28; }
+@media(max-width: 650px) { main { padding: 20px 14px; } .controls, .cards { grid-template-columns: 1fr; } }

@@ -3,6 +3,55 @@ const assert = require("node:assert/strict");
 
 const { loadProjectData, loadChairmanRules } = require("./helpers/project-loader");
 
+test("地区平衡在共享路线生效，保留日本基线与欧洲瞬发出口", () => {
+  const { rules, races } = loadChairmanRules();
+  const profiles = rules.RaceCourseProfiles;
+  const resolve = (id) => profiles.resolveForRace(races.find((race) => race.id === id));
+  for (const id of ["prix-de-larc", "grand-prix-de-paris", "prix-vermeille", "epsom-derby", "epsom-oaks", "coronation-cup", "irish-derby", "irish-oaks", "king-george-vi-and-queen-elizabeth-stakes", "british-champions-fillies-mares-stakes", "eclipse-stakes", "irish-champion-stakes", "prince-of-wales-stakes", "champion-stakes"]) {
+    const profile = resolve(id);
+    assert.equal(profile.type, "sustained", id);
+    assert.equal(profile.intensity, 2, id);
+    assert.equal(profile.classificationSource, "regional-course-balance-2026-09-23");
+  }
+  assert.equal(resolve("prix-de-larc").id, resolve("prix-vermeille").id);
+  for (const id of ["prix-jacques-le-marois", "prix-du-jockey-club", "international-stakes", "lockinge-stakes", "tokyo-yushun"]) {
+    assert.equal(resolve(id).type, "burst", id);
+    assert.equal(resolve(id).intensity, 1, id);
+  }
+  assert.equal(resolve("february-stakes").intensity, 2);
+  assert.equal(resolve("champions-cup").type, "sustained");
+  assert.equal(resolve("kashiwa-kinen").type, "attrition");
+  assert.equal(profiles.resolveForTrackCourse("chukyo", "草地", 1600).type, "burst");
+});
+
+test("美国、香港与中东分化按草泥和距离执行，轮换采用实际举办地", () => {
+  const { rules, races } = loadChairmanRules();
+  const profiles = rules.RaceCourseProfiles;
+  const resolve = (id) => profiles.resolveForRace(races.find((race) => race.id === id));
+  const expectations = {
+    "pegasus-world-cup-turf": "attrition", "breeders-cup-turf": "sustained",
+    "breeders-cup-mile": "attrition", "keeneland-turf-mile": "burst", "kentucky-derby": "sustained",
+    "hong-kong-vase": "sustained", "hong-kong-cup": "burst", "hong-kong-sprint": "attrition",
+    "dubai-world-cup": "attrition", "uae-derby": "attrition", "uae-2000-guineas": "attrition",
+    "saudi-cup": "sustained", "saudi-derby": "sustained", "dubai-turf": "burst",
+    "dubai-sheema-classic": "sustained", "al-quoz-sprint": "attrition", "neom-turf-cup": "sustained"
+  };
+  for (const [id, type] of Object.entries(expectations)) {
+    assert.equal(resolve(id).type, type, id);
+    assert.equal(resolve(id).intensity, 1, id);
+  }
+  const mile = races.find((race) => race.id === "breeders-cup-mile");
+  assert.equal(profiles.resolveForVenue(mile, "keeneland").type, "burst");
+  assert.equal(profiles.resolveForVenue(mile, "del-mar").type, "attrition");
+  assert.equal(profiles.resolveForTrackCourse("us-circuit-turf", "草地", 1800).type, "attrition");
+  assert.equal(profiles.resolveForTrackCourse("us-circuit-turf", "草地", 2000).type, "sustained");
+  const blue = races.find((race) => race.id === "blue-point-sprint");
+  assert.equal(blue.distance, 1200);
+  assert.equal(blue.month, 1);
+  assert.equal(resolve(blue.id).trackKey, "meydan");
+  assert.equal(resolve(blue.id).type, "attrition");
+});
+
 test("赛程档案将已确认的日本 G1 映射到共享路线，并为未识别赛事提供低置信度模板", () => {
   const project = loadProjectData();
   const profiles = project.context.window.Keiba.RaceCourseProfiles;

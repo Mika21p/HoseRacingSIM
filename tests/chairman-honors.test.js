@@ -127,7 +127,7 @@ test('councils, votes, local awards and migration snapshots persist atomically a
     const out = vote(W, H, world, 'central', 'representative');
     await assert.rejects(store.commitChanges(world, out, { failForTest: true }), /事务中断/); assert.equal((await store.load(world.id)).honors.latest['central:representative'], undefined);
     await store.commitChanges(world, out, { checkpoint: 'turn' }); world = out.world;
-    const saved = await store.exportWorld(world.id); store.validateSnapshot(saved); assert.equal(saved.version, 9);
+    const saved = await store.exportWorld(world.id); store.validateSnapshot(saved); assert.equal(saved.version, 10);
     const bad = plain(saved); bad.records.councilVotes.pop(); assert.throws(() => store.validateSnapshot(bad), /不完整/);
     const removed = H.edit(world, 'deleteType', { id: world.councilTypes[0].id }); await store.commitChanges(world, removed); world = await store.load(world.id); assert.equal(world.councilTypes.length, 0);
     assert.equal((await store.queryHonorHistory(world.id, 'councilVotes', { roundId: out.councilRounds[0].id })).total, 4);

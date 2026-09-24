@@ -28,7 +28,7 @@ async function app(t, options = {}) {
   w.scrollTo = ({ top }) => Object.defineProperty(w, 'scrollY', { value: top || 0, configurable: true });
   w.HTMLDialogElement.prototype.showModal = function () { this.open = true; };
   w.HTMLDialogElement.prototype.close = function () { this.open = false; this.dispatchEvent(new w.Event('close')); };
-  for (const f of ['chairman-storage', 'chairman-history', 'chairman-ui', 'chairman-office-ui', 'chairman-breeding-ui', 'chairman-honors-ui', 'chairman-content-ui', 'chairman-editor-ui', 'chairman-app']) w.eval(source(`js/${f}.js`));
+  for (const f of ['ui/pedigree-tree', 'chairman-storage', 'chairman-history', 'chairman-ui', 'chairman-office-ui', 'chairman-bloodline-ui', 'chairman-breeding-ui', 'chairman-honors-ui', 'chairman-content-ui', 'chairman-editor-ui', 'chairman-app']) w.eval(source(`js/${f}.js`));
   const { prepare, ...worldOptions } = options;
   const W = ns.ChairmanRules, store = await ns.ChairmanStorage.open(); let world = W.createWorld({ seed: 5701, horseCount: 160, ...worldOptions });
   world.races.filter(r=>r.month===1 && r.half===1).forEach(r=>{r.raceClass="g3";r.grade="G3";}); W.planEntries(world);
@@ -132,7 +132,7 @@ test('breeding views share horse archives, preserve private fields and save desi
   await click('[data-route=active]'); assert.ok(body.querySelector('table'));
   await click('[data-action=breedView][data-id=library]'); assert.equal(body.querySelectorAll('tbody tr').length, 50);
   assert.equal(body.querySelector('tbody td:first-child small'), null, 'stable identifiers stay out of list rows');
-  await click('[data-action=pedigree]', body); assert.equal(dialog.querySelectorAll('.cm-pedigree-cell').length, 14); assert.doesNotMatch(dialog.innerHTML, /breedingStrength|courseGrades|peakStart/); await click('[data-action=close]', dialog);
+  await click('[data-action=pedigree]', body); assert.equal(dialog.querySelectorAll('.pt-node').length, 15); assert.doesNotMatch(dialog.innerHTML, /breedingStrength|courseGrades|peakStart/); await click('[data-action=close]', dialog);
   await click('[data-action=breedView][data-id=boards]'); assert.equal(body.querySelectorAll('table').length, 1); await click('[data-action=breedBoardKind][data-id=dam]');
   await click('[data-action=breedView][data-id=plans]'); const plan = ns.ChairmanBreeding.plan(ns.ChairmanRules.clone(world)).find(p => ns.ChairmanBreeding.get(world, p.fatherId) && ns.ChairmanBreeding.get(world, p.motherId)); assert.ok(plan);
   await click('[data-action=breedMate]', body); let mating = dialog.querySelector('form');
@@ -152,7 +152,7 @@ test('breeding views share horse archives, preserve private fields and save desi
   assert.match(mating.querySelector('[data-parent-count=fatherId]').textContent, /没有符合条件/); assert.equal(mating.elements.fatherId.value, plan.fatherId);
   assert.equal(dialog.querySelector('.cm-dialog-footer button:not([type])').form, mating); mating.requestSubmit(); await wait();
   assert.equal((await store.load(world.id)).breeding.manual.length, 1); assert.ok(body.querySelector('[data-action=breedCancel]'));
-  await click('[data-action=tab][data-id=horses]'); await click('[data-action=horse]', body); await click('[data-action=horseView][data-view=pedigree]', dialog); assert.equal(dialog.querySelectorAll('.cm-pedigree-cell').length, 14);
+  await click('[data-action=tab][data-id=horses]'); await click('[data-action=horse]', body); await click('[data-action=horseView][data-view=pedigree]', dialog); assert.equal(dialog.querySelectorAll('.pt-node').length, 15);
   await click('[data-action=horseView][data-view=children]', dialog); assert.equal(dialog.querySelectorAll('[data-action=breedDescendants]').length, 4); await click('[data-action=close]', dialog);
   await click('[data-action=editHorse]', body); const form = dialog.querySelector('form'); form.elements.name.value = '测试父母跳转不丢失编辑'; form.elements.fatherId.value = plan.fatherId; form.elements.fatherId.dispatchEvent(new w.Event('input', { bubbles: true }));
   await click('.cm-parent-preview [data-action=pedigree]', dialog); await click('[data-action=dialogBack]', dialog);

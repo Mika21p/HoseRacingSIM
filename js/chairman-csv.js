@@ -5,7 +5,7 @@
   const field = (key, label, type) => ({ key, label, type: type || "text" });
   const HORSE = [field("id", "编号"), field("name", "马名"), field("gender", "性别"), field("birthYear", "出生年份", "number"), field("age", "导入时年龄", "number"),
     field("homeRegion", "所属地区"), field("owner", "马主"), field("coat", "毛色"), field("strength", "基础能力", "number"),
-    field("weight", "体重kg", "number"), field("breedingStrength", "配种实力", "number"), field("temperamentLabel", "气性"), field("heavyType", "重场地适性"),
+    field("weight", "体重kg", "number"), field("breedingStrength", "繁殖素质", "number"), field("breedingStability", "遗传稳定度", "number"), field("temperamentLabel", "气性"), field("heavyType", "重场地适性"),
     field("distMin", "距离下限米", "number"), field("coreDist", "核心距离米", "number"), field("distMax", "距离上限米", "number"),
     field("growthType", "成长类型"), field("peakStart", "巅峰开始"), field("peakEnd", "巅峰结束"),
     field("fatherId", "父马编号"), field("motherId", "母马编号"), field("sireId", "父系模板"), field("damId", "母系模板"),
@@ -61,7 +61,7 @@
     const output = [["模板版本", "来源世界", ...fields.map((f) => f.label)].map((v) => quote(v)).join(",")];
     for (const original of rows) {
       const row = { ...original };
-      if (kind === "horse") row.breedingStrength = original.breeding?.strength ?? original.breedingStrength;
+      if (kind === "horse") {row.breedingStrength = original.breeding?.strength ?? original.breedingStrength;row.breedingStability=original.genetics?.stability;}
       if (kind === "race") row.trackName = (world.tracks.find((t) => t.id === row.trackId) || {}).name;
       output.push(["1", quote(world.id), ...fields.map((f) => quote(read(row, f.key), f.type === "number"))].join(","));
     }
@@ -84,7 +84,7 @@
     let rows;
     try { rows = parse(text); } catch (error) { return { errors: [error.message], changes, added, updated, skipped, output: null }; }
     if (!rows.length) return { errors: ["CSV为空。"], changes, added, updated, skipped, output: null };
-    const headers = rows.shift().values.map((v) => v.trim());
+    const headers = rows.shift().values.map((v) => v.trim() === "配种实力" ? "繁殖素质" : v.trim());
     if (new Set(headers).size !== headers.length) errors.push("表头含重复列。");
     for (const header of headers) if (!["模板版本", "来源世界"].includes(header) && !lookup.has(header)) errors.push(`不支持的列：${header}`);
     if (!headers.includes("模板版本")) errors.push("缺少模板版本列，请使用本模式模板。");
@@ -156,7 +156,8 @@
             else if (opts.parentMappings?.[value[key]]) value[key] = opts.parentMappings[value[key]];
             else if (external) { errors.push(`第${row.line}行，${key === "fatherId" ? "父马编号" : "母马编号"}：跨世界引用${value[key]}须明确映射，不能按同号自动关联。`); invalid = true; }
           }
-          if (value.breedingStrength != null && w.breeding) { value.breeding.strength = value.breedingStrength; delete value.breedingStrength; }
+          if(value.breedingStability!=null&&w.breeding){ns.ChairmanGenetics.setValues(w,value,null,value.breedingStability);delete value.breedingStability;}
+          if (value.breedingStrength != null && w.breeding) { ns.ChairmanGenetics.setValues(w,value,value.breedingStrength); delete value.breedingStrength; }
           else if (!existing && w.breeding) pendingStrength.set(value.id, value);
           if (invalid) continue;
         } else {

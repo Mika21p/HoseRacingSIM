@@ -276,14 +276,17 @@
       // A minimum legal field for a planned named event takes priority over
       // extra runners elsewhere. Only move unlocked, eligible public candidates;
       // keep at least two runners in every other named event.
-      for(const e of events.filter(e=>!e.race.support&&!e.locked&&!preserved.has(e.key)).sort((a,b)=>a.turn-b.turn)){
+      // A frozen venue does not close its entry list. Before departure or race day we
+      // may still fill a short field from uncommitted, legally reachable horses.
+      // Previously committed runners never enter `pending` and cannot be moved.
+      for(const e of events.filter(e=>!e.race.support).sort((a,b)=>a.turn-b.turn)){
         const list=accepted.get(e.key)||[];
         if(list.length>=2)continue;
         for(const p of pending.slice().reverse()){
           if(list.length>=2)break;
           const choice=p.choices.find(c=>c.key===e.key);if(!choice||list.includes(p.h))continue;
           const booked=p.h.booked,donor=booked&&indexes.get(`${W().date(booked.turn).year}:${booked.raceId}`),rows=donor&&accepted.get(donor.key);
-          if(donor&&(donor.locked||preserved.has(donor.key)||!donor.race.support&&rows.length<=2))continue;
+          if(donor&&!donor.race.support&&rows.length<=2)continue;
           if(rows)rows.splice(rows.indexOf(p.h),1);
           list.push(p.h);accepted.set(e.key,list);
           p.h.booked={raceId:e.race.id,turn:e.turn,targetRegion:choice.path.targetRegion,targetRegionId:choice.path.targetRegionId,fromRegionId:choice.path.fromRegionId,preparationTurn:choice.path.preparationTurn,travelTurns:choice.path.duration};

@@ -1,0 +1,4 @@
+interface:
+  display_name: "史实赛马资料维护"
+  short_description: "按项目结构核实并录入史实马胜鞍，校订中文名、平衡能力并验证赛事和骑手引用"
+  default_prompt: "使用 $keiba-historical-data，按当前项目数据结构与已确认评分维护史实马，核实胜鞍并报告未录入项和验证结果。"

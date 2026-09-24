@@ -250,13 +250,7 @@
   }
 
   function raceVenueLabel(race) {
-    const region = race.surfaceRegion || "日本";
-    const course = race.course || "";
-    if (region === "日本") return course || "其他地方";
-    if (course && course !== "其他地方") return course;
-    return ns.RegionRules && ns.RegionRules.getRaceRegionLabel
-      ? ns.RegionRules.getRaceRegionLabel(race)
-      : region;
+    return ns.RaceSelection.label(race);
   }
 
   function historyRecordKey(number) {
@@ -390,260 +384,6 @@
 
   function travelLockedText(travel) {
     return isReturnTravel(travel) ? "正在返厩检疫中，本场比赛不能取消。" : "正在远征检疫中，本场比赛不能取消。";
-  }
-
-  function raceOptionLabel(plan, mode) {
-    const challengeLabel = plan.challenge ? "[格上] " : "";
-    const priorityLabel = plan.priorityEntry ? "[优先] " : "";
-    const expeditionLabel = plan.travel && plan.travel.active
-      ? `[${travelPlanLabel(plan.travel)}] `
-      : (plan.expedition && plan.expedition.active ? "[远征] " : "");
-    return `${expeditionLabel}${challengeLabel}${priorityLabel}${plan.schedule.label} · ${raceDisplayName(plan.race, mode)} · ${plan.race.grade} · ${plan.race.ageRule}${raceRestrictionLabel(plan.race)} · ${raceSurfaceDistanceLabel(plan.race)} · ${raceVenueLabel(plan.race)}`;
-  }
-
-  const FEATURED_COURSES = ["京都", "阪神", "中山", "东京"];
-  const REGION_FILTER_VALUES = ["japan", "america", "europe", "other"];
-  const JAPAN_COURSE_FILTER_VALUES = ["kyoto", "hanshin", "tokyo", "nakayama", "other"];
-  const JAPAN_COURSE_VALUE_MAP = {
-    kyoto: "京都",
-    hanshin: "阪神",
-    nakayama: "中山",
-    tokyo: "东京"
-  };
-  const LEGACY_COURSE_TO_JAPAN_COURSE = {
-    kyoto: "kyoto",
-    hanshin: "hanshin",
-    tokyo: "tokyo",
-    nakayama: "nakayama",
-    "other-japan": "other"
-  };
-  const RACE_FILTER_GROUPS = [
-    {
-      id: "grade",
-      label: "等级",
-      options: [
-        { value: "g1", label: "G1/JpnI" },
-        { value: "g2", label: "G2/JpnII" },
-        { value: "g3", label: "G3/JpnIII" },
-        { value: "op", label: "公开赛" },
-        { value: "condition", label: "条件赛" }
-      ]
-    },
-    {
-      id: "surface",
-      label: "场地",
-      options: [
-        { value: "草地", label: "草地" },
-        { value: "泥地", label: "泥地" }
-      ]
-    },
-    {
-      id: "distance",
-      label: "距离",
-      options: [
-        { value: "sprint", label: "短途1000-1300" },
-        { value: "mile", label: "英里1400-1800" },
-        { value: "middle", label: "中距离1900-2200" },
-        { value: "intermediate", label: "中长距离2300-2600" },
-        { value: "long", label: "长距离2601+" }
-      ]
-    },
-    {
-      id: "region",
-      label: "地区",
-      options: [
-        { value: "japan", label: "日本" },
-        { value: "america", label: "美国" },
-        { value: "europe", label: "欧洲" },
-        { value: "other", label: "其他" }
-      ]
-    },
-    {
-      id: "japanCourse",
-      label: "日本赛场",
-      options: [
-        { value: "kyoto", label: "京都" },
-        { value: "hanshin", label: "阪神" },
-        { value: "tokyo", label: "东京" },
-        { value: "nakayama", label: "中山" },
-        { value: "other", label: "其他" }
-      ]
-    }
-  ];
-
-  function filterValues(filters, key) {
-    const value = filters && filters[key];
-    if (Array.isArray(value)) return value.filter((item) => item && item !== "all");
-    if (!value || value === "all") return [];
-    return [value];
-  }
-
-  function normalizeRaceFilters(filters) {
-    let region = filterValues(filters, "region").filter((item) => REGION_FILTER_VALUES.includes(item));
-    let japanCourse = filterValues(filters, "japanCourse").filter((item) => JAPAN_COURSE_FILTER_VALUES.includes(item));
-    const legacyCourses = filterValues(filters, "course")
-      .map((item) => LEGACY_COURSE_TO_JAPAN_COURSE[item])
-      .filter(Boolean);
-
-    if (region.length === 0 && japanCourse.length === 0 && legacyCourses.length > 0) {
-      region = ["japan"];
-      japanCourse = [...new Set(legacyCourses)];
-    }
-    if (!region.includes("japan")) japanCourse = [];
-
-    return {
-      grade: filterValues(filters, "grade"),
-      surface: filterValues(filters, "surface"),
-      distance: filterValues(filters, "distance"),
-      region,
-      japanCourse,
-      avoidFatigueRisk: !!(filters && filters.avoidFatigueRisk)
-    };
-  }
-
-  function gradeMatches(raceClass, value) {
-    return raceClass === value
-      || (value === "g1" && raceClass === "jpn1")
-      || (value === "g2" && raceClass === "jpn2")
-      || (value === "g3" && raceClass === "jpn3")
-      || (value === "op" && raceClass === "listed")
-      || (value === "condition" && ns.RaceProgression.CONDITION_CLASSES.includes(raceClass));
-  }
-
-  function distanceMatches(distance, value) {
-    return (value === "sprint" && distance >= 1000 && distance <= 1300)
-      || (value === "mile" && distance >= 1400 && distance <= 1800)
-      || (value === "middle" && distance >= 1900 && distance <= 2200)
-      || (value === "intermediate" && distance >= 2300 && distance <= 2600)
-      || (value === "long" && distance >= 2601);
-  }
-
-  function raceRegionValue(race) {
-    const region = race.surfaceRegion || "日本";
-    if (region === "日本") return "japan";
-    if (region === "美国") return "america";
-    if (region === "欧洲") return "europe";
-    return "other";
-  }
-
-  function regionMatches(race, value) {
-    return raceRegionValue(race) === value;
-  }
-
-  function japanCourseMatches(race, value) {
-    const region = race.surfaceRegion || "日本";
-    if (region !== "日本") return true;
-    if (JAPAN_COURSE_VALUE_MAP[value]) return race.course === JAPAN_COURSE_VALUE_MAP[value];
-    if (value === "other") return !FEATURED_COURSES.includes(race.course);
-    return false;
-  }
-
-  function groupMatches(values, matcher) {
-    return values.length === 0 || values.some(matcher);
-  }
-
-  function hasFatigueRisk(career, plan) {
-    if (!career || !plan || !ns.RaceFatigueRules || !ns.RaceFatigueRules.previewFatigueRisk) return false;
-    const risk = ns.RaceFatigueRules.previewFatigueRisk(career, plan.race, plan.schedule, {
-      priorityEntry: plan.priorityEntry || null
-    });
-    return !!(risk && risk.eligible && risk.probability > 0);
-  }
-
-  function raceMatchesFilters(plan, filters, career) {
-    const currentFilters = normalizeRaceFilters(filters);
-    if (currentFilters.avoidFatigueRisk && hasFatigueRisk(career, plan)) return false;
-    const raceClass = plan.race.raceClass;
-    const raceDistance = plan.race.distance;
-    const gradeMatched = groupMatches(currentFilters.grade, (value) => gradeMatches(raceClass, value));
-    const surfaceMatched = groupMatches(currentFilters.surface, (value) => plan.race.surface === value);
-    const distanceMatched = groupMatches(currentFilters.distance, (value) => distanceMatches(raceDistance, value));
-    const regionMatched = groupMatches(currentFilters.region, (value) => regionMatches(plan.race, value));
-    const japanCourseMatched = groupMatches(currentFilters.japanCourse, (value) => japanCourseMatches(plan.race, value));
-    return gradeMatched && surfaceMatched && distanceMatched && regionMatched && japanCourseMatched;
-  }
-
-  function filterSummary(group, selectedValues, disabled) {
-    if (disabled) return "需先选日本";
-    if (selectedValues.length === 0) return "全部";
-    const labels = selectedValues
-      .map((value) => (group.options.find((option) => option.value === value) || {}).label)
-      .filter(Boolean);
-    if (labels.length <= 2) return labels.join("+");
-    return `${labels.slice(0, 2).join("+")}+${labels.length - 2}`;
-  }
-
-  function renderFilterGroup(group, filters, activeFilterGroup, disabled) {
-    const selectedValues = filterValues(filters, group.id);
-    const selectedSet = new Set(selectedValues);
-    const isOpen = !disabled && activeFilterGroup === group.id;
-    return `
-      <details class="race-filter-menu ${disabled ? "is-disabled" : ""}" data-race-filter-group="${group.id}" ${isOpen ? "open" : ""} ${disabled ? `aria-disabled="true"` : ""}>
-        <summary>
-          <span>${group.label}：${filterSummary(group, selectedValues, disabled)}</span>
-          <b>${disabled ? "未启用" : selectedValues.length || "全部"}</b>
-        </summary>
-        <div class="race-filter-options">
-          ${group.options.map((option) => `
-            <label class="race-filter-option">
-              <input type="checkbox" data-race-filter="${group.id}" value="${option.value}" ${selectedSet.has(option.value) ? "checked" : ""} ${disabled ? "disabled" : ""}>
-              <span>${option.label}</span>
-            </label>
-          `).join("")}
-          <button class="secondary filter-clear-button" type="button" data-filter-clear="${group.id}" ${selectedValues.length && !disabled ? "" : "disabled"}>清除${group.label}</button>
-        </div>
-      </details>
-    `;
-  }
-
-  function hasActiveRaceFilters(filters) {
-    return RACE_FILTER_GROUPS.some((group) => filterValues(filters, group.id).length > 0)
-      || !!(filters && filters.avoidFatigueRisk);
-  }
-
-  function renderRiskFilter(filters) {
-    const checked = filters && filters.avoidFatigueRisk;
-    return `
-      <label class="race-risk-filter">
-        <input type="checkbox" data-race-filter-toggle="avoidFatigueRisk" ${checked ? "checked" : ""}>
-        <span>避开疲劳风险赛事</span>
-      </label>
-    `;
-  }
-
-  function renderRaceFilters(filters, activeFilterGroup) {
-    const currentFilters = normalizeRaceFilters(filters);
-    const active = hasActiveRaceFilters(currentFilters);
-    return `
-      <div class="filter-row" aria-label="比赛筛选">
-        ${RACE_FILTER_GROUPS.map((group) => renderFilterGroup(
-          group,
-          currentFilters,
-          activeFilterGroup,
-          group.id === "japanCourse" && !currentFilters.region.includes("japan")
-        )).join("")}
-        ${renderRiskFilter(currentFilters)}
-        <button class="secondary filter-clear-all" id="clearAllRaceFiltersBtn" type="button" ${active ? "" : "disabled"}>清除筛选</button>
-      </div>
-    `;
-  }
-
-  function renderRacePlanCards(plans, mode) {
-    return `
-      <div class="race-card-list" role="listbox" aria-label="可报名赛事">
-        ${plans.map((plan, index) => `
-          <button class="secondary race-plan-card ${index === 0 ? "is-active" : ""}" type="button" data-race-card="${plan.race.id}" aria-pressed="${index === 0 ? "true" : "false"}">
-            <span class="race-card-meta">${plan.schedule.label} · ${plan.race.grade}</span>
-            <strong>${raceDisplayName(plan.race, mode)}</strong>
-            <span>${plan.race.ageRule}${raceRestrictionLabel(plan.race)} · ${raceSurfaceDistanceLabel(plan.race)} · ${raceVenueLabel(plan.race)}</span>
-            ${plan.travel && plan.travel.active && plan.travel.prepLabel ? `<span>检疫预备：${plan.travel.prepLabel}</span>` : ""}
-            ${plan.challenge ? `<em>格上</em>` : ""}
-            ${plan.priorityEntry ? `<em>优先</em>` : ""}
-            ${plan.travel && plan.travel.active ? `<em>${travelPlanLabel(plan.travel)}</em>` : (plan.expedition && plan.expedition.active ? `<em>远征</em>` : "")}
-          </button>
-        `).join("")}
-      </div>
-    `;
   }
 
   function renderSetup(root) {
@@ -820,28 +560,7 @@
           <label>马名
             <input id="horseNameInput" type="text" value="未命名小马">
           </label>
-          <div class="field-block sire-field">
-            <div class="field-label-row">
-              <div class="field-label-title">
-                <span>父系</span>
-                <button class="secondary icon-help-button" id="sireHelpToggleBtn" type="button" aria-expanded="false" aria-label="查看父系特点" title="父系特点">?</button>
-              </div>
-              <label class="filter-checkbox sire-classic-toggle">
-                <input id="classicSireToggle" type="checkbox">
-                经典父系
-              </label>
-            </div>
-            <select id="sireSelect">${optionList(sireBloodlines, "random")}</select>
-          </div>
-          <div class="field-block dam-field">
-            <div class="field-label-row">
-              <div class="field-label-title">
-                <span>母系</span>
-                <button class="secondary icon-help-button" id="damHelpToggleBtn" type="button" aria-expanded="false" aria-label="查看母系特点" title="母系特点">?</button>
-              </div>
-            </div>
-            <select id="damSelect">${optionList(damBloodlines, "random")}</select>
-          </div>
+          ${ns.CareerBloodlineUI.setupHtml()}
           <div class="field-block trainer-field">
             <div class="field-label-row">
               <span>练马师</span>
@@ -861,18 +580,6 @@
                 优秀骑手
               </label>
             </div>
-          </div>
-        </div>
-        <div class="help-panel sire-help-panel" id="sireHelpPanel" hidden>
-          ${ns.Help ? ns.Help.sireHelpHtml : ""}
-          <div class="help-panel-actions">
-            <button class="secondary help-panel-close" type="button" data-help-close="sireHelpPanel">收起</button>
-          </div>
-        </div>
-        <div class="help-panel dam-help-panel" id="damHelpPanel" hidden>
-          ${ns.Help ? ns.Help.damHelpHtml : ""}
-          <div class="help-panel-actions">
-            <button class="secondary help-panel-close" type="button" data-help-close="damHelpPanel">收起</button>
           </div>
         </div>
         <div class="help-panel trainer-help-panel" id="trainerHelpPanel" hidden>
@@ -984,6 +691,7 @@
             <button class="workspace-nav-button" type="button" data-workspace-view="horse">
               <span class="workspace-nav-icon" aria-hidden="true">◆</span><span>马匹</span>
             </button>
+            <button class="workspace-nav-button" id="workspaceBloodlineNav" type="button" data-workspace-view="bloodline"><span class="workspace-nav-icon" aria-hidden="true">♧</span><span>血统</span></button>
             <button class="workspace-nav-button" id="workspaceChallengeNav" type="button" data-workspace-view="challenge" hidden>
               <span class="workspace-nav-icon" aria-hidden="true">★</span><span>挑战</span>
             </button>
@@ -1013,6 +721,7 @@
                 <section class="panel rogue-veterinarian-panel" id="rogueVeterinarianPanel" hidden></section>
                 <section class="panel feedback-panel" id="feedbackPanel" hidden></section>
               </div>
+              <section class="panel workspace-view" id="bloodlinePanel" data-workspace-panel="bloodline" hidden></section>
               <section class="panel workspace-view rogue-challenge-page" id="rogueChallengePanel" data-workspace-panel="challenge" hidden></section>
               <section class="panel workspace-view more-panel" id="morePanel" data-workspace-panel="more" hidden>
                 <div class="section-title-row">
@@ -1138,7 +847,7 @@
         <div><p class="eyebrow">比赛结束</p><h2 id="raceResultTitle">${recordRaceName(record, opts.raceNameMode)}</h2></div>
         <button class="secondary race-result-close" id="raceResultCloseBtn" type="button" aria-label="关闭赛果">×</button>
       </div>
-      <div class="race-result-rank"><span>最终结果</span><strong>${rankText}</strong><em>${historyMarginText(record)}</em></div>
+      <p class="muted">${escapeCommentText(historyRaceDetail(record))}</p><div class="race-result-rank"><span>最终结果</span><strong>${rankText}</strong><em>${historyMarginText(record)}</em></div>
       <div class="race-result-facts">
         <span><small>时间</small><b>${publicResult.timeLabel || "-"}</b></span>
         <span><small>场地</small><b>${publicResult.trackCondition || hidden.trackCondition || "-"}</b></span>
@@ -1385,31 +1094,11 @@
       `;
       return;
     }
-    const currentFilters = normalizeRaceFilters(filters);
-    const activeFilterGroup = options && options.activeFilterGroup;
-    const filteredPlans = plans.filter((plan) => raceMatchesFilters(plan, currentFilters, career));
-    panel.innerHTML = `
-      ${racePanelHeader(career, "下一场比赛")}
-      ${renderRaceFilters(currentFilters, activeFilterGroup)}
-      <div id="jockeyNotice"></div>
-      ${filteredPlans.length ? `
-        <div class="race-row">
-          <select class="race-select" id="raceSelect">
-            ${filteredPlans.map((plan) => `<option value="${plan.race.id}">${raceOptionLabel(plan, raceNameMode)}</option>`).join("")}
-          </select>
-          ${renderRacePlanCards(filteredPlans, raceNameMode)}
-          <button id="registerRaceBtn">报名比赛</button>
-          <button class="secondary" id="nextTurnBtn">下一回合</button>
-          <button class="secondary" id="retireBtn">退役</button>
-        </div>
-      ` : `
-        <p class="muted">当前筛选条件下没有可参加的赛事。</p>
-        <button id="nextTurnBtn">下一回合</button>
-        <button class="secondary" id="retireBtn">退役</button>
-      `}
-      <p class="muted">报名赛事后，可以逐回合推进到该赛事自动开赛。</p>
-    `;
+    const ui = options?.selection || {};
+    ui.activeFilterGroup = options?.activeFilterGroup || '';
+    panel.innerHTML = racePanelHeader(career, "下一场比赛") + ns.RaceSelection.render(plans, filters || {}, ui, career, race => raceDisplayName(race, raceNameMode));
   }
+
 
   function renderHistory(panel, career, summary, options) {
     if (!career) {

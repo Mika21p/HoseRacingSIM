@@ -1,0 +1,12 @@
+.pt-scroll{max-width:100%;min-width:0;overflow-x:auto;overflow-y:hidden;scrollbar-width:auto;scrollbar-color:#a7ad9b #263c36;overscroll-behavior-x:contain;cursor:grab;border:1px solid #708779;border-radius:10px;margin:12px 0;touch-action:pan-x pan-y}
+.pt-scroll:focus-visible{outline:2px solid #d4ac63;outline-offset:3px}.pt-scroll.is-dragging{cursor:grabbing;user-select:none}
+.pt-canvas{--pt-y-scale:1;--pt-node-height:144px;position:relative;isolation:isolate;margin:12px}
+.pt-lines{height:100%;position:absolute;left:0;top:0;pointer-events:none;overflow:visible}.pt-lines path{stroke:#8b9e97;stroke-width:1.5;fill:none}
+.pt-heading{position:absolute;top:0;text-align:center;font-size:13px;font-weight:bold}
+.pt-canvas .pt-node{position:absolute;box-sizing:border-box;width:208px;height:var(--pt-node-height);display:flex;flex-direction:column;justify-content:center;gap:5px;padding:10px;border:1px solid #829b90;border-radius:8px;background:var(--pt-background,#233d35);color:var(--pt-color,#eef3e9);overflow-wrap:anywhere;font-size:13px;line-height:1.35;min-width:0}
+.pt-node strong{font-size:14px}.pt-node small,.pt-node span{font-size:11px}.pt-node button,.pt-node a{font:inherit;white-space:normal;overflow-wrap:anywhere;max-width:100%;color:inherit}
+.pt-canvas .pt-node.is-broodmare-sire{border-color:#dfbf72;background:#50462b}.pt-canvas .pt-node.is-repeated{border-width:2px;border-color:#dcba79}.pt-canvas .pt-node.participant{outline:3px solid #73c3ad;outline-offset:2px}.pt-participant-label{color:#a7efd5}.pt-participant-label[hidden]{display:none}
+.pt-hint{font-size:12px;opacity:.8}.pt-depth{display:flex;gap:8px;margin:12px 0}.pt-depth [aria-pressed=true]{outline:2px solid #c4a35b}
+.pt-scroll::-webkit-scrollbar{height:12px}.pt-scroll::-webkit-scrollbar-thumb{background:#899c8e;border-radius:8px}.pt-scroll::-webkit-scrollbar-track{background:#263c36}
+
+@media(max-width:700px){.pt-canvas{--pt-y-scale:.585366;--pt-node-height:88px;margin:8px}.pt-canvas .pt-node{padding:6px 8px;gap:1px;border-radius:6px;line-height:1.15}.pt-node strong{font-size:12px}.pt-node small,.pt-node span{font-size:10px}.pt-node button,.pt-node a{padding:0;min-height:0}.pt-heading{font-size:11px}}

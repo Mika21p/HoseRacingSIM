@@ -3,7 +3,7 @@
   const ns = (window.Keiba = window.Keiba || {});
   const ENTITIES = ["horses", "tracks", "races", "pedigrees", "councilTypes", "honorProfiles", "series", "familyTemplates", "sourceMappings", "templateOverrides"];
   const HONOR_HISTORY = ["councilRounds", "councilVotes", "hallEvents", "honorYears"];
-  const HISTORY = ["occurrences", "performances", "ratings", "awards", "scoreDrafts", "revisions", "breedingEvents", "breedingYears", ...HONOR_HISTORY, "seriesYears", "seriesRewards", "editorRecords"];
+  const HISTORY = ["occurrences", "performances", "ratings", "awards", "scoreDrafts", "revisions", "breedingEvents", "breedingYears", "breedingReports", ...HONOR_HISTORY, "seriesYears", "seriesRewards", "editorRecords"];
   const DATA = [...ENTITIES, ...HISTORY];
   const DB_NAME = "keiba-chairman-v1";
   const clean = (row) => { if (!row) return row; const value = { ...row }; delete value.worldId; return value; };
@@ -24,7 +24,7 @@
   function open() {
     return new Promise((resolve, reject) => {
       if (!window.indexedDB) { reject(new Error("当前浏览器无法使用本地数据库，未保存的世界不会被静默丢弃。请启用站点存储。")); return; }
-      const req = window.indexedDB.open(DB_NAME, 9);
+      const req = window.indexedDB.open(DB_NAME, 10);
       req.onupgradeneeded = (event) => {
         const db = req.result;
         if (event.oldVersion < 1) {
@@ -88,6 +88,8 @@
       const originalUpgrade = req.onupgradeneeded;
       req.onupgradeneeded = (event) => {
         originalUpgrade(event);
+        if(event.oldVersion<10){const db=req.result,key='breedingReports';const s=db.objectStoreNames.contains(key)?req.transaction.objectStore(key):db.createObjectStore(key,{keyPath:['worldId','id']});for(const [name,path]of [['byWorld','worldId'],['byYear',['worldId','year']],['byTurn',['worldId','turn']]])if(!s.indexNames.contains(name))s.createIndex(name,path);}
+
         if(event.oldVersion<8)for(const key of ['templateOverrides','editorRecords']){const db=req.result,store=db.objectStoreNames.contains(key)?req.transaction.objectStore(key):db.createObjectStore(key,{keyPath:['worldId','id']});for(const [name,path]of [['byWorld','worldId'],['byYear',['worldId','year']],['byTarget',['worldId','targetId','turn']],['byTurn',['worldId','turn']]])if(!store.indexNames.contains(name))store.createIndex(name,path);}
         if(event.oldVersion<7)for(const key of ['series','familyTemplates','sourceMappings','seriesYears','seriesRewards']){
           const db=req.result,s=db.objectStoreNames.contains(key)?req.transaction.objectStore(key):db.createObjectStore(key,{keyPath:['worldId','id']});
@@ -379,10 +381,10 @@
       if (!meta) throw new Error("世界不存在。");
       const world = { ...meta }; const records = {};
       DATA.forEach((key, i) => { if (ENTITIES.includes(key)) world[key] = all[i].map(clean); else records[key] = all[i].map(clean); });
-      return { format: "keiba-chairman-save", version: 9, savedAt: new Date().toISOString(), world, records };
+      return { format: "keiba-chairman-save", version: 10, savedAt: new Date().toISOString(), world, records };
     }
     validateSnapshot(snapshot) {
-      if (!snapshot || snapshot.format !== "keiba-chairman-save" || ![1, 2, 3, 4, 5, 6, 7, 8, 9].includes(snapshot.version)) throw new Error("不支持的存档格式，原存档未修改。");
+      if (!snapshot || snapshot.format !== "keiba-chairman-save" || ![1, 2, 3, 4, 5, 6, 7, 8, 9, 10].includes(snapshot.version)) throw new Error("不支持的存档格式，原存档未修改。");
       ns.ChairmanRules.validateWorld(snapshot.world);
       if (snapshot.world.ratingPrecisionVersion === 1) {
         const check = values => { if (values.some(v => v != null && v !== '' && !Number.isSafeInteger(Number(v)))) throw new Error('评分须为整数，存档未修改。'); };
@@ -394,9 +396,15 @@
       }
       const horseIds = new Set(snapshot.world.horses.map((h) => h.id));
       const pedigreeIds = new Set([...snapshot.world.horses, ...(snapshot.world.pedigrees || [])].map((h) => h.id));
+      const validFactors=rows=>Array.isArray(rows)&&rows.length<=2&&new Set(rows.map(f=>f.trait)).size===rows.length&&rows.every(f=>ns.BloodlineSystem.FACTORS.includes(f.trait)&&[1,2].includes(f.power));
+      for(const h of [...snapshot.world.horses,...(snapshot.world.pedigrees||[])]){
+        const g=h.genetics;if(g&&(!validFactors(g.factors||[])||['quality','stability'].some(k=>g[k]!=null&&(!Number.isInteger(g[k])||g[k]<1||g[k]>100))))throw new Error('遗传素质、稳定度或因子无效。');
+        const p=h.pedigree;if(p?.format!==2)continue;
+        if(!Array.isArray(p.nodes)||p.nodes.length>30||new Set(p.nodes.map(n=>n.id)).size!==p.nodes.length||p.nodes.some(n=>!pedigreeIds.has(n.id)||typeof n.name!=='string'||!validFactors(n.factors)||n.pedigree)||!Array.isArray(p.ancestors)||p.ancestors.length!==30||new Set(p.ancestors.map(a=>a.path)).size!==30||p.ancestors.some(a=>!(/^[父母]{1,4}$/).test(a.path)||a.id!=null&&!p.nodes.some(n=>n.id===a.id)))throw new Error('出生血统快照无效。');
+      }
       const raceIds = new Set(snapshot.world.races.map((r) => r.id));
       for (const key of HISTORY) {
-        const rows = snapshot.records && snapshot.records[key] || (snapshot.version < 7 && key === "editorRecords" || snapshot.version < 6 && ["seriesYears","seriesRewards"].includes(key) || snapshot.version < 5 && HONOR_HISTORY.includes(key) || snapshot.version < 3 && ["breedingEvents", "breedingYears"].includes(key) || snapshot.version === 1 && ["scoreDrafts", "revisions"].includes(key) ? [] : null);
+        const rows = snapshot.records && snapshot.records[key] || (snapshot.version < 10 && key === "breedingReports" || snapshot.version < 7 && key === "editorRecords" || snapshot.version < 6 && ["seriesYears","seriesRewards"].includes(key) || snapshot.version < 5 && HONOR_HISTORY.includes(key) || snapshot.version < 3 && ["breedingEvents", "breedingYears"].includes(key) || snapshot.version === 1 && ["scoreDrafts", "revisions"].includes(key) ? [] : null);
         if (!Array.isArray(rows) || new Set(rows.map((r) => r.id)).size !== rows.length) throw new Error("历史记录缺失或编号重复。");
         for (const row of rows) {
           if (!row || typeof row.id !== "string" || !Number.isInteger(row.year)) throw new Error("历史记录格式无效。");
@@ -445,6 +453,15 @@
         mothers.add(key); bornIds.add(r.horseId);
       }
       if (snapshot.world.breeding && snapshot.world.horses.some((h) => h.sourceKind === "bred" && !bornIds.has(h.id))) throw new Error("繁殖后代缺少出生记录。");
+      const reportedYears=new Set();
+      for(const r of snapshot.records.breedingReports||[]){
+        if(r.version!==2||!Number.isInteger(r.year)||reportedYears.has(r.year)||!Number.isInteger(r.pairs)||r.pairs<0||!['lines','maternalFamilies','broodmareSires','parents','firstCrop','rising','supplements','cancelled'].every(k=>Array.isArray(r[k])))throw new Error('繁殖年度报告无效。');
+        reportedYears.add(r.year);
+        for(const row of [...r.parents,...r.firstCrop,...r.rising,...r.broodmareSires,...r.maternalFamilies,...r.supplements])if(!pedigreeIds.has(row.horseId||row.id))throw new Error('繁殖报告引用不存在的马匹。');
+        for(const row of [...r.broodmareSires,...r.maternalFamilies])if(!Array.isArray(row.representatives)||row.representatives.some(h=>!horseIds.has(h.id)))throw new Error('母系报告代表后代无效。');
+        if(r.rareLines!=null&&(!Array.isArray(r.rareLines)||r.rareLines.some(l=>!l||typeof l.id!=='string'||!Number.isFinite(l.previousShare)||l.previousShare<=0||l.previousShare>=.05||!r.lines.some(x=>x.id===l.id&&x.count===l.count))))throw new Error('稀有家系年度记录无效。');
+        if(r.lines.some(l=>!Number.isInteger(l.count)||l.count<0)||r.lines.reduce((sum,l)=>sum+l.count,0)!==r.pairs)throw new Error('繁殖报告产驹统计无效。');
+      }
       for (const r of snapshot.records.breedingYears || []) if (!Number.isFinite(r.prize) || r.prize < 0 || typeof r.champion !== "boolean") throw new Error("繁殖年度统计无效。");
       return true;
     }

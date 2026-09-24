@@ -27,6 +27,10 @@
   }
   function initialize(w, h) {
     if (!w.breeding || h.breeding) return;
+    if(w.breeding.version>=2){
+      h.breeding={strength:h.genetics?.quality??h.breedingStrength??50,status:"none",everActive:false,pinned:false,joinedYear:null,championYears:[]};
+      seeded(w,()=>ns.ChairmanGenetics.initialize(w,h));delete h.breedingStrength;delete h.breedingStability;return;
+    }
     seeded(w, () => {
       const p = ((get(w, h.fatherId)?.breeding?.strength ?? 50) + (get(w, h.motherId)?.breeding?.strength ?? 50)) / 2;
       const a = R.clamp(1 + 99 * (h.strength - 62) / 38, 1, 100);
@@ -48,6 +52,7 @@
     return result;
   }
   function related(w, father, mother, byId = map(w)) {
+    if(w.breeding?.version>=2)return !ns.ChairmanGenetics.pair(w,father.id,mother.id).preview.legal;
     if (father.id === mother.id || ancestors(w, father.id, Infinity, byId).has(mother.id) || ancestors(w, mother.id, Infinity, byId).has(father.id)) return true;
     const fa = ancestors(w, father.id, 2, byId), ma = ancestors(w, mother.id, 2, byId);
     return [...fa].some((id) => ma.has(id));
@@ -74,6 +79,7 @@
     return 100 * (rows.filter((v) => v < value).length + .5 * rows.filter((v) => v === value).length) / rows.length;
   }
   function reputations(w) {
+    if(w.breeding?.version>=2)return new Map([...ns.ChairmanGenetics.evaluate(w)].map(([id,v])=>[id,v.score]));
     const horses = w.horses.filter((h) => h.lifetime.starts), candidates = all(w).filter((h) => h.breeding);
     const top = (h) => Math.max(h.breeding?.bestEvaluation ?? h.breeding?.bestWtr ?? -Infinity, W().rating(h) ?? (h.annual.tf == null ? -Infinity : h.annual.tf - 5), h.previousWtr ?? (h.previousTf == null ? -Infinity : h.previousTf - 5));
     const ratings = horses.map(top).filter(Number.isFinite), g1s = horses.map((h) => h.lifetime.g1), prizes = horses.map((h) => h.lifetime.prize);
@@ -123,12 +129,14 @@
     h.templateId = template?.id || ""; h.templateVersion = w.breeding.templateVersion; h.historicalBirthYear = template?.birthYear ?? null;
     h.sourceUrl = template?.sourceUrl || "";
     h.aliases = template?.aliases || []; h.originalName = template?.originalName || h.name; h.romanizedName = template?.romanizedName || h.originalName; h.pinyin = template?.pinyin || "";
-    h.breeding.strength = template ? R.clamp((template.game?.breedingBase ?? 50) + R.rollRange(-5, 5), 1, 100) : h.breeding.strength;
+    if(template){const legacy=R.clamp((template.game?.breedingBase??50)+R.rollRange(-5,5),1,100);if(w.breeding.version===1)h.breeding.strength=legacy;}
     h.breeding.status = "active"; h.breeding.everActive = true; h.breeding.joinedYear = year(w);
     if (template?.game?.distance) { h.coreDist = template.game.distance; h.distMin = Math.max(1000, h.coreDist - 400); h.distMax = h.coreDist + 400; }
     if (template?.game?.surface) { const key = template.game.surface === "泥地" ? "dirt" : "grass"; h.surfaceGrades[key] = "A"; }
     if (template?.game?.growthType) { h.growthType = template.game.growthType; const peak = ns.HorseRules.generatePeak(h.growthType); h.peakStart = peak.start; h.peakEnd = peak.end; }
     if(template?.playerModified){if(template.coat)h.coat=template.coat;if(template.game?.distance){h.distMin=Math.max(1,h.coreDist-400);h.distType=W().category(h.coreDist);}if(template.game?.surface==='泥地'&&W().regionBase(w,region)==='欧洲')h.surfaceGrades.dirt='A';}
+    if(w.breeding.version>=2&&template)ns.ChairmanGenetics.applyTemplate(w,h,template);
+    ns.ChairmanGenetics?.invalidate(w);
     return h;
   }
   function attachAncestors(w, roots) {
@@ -159,6 +167,7 @@
       const next = new Set(path); next.add(tid);
       h.fatherId = visit(t.fatherId, h.birthYear - 3, next); h.motherId = visit(t.motherId, h.birthYear - 3, next);
       h.parentsLocked = true;
+      if(w.breeding.version>=2)ns.ChairmanGenetics.initialize(w,h,{migration:true});
       return h.id;
     }
     for (const h of roots) { const t = source.get(h.templateId); if (t && !h.parentsLocked) { h.sourceUrl = t.sourceUrl; h.fatherId = visit(t.fatherId, h.birthYear - 3); h.motherId = visit(t.motherId, h.birthYear - 3); h.parentsLocked = true; } }
@@ -190,7 +199,7 @@
   }
   function enable(w, options = {}) {
     assert(!w.breeding, "此世界已启用繁殖。");
-    w.pedigrees ||= []; w.breeding = { version: 1, templateVersion: ns.ChairmanPedigrees?.version || 1,
+    w.pedigrees ||= []; w.breeding = { version: 2, ruleVersion: ns.BloodlineSystem.VERSION, templateVersion: ns.ChairmanPedigrees?.version || 1,
       rngState: ((w.seed ?? w.rngState) ^ 0xb4e31d57) >>> 0, enabledYear: year(w), manual: [], sources: {}, completedYear: year(w) - 1 };
     seeded(w, () => {
       w.horses.forEach((h) => { initialize(w, h); for (const [y, score] of Object.entries(options.ratings?.[h.id] || {})) recordRating(h, y, score && typeof score === "object" ? score.wtr : score, score && typeof score === "object" ? score.tf : null); });
@@ -202,7 +211,7 @@
           const mares = (w.pedigrees || []).filter((m) => m.gender === "牝马" && m.breeding && m.homeRegion === h.homeRegion && m.birthYear <= h.birthYear - 3 && !occupied.has(`${m.id}:${h.birthYear}`));
           const m = mares.length ? R.pickOne(mares) : null;
           const sires = m ? w.pedigrees.filter((f) => f.gender === "牡马" && f.breeding && f.birthYear <= h.birthYear - 3 && !related(w, f, m, byId)) : [];
-          if (m && sires.length) { h.fatherId = R.pickOne(sires).id; h.motherId = m.id; h.pedigreeOrigin = "background"; occupied.add(`${m.id}:${h.birthYear}`); delete h.breeding; initialize(w, h); }
+          if (m && sires.length) { h.fatherId = R.pickOne(sires).id; h.motherId = m.id; h.pedigreeOrigin = "background"; if(w.breeding.version>=2){h.genetics.lineId=get(w,h.fatherId)?.genetics?.lineId??null;h.genetics.familyId=m.genetics?.familyId??null;} occupied.add(`${m.id}:${h.birthYear}`); delete h.breeding; initialize(w, h); }
         }
       }
       selectBreeders(w);
@@ -221,6 +230,7 @@
     });
   }
   function plan(w) {
+    if(w.breeding.version>=2)return ns.ChairmanGenetics.plan(w);
     return seeded(w, () => {
       const result = [], occupied = new Set(), quotasByRegion = quotas(w), byId = map(w), scores = reputations(w);
       for (const p of w.breeding.manual) {
@@ -249,6 +259,7 @@
     });
   }
   function inherited(w, f, m, homeRegion) {
+    if(w.breeding.version>=2)return ns.ChairmanGenetics.inherited(w,f,m,homeRegion);
     const h = ns.HorseRules.generateHorse({ gameMode: "normal", sireId: "random", damId: "random", ...(w.worldSystemVersion === 2 ? {chairmanProfile:ns.ChairmanWorld.profile(w,homeRegion||m.homeRegion)} : {}) });
     delete h.id; delete h.name; delete h.career; delete h.gender;
     h.strength = R.clamp(Math.round(h.strength + (((f?.breeding?.strength ?? 50) + (m?.breeding?.strength ?? 50)) / 2 - 50) / 10), 62, 100);
@@ -278,6 +289,8 @@
   }
   function closeYear(w, out) {
     if (!w.breeding) return null;
+    ns.ChairmanGenetics.upgrade(w);
+    ns.ChairmanGenetics.invalidate(w);
     const y = year(w); assert(w.breeding.completedYear < y, "本年度繁殖已经结算。");
     return seeded(w, () => {
       const stats = childStats(w, y), sires = stats.filter((s) => s.gender === "牡马"), highest = Math.max(0, ...sires.map((s) => s.prize));
@@ -289,6 +302,9 @@
         return { ...p, id: `${y}:mating:${i}`, year: y, birthYear: y + 1, fatherName: f.name, motherName: m.name,
           fatherSnapshot: geneticSnapshot(f), motherSnapshot: geneticSnapshot(m), offspring: inherited(w, f, m, p.homeRegion), ...(w.worldSystemVersion === 2 ? {homeRegionId:ns.ChairmanWorld.region(w,p.homeRegion).id,generationVersion:ns.ChairmanWorld.region(w,p.homeRegion).generationVersion||1,generationProfile:ns.ChairmanWorld.profile(w,p.homeRegion)} : {}) };
       });
+      out.breedingReports=[ns.ChairmanGenetics.report(w,pairs)];
+      out.breedingReports[0].parents=clone(out.breedingYears);
+      w.breeding.upgradeNotices=[];
       w.breeding.completedYear = y; w.breeding.manual = [];
       return locked;
     });
@@ -296,6 +312,7 @@
   function geneticSnapshot(h) { const keys = ["id", "name", "strength", "surfaceGrades", "trackAptitudes", "surfacePref", "distMin", "coreDist", "distMax", "distType", "growthType", "temperamentLabel", "temperament", "heavyType"]; return { ...Object.fromEntries(keys.map((k) => [k, clone(h[k])])), breeding: { strength: h.breeding.strength } }; }
   function startYear(w, out, locked) {
     if (!w.breeding) return;
+    assert(w.breeding.birthsCompletedYear !== year(w), "本年度出生已经结算。");
     seeded(w, () => {
       const debut = {};
       for (const h of w.horses) if (h.status === "juvenile" && W().ageOf(w, h) >= 2) { h.status = "active"; h.maturity.lastCheckedIndex = ns.TimeRules.toIndex(2, 1, 1); debut[h.homeRegion] = (debut[h.homeRegion] || 0) + 1; }
@@ -309,6 +326,7 @@
       }
       selectBreeders(w, true);
       for (const [region, target] of Object.entries(quotas(w))) for (let n = debut[region] || 0; n < target; n++) W().addHorse(w, { age: 2, homeRegion: region, sourceKind: "external" });
+      w.breeding.birthsCompletedYear = year(w);
     });
   }
   function childStats(w, selectedYear) {
@@ -325,13 +343,14 @@
     return [...stats.values()].sort((a, b) => b.prize - a.prize || a.id.localeCompare(b.id));
   }
   function publicHorse(w, h) {
+    const assessment=ns.ChairmanGenetics.publicEvaluation(w,h);
     const b = h.breeding, age = h.birthYear == null ? null : year(w) - h.birthYear;
     return { id: h.id, name: h.name, originalName: h.originalName || h.name, romanizedName: h.romanizedName || h.originalName || h.name, aliases: h.aliases || [], pinyin: h.pinyin || "",
       gender: h.gender, birthYear: h.birthYear, historicalBirthYear: h.historicalBirthYear ?? null, age,
       fatherId: h.fatherId || "", motherId: h.motherId || "", region: h.homeRegion || "", status: h.status,
       source: h.sourceKind || (h.origin === "custom" ? "custom" : "ai"), templateId: h.templateId || "", sourceUrl: h.sourceUrl || "",
-      breedingStatus: b?.status || "none", grade: b?.everActive || h.origin === "custom" ? grade(b?.strength ?? 50) : "未公开",
-      ...(ns.ChairmanEditor?.enabled(w)?{strength:h.strength}:{}),pinned: !!b?.pinned, championYears: b?.championYears || [], ...((h.origin === "custom" || ns.ChairmanEditor?.enabled(w)) ? { breedingStrength: b?.strength ?? null } : {}) };
+      breedingStatus: b?.status || "none", grade: b?assessment.grade:"未公开", assessment,
+      ...(ns.ChairmanEditor?.enabled(w)?{strength:h.strength}:{}),pinned: !!b?.pinned, championYears: b?.championYears || [], ...(ns.ChairmanEditor?.enabled(w) ? { breedingStrength: b?.strength ?? null, breedingStability:h.genetics?.stability??null } : {}) };
   }
   const normalize = (s) => String(s || "").normalize("NFKD").replace(/[\u0300-\u036f]/g, "").toLowerCase().replace(/[\s'’._-]/g, "");
   const pinyinCollator = new Intl.Collator("zh-Hans-CN-u-co-pinyin");
@@ -406,7 +425,7 @@
     if (!w.breeding) { assert(!(w.pedigrees || []).length, "未启用繁殖的世界不能含有新增谱系。"); return; }
     assert(Array.isArray(w.pedigrees) && Number.isInteger(w.breeding.enabledYear) && w.breeding.enabledYear <= year(w)
       && Number.isInteger(w.breeding.completedYear) && w.breeding.completedYear < year(w), "繁殖启用或结算年份无效。");
-    assert(w.breeding.version === 1 && Number.isInteger(w.breeding.rngState) && w.breeding.rngState >= 0 && w.breeding.rngState <= 0xffffffff, "繁殖规则或随机状态无效。");
+    assert([1,2].includes(w.breeding.version) && Number.isInteger(w.breeding.rngState) && w.breeding.rngState >= 0 && w.breeding.rngState <= 0xffffffff, "繁殖规则或随机状态无效。");
     const rows = all(w), byId = map(w); assert(rows.length === byId.size, "谱系与马匹编号重复。");
     const templatesSeen = new Set(), mothers = new Set();
     for (const h of rows) {
@@ -420,6 +439,7 @@
         && h.breeding.championYears.every((y) => Number.isInteger(y) && y < year(w))
         && new Set(h.breeding.championYears).size === h.breeding.championYears.length
         && Object.values(h.breeding.yearWtr || {}).every((v) => v == null || Number.isFinite(v)), "配种实力或繁殖状态无效。");
+      if(w.breeding.version>=2&&h.breeding){assert(h.genetics&&h.genetics.quality===h.breeding.strength&&Number.isInteger(h.genetics.stability)&&h.genetics.stability>=1&&h.genetics.stability<=100,"繁殖素质或稳定度不同步。");}
       if (h.status === "juvenile") assert(W().ageOf(w, h) < 2 && !h.booked && !h.lifetime.starts && !h.annual.starts
         && [h.annual.tf, h.annual.manual, h.annual.suggested].every((v) => v == null), "幼驹不能报名、拥有赛绩或年度评分。");
       if (h.sourceKind === "bred" && h.motherId) { const key = `${h.motherId}:${h.birthYear}`; assert(!mothers.has(key), "同母同年产驹重复。"); mothers.add(key); }

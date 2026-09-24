@@ -1,0 +1,17 @@
+.bloodline-picker{grid-column:1/-1;padding:18px;border:1px solid var(--border,#ddd);border-radius:12px;min-width:0}
+.bloodline-parents,.bloodline-filters{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.bloodline-parents section,.bloodline-picker label{min-width:0}
+.bloodline-picker label{display:flex;flex-direction:column;gap:6px;margin-bottom:10px}
+.bloodline-picker input,.bloodline-picker select{width:100%;min-width:0;max-width:100%;box-sizing:border-box}
+.bloodline-brief{padding-left:22px;line-height:1.8}
+.bloodline-identity{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.bloodline-nodes{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:12px 0 20px}
+.bloodline-node{display:flex;flex-direction:column;gap:7px;padding:12px;border:1px solid #d8ddd8;border-radius:10px;min-width:0}
+.bloodline-node small,.bloodline-node span{font-size:.85rem;opacity:.8}
+.bloodline-node.is-broodmare-sire{background:#b8993420}
+.bloodline-node.is-repeated{border-color:#a77a35;border-width:2px}
+#bloodlinePanel,#bloodlinePanel strong,.bloodline-picker{overflow-wrap:anywhere}
+#bloodlinePanel summary{cursor:pointer;padding:12px 0}
+@media(max-width:700px){.bloodline-parents,.bloodline-identity{grid-template-columns:1fr}.bloodline-nodes{grid-template-columns:repeat(2,minmax(0,1fr))}.bloodline-picker{padding:12px}.bloodline-picker .section-title-row{flex-wrap:wrap}}
+
+@media(max-width:700px){.workspace-shell:not(.is-rogue-career) .workspace-nav{grid-template-columns:repeat(6,minmax(0,1fr))}}

@@ -4,6 +4,7 @@ const root = path.resolve(__dirname, '..');
 const { loadChairmanRules } = require('../tests/helpers/project-loader');
 const project = loadChairmanRules(), B = project.rules.ChairmanBreeding;
 const source = JSON.parse(fs.readFileSync(path.join(root, 'js/data/chairman-pedigrees.json'), 'utf8'));
+const nameOverrides = require('../js/data/chairman-pedigree-name-overrides.json');
 const normalize = (s) => String(s).normalize('NFKD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
 const historical = new Map(project.horses.map((h) => [normalize(h.displayNameEn || h.name), h]));
 const japanese = new Map(project.horses.map((h) => [String(h.name).normalize('NFKC'), h]));
@@ -37,7 +38,7 @@ for (const h of source.records) {
   const romanized = { 'jbis-0000108334': 'Marble Tosho', 'jbis-0000383510': 'Immense', 'jbis-0001239512': 'Best In The World' }[h.id];
   if (romanized) { h.aliases = [...new Set([...(h.aliases || []), h.originalName])]; h.originalName = romanized; h.nameSourceUrl = `https://www.jbis.or.jp/horse/${h.jbisId}/`; }
   const old = historical.get(normalize(h.originalName)) || japanese.get(h.originalName.normalize('NFKC'));
-  h.displayName = old?.displayNameZh || extraNames[h.originalName] || h.originalName;
+  h.displayName = ['欧洲', '美国'].includes(h.region) ? h.originalName : nameOverrides[h.originalName] || old?.displayNameZh || extraNames[h.originalName] || h.originalName;
   h.aliases = [...new Set([...(h.aliases || []), h.originalName, h.name, h.displayName, ...(old ? [old.name, old.displayNameEn] : [])].filter(Boolean))];
   h.pinyin = [...h.displayName].map((ch) => B.initial(ch)).join('').toLowerCase();
   h.romanizedName = /[A-Za-z]/.test(h.originalName) ? h.originalName : old?.displayNameEn || kanaIndex(h.originalName);

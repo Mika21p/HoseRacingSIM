@@ -391,7 +391,7 @@
           <div class="era-schedule-copy">
             <span>${escapeHtml(scheduleStatusLabel(option))}</span>
             <h3>${escapeHtml(occurrence.nameZh)}</h3>
-            <p>${escapeHtml(race.grade)} · ${escapeHtml(race.course)} · ${escapeHtml(race.surface)}${escapeHtml(race.distance)}m</p>
+            <p>${escapeHtml(race.grade)} · ${escapeHtml(ns.RaceSelection.label(race))} · ${escapeHtml(race.surface)}${escapeHtml(race.distance)}m</p>
             ${option.reason ? `<p class="era-registration-reason">${escapeHtml(option.reason)}</p>` : ""}
             ${option.section === "current" ? `<div class="era-registration-preview">
               <small class="${preview.withinDistance === false ? "is-warning" : ""}">${escapeHtml(preview.distanceLabel || "")}</small>

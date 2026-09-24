@@ -634,15 +634,16 @@
       "aliases": [
         "レデイーシラオキ",
         "Lady Shiraoki(JPN)",
-        "Lady Shiraoki"
+        "Lady Shiraoki",
+        "白荻夫人"
       ],
       "sourceUrl": "https://www.jbis.or.jp/horse/0000104968/",
       "verifiedAt": "2026-09-20",
       "verifiedParents": true,
       "core": true,
       "region": "日本",
-      "displayName": "Lady Shiraoki",
-      "pinyin": "ladyshiraoki",
+      "displayName": "白荻夫人",
+      "pinyin": "bdfr",
       "romanizedName": "Lady Shiraoki",
       "game": {
         "breedingBase": 50,
@@ -668,15 +669,16 @@
       "aliases": [
         "トキノシユリリー",
         "Tokino Shrilly(JPN)",
-        "Tokino Shrilly"
+        "Tokino Shrilly",
+        "时之希莉"
       ],
       "sourceUrl": "https://www.jbis.or.jp/horse/0000105286/",
       "verifiedAt": "2026-09-20",
       "verifiedParents": true,
       "core": true,
       "region": "日本",
-      "displayName": "Tokino Shrilly",
-      "pinyin": "tokinoshrilly",
+      "displayName": "时之希莉",
+      "pinyin": "szwl",
       "romanizedName": "Tokino Shrilly",
       "game": {
         "breedingBase": 50,
@@ -697,7 +699,8 @@
       "originalName": "Marble Tosho",
       "aliases": [
         "マーブルトウシヨウ",
-        "Marble Tosho"
+        "Marble Tosho",
+        "东商大理石"
       ],
       "gender": "牝马",
       "birthYear": 1978,
@@ -709,8 +712,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "日本",
-      "displayName": "Marble Tosho",
-      "pinyin": "marbletosho",
+      "displayName": "东商大理石",
+      "pinyin": "dsdls",
       "romanizedName": "Marble Tosho",
       "game": {
         "breedingBase": 50,
@@ -803,15 +806,16 @@
       "aliases": [
         "ダイナサツシユ",
         "Dyna Sash(JPN)",
-        "Dyna Sash"
+        "Dyna Sash",
+        "戴拿缎带"
       ],
       "sourceUrl": "https://www.jbis.or.jp/horse/0000115357/",
       "verifiedAt": "2026-09-20",
       "verifiedParents": true,
       "core": true,
       "region": "日本",
-      "displayName": "Dyna Sash",
-      "pinyin": "dynasash",
+      "displayName": "戴拿缎带",
+      "pinyin": "dndd",
       "romanizedName": "Dyna Sash",
       "game": {
         "breedingBase": 50,
@@ -844,7 +848,7 @@
       "core": true,
       "region": "欧洲",
       "displayName": "All Along",
-      "pinyin": "allalong",
+      "pinyin": "all along",
       "romanizedName": "All Along",
       "game": {
         "breedingBase": 50,
@@ -902,15 +906,16 @@
       "aliases": [
         "ダイナカール",
         "Dyna Carle(JPN)",
-        "Dyna Carle"
+        "Dyna Carle",
+        "戴拿卡尔"
       ],
       "sourceUrl": "https://www.jbis.or.jp/horse/0000125485/",
       "verifiedAt": "2026-09-20",
       "verifiedParents": true,
       "core": true,
       "region": "日本",
-      "displayName": "Dyna Carle",
-      "pinyin": "dynacarle",
+      "displayName": "戴拿卡尔",
+      "pinyin": "dnke",
       "romanizedName": "Dyna Carle",
       "game": {
         "breedingBase": 80,
@@ -1072,15 +1077,16 @@
       "aliases": [
         "トニービン(IRE)",
         "Tony Bin(IRE)",
-        "Tony Bin"
+        "Tony Bin",
+        "东来兵"
       ],
       "sourceUrl": "https://www.jbis.or.jp/horse/0000161740/",
       "verifiedAt": "2026-09-20",
       "verifiedParents": true,
       "core": true,
       "region": "日本",
-      "displayName": "Tony Bin",
-      "pinyin": "tonybin",
+      "displayName": "东来兵",
+      "pinyin": "dlb",
       "romanizedName": "Tony Bin",
       "game": {
         "breedingBase": 65,
@@ -1443,15 +1449,16 @@
       "aliases": [
         "スカーレットブーケ",
         "Scarlet Bouquet(JPN)",
-        "Scarlet Bouquet"
+        "Scarlet Bouquet",
+        "绯红花束"
       ],
       "sourceUrl": "https://www.jbis.or.jp/horse/0000213918/",
       "verifiedAt": "2026-09-20",
       "verifiedParents": true,
       "core": true,
       "region": "日本",
-      "displayName": "Scarlet Bouquet",
-      "pinyin": "scarletbouquet",
+      "displayName": "绯红花束",
+      "pinyin": "fhhs",
       "romanizedName": "Scarlet Bouquet",
       "game": {
         "breedingBase": 80,
@@ -1584,8 +1591,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "欧洲",
-      "displayName": "都市海洋",
-      "pinyin": "dshy",
+      "displayName": "Urban Sea",
+      "pinyin": "urban sea",
       "romanizedName": "Urban Sea",
       "game": {
         "breedingBase": 90,
@@ -1646,15 +1653,16 @@
       "aliases": [
         "ベガ",
         "Vega(JPN)",
-        "Vega"
+        "Vega",
+        "织女星"
       ],
       "sourceUrl": "https://www.jbis.or.jp/horse/0000232957/",
       "verifiedAt": "2026-09-20",
       "verifiedParents": true,
       "core": true,
       "region": "日本",
-      "displayName": "Vega",
-      "pinyin": "vega",
+      "displayName": "织女星",
+      "pinyin": "znx",
       "romanizedName": "Vega",
       "game": {
         "breedingBase": 65,
@@ -1782,15 +1790,16 @@
       "aliases": [
         "ダンスパートナー",
         "Dance Partner(JPN)",
-        "Dance Partner"
+        "Dance Partner",
+        "舞伴"
       ],
       "sourceUrl": "https://www.jbis.or.jp/horse/0000262374/",
       "verifiedAt": "2026-09-20",
       "verifiedParents": true,
       "core": true,
       "region": "日本",
-      "displayName": "Dance Partner",
-      "pinyin": "dancepartner",
+      "displayName": "舞伴",
+      "pinyin": "wb",
       "romanizedName": "Dance Partner",
       "game": {
         "breedingBase": 50,
@@ -1985,15 +1994,16 @@
       "aliases": [
         "ビワハイジ",
         "Biwa Heidi(JPN)",
-        "Biwa Heidi"
+        "Biwa Heidi",
+        "琵琶海蒂"
       ],
       "sourceUrl": "https://www.jbis.or.jp/horse/0000275176/",
       "verifiedAt": "2026-09-20",
       "verifiedParents": true,
       "core": true,
       "region": "日本",
-      "displayName": "Biwa Heidi",
-      "pinyin": "biwaheidi",
+      "displayName": "琵琶海蒂",
+      "pinyin": "pphd",
       "romanizedName": "Biwa Heidi",
       "game": {
         "breedingBase": 80,
@@ -2055,15 +2065,16 @@
       "aliases": [
         "キョウエイマーチ",
         "Kyoei March(JPN)",
-        "Kyoei March"
+        "Kyoei March",
+        "协荣进行曲"
       ],
       "sourceUrl": "https://www.jbis.or.jp/horse/0000287403/",
       "verifiedAt": "2026-09-20",
       "verifiedParents": true,
       "core": true,
       "region": "日本",
-      "displayName": "Kyoei March",
-      "pinyin": "kyoeimarch",
+      "displayName": "协荣进行曲",
+      "pinyin": "xrjxq",
       "romanizedName": "Kyoei March",
       "game": {
         "breedingBase": 50,
@@ -2159,15 +2170,16 @@
       "aliases": [
         "ファレノプシス",
         "Phalaenopsis(JPN)",
-        "Phalaenopsis"
+        "Phalaenopsis",
+        "蝴蝶兰"
       ],
       "sourceUrl": "https://www.jbis.or.jp/horse/0000295505/",
       "verifiedAt": "2026-09-20",
       "verifiedParents": true,
       "core": true,
       "region": "日本",
-      "displayName": "Phalaenopsis",
-      "pinyin": "phalaenopsis",
+      "displayName": "蝴蝶兰",
+      "pinyin": "hdl",
       "romanizedName": "Phalaenopsis",
       "game": {
         "breedingBase": 50,
@@ -2292,15 +2304,16 @@
       "aliases": [
         "トゥザヴィクトリー",
         "To the Victory(JPN)",
-        "To the Victory"
+        "To the Victory",
+        "迈向胜利"
       ],
       "sourceUrl": "https://www.jbis.or.jp/horse/0000309174/",
       "verifiedAt": "2026-09-20",
       "verifiedParents": true,
       "core": true,
       "region": "日本",
-      "displayName": "To the Victory",
-      "pinyin": "tothevictory",
+      "displayName": "迈向胜利",
+      "pinyin": "mxsl",
       "romanizedName": "To the Victory",
       "game": {
         "breedingBase": 65,
@@ -2359,15 +2372,16 @@
       "aliases": [
         "オリエンタルアート",
         "Oriental Art(JPN)",
-        "Oriental Art"
+        "Oriental Art",
+        "东方艺术"
       ],
       "sourceUrl": "https://www.jbis.or.jp/horse/0000316406/",
       "verifiedAt": "2026-09-20",
       "verifiedParents": true,
       "core": true,
       "region": "日本",
-      "displayName": "Oriental Art",
-      "pinyin": "orientalart",
+      "displayName": "东方艺术",
+      "pinyin": "dfys",
       "romanizedName": "Oriental Art",
       "game": {
         "breedingBase": 50,
@@ -2494,15 +2508,16 @@
       "aliases": [
         "ブランシェリー",
         "Blancherie(JPN)",
-        "Blancherie"
+        "Blancherie",
+        "布兰雪莉"
       ],
       "sourceUrl": "https://www.jbis.or.jp/horse/0000325260/",
       "verifiedAt": "2026-09-20",
       "verifiedParents": true,
       "core": true,
       "region": "日本",
-      "displayName": "Blancherie",
-      "pinyin": "blancherie",
+      "displayName": "布兰雪莉",
+      "pinyin": "blxl",
       "romanizedName": "Blancherie",
       "game": {
         "breedingBase": 50,
@@ -2528,15 +2543,16 @@
       "aliases": [
         "ヒンドスタン(GB)",
         "Hindostan(GB)",
-        "Hindostan"
+        "Hindostan",
+        "印度斯坦"
       ],
       "sourceUrl": "https://www.jbis.or.jp/horse/0000333190/",
       "verifiedAt": "2026-09-20",
       "verifiedParents": true,
       "core": true,
       "region": "日本",
-      "displayName": "Hindostan",
-      "pinyin": "hindostan",
+      "displayName": "印度斯坦",
+      "pinyin": "ydst",
       "romanizedName": "Hindostan",
       "game": {
         "breedingBase": 65,
@@ -2663,15 +2679,16 @@
       "aliases": [
         "パーソロン(IRE)",
         "Partholon(IRE)",
-        "Partholon"
+        "Partholon",
+        "帕索隆"
       ],
       "sourceUrl": "https://www.jbis.or.jp/horse/0000333257/",
       "verifiedAt": "2026-09-20",
       "verifiedParents": true,
       "core": true,
       "region": "日本",
-      "displayName": "Partholon",
-      "pinyin": "partholon",
+      "displayName": "帕索隆",
+      "pinyin": "psl",
       "romanizedName": "Partholon",
       "game": {
         "breedingBase": 65,
@@ -2731,15 +2748,16 @@
       "aliases": [
         "テスコボーイ(GB)",
         "Tesco Boy(GB)",
-        "Tesco Boy"
+        "Tesco Boy",
+        "乐购男孩"
       ],
       "sourceUrl": "https://www.jbis.or.jp/horse/0000333299/",
       "verifiedAt": "2026-09-20",
       "verifiedParents": true,
       "core": true,
       "region": "日本",
-      "displayName": "Tesco Boy",
-      "pinyin": "tescoboy",
+      "displayName": "乐购男孩",
+      "pinyin": "lgnh",
       "romanizedName": "Tesco Boy",
       "game": {
         "breedingBase": 65,
@@ -3219,15 +3237,16 @@
       "aliases": [
         "ノーザンテースト(CAN)",
         "Northern Taste(CAN)",
-        "Northern Taste"
+        "Northern Taste",
+        "北方风味"
       ],
       "sourceUrl": "https://www.jbis.or.jp/horse/0000333544/",
       "verifiedAt": "2026-09-20",
       "verifiedParents": true,
       "core": true,
       "region": "日本",
-      "displayName": "Northern Taste",
-      "pinyin": "northerntaste",
+      "displayName": "北方风味",
+      "pinyin": "bffw",
       "romanizedName": "Northern Taste",
       "game": {
         "breedingBase": 80,
@@ -3562,15 +3581,16 @@
       "aliases": [
         "リアルシヤダイ(USA)",
         "Real Shadai(USA)",
-        "Real Shadai"
+        "Real Shadai",
+        "真实社台"
       ],
       "sourceUrl": "https://www.jbis.or.jp/horse/0000333707/",
       "verifiedAt": "2026-09-20",
       "verifiedParents": true,
       "core": true,
       "region": "日本",
-      "displayName": "Real Shadai",
-      "pinyin": "realshadai",
+      "displayName": "真实社台",
+      "pinyin": "zsst",
       "romanizedName": "Real Shadai",
       "game": {
         "breedingBase": 65,
@@ -3803,15 +3823,16 @@
       "aliases": [
         "ブライアンズタイム(USA)",
         "Brian's Time(USA)",
-        "Brian's Time"
+        "Brian's Time",
+        "白仁时间"
       ],
       "sourceUrl": "https://www.jbis.or.jp/horse/0000333844/",
       "verifiedAt": "2026-09-20",
       "verifiedParents": true,
       "core": true,
       "region": "日本",
-      "displayName": "Brian's Time",
-      "pinyin": "brianstime",
+      "displayName": "白仁时间",
+      "pinyin": "brsj",
       "romanizedName": "Brian's Time",
       "game": {
         "breedingBase": 65,
@@ -4462,8 +4483,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "美国",
-      "displayName": "秘书处",
-      "pinyin": "msc",
+      "displayName": "Secretariat",
+      "pinyin": "secretariat",
       "romanizedName": "Secretariat",
       "game": {
         "breedingBase": 65,
@@ -4678,8 +4699,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "美国",
-      "displayName": "北地舞人",
-      "pinyin": "bdwr",
+      "displayName": "Northern Dancer",
+      "pinyin": "northern dancer",
       "romanizedName": "Northern Dancer",
       "game": {
         "breedingBase": 90,
@@ -4953,8 +4974,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "欧洲",
-      "displayName": "水车礁石",
-      "pinyin": "scjs",
+      "displayName": "Mill Reef",
+      "pinyin": "mill reef",
       "romanizedName": "Mill Reef",
       "game": {
         "breedingBase": 65,
@@ -5430,7 +5451,7 @@
       "core": true,
       "region": "美国",
       "displayName": "Bold Ruler",
-      "pinyin": "boldruler",
+      "pinyin": "bold ruler",
       "romanizedName": "Bold Ruler",
       "game": {
         "breedingBase": 80,
@@ -6531,8 +6552,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "美国",
-      "displayName": "天才舞者",
-      "pinyin": "tcwz",
+      "displayName": "Native Dancer",
+      "pinyin": "native dancer",
       "romanizedName": "Native Dancer",
       "game": {
         "breedingBase": 80,
@@ -9960,7 +9981,7 @@
       "core": true,
       "region": "欧洲",
       "displayName": "Blushing Groom",
-      "pinyin": "blushinggroom",
+      "pinyin": "blushing groom",
       "romanizedName": "Blushing Groom",
       "game": {
         "breedingBase": 80,
@@ -11314,8 +11335,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "美国",
-      "displayName": "西雅图回旋",
-      "pinyin": "wythx",
+      "displayName": "Seattle Slew",
+      "pinyin": "seattle slew",
       "romanizedName": "Seattle Slew",
       "game": {
         "breedingBase": 80,
@@ -11382,8 +11403,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "美国",
-      "displayName": "淘金者",
-      "pinyin": "tjz",
+      "displayName": "Mr. Prospector",
+      "pinyin": "mr. prospector",
       "romanizedName": "Mr. Prospector",
       "game": {
         "breedingBase": 90,
@@ -12528,7 +12549,7 @@
       "core": true,
       "region": "欧洲",
       "displayName": "Green Desert",
-      "pinyin": "greendesert",
+      "pinyin": "green desert",
       "romanizedName": "Green Desert",
       "game": {
         "breedingBase": 80,
@@ -12829,8 +12850,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "欧洲",
-      "displayName": "鞍匠井",
-      "pinyin": "ajj",
+      "displayName": "Sadler's Wells",
+      "pinyin": "sadler's wells",
       "romanizedName": "Sadler's Wells",
       "game": {
         "breedingBase": 90,
@@ -13506,7 +13527,7 @@
       "core": true,
       "region": "美国",
       "displayName": "Storm Cat",
-      "pinyin": "stormcat",
+      "pinyin": "storm cat",
       "romanizedName": "Storm Cat",
       "game": {
         "breedingBase": 80,
@@ -13779,7 +13800,7 @@
       "core": true,
       "region": "欧洲",
       "displayName": "Rainbow Quest",
-      "pinyin": "rainbowquest",
+      "pinyin": "rainbow quest",
       "romanizedName": "Rainbow Quest",
       "game": {
         "breedingBase": 65,
@@ -13910,8 +13931,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "欧洲",
-      "displayName": "丹山",
-      "pinyin": "ds",
+      "displayName": "Danehill",
+      "pinyin": "danehill",
       "romanizedName": "Danehill",
       "game": {
         "breedingBase": 90,
@@ -14476,7 +14497,7 @@
       "core": true,
       "region": "美国",
       "displayName": "Deputy Minister",
-      "pinyin": "deputyminister",
+      "pinyin": "deputy minister",
       "romanizedName": "Deputy Minister",
       "game": {
         "breedingBase": 65,
@@ -14900,8 +14921,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "美国",
-      "displayName": "艾匹印第",
-      "pinyin": "apyd",
+      "displayName": "A.P. Indy",
+      "pinyin": "a.p. indy",
       "romanizedName": "A.P. Indy",
       "game": {
         "breedingBase": 80,
@@ -16786,7 +16807,7 @@
       "core": true,
       "region": "美国",
       "displayName": "Elusive Quality",
-      "pinyin": "elusivequality",
+      "pinyin": "elusive quality",
       "romanizedName": "Elusive Quality",
       "game": {
         "breedingBase": 65,
@@ -16916,7 +16937,7 @@
       "core": true,
       "region": "美国",
       "displayName": "Distorted Humor",
-      "pinyin": "distortedhumor",
+      "pinyin": "distorted humor",
       "romanizedName": "Distorted Humor",
       "game": {
         "breedingBase": 65,
@@ -16950,7 +16971,7 @@
       "core": true,
       "region": "美国",
       "displayName": "Smart Strike",
-      "pinyin": "smartstrike",
+      "pinyin": "smart strike",
       "romanizedName": "Smart Strike",
       "game": {
         "breedingBase": 65,
@@ -17345,8 +17366,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "欧洲",
-      "displayName": "望族",
-      "pinyin": "wz",
+      "displayName": "Montjeu",
+      "pinyin": "montjeu",
       "romanizedName": "Montjeu",
       "game": {
         "breedingBase": 80,
@@ -17444,8 +17465,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "欧洲",
-      "displayName": "迪拜千禧",
-      "pinyin": "dbqx",
+      "displayName": "Dubai Millennium",
+      "pinyin": "dubai millennium",
       "romanizedName": "Dubai Millennium",
       "game": {
         "breedingBase": 50,
@@ -17511,7 +17532,7 @@
       "core": true,
       "region": "欧洲",
       "displayName": "Invincible Spirit",
-      "pinyin": "invinciblespirit",
+      "pinyin": "invincible spirit",
       "romanizedName": "Invincible Spirit",
       "game": {
         "breedingBase": 65,
@@ -17544,8 +17565,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "美国",
-      "displayName": "巨人长堤",
-      "pinyin": "jrzd",
+      "displayName": "Giant's Causeway",
+      "pinyin": "giant's causeway",
       "romanizedName": "Giant's Causeway",
       "game": {
         "breedingBase": 65,
@@ -18010,15 +18031,16 @@
       "aliases": [
         "アンテイツクヴアリユー(USA)",
         "Antique Value(USA)",
-        "Antique Value"
+        "Antique Value",
+        "古董价值"
       ],
       "sourceUrl": "https://www.jbis.or.jp/horse/0000383031/",
       "verifiedAt": "2026-09-20",
       "verifiedParents": true,
       "core": true,
       "region": "日本",
-      "displayName": "Antique Value",
-      "pinyin": "antiquevalue",
+      "displayName": "古董价值",
+      "pinyin": "gdjz",
       "romanizedName": "Antique Value",
       "game": {
         "breedingBase": 50,
@@ -18114,15 +18136,16 @@
       "aliases": [
         "ダンシングキイ(USA)",
         "Dancing Key(USA)",
-        "Dancing Key"
+        "Dancing Key",
+        "舞动之钥"
       ],
       "sourceUrl": "https://www.jbis.or.jp/horse/0000383247/",
       "verifiedAt": "2026-09-20",
       "verifiedParents": true,
       "core": true,
       "region": "日本",
-      "displayName": "Dancing Key",
-      "pinyin": "dancingkey",
+      "displayName": "舞动之钥",
+      "pinyin": "wdzy",
       "romanizedName": "Dancing Key",
       "game": {
         "breedingBase": 80,
@@ -22567,8 +22590,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "美国",
-      "displayName": "拉托莲",
-      "pinyin": "ltl",
+      "displayName": "La Troienne",
+      "pinyin": "la troienne",
       "romanizedName": "La Troienne",
       "game": {
         "breedingBase": 90,
@@ -27967,15 +27990,16 @@
       "motherId": "jbis-0000391294",
       "aliases": [
         "Pasadoble(USA)",
-        "Pasadoble"
+        "Pasadoble",
+        "斗牛舞"
       ],
       "sourceUrl": "https://www.jbis.or.jp/horse/0000391295/",
       "verifiedAt": "2026-09-20",
       "verifiedParents": true,
       "core": true,
       "region": "日本",
-      "displayName": "Pasadoble",
-      "pinyin": "pasadoble",
+      "displayName": "斗牛舞",
+      "pinyin": "dnw",
       "romanizedName": "Pasadoble",
       "game": {
         "breedingBase": 50,
@@ -28483,7 +28507,7 @@
       "core": true,
       "region": "欧洲",
       "displayName": "Foreign Courier",
-      "pinyin": "foreigncourier",
+      "pinyin": "foreign courier",
       "romanizedName": "Foreign Courier",
       "game": {
         "breedingBase": 50,
@@ -28739,7 +28763,8 @@
       "originalName": "Kadissya",
       "aliases": [
         "Kadissya(USA)",
-        "Kadissya"
+        "Kadissya",
+        "卡迪西亚"
       ],
       "gender": "牝马",
       "birthYear": 1979,
@@ -28751,8 +28776,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "日本",
-      "displayName": "Kadissya",
-      "pinyin": "kadissya",
+      "displayName": "卡迪西亚",
+      "pinyin": "kdwy",
       "romanizedName": "Kadissya",
       "game": {
         "breedingBase": 50,
@@ -28842,7 +28867,8 @@
       "originalName": "Pound Foolish",
       "aliases": [
         "Pound Foolish(USA)",
-        "Pound Foolish"
+        "Pound Foolish",
+        "因小失大"
       ],
       "gender": "牝马",
       "birthYear": 1979,
@@ -28854,8 +28880,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "日本",
-      "displayName": "Pound Foolish",
-      "pinyin": "poundfoolish",
+      "displayName": "因小失大",
+      "pinyin": "yxsd",
       "romanizedName": "Pound Foolish",
       "game": {
         "breedingBase": 50,
@@ -30413,7 +30439,7 @@
       "core": true,
       "region": "美国",
       "displayName": "Ta Wee",
-      "pinyin": "tawee",
+      "pinyin": "ta wee",
       "romanizedName": "Ta Wee",
       "game": {
         "breedingBase": 50,
@@ -30911,7 +30937,7 @@
       "core": true,
       "region": "美国",
       "displayName": "Chris Evert",
-      "pinyin": "chrisevert",
+      "pinyin": "chris evert",
       "romanizedName": "Chris Evert",
       "game": {
         "breedingBase": 50,
@@ -31279,7 +31305,7 @@
       "core": true,
       "region": "美国",
       "displayName": "Lady's Secret",
-      "pinyin": "ladyssecret",
+      "pinyin": "lady's secret",
       "romanizedName": "Lady's Secret",
       "game": {
         "breedingBase": 50,
@@ -32972,8 +32998,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "欧洲",
-      "displayName": "易用软件",
-      "pinyin": "yyrj",
+      "displayName": "User Friendly",
+      "pinyin": "user friendly",
       "romanizedName": "User Friendly",
       "game": {
         "breedingBase": 50,
@@ -33105,7 +33131,7 @@
       "core": true,
       "region": "美国",
       "displayName": "Weekend Surprise",
-      "pinyin": "weekendsurprise",
+      "pinyin": "weekend surprise",
       "romanizedName": "Weekend Surprise",
       "game": {
         "breedingBase": 80,
@@ -33432,7 +33458,8 @@
       "originalName": "Take Lady Anne",
       "aliases": [
         "Take Lady Anne(USA)",
-        "Take Lady Anne"
+        "Take Lady Anne",
+        "安妮夫人"
       ],
       "gender": "牝马",
       "birthYear": 1979,
@@ -33444,8 +33471,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "日本",
-      "displayName": "Take Lady Anne",
-      "pinyin": "takeladyanne",
+      "displayName": "安妮夫人",
+      "pinyin": "anfr",
       "romanizedName": "Take Lady Anne",
       "game": {
         "breedingBase": 50,
@@ -33710,7 +33737,7 @@
       "core": true,
       "region": "美国",
       "displayName": "Gold Beauty",
-      "pinyin": "goldbeauty",
+      "pinyin": "gold beauty",
       "romanizedName": "Gold Beauty",
       "game": {
         "breedingBase": 65,
@@ -34010,7 +34037,7 @@
       "core": true,
       "region": "欧洲",
       "displayName": "Flying Melody",
-      "pinyin": "flyingmelody",
+      "pinyin": "flying melody",
       "romanizedName": "Flying Melody",
       "game": {
         "breedingBase": 50,
@@ -34674,7 +34701,7 @@
       "core": true,
       "region": "欧洲",
       "displayName": "Allez France",
-      "pinyin": "allezfrance",
+      "pinyin": "allez france",
       "romanizedName": "Allez France",
       "game": {
         "breedingBase": 50,
@@ -34839,7 +34866,7 @@
       "core": true,
       "region": "欧洲",
       "displayName": "Slightly Dangerous",
-      "pinyin": "slightlydangerous",
+      "pinyin": "slightly dangerous",
       "romanizedName": "Slightly Dangerous",
       "game": {
         "breedingBase": 50,
@@ -35501,7 +35528,7 @@
       "core": true,
       "region": "美国",
       "displayName": "Fall Aspen",
-      "pinyin": "fallaspen",
+      "pinyin": "fall aspen",
       "romanizedName": "Fall Aspen",
       "game": {
         "breedingBase": 80,
@@ -35829,8 +35856,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "美国",
-      "displayName": "个人荣誉",
-      "pinyin": "grry",
+      "displayName": "Personal Ensign",
+      "pinyin": "personal ensign",
       "romanizedName": "Personal Ensign",
       "game": {
         "breedingBase": 50,
@@ -35863,8 +35890,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "美国",
-      "displayName": "胜利色彩",
-      "pinyin": "slsc",
+      "displayName": "Winning Colors",
+      "pinyin": "winning colors",
       "romanizedName": "Winning Colors",
       "game": {
         "breedingBase": 50,
@@ -35897,8 +35924,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "欧洲",
-      "displayName": "美艳时刻",
-      "pinyin": "mysk",
+      "displayName": "Miesque",
+      "pinyin": "miesque",
       "romanizedName": "Miesque",
       "game": {
         "breedingBase": 80,
@@ -36098,7 +36125,7 @@
       "core": true,
       "region": "欧洲",
       "displayName": "Toute Cy",
-      "pinyin": "toutecy",
+      "pinyin": "toute cy",
       "romanizedName": "Toute Cy",
       "game": {
         "breedingBase": 50,
@@ -36618,7 +36645,8 @@
       "originalName": "Broom Dance",
       "aliases": [
         "Broom Dance(USA)",
-        "Broom Dance"
+        "Broom Dance",
+        "扫帚之舞"
       ],
       "gender": "牝马",
       "birthYear": 1979,
@@ -36630,8 +36658,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "日本",
-      "displayName": "Broom Dance",
-      "pinyin": "broomdance",
+      "displayName": "扫帚之舞",
+      "pinyin": "szzw",
       "romanizedName": "Broom Dance",
       "game": {
         "breedingBase": 50,
@@ -36762,7 +36790,7 @@
       "core": true,
       "region": "美国",
       "displayName": "Genuine Risk",
-      "pinyin": "genuinerisk",
+      "pinyin": "genuine risk",
       "romanizedName": "Genuine Risk",
       "game": {
         "breedingBase": 50,
@@ -36893,8 +36921,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "欧洲",
-      "displayName": "邓弗姆林",
-      "pinyin": "dfml",
+      "displayName": "Dunfermline",
+      "pinyin": "dunfermline",
       "romanizedName": "Dunfermline",
       "game": {
         "breedingBase": 50,
@@ -36997,8 +37025,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "美国",
-      "displayName": "暴徒",
-      "pinyin": "bt",
+      "displayName": "Ruffian",
+      "pinyin": "ruffian",
       "romanizedName": "Ruffian",
       "game": {
         "breedingBase": 50,
@@ -37630,7 +37658,7 @@
       "core": true,
       "region": "美国",
       "displayName": "Serena's Song",
-      "pinyin": "serenassong",
+      "pinyin": "serena's song",
       "romanizedName": "Serena's Song",
       "game": {
         "breedingBase": 50,
@@ -39182,8 +39210,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "欧洲",
-      "displayName": "夏西里",
-      "pinyin": "xwl",
+      "displayName": "Hasili",
+      "pinyin": "hasili",
       "romanizedName": "Hasili",
       "game": {
         "breedingBase": 90,
@@ -39287,7 +39315,7 @@
       "core": true,
       "region": "欧洲",
       "displayName": "Lady Vettori",
-      "pinyin": "ladyvettori",
+      "pinyin": "lady vettori",
       "romanizedName": "Lady Vettori",
       "game": {
         "breedingBase": 50,
@@ -39612,15 +39640,16 @@
       "aliases": [
         "グレイトサンライズ(GB)",
         "Great Sunrise(GB)",
-        "Great Sunrise"
+        "Great Sunrise",
+        "壮丽朝阳"
       ],
       "sourceUrl": "https://www.jbis.or.jp/horse/0000617472/",
       "verifiedAt": "2026-09-20",
       "verifiedParents": true,
       "core": true,
       "region": "日本",
-      "displayName": "Great Sunrise",
-      "pinyin": "greatsunrise",
+      "displayName": "壮丽朝阳",
+      "pinyin": "zlcy",
       "romanizedName": "Great Sunrise",
       "game": {
         "breedingBase": 50,
@@ -40043,15 +40072,16 @@
       "aliases": [
         "ヘヴンリーロマンス",
         "Heavenly Romance(JPN)",
-        "Heavenly Romance"
+        "Heavenly Romance",
+        "美妙浪漫"
       ],
       "sourceUrl": "https://www.jbis.or.jp/horse/0000706207/",
       "verifiedAt": "2026-09-20",
       "verifiedParents": true,
       "core": true,
       "region": "日本",
-      "displayName": "Heavenly Romance",
-      "pinyin": "heavenlyromance",
+      "displayName": "美妙浪漫",
+      "pinyin": "mmlm",
       "romanizedName": "Heavenly Romance",
       "game": {
         "breedingBase": 65,
@@ -40152,8 +40182,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "欧洲",
-      "displayName": "伽利略",
-      "pinyin": "jll",
+      "displayName": "Galileo",
+      "pinyin": "galileo",
       "romanizedName": "Galileo",
       "game": {
         "breedingBase": 90,
@@ -40383,7 +40413,7 @@
       "core": true,
       "region": "欧洲",
       "displayName": "Side of Paradise",
-      "pinyin": "sideofparadise",
+      "pinyin": "side of paradise",
       "romanizedName": "Side of Paradise",
       "game": {
         "breedingBase": 50,
@@ -40711,7 +40741,7 @@
       "core": true,
       "region": "美国",
       "displayName": "Medaglia d'Oro",
-      "pinyin": "medagliadoro",
+      "pinyin": "medaglia d'oro",
       "romanizedName": "Medaglia d'Oro",
       "game": {
         "breedingBase": 80,
@@ -40745,8 +40775,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "美国",
-      "displayName": "阿塞拜疆",
-      "pinyin": "asbj",
+      "displayName": "Azeri",
+      "pinyin": "azeri",
       "romanizedName": "Azeri",
       "game": {
         "breedingBase": 50,
@@ -40779,7 +40809,7 @@
       "core": true,
       "region": "美国",
       "displayName": "Leslie's Lady",
-      "pinyin": "leslieslady",
+      "pinyin": "leslie's lady",
       "romanizedName": "Leslie's Lady",
       "game": {
         "breedingBase": 80,
@@ -41048,15 +41078,16 @@
       "aliases": [
         "ディアデラノビア",
         "Dia de la Novia(JPN)",
-        "Dia de la Novia"
+        "Dia de la Novia",
+        "情人节"
       ],
       "sourceUrl": "https://www.jbis.or.jp/horse/0000743031/",
       "verifiedAt": "2026-09-20",
       "verifiedParents": true,
       "core": true,
       "region": "日本",
-      "displayName": "Dia de la Novia",
-      "pinyin": "diadelanovia",
+      "displayName": "情人节",
+      "pinyin": "qrj",
       "romanizedName": "Dia de la Novia",
       "game": {
         "breedingBase": 50,
@@ -41189,7 +41220,7 @@
       "core": true,
       "region": "美国",
       "displayName": "Fun House",
-      "pinyin": "funhouse",
+      "pinyin": "fun house",
       "romanizedName": "Fun House",
       "game": {
         "breedingBase": 50,
@@ -41353,8 +41384,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "欧洲",
-      "displayName": "绿洲梦",
-      "pinyin": "lzm",
+      "displayName": "Oasis Dream",
+      "pinyin": "oasis dream",
       "romanizedName": "Oasis Dream",
       "game": {
         "breedingBase": 65,
@@ -41479,15 +41510,16 @@
       "aliases": [
         "エアメサイア",
         "Air Messiah(JPN)",
-        "Air Messiah"
+        "Air Messiah",
+        "空中弥赛亚"
       ],
       "sourceUrl": "https://www.jbis.or.jp/horse/0000750289/",
       "verifiedAt": "2026-09-20",
       "verifiedParents": true,
       "core": true,
       "region": "日本",
-      "displayName": "Air Messiah",
-      "pinyin": "airmessiah",
+      "displayName": "空中弥赛亚",
+      "pinyin": "kzmsy",
       "romanizedName": "Air Messiah",
       "game": {
         "breedingBase": 50,
@@ -41546,15 +41578,16 @@
       "aliases": [
         "カワカミプリンセス",
         "Kawakami Princess(JPN)",
-        "Kawakami Princess"
+        "Kawakami Princess",
+        "川上公主"
       ],
       "sourceUrl": "https://www.jbis.or.jp/horse/0000759762/",
       "verifiedAt": "2026-09-20",
       "verifiedParents": true,
       "core": true,
       "region": "日本",
-      "displayName": "Kawakami Princess",
-      "pinyin": "kawakamiprincess",
+      "displayName": "川上公主",
+      "pinyin": "csgz",
       "romanizedName": "Kawakami Princess",
       "game": {
         "breedingBase": 50,
@@ -41613,15 +41646,16 @@
       "aliases": [
         "フサイチパンドラ",
         "Fusaichi Pandora(JPN)",
-        "Fusaichi Pandora"
+        "Fusaichi Pandora",
+        "火神"
       ],
       "sourceUrl": "https://www.jbis.or.jp/horse/0000762056/",
       "verifiedAt": "2026-09-20",
       "verifiedParents": true,
       "core": true,
       "region": "日本",
-      "displayName": "Fusaichi Pandora",
-      "pinyin": "fusaichipandora",
+      "displayName": "火神",
+      "pinyin": "hs",
       "romanizedName": "Fusaichi Pandora",
       "game": {
         "breedingBase": 65,
@@ -42069,7 +42103,8 @@
       "originalName": "Flying Marlin",
       "aliases": [
         "Flying Marlin(USA)",
-        "Flying Marlin"
+        "Flying Marlin",
+        "飞翔枪鱼"
       ],
       "gender": "牝马",
       "birthYear": 1999,
@@ -42081,8 +42116,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "日本",
-      "displayName": "Flying Marlin",
-      "pinyin": "flyingmarlin",
+      "displayName": "飞翔枪鱼",
+      "pinyin": "fxqy",
       "romanizedName": "Flying Marlin",
       "game": {
         "breedingBase": 50,
@@ -42383,7 +42418,7 @@
       "core": true,
       "region": "美国",
       "displayName": "Winning Call",
-      "pinyin": "winningcall",
+      "pinyin": "winning call",
       "romanizedName": "Winning Call",
       "game": {
         "breedingBase": 50,
@@ -42449,7 +42484,7 @@
       "core": true,
       "region": "美国",
       "displayName": "Love Style",
-      "pinyin": "lovestyle",
+      "pinyin": "love style",
       "romanizedName": "Love Style",
       "game": {
         "breedingBase": 50,
@@ -42482,7 +42517,7 @@
       "core": true,
       "region": "美国",
       "displayName": "Delta Princess",
-      "pinyin": "deltaprincess",
+      "pinyin": "delta princess",
       "romanizedName": "Delta Princess",
       "game": {
         "breedingBase": 50,
@@ -42646,8 +42681,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "美国",
-      "displayName": "普鲁笔",
-      "pinyin": "plb",
+      "displayName": "Tapit",
+      "pinyin": "tapit",
       "romanizedName": "Tapit",
       "game": {
         "breedingBase": 90,
@@ -42746,8 +42781,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "欧洲",
-      "displayName": "侠马道",
-      "pinyin": "xmd",
+      "displayName": "Shamardal",
+      "pinyin": "shamardal",
       "romanizedName": "Shamardal",
       "game": {
         "breedingBase": 80,
@@ -42813,8 +42848,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "欧洲",
-      "displayName": "占卜",
-      "pinyin": "zb",
+      "displayName": "Ouija Board",
+      "pinyin": "ouija board",
       "romanizedName": "Ouija Board",
       "game": {
         "breedingBase": 50,
@@ -43012,7 +43047,7 @@
       "core": true,
       "region": "美国",
       "displayName": "Clouds of Gold",
-      "pinyin": "cloudsofgold",
+      "pinyin": "clouds of gold",
       "romanizedName": "Clouds of Gold",
       "game": {
         "breedingBase": 50,
@@ -43730,15 +43765,16 @@
       "aliases": [
         "レッドディザイア",
         "Red Desire(JPN)",
-        "Red Desire"
+        "Red Desire",
+        "红色梦想"
       ],
       "sourceUrl": "https://www.jbis.or.jp/horse/0000994916/",
       "verifiedAt": "2026-09-20",
       "verifiedParents": true,
       "core": true,
       "region": "日本",
-      "displayName": "Red Desire",
-      "pinyin": "reddesire",
+      "displayName": "红色梦想",
+      "pinyin": "hsmx",
       "romanizedName": "Red Desire",
       "game": {
         "breedingBase": 50,
@@ -43904,7 +43940,7 @@
       "core": true,
       "region": "美国",
       "displayName": "Scat Daddy",
-      "pinyin": "scatdaddy",
+      "pinyin": "scat daddy",
       "romanizedName": "Scat Daddy",
       "game": {
         "breedingBase": 80,
@@ -44069,7 +44105,7 @@
       "core": true,
       "region": "欧洲",
       "displayName": "Moon Goddess",
-      "pinyin": "moongoddess",
+      "pinyin": "moon goddess",
       "romanizedName": "Moon Goddess",
       "game": {
         "breedingBase": 50,
@@ -44234,8 +44270,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "美国",
-      "displayName": "白手起家",
-      "pinyin": "bsqj",
+      "displayName": "Rags to Riches",
+      "pinyin": "rags to riches",
       "romanizedName": "Rags to Riches",
       "game": {
         "breedingBase": 50,
@@ -44302,7 +44338,7 @@
       "core": true,
       "region": "美国",
       "displayName": "Street Sense",
-      "pinyin": "streetsense",
+      "pinyin": "street sense",
       "romanizedName": "Street Sense",
       "game": {
         "breedingBase": 65,
@@ -44401,8 +44437,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "美国",
-      "displayName": "禅雅塔",
-      "pinyin": "cyt",
+      "displayName": "Zenyatta",
+      "pinyin": "zenyatta",
       "romanizedName": "Zenyatta",
       "game": {
         "breedingBase": 50,
@@ -44460,15 +44496,16 @@
       "aliases": [
         "ルーラーシップ",
         "Rulership(JPN)",
-        "Rulership"
+        "Rulership",
+        "统治地位"
       ],
       "sourceUrl": "https://www.jbis.or.jp/horse/0001042049/",
       "verifiedAt": "2026-09-20",
       "verifiedParents": true,
       "core": true,
       "region": "日本",
-      "displayName": "Rulership",
-      "pinyin": "rulership",
+      "displayName": "统治地位",
+      "pinyin": "tzdw",
       "romanizedName": "Rulership",
       "game": {
         "breedingBase": 65,
@@ -44569,8 +44606,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "美国",
-      "displayName": "机灵骏马",
-      "pinyin": "jljm",
+      "displayName": "Curlin",
+      "pinyin": "curlin",
       "romanizedName": "Curlin",
       "game": {
         "breedingBase": 80,
@@ -44637,7 +44674,7 @@
       "core": true,
       "region": "美国",
       "displayName": "Surf Club",
-      "pinyin": "surfclub",
+      "pinyin": "surf club",
       "romanizedName": "Surf Club",
       "game": {
         "breedingBase": 50,
@@ -44670,8 +44707,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "欧洲",
-      "displayName": "金刚威",
-      "pinyin": "jgw",
+      "displayName": "Goldikova",
+      "pinyin": "goldikova",
       "romanizedName": "Goldikova",
       "game": {
         "breedingBase": 50,
@@ -44736,8 +44773,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "美国",
-      "displayName": "恶作剧",
-      "pinyin": "ezj",
+      "displayName": "Into Mischief",
+      "pinyin": "into mischief",
       "romanizedName": "Into Mischief",
       "game": {
         "breedingBase": 90,
@@ -44770,7 +44807,7 @@
       "core": true,
       "region": "欧洲",
       "displayName": "Dar Re Mi",
-      "pinyin": "darremi",
+      "pinyin": "dar re mi",
       "romanizedName": "Dar Re Mi",
       "game": {
         "breedingBase": 50,
@@ -44866,15 +44903,16 @@
       "aliases": [
         "マルセリーナ",
         "Marcellina(JPN)",
-        "Marcellina"
+        "Marcellina",
+        "马莎莲娜"
       ],
       "sourceUrl": "https://www.jbis.or.jp/horse/0001096817/",
       "verifiedAt": "2026-09-20",
       "verifiedParents": true,
       "core": true,
       "region": "日本",
-      "displayName": "Marcellina",
-      "pinyin": "marcellina",
+      "displayName": "马莎莲娜",
+      "pinyin": "msln",
       "romanizedName": "Marcellina",
       "game": {
         "breedingBase": 50,
@@ -45107,8 +45145,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "欧洲",
-      "displayName": "杜拜威",
-      "pinyin": "dbw",
+      "displayName": "Dubawi",
+      "pinyin": "dubawi",
       "romanizedName": "Dubawi",
       "game": {
         "breedingBase": 90,
@@ -45141,7 +45179,7 @@
       "core": true,
       "region": "美国",
       "displayName": "Quality Road",
-      "pinyin": "qualityroad",
+      "pinyin": "quality road",
       "romanizedName": "Quality Road",
       "game": {
         "breedingBase": 80,
@@ -45206,8 +45244,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "欧洲",
-      "displayName": "莉莉",
-      "pinyin": "ll",
+      "displayName": "Lillie Langtry",
+      "pinyin": "lillie langtry",
       "romanizedName": "Lillie Langtry",
       "game": {
         "breedingBase": 50,
@@ -45240,8 +45278,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "欧洲",
-      "displayName": "海都之星",
-      "pinyin": "hdzx",
+      "displayName": "Sea The Stars",
+      "pinyin": "sea the stars",
       "romanizedName": "Sea The Stars",
       "game": {
         "breedingBase": 80,
@@ -45274,8 +45312,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "欧洲",
-      "displayName": "正午",
-      "pinyin": "zw",
+      "displayName": "Midday",
+      "pinyin": "midday",
       "romanizedName": "Midday",
       "game": {
         "breedingBase": 50,
@@ -45376,8 +45414,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "欧洲",
-      "displayName": "歌剧泰斗",
-      "pinyin": "gjtd",
+      "displayName": "Lope de Vega",
+      "pinyin": "lope de vega",
       "romanizedName": "Lope de Vega",
       "game": {
         "breedingBase": 80,
@@ -45579,8 +45617,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "欧洲",
-      "displayName": "扎卡瓦",
-      "pinyin": "zkw",
+      "displayName": "Zarkava",
+      "pinyin": "zarkava",
       "romanizedName": "Zarkava",
       "game": {
         "breedingBase": 50,
@@ -45613,8 +45651,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "美国",
-      "displayName": "历山小姐",
-      "pinyin": "lsxj",
+      "displayName": "Rachel Alexandra",
+      "pinyin": "rachel alexandra",
       "romanizedName": "Rachel Alexandra",
       "game": {
         "breedingBase": 50,
@@ -45680,7 +45718,7 @@
       "core": true,
       "region": "美国",
       "displayName": "Salty Strike",
-      "pinyin": "saltystrike",
+      "pinyin": "salty strike",
       "romanizedName": "Salty Strike",
       "game": {
         "breedingBase": 50,
@@ -45746,8 +45784,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "欧洲",
-      "displayName": "飞雪仙踪",
-      "pinyin": "fxxz",
+      "displayName": "Snow Fairy",
+      "pinyin": "snow fairy",
       "romanizedName": "Snow Fairy",
       "game": {
         "breedingBase": 50,
@@ -45813,7 +45851,7 @@
       "core": true,
       "region": "欧洲",
       "displayName": "Forest Storm",
-      "pinyin": "foreststorm",
+      "pinyin": "forest storm",
       "romanizedName": "Forest Storm",
       "game": {
         "breedingBase": 50,
@@ -45910,7 +45948,7 @@
       "core": true,
       "region": "欧洲",
       "displayName": "Immortal Verse",
-      "pinyin": "immortalverse",
+      "pinyin": "immortal verse",
       "romanizedName": "Immortal Verse",
       "game": {
         "breedingBase": 50,
@@ -46041,7 +46079,7 @@
       "core": true,
       "region": "欧洲",
       "displayName": "Dark Angel",
-      "pinyin": "darkangel",
+      "pinyin": "dark angel",
       "romanizedName": "Dark Angel",
       "game": {
         "breedingBase": 65,
@@ -46074,7 +46112,7 @@
       "core": true,
       "region": "美国",
       "displayName": "Diva Delite",
-      "pinyin": "divadelite",
+      "pinyin": "diva delite",
       "romanizedName": "Diva Delite",
       "game": {
         "breedingBase": 50,
@@ -46139,7 +46177,7 @@
       "core": true,
       "region": "美国",
       "displayName": "Marion Ravenwood",
-      "pinyin": "marionravenwood",
+      "pinyin": "marion ravenwood",
       "romanizedName": "Marion Ravenwood",
       "game": {
         "breedingBase": 50,
@@ -46310,7 +46348,7 @@
       "core": true,
       "region": "美国",
       "displayName": "Expo Gold",
-      "pinyin": "expogold",
+      "pinyin": "expo gold",
       "romanizedName": "Expo Gold",
       "game": {
         "breedingBase": 50,
@@ -46343,8 +46381,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "美国",
-      "displayName": "皇家三角洲",
-      "pinyin": "hjsjz",
+      "displayName": "Royal Delta",
+      "pinyin": "royal delta",
       "romanizedName": "Royal Delta",
       "game": {
         "breedingBase": 50,
@@ -46377,8 +46415,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "欧洲",
-      "displayName": "范高尔",
-      "pinyin": "fge",
+      "displayName": "Frankel",
+      "pinyin": "frankel",
       "romanizedName": "Frankel",
       "game": {
         "breedingBase": 90,
@@ -46443,7 +46481,7 @@
       "core": true,
       "region": "美国",
       "displayName": "Uncle Mo",
-      "pinyin": "unclemo",
+      "pinyin": "uncle mo",
       "romanizedName": "Uncle Mo",
       "game": {
         "breedingBase": 65,
@@ -46476,7 +46514,7 @@
       "core": true,
       "region": "美国",
       "displayName": "Quiet Giant",
-      "pinyin": "quietgiant",
+      "pinyin": "quiet giant",
       "romanizedName": "Quiet Giant",
       "game": {
         "breedingBase": 65,
@@ -46509,8 +46547,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "欧洲",
-      "displayName": "赋格",
-      "pinyin": "fg",
+      "displayName": "The Fugue",
+      "pinyin": "the fugue",
       "romanizedName": "The Fugue",
       "game": {
         "breedingBase": 50,
@@ -46543,7 +46581,7 @@
       "core": true,
       "region": "美国",
       "displayName": "Stage Magic",
-      "pinyin": "stagemagic",
+      "pinyin": "stage magic",
       "romanizedName": "Stage Magic",
       "game": {
         "breedingBase": 50,
@@ -46569,15 +46607,16 @@
       "aliases": [
         "ディアドラ",
         "Deirdre(JPN)",
-        "Deirdre"
+        "Deirdre",
+        "迪雅卓"
       ],
       "sourceUrl": "https://www.jbis.or.jp/horse/0001190503/",
       "verifiedAt": "2026-09-20",
       "verifiedParents": true,
       "core": true,
       "region": "日本",
-      "displayName": "Deirdre",
-      "pinyin": "deirdre",
+      "displayName": "迪雅卓",
+      "pinyin": "dyz",
       "romanizedName": "Deirdre",
       "game": {
         "breedingBase": 50,
@@ -46813,7 +46852,7 @@
       "core": true,
       "region": "欧洲",
       "displayName": "Fleche d'Or",
-      "pinyin": "flechedor",
+      "pinyin": "fleche d'or",
       "romanizedName": "Fleche d'Or",
       "game": {
         "breedingBase": 50,
@@ -46846,8 +46885,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "欧洲",
-      "displayName": "金号角",
-      "pinyin": "jhj",
+      "displayName": "Golden Horn",
+      "pinyin": "golden horn",
       "romanizedName": "Golden Horn",
       "game": {
         "breedingBase": 50,
@@ -46985,8 +47024,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "欧洲",
-      "displayName": "皇仆",
-      "pinyin": "hp",
+      "displayName": "Kingman",
+      "pinyin": "kingman",
       "romanizedName": "Kingman",
       "game": {
         "breedingBase": 80,
@@ -47051,8 +47090,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "欧洲",
-      "displayName": "塔格鲁达",
-      "pinyin": "tgld",
+      "displayName": "Taghrooda",
+      "pinyin": "taghrooda",
       "romanizedName": "Taghrooda",
       "game": {
         "breedingBase": 50,
@@ -47086,8 +47125,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "欧洲",
-      "displayName": "眷念",
-      "pinyin": "jn",
+      "displayName": "Minding",
+      "pinyin": "minding",
       "romanizedName": "Minding",
       "game": {
         "breedingBase": 50,
@@ -47323,8 +47362,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "美国",
-      "displayName": "美国法老",
-      "pinyin": "mgfl",
+      "displayName": "American Pharoah",
+      "pinyin": "american pharoah",
       "romanizedName": "American Pharoah",
       "game": {
         "breedingBase": 65,
@@ -47357,8 +47396,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "欧洲",
-      "displayName": "雷夜",
-      "pinyin": "ly",
+      "displayName": "Night of Thunder",
+      "pinyin": "night of thunder",
       "romanizedName": "Night of Thunder",
       "game": {
         "breedingBase": 80,
@@ -47393,7 +47432,7 @@
       "core": true,
       "region": "欧洲",
       "displayName": "Best In The World",
-      "pinyin": "bestintheworld",
+      "pinyin": "best in the world",
       "romanizedName": "Best In The World",
       "game": {
         "breedingBase": 50,
@@ -47558,8 +47597,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "欧洲",
-      "displayName": "成全宝",
-      "pinyin": "cqb",
+      "displayName": "Enable",
+      "pinyin": "enable",
       "romanizedName": "Enable",
       "game": {
         "breedingBase": 50,
@@ -47625,8 +47664,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "美国",
-      "displayName": "旁观者",
-      "pinyin": "pgz",
+      "displayName": "Beholder",
+      "pinyin": "beholder",
       "romanizedName": "Beholder",
       "game": {
         "breedingBase": 50,
@@ -47659,8 +47698,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "欧洲",
-      "displayName": "合体恒星",
-      "pinyin": "hthx",
+      "displayName": "Alpha Centauri",
+      "pinyin": "alpha centauri",
       "romanizedName": "Alpha Centauri",
       "game": {
         "breedingBase": 50,
@@ -47762,8 +47801,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "欧洲",
-      "displayName": "吹雪",
-      "pinyin": "cx",
+      "displayName": "Snowfall",
+      "pinyin": "snowfall",
       "romanizedName": "Snowfall",
       "game": {
         "breedingBase": 50,
@@ -47797,7 +47836,7 @@
       "core": true,
       "region": "美国",
       "displayName": "Seeking Gabrielle",
-      "pinyin": "seekinggabrielle",
+      "pinyin": "seeking gabrielle",
       "romanizedName": "Seeking Gabrielle",
       "game": {
         "breedingBase": 50,
@@ -47830,8 +47869,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "美国",
-      "displayName": "奈奎斯特",
-      "pinyin": "nkst",
+      "displayName": "Nyquist",
+      "pinyin": "nyquist",
       "romanizedName": "Nyquist",
       "game": {
         "breedingBase": 65,
@@ -47864,8 +47903,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "美国",
-      "displayName": "铤而走险",
-      "pinyin": "tezx",
+      "displayName": "Gun Runner",
+      "pinyin": "gun runner",
       "romanizedName": "Gun Runner",
       "game": {
         "breedingBase": 80,
@@ -47898,8 +47937,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "美国",
-      "displayName": "鸣禽",
-      "pinyin": "mq",
+      "displayName": "Songbird",
+      "pinyin": "songbird",
       "romanizedName": "Songbird",
       "game": {
         "breedingBase": 50,
@@ -47932,7 +47971,7 @@
       "core": true,
       "region": "美国",
       "displayName": "Not This Time",
-      "pinyin": "notthistime",
+      "pinyin": "not this time",
       "romanizedName": "Not This Time",
       "game": {
         "breedingBase": 65,
@@ -47965,8 +48004,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "欧洲",
-      "displayName": "丘吉尔",
-      "pinyin": "qje",
+      "displayName": "Churchill",
+      "pinyin": "churchill",
       "romanizedName": "Churchill",
       "game": {
         "breedingBase": 50,
@@ -48000,8 +48039,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "欧洲",
-      "displayName": "冬季",
-      "pinyin": "dj",
+      "displayName": "Winter",
+      "pinyin": "winter",
       "romanizedName": "Winter",
       "game": {
         "breedingBase": 50,
@@ -48066,8 +48105,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "欧洲",
-      "displayName": "卓芙",
-      "pinyin": "zf",
+      "displayName": "Treve",
+      "pinyin": "treve",
       "romanizedName": "Treve",
       "game": {
         "breedingBase": 50,
@@ -48168,8 +48207,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "美国",
-      "displayName": "正义",
-      "pinyin": "zy",
+      "displayName": "Justify",
+      "pinyin": "justify",
       "romanizedName": "Justify",
       "game": {
         "breedingBase": 65,
@@ -48202,8 +48241,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "欧洲",
-      "displayName": "热到爆",
-      "pinyin": "rdb",
+      "displayName": "Too Darn Hot",
+      "pinyin": "too darn hot",
       "romanizedName": "Too Darn Hot",
       "game": {
         "breedingBase": 65,
@@ -48271,8 +48310,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "欧洲",
-      "displayName": "登山英雌",
-      "pinyin": "dsyc",
+      "displayName": "Alpinista",
+      "pinyin": "alpinista",
       "romanizedName": "Alpinista",
       "game": {
         "breedingBase": 50,
@@ -48370,8 +48409,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "美国",
-      "displayName": "玛拉萨特",
-      "pinyin": "mlst",
+      "displayName": "Malathaat",
+      "pinyin": "malathaat",
       "romanizedName": "Malathaat",
       "game": {
         "breedingBase": 50,
@@ -48404,8 +48443,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "欧洲",
-      "displayName": "旋进轨迹",
-      "pinyin": "xjgj",
+      "displayName": "Inspiral",
+      "pinyin": "inspiral",
       "romanizedName": "Inspiral",
       "game": {
         "breedingBase": 50,
@@ -48438,8 +48477,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "美国",
-      "displayName": "莫诺莫伊女孩",
-      "pinyin": "mnmynh",
+      "displayName": "Monomoy Girl",
+      "pinyin": "monomoy girl",
       "romanizedName": "Monomoy Girl",
       "game": {
         "breedingBase": 50,
@@ -48473,8 +48512,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "美国",
-      "displayName": "瑞士跳伞者",
-      "pinyin": "rstsz",
+      "displayName": "Swiss Skydiver",
+      "pinyin": "swiss skydiver",
       "romanizedName": "Swiss Skydiver",
       "game": {
         "breedingBase": 50,
@@ -48507,8 +48546,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "美国",
-      "displayName": "巢穴",
-      "pinyin": "cx",
+      "displayName": "Nest",
+      "pinyin": "nest",
       "romanizedName": "Nest",
       "game": {
         "breedingBase": 50,
@@ -48541,7 +48580,7 @@
       "core": true,
       "region": "美国",
       "displayName": "Secret Oath",
-      "pinyin": "secretoath",
+      "pinyin": "secret oath",
       "romanizedName": "Secret Oath",
       "game": {
         "breedingBase": 50,
@@ -48574,7 +48613,7 @@
       "core": true,
       "region": "美国",
       "displayName": "Absinthe Minded",
-      "pinyin": "absintheminded",
+      "pinyin": "absinthe minded",
       "romanizedName": "Absinthe Minded",
       "game": {
         "breedingBase": 50,
@@ -48607,7 +48646,7 @@
       "core": true,
       "region": "美国",
       "displayName": "Goodnight Olive",
-      "pinyin": "goodnightolive",
+      "pinyin": "goodnight olive",
       "romanizedName": "Goodnight Olive",
       "game": {
         "breedingBase": 50,
@@ -48641,8 +48680,8 @@
       "verifiedParents": true,
       "core": true,
       "region": "美国",
-      "displayName": "子夜爱意",
-      "pinyin": "zyay",
+      "displayName": "Midnight Bisou",
+      "pinyin": "midnight bisou",
       "romanizedName": "Midnight Bisou",
       "game": {
         "breedingBase": 50,

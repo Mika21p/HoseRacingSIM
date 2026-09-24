@@ -91,12 +91,17 @@ test("production build preserves historical-horse data and loads one bundle", as
   }
   assert.ok(fs.existsSync(path.join(result.outputRoot, "css", "home.css")));
   assert.ok(fs.existsSync(path.join(result.outputRoot, "track-aptitude-lab.html")));
+  assert.ok(fs.existsSync(path.join(result.outputRoot, "bloodline-lab.html")));
+  assert.ok(fs.existsSync(path.join(result.outputRoot, "js", "rules", "bloodline-system.js")));
+  assert.ok(fs.existsSync(path.join(result.outputRoot, "js", "data", "bloodline-pilot.js")));
+  assert.ok(fs.existsSync(path.join(result.outputRoot, "js", "data", "bloodline-catalog.js")));
+  assert.ok(fs.existsSync(path.join(result.outputRoot, "js", "data", "chairman-pedigrees.js")));
   assert.ok(fs.existsSync(path.join(result.outputRoot, "css", "track-aptitude-lab.css")));
   assert.ok(fs.existsSync(path.join(result.outputRoot, "js", "track-aptitude-lab.js")));
   assert.ok(fs.existsSync(path.join(result.outputRoot, "js", "data", "jra-course-catalogue.js")));
   assert.ok(fs.existsSync(path.join(result.outputRoot, "js", "data", "race-course-profiles.js")));
   assert.match(productionIndex, /js\/data\/jra-course-catalogue\.js\?v=20260922-phase2/);
-  assert.match(productionIndex, /js\/data\/race-course-profiles\.js\?v=20260922-venue-names/);
+  assert.match(productionIndex, /js\/data\/race-course-profiles\.js\?v=20260923-registration/);
   assert.match(
     productionIndex,
     new RegExp(`js/data/historical-horses/index\\.js\\?v=${result.hash}`)

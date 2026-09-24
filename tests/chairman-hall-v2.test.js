@@ -162,7 +162,7 @@ test('v8 export, transaction rollback, restore and reimport preserve frozen ball
     const out = vote(w); await assert.rejects(store.commitChanges(w, out, { failForTest: true }), /事务中断/);
     assert.equal((await store.load(w.id)).honors.hallRngState, undefined);
     await store.commitChanges(w, out, { checkpoint: 'turn' });
-    const save = await store.exportWorld(w.id); assert.equal(save.version, 9); store.validateSnapshot(save);
+    const save = await store.exportWorld(w.id); assert.equal(save.version, 10); store.validateSnapshot(save);
     const restored = await store.restore(out.world, `turn:${w.revision}`); assert.equal(restored.honors.hallRngState, undefined);
     assert.deepEqual(selections(vote(restored)), selections(out));
     const imported = await store.importWorld(save); assert.deepEqual(plain(imported.honors), plain(save.world.honors));
