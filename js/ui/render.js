@@ -1327,6 +1327,7 @@
               <div class="grade-list">${renderGradeList(h.trackAptitudes)}</div>
             </div>
           </div>
+          ${(career.gameMode || h.gameMode || 'normal') === 'normal' ? ns.CareerBloodlineUI?.retirementTable(h) || '' : ''}
         </div>
       `;
     }

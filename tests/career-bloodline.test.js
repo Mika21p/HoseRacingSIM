@@ -58,3 +58,14 @@ test('父母筛选、空结果、近亲禁配与随机配合',()=>{
   for(let i=0;i<25;i++){const ids=B.randomPair();assert.ok(B.pair(...ids).preview.legal);}
   dom.window.close();
 });
+
+test('退役简表保持六个祖先位置、出生快照和旧存档记录',()=>{
+ const {dom,n}=load(),panel=dom.window.document.querySelector('main');
+ const horse={sireName:'后续父名',damName:'后续母名',pedigree:{ancestors:[{path:'父',id:'same',name:'父马 <快照>',lineLabel:'北地舞人'},{path:'父父',id:'same',name:'重复祖先',lineLabel:'北地舞人'},{path:'母',name:'Long Thoroughbred Name Without Truncation',lineLabel:'未知'},{path:'母父',name:'母父快照',lineLabel:'架空家系'}]}};
+ const before=JSON.stringify(horse);n.Random.withSource(()=>{throw Error('简表不得抽取随机数');},()=>{panel.innerHTML=n.CareerBloodlineUI.retirementTable(horse);});
+ assert.equal(panel.querySelectorAll('td').length,6);assert.equal(panel.querySelectorAll('tr').length,4);assert.equal(panel.querySelector('[data-path="父"]').rowSpan,2);assert.equal(panel.querySelector('[data-path="母"]').rowSpan,2);
+ assert.equal(panel.querySelectorAll('.retirement-pedigree-male').length,3);assert.equal(panel.querySelectorAll('.retirement-pedigree-female').length,3);
+ assert.match(panel.querySelector('[data-path="父"]').textContent,/父马 <快照>/);assert.equal(panel.querySelector('[data-path="父母"] strong').textContent,'未知');assert.equal(panel.querySelector('[data-path="母"] span').textContent,'血系未知');assert.equal(panel.querySelector('[data-path="母父"] span').textContent,'架空家系');
+ const html=panel.innerHTML;panel.innerHTML=n.CareerBloodlineUI.retirementTable(JSON.parse(before));assert.equal(panel.innerHTML,html);assert.equal(JSON.stringify(horse),before);assert.equal(panel.querySelectorAll('button,a').length,0);
+ panel.innerHTML=n.CareerBloodlineUI.retirementTable({sireName:'旧父系',damName:'旧母系'});assert.match(panel.textContent,/旧父系/);assert.match(panel.textContent,/旧母系/);assert.match(panel.textContent,/旧版血系记录，暂无完整祖先资料/);assert.equal(panel.querySelectorAll('td strong').length,6);dom.window.close();
+});

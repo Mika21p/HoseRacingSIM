@@ -78,5 +78,18 @@
       ns.PedigreeTree.render({key:'career:'+h.id, root:{id:h.id,name:h.name}, ancestors:p.ancestors, depth});
     panel.querySelectorAll('[data-tree-depth]').forEach(button=>button.addEventListener('click',()=>{panel.dataset.treeDepth=button.dataset.treeDepth;render(panel,career);}));
   }
-  ns.CareerBloodlineUI = { setupHtml, bindSetup, render, brief };
+  function retirementTable(horse) {
+    const ancestors = horse?.pedigree?.ancestors;
+    const legacy = !Array.isArray(ancestors);
+    const byPath = new Map((ancestors || []).map(a => [a.path, a]));
+    function cell(path, label, rows = 1) {
+      const a = byPath.get(path);
+      const name = a?.name || (legacy ? ({父: horse.sireName, 母: horse.damName})[path] : '') || '未知';
+      const line = a?.lineLabel;
+      const lineText = !line || line === '未知' ? '血系未知' : /血系$|家系$/.test(line) ? line : line + '血系';
+      return `<td rowspan="${rows}" class="retirement-pedigree-${path.endsWith('父') ? 'male' : 'female'}" data-path="${path}"><small>${label}</small><strong>${e(name)}</strong><span>${e(lineText)}</span></td>`;
+    }
+    return `<section class="retirement-pedigree"><table aria-label="两代血统表"><caption>血统</caption><tbody><tr>${cell('父', '父马', 2)}${cell('父父', '父父')}</tr><tr>${cell('父母', '父母')}</tr><tr>${cell('母', '母马', 2)}${cell('母父', '母父')}</tr><tr>${cell('母母', '母母')}</tr></tbody></table>${legacy ? '<p class="muted">旧版血系记录，暂无完整祖先资料。</p>' : ''}</section>`;
+  }
+  ns.CareerBloodlineUI = { setupHtml, bindSetup, render, brief, retirementTable };
 })();

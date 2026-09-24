@@ -15,3 +15,14 @@
 @media(max-width:700px){.bloodline-parents,.bloodline-identity{grid-template-columns:1fr}.bloodline-nodes{grid-template-columns:repeat(2,minmax(0,1fr))}.bloodline-picker{padding:12px}.bloodline-picker .section-title-row{flex-wrap:wrap}}
 
 @media(max-width:700px){.workspace-shell:not(.is-rogue-career) .workspace-nav{grid-template-columns:repeat(6,minmax(0,1fr))}}
+
+.retirement-pedigree{width:100%;max-width:560px;min-width:0;margin-top:20px}
+.retirement-pedigree table{width:100%;min-width:0;table-layout:fixed;border-collapse:collapse;border:1px solid #667b83}
+.retirement-pedigree caption{text-align:left;font-size:1rem;font-weight:700;margin-bottom:10px}
+.retirement-pedigree td{width:50%;padding:10px 12px;border:1px solid #667b83;vertical-align:middle;background:transparent;color:var(--dusk-text,#e8edf5);white-space:normal;overflow-wrap:anywhere}
+.retirement-pedigree td small,.retirement-pedigree td strong,.retirement-pedigree td span{display:block;color:inherit}
+.retirement-pedigree td small{font-size:11px;margin-bottom:5px;color:var(--dusk-muted,#b0c4bc)}
+.retirement-pedigree td strong{font-size:20px;line-height:1.4;font-weight:700}
+.retirement-pedigree td span{font-size:11px;line-height:1.4;margin-top:5px;color:var(--dusk-muted,#b0c4bc)}
+.retirement-pedigree>p{font-size:12px;line-height:1.6}
+@media(max-width:480px){.retirement-pedigree td{padding:8px}.retirement-pedigree td strong{font-size:18px}}
