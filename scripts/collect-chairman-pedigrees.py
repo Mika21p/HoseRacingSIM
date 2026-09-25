@@ -105,6 +105,10 @@ MARES = {
 '欧洲': "Enable:2014|Found:2012|Minding:2013|Winter:2014|Love:2017|Snowfall:2018|Alpinista:2017|Inspiral:2019|Alpha Centauri:2015|Magical:2015|Treve:2010|Zarkava:2005|Goldikova:2005|Ouija Board:2001|Midday:2006|The Fugue:2009|Snow Fairy:2007|Dar Re Mi:2005|Lillie Langtry:2007|Immortal Verse:2008|Taghrooda:2011|Urban Sea:1989|Hasili:1991|Kind:2001|Zomaradah:1995|Rafha:1987|Miesque:1984|Dahlia:1970|Allez France:1970|Pawneese:1973|Salsabil:1987|Pebbles:1981|User Friendly:1989|All Along:1979|Detroit:1977|Dunfermline:1974",
 '美国': "Rachel Alexandra:2006|Zenyatta:2004|Beholder:2010|Songbird:2013|Monomoy Girl:2015|Midnight Bisou:2015|Swiss Skydiver:2017|Malathaat:2018|Nest:2019|Secret Oath:2019|Goodnight Olive:2018|Untapable:2011|Royal Delta:2008|Rags to Riches:2004|Serena's Song:1992|Silverbulletday:1996|Azeri:1998|Personal Ensign:1984|Winning Colors:1985|Lady's Secret:1982|Genuine Risk:1977|Ruffian:1972|Chris Evert:1971|Shuvee:1966|Ta Wee:1966|Affectionately:1960|Gamely:1964|Gold Beauty:1979|Weekend Surprise:1980|Terlingua:1976|La Troienne:1926|Somethingroyal:1952|Fall Aspen:1976|Toussaud:1989|Leslie's Lady:1996|Quiet Giant:2007"}
 
+# Subsequent Japanese-focused additions; Vodka is already in the original seeds.
+SIRES['日本'] += '|Gold Ship:2009|Manhattan Cafe:1998|T.M. Opera O:1996'
+MARES['日本'] += '|Wind in Her Hair:1991|Mejiro Dober:1994|Curren Chan:2007|Daiichi Ruby:1987'
+
 def main():
     cached_relationships()
     nodes={}; errors=[]; regions={r:set() for r in SIRES}
@@ -140,7 +144,8 @@ def main():
             targets=[10,16,14,10]
             def era(p): return 0 if p['birthYear']<1980 else 1 if p['birthYear']<2000 else 2 if p['birthYear']<2010 else 3
             core=[p for p in nodes.values() if p['core'] and p.get('region')==region and p['gender']=='牝马']
-            while len(core)<50 and candidates:
+            target_count = 54 if region == '日本' else 50
+            while len(core)<target_count and candidates:
                 counts=[sum(era(p)==i for p in core) for i in range(4)]
                 candidates.sort(key=lambda p:(-(targets[era(p)]-counts[era(p)]),-p['birthYear'],p['id']))
                 p=candidates.pop(0); p.update(core=True,region=region); used.add(p['id']); core.append(p)

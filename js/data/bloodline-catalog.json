@@ -1,6 +1,6 @@
 {
   "version": "bloodline-catalog-game-v1",
-  "note": "240匹核心马的粗分类游戏赋值；身份与系谱沿用原库。地区、父系模板及稳定差异是设计选择，不是史实遗传结论；未知字段的模板默认均有标记。",
+  "note": "247匹核心马的粗分类游戏赋值；身份与系谱沿用原库。地区、父系模板及稳定差异是设计选择，不是史实遗传结论；未知字段的模板默认均有标记。",
   "roots": [
     "jbis-0000061253",
     "jbis-0000069360",
@@ -11,6 +11,7 @@
     "jbis-0000120589",
     "jbis-0000125485",
     "jbis-0000161740",
+    "jbis-0000196381",
     "jbis-0000203356",
     "jbis-0000207623",
     "jbis-0000213918",
@@ -22,13 +23,16 @@
     "jbis-0000262443",
     "jbis-0000274849",
     "jbis-0000275176",
+    "jbis-0000286632",
     "jbis-0000286968",
     "jbis-0000287403",
     "jbis-0000293624",
     "jbis-0000294840",
     "jbis-0000295505",
+    "jbis-0000302080",
     "jbis-0000309174",
     "jbis-0000316406",
+    "jbis-0000324971",
     "jbis-0000325260",
     "jbis-0000333190",
     "jbis-0000333257",
@@ -105,6 +109,7 @@
     "jbis-0000418499",
     "jbis-0000418731",
     "jbis-0000418859",
+    "jbis-0000430846",
     "jbis-0000431952",
     "jbis-0000444921",
     "jbis-0000444950",
@@ -153,6 +158,7 @@
     "jbis-0001031979",
     "jbis-0001037012",
     "jbis-0001042049",
+    "jbis-0001044299",
     "jbis-0001049318",
     "jbis-0001051353",
     "jbis-0001063848",
@@ -162,6 +168,7 @@
     "jbis-0001089850",
     "jbis-0001090360",
     "jbis-0001096817",
+    "jbis-0001104811",
     "jbis-0001110862",
     "jbis-0001111493",
     "jbis-0001112380",
@@ -547,8 +554,11 @@
     "jbis-0000010412": null,
     "jbis-0000012320": "hindostan",
     "jbis-0000012444": "hindostan",
+    "jbis-0000014242": null,
     "jbis-0000015913": null,
     "jbis-0000017015": "partholon",
+    "jbis-0000042323": null,
+    "jbis-0000044755": null,
     "jbis-0000050973": null,
     "jbis-0000051221": null,
     "jbis-0000061253": "tescoboy",
@@ -557,6 +567,9 @@
     "jbis-0000069360": "nijinsky",
     "jbis-0000091738": null,
     "jbis-0000095371": "princelygift",
+    "jbis-0000097964": null,
+    "jbis-0000098122": "northerntaste",
+    "jbis-0000098280": "finetop",
     "jbis-0000100258": null,
     "jbis-0000104968": "hyperion",
     "jbis-0000105286": null,
@@ -570,14 +583,19 @@
     "jbis-0000130578": "millreef",
     "jbis-0000140567": "partholon",
     "jbis-0000145106": "tescoboy",
+    "jbis-0000146003": "partholon",
     "jbis-0000146600": "northerndancer",
     "jbis-0000161740": "tonybin",
+    "jbis-0000166449": null,
     "jbis-0000169374": "northerntaste",
     "jbis-0000176310": "tescoboy",
     "jbis-0000190821": "northerntaste",
+    "jbis-0000196381": "tescoboy",
     "jbis-0000197616": "nijinsky",
     "jbis-0000199926": null,
     "jbis-0000200658": "neverbend",
+    "jbis-0000201489": "northerntaste",
+    "jbis-0000202389": null,
     "jbis-0000202788": "tescoboy",
     "jbis-0000203356": "partholon",
     "jbis-0000207623": "partholon",
@@ -599,21 +617,25 @@
     "jbis-0000269880": "neverbend",
     "jbis-0000274849": "tonybin",
     "jbis-0000275176": "nijinsky",
+    "jbis-0000286632": "northerntaste",
     "jbis-0000286968": "sunday",
     "jbis-0000287403": "lyphard",
     "jbis-0000293624": "sunday",
     "jbis-0000294840": "lyphard",
     "jbis-0000295505": "roberto",
     "jbis-0000298392": "northerntaste",
+    "jbis-0000302080": "sadlers",
     "jbis-0000308961": "stormcat",
     "jbis-0000309095": "sunday",
     "jbis-0000309174": "sunday",
     "jbis-0000310350": "seattleslew",
+    "jbis-0000316290": "tonybin",
     "jbis-0000316406": "partholon",
     "jbis-0000316591": "sunday",
     "jbis-0000324933": "sunday",
     "jbis-0000324971": "sunday",
     "jbis-0000325260": "tonybin",
+    "jbis-0000329411": "partholon",
     "jbis-0000333190": "hindostan",
     "jbis-0000333232": null,
     "jbis-0000333243": null,
@@ -626,6 +648,7 @@
     "jbis-0000333343": null,
     "jbis-0000333346": "greysovereign",
     "jbis-0000333354": null,
+    "jbis-0000333359": null,
     "jbis-0000333363": null,
     "jbis-0000333365": "hyperion",
     "jbis-0000333371": "hyperion",
@@ -634,6 +657,7 @@
     "jbis-0000333400": "hyperion",
     "jbis-0000333404": null,
     "jbis-0000333456": null,
+    "jbis-0000333480": "finetop",
     "jbis-0000333544": "northerntaste",
     "jbis-0000333545": null,
     "jbis-0000333603": "northerndancer",
@@ -972,6 +996,7 @@
     "jbis-0000339082": null,
     "jbis-0000339120": null,
     "jbis-0000339289": "teddy",
+    "jbis-0000339572": "sadlers",
     "jbis-0000339602": null,
     "jbis-0000339653": "apindy",
     "jbis-0000339659": "lyphard",
@@ -1060,11 +1085,13 @@
     "jbis-0000379868": null,
     "jbis-0000380345": null,
     "jbis-0000380687": "princelygift",
+    "jbis-0000380822": null,
     "jbis-0000381167": null,
     "jbis-0000381349": "tomfool",
     "jbis-0000381553": null,
     "jbis-0000381880": null,
     "jbis-0000382617": null,
+    "jbis-0000382776": "nasrullah",
     "jbis-0000382926": "lyphard",
     "jbis-0000382927": null,
     "jbis-0000383031": "northerndancer",
@@ -1262,6 +1289,7 @@
     "jbis-0000389082": null,
     "jbis-0000389103": "blandford",
     "jbis-0000389106": "hyperion",
+    "jbis-0000389121": null,
     "jbis-0000389141": "hyperion",
     "jbis-0000389152": null,
     "jbis-0000389157": null,
@@ -1342,6 +1370,7 @@
     "jbis-0000391025": null,
     "jbis-0000391026": null,
     "jbis-0000391040": null,
+    "jbis-0000391074": null,
     "jbis-0000391087": null,
     "jbis-0000391088": null,
     "jbis-0000391141": null,
@@ -1500,6 +1529,7 @@
     "jbis-0000404601": null,
     "jbis-0000404603": null,
     "jbis-0000404664": "millreef",
+    "jbis-0000404690": null,
     "jbis-0000404708": null,
     "jbis-0000404720": null,
     "jbis-0000404841": "tomfool",
@@ -1846,6 +1876,7 @@
     "jbis-0001037012": "streetcry",
     "jbis-0001037147": "sadlers",
     "jbis-0001042049": "kingmambo",
+    "jbis-0001044299": "deputyminister",
     "jbis-0001048481": "sunday",
     "jbis-0001049318": "kingmambo",
     "jbis-0001051353": "mrprospector",
@@ -1861,6 +1892,7 @@
     "jbis-0001098482": "roberto",
     "jbis-0001099390": "bering",
     "jbis-0001100810": null,
+    "jbis-0001104811": "sunday",
     "jbis-0001110862": "sunday",
     "jbis-0001111289": null,
     "jbis-0001111367": null,
@@ -1983,7 +2015,7 @@
       "primary": "burst",
       "template": "◎△△",
       "surface": "grass",
-      "usage": 2,
+      "usage": 3,
       "method": "个体游戏定位＋模板",
       "distanceSource": "沿用旧游戏距离并取整",
       "surfaceSource": "沿用旧游戏场地",
@@ -2203,6 +2235,44 @@
       "sourceUrl": "https://www.jbis.or.jp/horse/0000108334/"
     },
     {
+      "id": "jbis-0000110447",
+      "name": "Mejiro Titan",
+      "english": "Mejiro Titan",
+      "role": "关键祖先",
+      "region": "祖先",
+      "usage": 4,
+      "method": "重复出现祖先按已知父系模板赋因子；非现实遗传结论",
+      "genetics": {
+        "lineId": "partholon",
+        "factors": [
+          {
+            "trait": "sustained",
+            "power": 1
+          }
+        ]
+      },
+      "sourceUrl": "https://www.jbis.or.jp/horse/0000110447/"
+    },
+    {
+      "id": "jbis-0000110449",
+      "name": "Mejiro Aurola",
+      "english": "Mejiro Aurola",
+      "role": "关键祖先",
+      "region": "祖先",
+      "usage": 4,
+      "method": "重复出现祖先按已知父系模板赋因子；非现实遗传结论",
+      "genetics": {
+        "lineId": null,
+        "factors": [
+          {
+            "trait": "attrition",
+            "power": 1
+          }
+        ]
+      },
+      "sourceUrl": "https://www.jbis.or.jp/horse/0000110449/"
+    },
+    {
       "id": "jbis-0000115357",
       "name": "戴拿缎带",
       "english": "Dyna Sash",
@@ -2213,7 +2283,7 @@
       "primary": "burst",
       "template": "◎○△",
       "surface": "grass",
-      "usage": 2,
+      "usage": 3,
       "method": "地区／父系游戏模板",
       "distanceSource": "模板默认距离",
       "surfaceSource": "地区模板默认",
@@ -2351,7 +2421,7 @@
       "primary": "sustained",
       "template": "○○△",
       "surface": "grass",
-      "usage": 9,
+      "usage": 10,
       "method": "个体游戏定位＋模板",
       "distanceSource": "模板默认距离",
       "surfaceSource": "地区模板默认",
@@ -2391,6 +2461,52 @@
       "sourceUrl": "https://www.jbis.or.jp/horse/0000161740/"
     },
     {
+      "id": "jbis-0000196381",
+      "name": "第一红宝石",
+      "english": "Daiichi Ruby",
+      "role": "核心繁殖马",
+      "region": "日本",
+      "gender": "牝马",
+      "classification": "瞬发",
+      "primary": "burst",
+      "template": "◎△△",
+      "surface": "grass",
+      "usage": 0,
+      "method": "个体游戏定位＋模板",
+      "distanceSource": "新增批次游戏定位",
+      "surfaceSource": "沿用旧游戏场地",
+      "genetics": {
+        "lineId": "tescoboy",
+        "familyId": "known-maternal-jbis-0000014242",
+        "quality": 75,
+        "stability": 60,
+        "trackAptitudes": {
+          "burst": "◎",
+          "sustained": "△",
+          "attrition": "△"
+        },
+        "surfaceGrades": {
+          "grass": "A",
+          "dirt": "C"
+        },
+        "distance": {
+          "min": 1000,
+          "core": 1400,
+          "max": 1800
+        },
+        "growthType": "普早",
+        "temperamentLabel": "普通",
+        "heavyType": "普通",
+        "factors": [
+          {
+            "trait": "burst",
+            "power": 1
+          }
+        ]
+      },
+      "sourceUrl": "https://www.jbis.or.jp/horse/0000196381/"
+    },
+    {
       "id": "jbis-0000197616",
       "name": "Campaign Girl",
       "english": "Campaign Girl",
@@ -2420,7 +2536,7 @@
       "primary": "sustained",
       "template": "◎△△",
       "surface": "grass",
-      "usage": 3,
+      "usage": 4,
       "method": "个体游戏定位＋模板",
       "distanceSource": "沿用旧游戏距离并取整",
       "surfaceSource": "沿用旧游戏场地",
@@ -2546,6 +2662,25 @@
         ]
       },
       "sourceUrl": "https://www.jbis.or.jp/horse/0000213918/"
+    },
+    {
+      "id": "jbis-0000213942",
+      "name": "Golden Sash",
+      "english": "Golden Sash",
+      "role": "关键祖先",
+      "region": "祖先",
+      "usage": 4,
+      "method": "重复出现祖先按已知父系模板赋因子；非现实遗传结论",
+      "genetics": {
+        "lineId": "finetop",
+        "factors": [
+          {
+            "trait": "sustained",
+            "power": 1
+          }
+        ]
+      },
+      "sourceUrl": "https://www.jbis.or.jp/horse/0000213942/"
     },
     {
       "id": "jbis-0000225908",
@@ -2920,6 +3055,52 @@
       "sourceUrl": "https://www.jbis.or.jp/horse/0000275176/"
     },
     {
+      "id": "jbis-0000286632",
+      "name": "目白多伯",
+      "english": "Mejiro Dober",
+      "role": "核心繁殖马",
+      "region": "日本",
+      "gender": "牝马",
+      "classification": "瞬发",
+      "primary": "burst",
+      "template": "◎○△",
+      "surface": "grass",
+      "usage": 0,
+      "method": "个体游戏定位＋模板",
+      "distanceSource": "新增批次游戏定位",
+      "surfaceSource": "沿用旧游戏场地",
+      "genetics": {
+        "lineId": "northerntaste",
+        "familyId": "known-maternal-jbis-0000042323",
+        "quality": 75,
+        "stability": 80,
+        "trackAptitudes": {
+          "burst": "◎",
+          "sustained": "△",
+          "attrition": "○"
+        },
+        "surfaceGrades": {
+          "grass": "A",
+          "dirt": "C"
+        },
+        "distance": {
+          "min": 1800,
+          "core": 2200,
+          "max": 2600
+        },
+        "growthType": "普早",
+        "temperamentLabel": "普通",
+        "heavyType": "普通",
+        "factors": [
+          {
+            "trait": "burst",
+            "power": 1
+          }
+        ]
+      },
+      "sourceUrl": "https://www.jbis.or.jp/horse/0000286632/"
+    },
+    {
       "id": "jbis-0000286968",
       "name": "黄金旅程",
       "english": "Stay Gold",
@@ -2930,7 +3111,7 @@
       "primary": "sustained",
       "template": "◎△△",
       "surface": "grass",
-      "usage": 2,
+      "usage": 3,
       "method": "个体游戏定位＋模板",
       "distanceSource": "沿用旧游戏距离并取整",
       "surfaceSource": "沿用旧游戏场地",
@@ -3150,6 +3331,52 @@
       "sourceUrl": "https://www.jbis.or.jp/horse/0000295505/"
     },
     {
+      "id": "jbis-0000302080",
+      "name": "好歌剧",
+      "english": "T.M. Opera O",
+      "role": "核心繁殖马",
+      "region": "日本",
+      "gender": "牡马",
+      "classification": "均衡",
+      "primary": "sustained",
+      "template": "○○△",
+      "surface": "grass",
+      "usage": 0,
+      "method": "个体游戏定位＋模板",
+      "distanceSource": "新增批次游戏定位",
+      "surfaceSource": "沿用旧游戏场地",
+      "genetics": {
+        "lineId": "sadlers",
+        "familyId": "known-maternal-jbis-0000391074",
+        "quality": 50,
+        "stability": 60,
+        "trackAptitudes": {
+          "burst": "○",
+          "sustained": "○",
+          "attrition": "△"
+        },
+        "surfaceGrades": {
+          "grass": "A",
+          "dirt": "C"
+        },
+        "distance": {
+          "min": 2200,
+          "core": 2600,
+          "max": 3000
+        },
+        "growthType": "普迟",
+        "temperamentLabel": "普通",
+        "heavyType": "普通",
+        "factors": [
+          {
+            "trait": "sustained",
+            "power": 1
+          }
+        ]
+      },
+      "sourceUrl": "https://www.jbis.or.jp/horse/0000302080/"
+    },
+    {
       "id": "jbis-0000309174",
       "name": "迈向胜利",
       "english": "To the Victory",
@@ -3240,6 +3467,52 @@
         ]
       },
       "sourceUrl": "https://www.jbis.or.jp/horse/0000316406/"
+    },
+    {
+      "id": "jbis-0000324971",
+      "name": "曼城茶座",
+      "english": "Manhattan Cafe",
+      "role": "核心繁殖马",
+      "region": "日本",
+      "gender": "牡马",
+      "classification": "持久",
+      "primary": "sustained",
+      "template": "◎○△",
+      "surface": "grass",
+      "usage": 1,
+      "method": "个体游戏定位＋模板",
+      "distanceSource": "新增批次游戏定位",
+      "surfaceSource": "沿用旧游戏场地",
+      "genetics": {
+        "lineId": "sunday",
+        "familyId": "known-maternal-jbis-0000390218",
+        "quality": 85,
+        "stability": 35,
+        "trackAptitudes": {
+          "burst": "○",
+          "sustained": "◎",
+          "attrition": "△"
+        },
+        "surfaceGrades": {
+          "grass": "A",
+          "dirt": "C"
+        },
+        "distance": {
+          "min": 2400,
+          "core": 2800,
+          "max": 3200
+        },
+        "growthType": "普迟",
+        "temperamentLabel": "普通",
+        "heavyType": "普通",
+        "factors": [
+          {
+            "trait": "sustained",
+            "power": 1
+          }
+        ]
+      },
+      "sourceUrl": "https://www.jbis.or.jp/horse/0000324971/"
     },
     {
       "id": "jbis-0000325260",
@@ -3348,7 +3621,7 @@
       "primary": "burst",
       "template": "◎○△",
       "surface": "grass",
-      "usage": 2,
+      "usage": 3,
       "method": "地区／父系游戏模板",
       "distanceSource": "模板默认距离",
       "surfaceSource": "地区模板默认",
@@ -3398,7 +3671,7 @@
       "primary": "burst",
       "template": "◎○△",
       "surface": "grass",
-      "usage": 1,
+      "usage": 2,
       "method": "地区／父系游戏模板",
       "distanceSource": "模板默认距离",
       "surfaceSource": "地区模板默认",
@@ -3448,7 +3721,7 @@
       "primary": "burst",
       "template": "◎△△",
       "surface": "grass",
-      "usage": 11,
+      "usage": 12,
       "method": "地区／父系游戏模板",
       "distanceSource": "模板默认距离",
       "surfaceSource": "地区模板默认",
@@ -3590,7 +3863,7 @@
       "primary": "burst",
       "template": "◎○△",
       "surface": "dual",
-      "usage": 35,
+      "usage": 37,
       "method": "个体游戏定位＋模板",
       "distanceSource": "沿用旧游戏距离并取整",
       "surfaceSource": "游戏兼用／草地定位",
@@ -3673,7 +3946,7 @@
       "english": "Sir Ivor",
       "role": "关键祖先",
       "region": "祖先",
-      "usage": 9,
+      "usage": 10,
       "method": "重复出现祖先按已知父系模板赋因子；非现实遗传结论",
       "genetics": {
         "lineId": null,
@@ -3781,7 +4054,7 @@
       "primary": "sustained",
       "template": "○○○",
       "surface": "dirt",
-      "usage": 65,
+      "usage": 67,
       "method": "地区／父系游戏模板",
       "distanceSource": "沿用旧游戏距离并取整",
       "surfaceSource": "沿用旧游戏场地",
@@ -3933,7 +4206,7 @@
       "english": "Red God",
       "role": "关键祖先",
       "region": "祖先",
-      "usage": 6,
+      "usage": 7,
       "method": "重复出现祖先按已知父系模板赋因子；非现实遗传结论",
       "genetics": {
         "lineId": "nasrullah",
@@ -4040,7 +4313,7 @@
       "english": "Hail to Reason",
       "role": "关键祖先",
       "region": "祖先",
-      "usage": 25,
+      "usage": 26,
       "method": "重复出现祖先按已知父系模板赋因子；非现实遗传结论",
       "genetics": {
         "lineId": "hailreason",
@@ -4247,7 +4520,7 @@
       "english": "Princely Gift",
       "role": "关键祖先",
       "region": "祖先",
-      "usage": 3,
+      "usage": 4,
       "method": "重复出现祖先按已知父系模板赋因子；非现实遗传结论",
       "genetics": {
         "lineId": "princelygift",
@@ -4309,6 +4582,25 @@
         ]
       },
       "sourceUrl": "https://www.jbis.or.jp/horse/0000334457/"
+    },
+    {
+      "id": "jbis-0000334478",
+      "name": "Sanctus",
+      "english": "Sanctus",
+      "role": "关键祖先",
+      "region": "祖先",
+      "usage": 4,
+      "method": "重复出现祖先按已知父系模板赋因子；非现实遗传结论",
+      "genetics": {
+        "lineId": "finetop",
+        "factors": [
+          {
+            "trait": "sustained",
+            "power": 1
+          }
+        ]
+      },
+      "sourceUrl": "https://www.jbis.or.jp/horse/0000334478/"
     },
     {
       "id": "jbis-0000334545",
@@ -4506,7 +4798,7 @@
       "english": "Lyphard",
       "role": "关键祖先",
       "region": "祖先",
-      "usage": 12,
+      "usage": 13,
       "method": "重复出现祖先按已知父系模板赋因子；非现实遗传结论",
       "genetics": {
         "lineId": "lyphard",
@@ -4544,7 +4836,7 @@
       "english": "Halo",
       "role": "关键祖先",
       "region": "祖先",
-      "usage": 34,
+      "usage": 36,
       "method": "重复出现祖先按已知父系模板赋因子；非现实遗传结论",
       "genetics": {
         "lineId": "halo",
@@ -4587,7 +4879,7 @@
       "primary": "sustained",
       "template": "◎△△",
       "surface": "grass",
-      "usage": 12,
+      "usage": 13,
       "method": "地区／父系游戏模板",
       "distanceSource": "模板默认距离",
       "surfaceSource": "地区模板默认",
@@ -5063,7 +5355,7 @@
       "english": "Kampala",
       "role": "关键祖先",
       "region": "祖先",
-      "usage": 7,
+      "usage": 8,
       "method": "重复出现祖先按已知父系模板赋因子；非现实遗传结论",
       "genetics": {
         "lineId": "greysovereign",
@@ -5175,7 +5467,7 @@
       "primary": "sustained",
       "template": "◎△△",
       "surface": "grass",
-      "usage": 29,
+      "usage": 30,
       "method": "个体游戏定位＋模板",
       "distanceSource": "模板默认距离",
       "surfaceSource": "地区模板默认",
@@ -5258,7 +5550,7 @@
       "english": "Understanding",
       "role": "关键祖先",
       "region": "祖先",
-      "usage": 13,
+      "usage": 14,
       "method": "重复出现祖先按已知父系模板赋因子；非现实遗传结论",
       "genetics": {
         "lineId": null,
@@ -5607,7 +5899,7 @@
       "primary": "attrition",
       "template": "◎△△",
       "surface": "dirt",
-      "usage": 12,
+      "usage": 13,
       "method": "地区／父系游戏模板",
       "distanceSource": "模板默认距离",
       "surfaceSource": "地区模板默认",
@@ -5790,7 +6082,7 @@
       "english": "Alzao",
       "role": "关键祖先",
       "region": "祖先",
-      "usage": 11,
+      "usage": 12,
       "method": "重复出现祖先按已知父系模板赋因子；非现实遗传结论",
       "genetics": {
         "lineId": "lyphard",
@@ -5943,6 +6235,25 @@
         ]
       },
       "sourceUrl": "https://www.jbis.or.jp/horse/0000347989/"
+    },
+    {
+      "id": "jbis-0000352327",
+      "name": "Classic Go Go",
+      "english": "Classic Go Go",
+      "role": "关键祖先",
+      "region": "祖先",
+      "usage": 4,
+      "method": "重复出现祖先按已知父系模板赋因子；非现实遗传结论",
+      "genetics": {
+        "lineId": null,
+        "factors": [
+          {
+            "trait": "attrition",
+            "power": 1
+          }
+        ]
+      },
+      "sourceUrl": "https://www.jbis.or.jp/horse/0000352327/"
     },
     {
       "id": "jbis-0000362560",
@@ -6593,7 +6904,7 @@
       "english": "Cosmah",
       "role": "关键祖先",
       "region": "祖先",
-      "usage": 15,
+      "usage": 16,
       "method": "重复出现祖先按已知父系模板赋因子；非现实遗传结论",
       "genetics": {
         "lineId": null,
@@ -6833,7 +7144,7 @@
       "english": "Runaway Bride",
       "role": "关键祖先",
       "region": "祖先",
-      "usage": 6,
+      "usage": 7,
       "method": "重复出现祖先按已知父系模板赋因子；非现实遗传结论",
       "genetics": {
         "lineId": null,
@@ -6963,7 +7274,7 @@
       "english": "Goofed",
       "role": "关键祖先",
       "region": "祖先",
-      "usage": 4,
+      "usage": 5,
       "method": "重复出现祖先按已知父系模板赋因子；非现实遗传结论",
       "genetics": {
         "lineId": null,
@@ -7110,6 +7421,25 @@
       "sourceUrl": "https://www.jbis.or.jp/horse/0000390581/"
     },
     {
+      "id": "jbis-0000390957",
+      "name": "Santa Luciana",
+      "english": "Santa Luciana",
+      "role": "关键祖先",
+      "region": "祖先",
+      "usage": 4,
+      "method": "重复出现祖先按已知父系模板赋因子；非现实遗传结论",
+      "genetics": {
+        "lineId": null,
+        "factors": [
+          {
+            "trait": "attrition",
+            "power": 1
+          }
+        ]
+      },
+      "sourceUrl": "https://www.jbis.or.jp/horse/0000390957/"
+    },
+    {
       "id": "jbis-0000391026",
       "name": "Foreseer",
       "english": "Foreseer",
@@ -7218,7 +7548,7 @@
       "english": "Severn Bridge",
       "role": "关键祖先",
       "region": "祖先",
-      "usage": 7,
+      "usage": 8,
       "method": "重复出现祖先按已知父系模板赋因子；非现实遗传结论",
       "genetics": {
         "lineId": "hyperion",
@@ -7497,7 +7827,7 @@
       "english": "Fairy Bridge",
       "role": "关键祖先",
       "region": "祖先",
-      "usage": 20,
+      "usage": 21,
       "method": "重复出现祖先按已知父系模板赋因子；非现实遗传结论",
       "genetics": {
         "lineId": "hailreason",
@@ -7535,7 +7865,7 @@
       "english": "Mountain Flower",
       "role": "关键祖先",
       "region": "祖先",
-      "usage": 13,
+      "usage": 14,
       "method": "重复出现祖先按已知父系模板赋因子；非现实遗传结论",
       "genetics": {
         "lineId": null,
@@ -7554,7 +7884,7 @@
       "english": "Wishing Well",
       "role": "关键祖先",
       "region": "祖先",
-      "usage": 29,
+      "usage": 31,
       "method": "重复出现祖先按已知父系模板赋因子；非现实遗传结论",
       "genetics": {
         "lineId": null,
@@ -7749,7 +8079,7 @@
       "english": "Burghclere",
       "role": "关键祖先",
       "region": "祖先",
-      "usage": 9,
+      "usage": 10,
       "method": "重复出现祖先按已知父系模板赋因子；非现实遗传结论",
       "genetics": {
         "lineId": null,
@@ -9115,17 +9445,48 @@
     },
     {
       "id": "jbis-0000430846",
-      "name": "Wind in Her Hair",
+      "name": "风中秀发",
       "english": "Wind in Her Hair",
-      "role": "关键祖先",
-      "region": "祖先",
+      "role": "核心繁殖马",
+      "region": "日本",
+      "gender": "牝马",
+      "classification": "持久",
+      "primary": "sustained",
+      "template": "◎○△",
+      "surface": "grass",
       "usage": 10,
-      "method": "重复出现祖先按已知父系模板赋因子；非现实遗传结论",
+      "method": "个体游戏定位＋模板",
+      "distanceSource": "新增批次游戏定位",
+      "surfaceSource": "地区模板默认",
       "genetics": {
         "lineId": "lyphard",
+        "familyId": "known-maternal-jbis-0000390924",
+        "quality": 95,
+        "stability": 35,
+        "trackAptitudes": {
+          "burst": "△",
+          "sustained": "◎",
+          "attrition": "○"
+        },
+        "surfaceGrades": {
+          "grass": "A",
+          "dirt": "C"
+        },
+        "distance": {
+          "min": 2000,
+          "core": 2400,
+          "max": 2800
+        },
+        "growthType": "普迟",
+        "temperamentLabel": "普通",
+        "heavyType": "普通",
         "factors": [
           {
-            "trait": "burst",
+            "trait": "sustained",
+            "power": 1
+          },
+          {
+            "trait": "attrition",
             "power": 1
           }
         ]
@@ -11501,6 +11862,52 @@
       "sourceUrl": "https://www.jbis.or.jp/horse/0001042049/"
     },
     {
+      "id": "jbis-0001044299",
+      "name": "真机伶",
+      "english": "Curren Chan",
+      "role": "核心繁殖马",
+      "region": "日本",
+      "gender": "牝马",
+      "classification": "瞬发",
+      "primary": "burst",
+      "template": "◎○△",
+      "surface": "grass",
+      "usage": 0,
+      "method": "个体游戏定位＋模板",
+      "distanceSource": "新增批次游戏定位",
+      "surfaceSource": "沿用旧游戏场地",
+      "genetics": {
+        "lineId": "deputyminister",
+        "familyId": "known-maternal-jbis-0000166449",
+        "quality": 75,
+        "stability": 60,
+        "trackAptitudes": {
+          "burst": "◎",
+          "sustained": "△",
+          "attrition": "○"
+        },
+        "surfaceGrades": {
+          "grass": "A",
+          "dirt": "C"
+        },
+        "distance": {
+          "min": 1000,
+          "core": 1200,
+          "max": 1600
+        },
+        "growthType": "普迟",
+        "temperamentLabel": "普通",
+        "heavyType": "普通",
+        "factors": [
+          {
+            "trait": "burst",
+            "power": 1
+          }
+        ]
+      },
+      "sourceUrl": "https://www.jbis.or.jp/horse/0001044299/"
+    },
+    {
       "id": "jbis-0001049318",
       "name": "夏威夷鸟",
       "english": "Apapane",
@@ -11913,6 +12320,52 @@
         ]
       },
       "sourceUrl": "https://www.jbis.or.jp/horse/0001096817/"
+    },
+    {
+      "id": "jbis-0001104811",
+      "name": "黄金船",
+      "english": "Gold Ship",
+      "role": "核心繁殖马",
+      "region": "日本",
+      "gender": "牡马",
+      "classification": "持久",
+      "primary": "sustained",
+      "template": "◎○△",
+      "surface": "grass",
+      "usage": 0,
+      "method": "个体游戏定位＋模板",
+      "distanceSource": "新增批次游戏定位",
+      "surfaceSource": "沿用旧游戏场地",
+      "genetics": {
+        "lineId": "sunday",
+        "familyId": "known-maternal-jbis-0000202389",
+        "quality": 75,
+        "stability": 80,
+        "trackAptitudes": {
+          "burst": "○",
+          "sustained": "◎",
+          "attrition": "△"
+        },
+        "surfaceGrades": {
+          "grass": "A",
+          "dirt": "C"
+        },
+        "distance": {
+          "min": 2200,
+          "core": 2600,
+          "max": 3000
+        },
+        "growthType": "普迟",
+        "temperamentLabel": "普通",
+        "heavyType": "普通",
+        "factors": [
+          {
+            "trait": "sustained",
+            "power": 1
+          }
+        ]
+      },
+      "sourceUrl": "https://www.jbis.or.jp/horse/0001104811/"
     },
     {
       "id": "jbis-0001110862",

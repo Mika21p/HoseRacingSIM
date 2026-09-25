@@ -216,6 +216,7 @@
 
   function normalizeRun(run) {
     if (!run || typeof run !== "object") return run || null;
+    run.includeHall = !!run.includeHall;
     const services = run.services && typeof run.services === "object" ? run.services : {};
     const refreshHistory = normalizeServiceHistory(services.refresh);
     const reviewHistory = normalizeServiceHistory(services.review);
@@ -275,8 +276,8 @@
 
   function bloodlineWeight(item, trainerId, kind) {
     if (!item || item.id === "random") return 0;
-    const preferred = kind === "dam" ? PREFERRED_DAMS[trainerId] : PREFERRED_SIRES[trainerId];
-    return preferred && preferred.has(item.id) ? (kind === "dam" ? 115 : 135) : 100;
+    const region = { 'sato-yuta': '日本', obrien: '欧洲', pletcher: '美国' }[trainerId];
+    return item.region === region ? (kind === "dam" ? 115 : 135) : 100;
   }
 
   function pickBloodline(list, trainerId, kind) {
@@ -309,22 +310,32 @@
     }));
   }
 
-  function generateCandidate(trainerId, profileId) {
+  function generateCandidate(trainerId, profileId, includeHall = false) {
     const strengthProfile = profileId || "normal";
-    const sire = pickBloodline(ns.SireBloodlines, trainerId, "sire");
-    const dam = pickBloodline(ns.DamBloodlines, trainerId, "dam");
+    const libraryOptions = { includeHall: !!includeHall };
+    const library = ns.CareerBloodline.getLibrary(libraryOptions);
+    let sire, dam;
+    for (let attempt = 0; attempt < 1000; attempt += 1) {
+      sire = pickBloodline(ns.CareerBloodline.parents('牡马', libraryOptions), trainerId, 'sire');
+      dam = pickBloodline(ns.CareerBloodline.parents('牝马', libraryOptions), trainerId, 'dam');
+      if (ns.BloodlineSystem.checkPair(library, sire.id, dam.id).legal) break;
+      sire = dam = null;
+    }
+    if (!sire || !dam) throw new Error('暂未抽到合法父母，请重试。');
     const trainer = ns.CommentRules.getTrainer(trainerId);
     let horse = null;
     for (let attempt = 0; attempt < 200; attempt += 1) {
-      horse = ns.HorseRules.generateHorse({
+      horse = ns.CareerBloodline.generate({
         name: "未命名小马",
         sireId: sire.id,
         damId: dam.id,
         gameMode: "roguelike",
-        strengthProfile
+        strengthProfile,
+        includeHall: !!includeHall
       });
       if (hasReasonableRoute(horse)) break;
     }
+    if (!hasReasonableRoute(horse)) throw new Error('未能生成具有可参赛路线的候选，请重试。');
     const regionId = ns.RegionRules.regionIdForTrainer(trainer);
     horse.trainerId = trainer.id;
     horse.trainerName = trainer.name;
@@ -344,11 +355,13 @@
     };
   }
 
-  function createRun(profile) {
+  function createRun(profile, options = {}) {
+    const includeHall = !!options.includeHall;
     return {
+      includeHall,
       id: createId("rogue-run"),
       phase: "candidates",
-      candidates: trainerAllocation(profile).map((trainerId) => generateCandidate(trainerId, "normal")),
+      candidates: trainerAllocation(profile).map((trainerId) => generateCandidate(trainerId, "normal", includeHall)),
       selectedCandidate: null,
       services: { refresh: [], review: [], adaptation: null },
       consumablesUsed: createConsumableUsage(),
@@ -426,7 +439,9 @@
     if (!run || run.phase !== "candidates") return { ok: false, reason: "当前不能刷新候选。" };
     const target = candidateById(run, candidateId);
     if (!target) return { ok: false, reason: "候选不存在。" };
-    const replacement = generateCandidate(target.trainerId, serviceId === "reroll" ? "normal" : serviceId);
+    let replacement;
+    try { replacement = generateCandidate(target.trainerId, serviceId === "reroll" ? "normal" : serviceId, run.includeHall); }
+    catch (error) { return { ok: false, reason: error.message }; }
     const index = run.candidates.indexOf(target);
     run.candidates[index] = replacement;
     run.services.refresh = normalizeServiceHistory(run.services.refresh);
@@ -499,6 +514,7 @@
     const grades = { G: "C", C: "B", B: "A" };
     const before = horse.surfaceGrades[picked];
     horse.surfaceGrades[picked] = grades[before];
+    horse.bloodlineAdapted = true;
     run.services.adaptation = { direction, field: picked, before, after: grades[before], consumed: 1 };
     run.adaptationResolved = true;
     finishConsumableUse(save, run, "adaptation");

@@ -15,15 +15,16 @@
   <link rel="icon" href="assets/home/logo.svg" type="image/svg+xml">
   <link rel="preload" as="image" type="image/webp" media="(max-width: 639px)" href="assets/home/racing-hero-mobile.32ed156b66.webp" fetchpriority="high">
   <link rel="preload" as="image" type="image/webp" media="(min-width: 640px)" imagesrcset="assets/home/racing-hero-1280.1693b82dc7.webp 1280w, assets/home/racing-hero-1920.63f61e69c0.webp 1920w" imagesizes="(min-width: 1504px) 1440px, (max-width: 760px) calc(100vw - 32px), calc(100vw - 64px)" fetchpriority="high">
-  <link rel="stylesheet" href="css/career-bloodline.css?v=20260924-retirement-pedigree-type">
+  <link rel="stylesheet" href="css/career-bloodline.css?v=20260925-rogue-bloodline">
+  <link rel="stylesheet" href="css/hall-of-fame.css?v=20260925-hall-v1">
   <link rel="stylesheet" href="css/pedigree-tree.css?v=20260924-tree-compact">
 </head>
 <body>
   <div class="app-meta-widget">
     <!-- 版本号与更新时间由 js/app.js 的 renderAppMeta() 依据更新日志覆盖。 -->
-    <button class="app-meta-button" id="changelogToggleBtn" type="button" aria-expanded="false" aria-label="查看 v0.16a 更新日志">
-      <strong id="appVersion">v0.16a</strong>
-      <small id="appUpdatedAt">更新于 2026.09.24 15:52</small>
+    <button class="app-meta-button" id="changelogToggleBtn" type="button" aria-expanded="false" aria-label="查看 v0.16b 更新日志">
+      <strong id="appVersion">v0.16b</strong>
+      <small id="appUpdatedAt">更新于 2026.09.25 18:44</small>
     </button>
     <section class="changelog-panel" id="changelogPanel" hidden>
       <div class="changelog-header">
@@ -75,7 +76,7 @@
   <script src="js/data/race-course-profiles.js?v=20260923-registration"></script>
   <script src="js/data/race-names.js"></script>
   <script src="js/data/help.js?v=20260924-bloodline"></script>
-  <script src="js/data/changelog.js?v=20260924-bloodline"></script>
+  <script src="js/data/changelog.js?v=20260925-v16b"></script>
   <script src="js/data/home-modes.js?v=20260923-home-copy"></script>
   <script src="js/data/historical-horses/registry.js"></script>
   <script src="js/data/historical-horses/index.js"></script>
@@ -93,8 +94,8 @@
   <script src="js/rules/injury-rules.js"></script>
   <script src="js/rules/race-fatigue.js"></script>
   <script src="js/rules/track-aptitude.js?v=20260922-phase3"></script>
-  <script src="js/rules/horse-generator.js?v=20260922-surface-floor"></script>
-  <script src="js/rules/bloodline-system.js?v=20260924-genetics-v2-final"></script>
+  <script src="js/rules/horse-generator.js?v=20260925-rogue-bloodline"></script>
+  <script src="js/rules/bloodline-system.js?v=20260925-rogue-bloodline"></script>
   <script src="js/rules/historical-opponents.js"></script>
   <script src="js/rules/race-simulator.js?v=20260920-ratings"></script>
   <script src="js/rules/comments.js?v=20260922-trainer-prose"></script>
@@ -102,27 +103,29 @@
   <script src="js/rules/adaptation-hints.js?v=20260922-trainer-prose"></script>
   <script src="js/rules/career.js?v=20260719-era-stage1"></script>
   <script src="js/rules/achievements.js"></script>
-  <script src="js/rules/roguelike.js?v=20260718-rogue-item-price"></script>
+  <script src="js/rules/roguelike.js?v=20260925-hall-v1"></script>
   <script src="js/rules/era-narrative.js?v=20260720-era-v5"></script>
   <script src="js/rules/era.js?v=20260922-trainer-prose"></script>
   <script src="js/ui/race-selection.js?v=20260923-registration"></script>
-  <script src="js/ui/render.js?v=20260924-retirement-pedigree"></script>
+  <script src="js/ui/render.js?v=20260925-hall-v1"></script>
   <script src="js/ui/home-art.js?v=20260920-home-images"></script>
   <script src="js/ui/era-render.js?v=20260923-registration"></script>
-  <script src="js/data/chairman-pedigrees.js?v=20260924-region-names"></script>
-  <script src="js/data/bloodline-catalog.js?v=20260924-region-names"></script>
-  <script src="js/rules/career-bloodline.js?v=20260924"></script>
-  <script src="js/ui/career-bloodline.js?v=20260924-retirement-pedigree"></script>
+  <script src="js/data/chairman-pedigrees.js?v=20260925-japan-batch"></script>
+  <script src="js/data/bloodline-catalog.js?v=20260925-japan-batch"></script>
+  <script src="js/rules/career-bloodline.js?v=20260925-hall-v1"></script>
+  <script src="js/rules/hall-of-fame.js?v=20260925-hall-v1"></script>
+  <script src="js/ui/career-bloodline.js?v=20260925-rogue-bloodline"></script>
+  <script src="js/ui/hall-of-fame.js?v=20260925-hall-v1"></script>
   <script src="js/rules/chairman-ratings.js?v=20260921-editor"></script>
   <script src="js/rules/chairman-scheduling.js?v=20260921-editor"></script>
   <script src="js/rules/chairman.js?v=20260924-genetics-v2-final"></script>
-  <script src="js/rules/chairman-genetics.js?v=20260924-genetics-v2-final"></script>
-  <script src="js/rules/chairman-breeding.js?v=20260924-genetics-v2-final"></script>
+  <script src="js/rules/chairman-genetics.js?v=20260925-hall-v1"></script>
+  <script src="js/rules/chairman-breeding.js?v=20260925-hall-v1"></script>
   <script src="js/rules/chairman-office.js?v=20260921-editor"></script>
   <script src="js/rules/chairman-honors.js?v=20260921-editor"></script>
   <script src="js/rules/chairman-series.js?v=20260921-editor"></script>
   <script src="js/chairman-packages.js?v=20260924-genetics-v2-final"></script>
-  <script src="js/rules/chairman-editor.js?v=20260924-genetics-v2-final"></script>
+  <script src="js/rules/chairman-editor.js?v=20260925-hall-v1"></script>
   <script src="js/data/chairman-venue-records.js?v=20260922-venue-names"></script>
   <script src="js/data/chairman-venues.js?v=20260922-venue-names"></script>
   <script src="js/rules/chairman-world.js?v=20260924-genetics-v2-final"></script>
@@ -135,10 +138,10 @@
   <script src="js/chairman-ui.js?v=20260924-genetics-v2-final"></script>
   <script src="js/chairman-office-ui.js?v=20260924-genetics-v2-final"></script>
   <script src="js/chairman-bloodline-ui.js?v=20260924-genetics-v2-final"></script>
-  <script src="js/chairman-breeding-ui.js?v=20260924-genetics-v2-final"></script>
+  <script src="js/chairman-breeding-ui.js?v=20260925-hall-v1"></script>
   <script src="js/chairman-honors-ui.js?v=20260921-editor"></script>
   <script src="js/chairman-world-ui.js?v=20260922-venue-names"></script>
   <script src="js/chairman-app.js?v=20260924-genetics-v2-final"></script>
-  <script src="js/app.js?v=20260924-bloodline"></script>
+  <script src="js/app.js?v=20260925-hall-v1"></script>
 </body>
 </html>

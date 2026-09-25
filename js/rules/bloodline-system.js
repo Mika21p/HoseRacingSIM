@@ -16,6 +16,7 @@
   const MODES = freeze({
     normal: { label: '常规模式', qualityAbilityWeight: 0, theoryAbilityCap: 2 },
     legend: { label: '传奇模式', qualityAbilityWeight: 0, theoryAbilityCap: 2 },
+    roguelike: { label: '肉鸽模式', qualityAbilityWeight: 0, theoryAbilityCap: 0 },
     chairman: { label: '主席模式', qualityAbilityWeight: .18, theoryAbilityCap: 1.5 }
   });
   const assert = (condition, message) => { if (!condition) throw new Error(message); };
@@ -38,7 +39,16 @@
       if (plan.kind === 'different' && targetScores.every(s => s >= 1)) weight *= 3;
       permutations.set(values.join(''), { values, weight });
     }
-    const selected = R.weightedPick([...permutations.values()], r => r.weight);
+    let choices = [...permutations.values()];
+    if (plan.directionalChance && plan.targets.length && R.next() < plan.directionalChance) {
+      const score = row => {
+        const scores = plan.targets.map(k => TRACK_SCORE[row.values[TYPES.indexOf(k)]]);
+        return Math.min(...scores) * 10 + scores.reduce((a, b) => a + b, 0);
+      };
+      const best = Math.max(...choices.map(score));
+      choices = choices.filter(row => score(row) === best);
+    }
+    const selected = R.weightedPick(choices, r => r.weight);
     return { pattern: row.pattern, excellent: row.excellent, aptitudes: Object.fromEntries(TYPES.map((key, i) => [key, selected.values[i]])) };
   }
 
@@ -187,12 +197,13 @@
         { pattern: '◎△△', probability: commonChance * focusedShare, excellent: false },
         { pattern: '○○△', probability: commonChance * (1 - focusedShare), excellent: false }
       ] };
+    if (mode === 'roguelike') trackPlan.directionalChance = .85;
     if (diverse) { const mean = TYPES.reduce((sum, key) => sum + weights[key], 0) / 3; TYPES.forEach(key => weights[key] = .85 * weights[key] + .15 * mean); }
     const meanQuality = ((father.genetics.quality ?? 50) + (mother.genetics.quality ?? 50)) / 2;
     const meanStability = ((father.genetics.stability ?? 50) + (mother.genetics.stability ?? 50)) / 2;
     const normalBonus = Math.min(2, (nick ? 1 : 0) + (distantReward ? 1 : 0));
     const normalFloor = diverse ? 74 : specialized || complementary ? 70 : 62;
-    const theoryBonus = mode !== 'chairman' ? normalBonus : Math.min(MODES.chairman.theoryAbilityCap, (nick ? .6 : 0) + (diverse ? .4 : 0) + (distantReward ? .4 : 0));
+    const theoryBonus = mode === 'roguelike' ? 0 : mode !== 'chairman' ? normalBonus : Math.min(MODES.chairman.theoryAbilityCap, (nick ? .6 : 0) + (diverse ? .4 : 0) + (distantReward ? .4 : 0));
     const contributors = supported ? [...new Set([fatherId, motherId, ...support('father', a[0]).map(f => f.id), ...support('mother', b[0]).map(f => f.id)])] : [];
     const theories = [nick && { id: 'nick', label: '母父相性', ids: [fatherId, motherId, broodmareSire.id], description: '优秀组合率＋4个百分点；常规能力＋1，主席能力计算＋0.6；母父的赛道因子额外增加方向权重，每方向最多0.6。' },
       reinforced.length && { id: 'ancestor', label: '祖先强化', ids: reinforced.map(c => c.id), description: '共同祖先因子额外贡献50%，每方向强化上限0.5；' + (distantReward ? '符合远代条件，优秀组合率＋2个百分点，常规能力＋1、主席能力计算＋0.4。' : '当前亲缘不满足奖励条件，不加速度或优秀组合率。') + '亲缘风险仍保留。' },
@@ -207,7 +218,7 @@
       risk: { level: forbidden ? '禁止' : severity >= 3 ? '高' : severity === 2 ? '中' : severity === 1 ? '低' : missing ? '资料不足' : '未发现四代重复', incomplete: missing > 0 },
       theories, factorSources, factorWeights, directionWeights: weights,
       trackPlan,
-      ability: { bloodlineMeanEffect: mode !== 'chairman' ? 0 : (meanQuality - 50) * MODES.chairman.qualityAbilityWeight,
+      ability: mode === 'roguelike' ? { bloodlineMeanEffect: 0, floor: null, protection: null, theoryBonus: 0, description: '能力仅由候选档位决定。' } : { bloodlineMeanEffect: mode !== 'chairman' ? 0 : (meanQuality - 50) * MODES.chairman.qualityAbilityWeight,
         floor: mode !== 'chairman' ? normalFloor : 62, protection: mode !== 'chairman' ? 'half-gap-rounded' : null,
         finalMinimum: mode !== 'chairman' ? normalAbility(mode === 'legend' ? 81 : 62, normalFloor, normalBonus) : 62,
         theoryBonus, qualityKnown: [father, mother].filter(p => p.genetics.quality != null).length,
@@ -221,7 +232,7 @@
       const R = ns.Random, H = ns.HorseRules;
       assert(R && H, '血统生成需要随机与马匹生成规则。');
       function run() {
-        const h = H.generateHorse({ gameMode: mode === 'legend' ? 'legend' : 'normal', sireId: 'random', damId: 'random', chairmanProfile: options.regionalProfile });
+        const h = H.generateHorse({ gameMode: mode === 'roguelike' ? 'roguelike' : mode === 'legend' ? 'legend' : 'normal', strengthProfile: options.strengthProfile, sireId: 'random', damId: 'random', chairmanProfile: options.regionalProfile });
         const rawStrength = h.strength;
         delete h.id;
         if (options.childId != null) h.id = String(options.childId);
@@ -237,10 +248,10 @@
           h.strength = R.clamp(Math.round(81 + preview.ability.bloodlineMeanEffect + noise + theoryBonus), 62, 100);
           chairmanDraw = { breakthrough, ordinaryStrength: h.strength };
           if (breakthrough) h.strength = Math.max(h.strength, exceptional);
-        } else h.strength = normalAbility(rawStrength, normalFloor, normalBonus);
-        h.strengthLabel = mode !== 'chairman' ? `${MODES[mode].label}血统：软保底与轻度加成（${preview.ability.finalMinimum}–100）` : '主席血统：繁殖素质与稳定度分布（62–100）';
+        } else if (mode !== 'roguelike') h.strength = normalAbility(rawStrength, normalFloor, normalBonus);
+        if (mode !== 'roguelike') h.strengthLabel = mode !== 'chairman' ? `${MODES[mode].label}血统：软保底与轻度加成（${preview.ability.finalMinimum}–100）` : '主席血统：繁殖素质与稳定度分布（62–100）';
         const inherited = (a, b, fresh, share = .4) => { const roll = R.next(); return clone((roll < share ? a : roll < share * 2 ? b : null) ?? fresh); };
-        for (const key of SURFACES) h.surfaceGrades[key] = inherited(father.genetics.surfaceGrades?.[key], mother.genetics.surfaceGrades?.[key], h.surfaceGrades[key]);
+        for (const key of SURFACES) h.surfaceGrades[key] = inherited(father.genetics.surfaceGrades?.[key], mother.genetics.surfaceGrades?.[key], h.surfaceGrades[key], mode === 'roguelike' ? .45 : .4);
         for (const key of SURFACES) if (R.next() < (factorWeights[key] || 0) * .05) {
           const grades = ['A', 'B', 'C', 'G']; h.surfaceGrades[key] = grades[Math.max(0, grades.indexOf(h.surfaceGrades[key]) - 1)];
         }
@@ -250,9 +261,9 @@
         h.trackAptitudes = trackResult.aptitudes;
         h.breedingOutcome = { pattern: trackResult.pattern, excellent: trackResult.excellent,
           rawStrength: mode !== 'chairman' ? rawStrength : null, floor: preview.ability.floor, protection: preview.ability.protection,
-          protectionGain: mode !== 'chairman' ? normalAbility(rawStrength, normalFloor, 0) - rawStrength : 0, bonus: theoryBonus };
+          protectionGain: mode !== 'chairman' && mode !== 'roguelike' ? normalAbility(rawStrength, normalFloor, 0) - rawStrength : 0, bonus: theoryBonus };
         if (chairmanDraw) Object.assign(h.breedingOutcome, chairmanDraw);
-        const dist = inherited(father.genetics.distance, mother.genetics.distance, { min: h.distMin, core: h.coreDist, max: h.distMax }, .3);
+        const dist = inherited(father.genetics.distance, mother.genetics.distance, { min: h.distMin, core: h.coreDist, max: h.distMax }, mode === 'roguelike' ? .45 : .3);
         h.distMin = dist.min; h.coreDist = dist.core; h.distMax = dist.max;
         h.distType = dist.core <= 1400 ? '短途' : dist.core <= 1800 ? '英里' : dist.core <= 2200 ? '中距离' : dist.core <= 2800 ? '中长距离' : dist.core <= 3200 ? '长距离' : '超长距离';
         h.growthType = inherited(father.genetics.growthType, mother.genetics.growthType, h.growthType, .3);
@@ -263,6 +274,7 @@
         if (R.next() < (factorWeights.heavy || 0) * .05 && ['不佳', '普通'].includes(h.heavyType)) h.heavyType = '擅长';
         // 风险只影响现有气性属性，不另造健康属性或扣基础能力。
         if (R.next() < severity * .05) h.temperamentLabel = '暴躁';
+        if (mode === 'roguelike' && options.strengthProfile === 'champion' && h.temperamentLabel === '极端暴躁') h.temperamentLabel = '暴躁';
         h.temperament = H.temperamentValue(h.temperamentLabel);
         const quality = R.clamp(Math.round(50 + .65 * (meanQuality - 50) + R.rollMulti(2, 16) - 17), 1, 100);
         const stability = R.clamp(Math.round(50 + .6 * (meanStability - 50) + R.rollMulti(2, 16) - 17), 1, 100);
@@ -271,7 +283,7 @@
         // 超过两项时随机选择，避免固定顺序偏向瞬发。
         while (factors.length > 2) factors.splice(R.rollRange(0, factors.length - 1), 1);
         h.genetics = { version: VERSION, quality, stability, lineId: father.genetics.lineId || null, familyId: mother.genetics.familyId || null, factors };
-        h.pedigree = { ruleVersion: VERSION, mode, seed: options.seed ?? null, fatherId, motherId,
+        h.pedigree = { ruleVersion: mode === 'roguelike' ? VERSION + '-rogue-v1' : VERSION, mode, seed: options.seed ?? null, fatherId, motherId,
           parents: [father, mother].map(p => ({ id: p.id, name: p.displayName || p.name || p.id,
             gender: p.gender, fatherId: p.fatherId || null, motherId: p.motherId || null, genetics: clone(p.genetics) })),
           ancestors: clone(slots), theories: clone(theories), risk: clone(preview.risk), trackPlan: clone(trackPlan),

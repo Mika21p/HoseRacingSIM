@@ -115,6 +115,10 @@ function loadRoguelikeRules() {
     "js/rules/comments.js",
     "js/rules/career.js",
     "js/rules/achievements.js",
+    "js/data/chairman-pedigrees.js",
+    "js/data/bloodline-catalog.js",
+    "js/rules/bloodline-system.js",
+    "js/rules/career-bloodline.js",
     "js/rules/roguelike.js"
   ].forEach((file) => runProjectFile(context, file));
   return { ...project, rules: context.window.Keiba };

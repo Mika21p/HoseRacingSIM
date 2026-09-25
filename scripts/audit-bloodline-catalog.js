@@ -20,11 +20,11 @@ for(const sire of sires)for(const mare of mares){const normal=B.createPair(libra
 summary.pairs.sireNickCoverage=sireNicks.size;summary.pairs.mareNickCoverage=mareNicks.size;
 for(const s of Object.values(summary.samples)){s.mean=s.sum/s.count;s.excellentPercent=s.excellent/s.count*100;s.expectedExcellentPercent=s.expectedExcellent/s.count*100;delete s.sum;delete s.expectedExcellent;}
 fs.writeFileSync(path.join(root,'artifacts/bloodline-catalog-audit.json'),JSON.stringify(summary,null,2)+'\n');
-let md='# 血统库批量赋值与初测\n\n240匹核心马均已赋值，另有'+summary.keyAncestors+'匹关键祖先仅补血系／因子。原始身份和系谱数据未改动。采用游戏模板，不是精确史实评级；完整逐匹清单见[赋值清单](血统库游戏赋值清单-2026-09-24.md)。\n\n|地区|牡／牝|瞬发|持久|消耗|均衡|草／泥／兼用|\n|---|---|---|---|---|---|---|\n';
+let md='# 血统库批量赋值与初测\n\n'+summary.core+'匹核心马均已赋值，另有'+summary.keyAncestors+'匹关键祖先仅补血系／因子。身份和系谱沿用已核实来源。采用游戏模板，不是精确史实评级；完整逐匹清单见[赋值清单](血统库游戏赋值清单-2026-09-24.md)。\n\n|地区|牡／牝|瞬发|持久|消耗|均衡|草／泥／兼用|\n|---|---|---|---|---|---|---|\n';
 for(const [region,r] of Object.entries(summary.regions))md+=`|${region}|${r.sires}/${r.mares}|${r.classification['瞬发']||0}|${r.classification['持久']||0}|${r.classification['消耗']||0}|${r.classification['均衡']||0}|${r.surface.grass||0}/${r.surface.dirt||0}/${r.surface.dual||0}|\n`;
 md+='\n初始组合：'+Object.entries(summary.patterns).map(([k,v])=>k+' '+v+'匹').join('；')+'。只有4匹○○○，没有双◎初始个体。\n\n## 配合遍历\n\n共检查'+summary.pairs.total+'组父母配合，合法'+summary.pairs.legal+'组，近亲拦截'+summary.pairs.blocked+'组。每个合法组合两模式各生成一匹，共'+(summary.samples.normal.count+summary.samples.chairman.count)+'匹。此抽样用于规则健全性和总体分布，不代表任何单独组合的准确胜率。\n\n|优秀池概率|合法组合数|占比|\n|---|---:|---:|\n';
 for(const [rate,count] of Object.entries(summary.pairs.excellentRates))md+=`|${rate}%|${count}|${(100*count/summary.pairs.legal).toFixed(2)}%|\n`;
-md+='\n母父相性覆盖'+sireNicks.size+'/90匹种牡马、'+mareNicks.size+'/150匹母马（至少有一个合法命中组合）。\n\n|父马地区|合法组合|命中母父相性|达到20%|\n|---|---:|---:|---:|\n';
+md+='\n母父相性覆盖'+sireNicks.size+'/'+sires.length+'匹种牡马、'+mareNicks.size+'/'+mares.length+'匹母马（至少有一个合法命中组合）。\n\n|父马地区|合法组合|命中母父相性|达到20%|\n|---|---:|---:|---:|\n';
 for(const [region,r] of Object.entries(summary.pairs.bySireRegion))md+=`|${region}|${r.legal}|${r.nick}|${r.full}|\n`;
 md+='\n|模式|生成数|平均能力|优秀组合实测|按所测组合计算的期望|\n|---|---:|---:|---:|---:|\n';
 for(const [mode,s] of Object.entries(summary.samples))md+=`|${mode==='normal'?'常规':'主席'}|${s.count}|${s.mean.toFixed(2)}|${s.excellentPercent.toFixed(2)}%|${s.expectedExcellentPercent.toFixed(2)}%|\n`;

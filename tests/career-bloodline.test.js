@@ -9,7 +9,7 @@ function load() {
 }
 test('常规与传奇能力规则、快照和纯展示不改变随机状态', () => {
   const {dom,n} = load(), B=n.CareerBloodline;
-  assert.equal(B.parents('牡马').length,90); assert.equal(B.parents('牝马').length,150);
+  assert.equal(B.parents('牡马').length,93); assert.equal(B.parents('牝马').length,154);
   const f=B.parents('牡马').find(r=>r.originalName==='Sunday Silence'),m=B.parents('牝马').find(r=>r.originalName==='Air Groove');
   for(const mode of ['normal','legend']) {
     const p=B.pair(f.id,m.id,mode).preview;
@@ -48,8 +48,11 @@ test('父母筛选、空结果、近亲禁配与随机配合',()=>{
   const {dom,n}=load(),doc=dom.window.document;
   doc.body.innerHTML=n.CareerBloodlineUI.setupHtml()+'<select id="gameModeSelect"><option>normal</option></select><button id="generateBtn"></button>';
   n.CareerBloodlineUI.bindSetup();
-  assert.equal(doc.querySelectorAll('#sireSelect option').length,90);assert.equal(doc.querySelectorAll('#damSelect option').length,150);
+  assert.equal(doc.querySelectorAll('#sireSelect option').length,93);assert.equal(doc.querySelectorAll('#damSelect option').length,154);
   const change=(id,value,type='change')=>{const el=doc.getElementById(id);el.value=value;el.dispatchEvent(new dom.window.Event(type));};
+  change('sireSearch','黄金船','input');assert.match(doc.getElementById('sireSelect').textContent,/黄金船/);
+  change('sireSearch','','input');change('damSearch','风中秀发','input');assert.match(doc.getElementById('damSelect').textContent,/风中秀发/);
+  change('damSearch','','input');
   change('sireSearch','乐购','input');assert.equal(doc.querySelectorAll('#sireSelect option').length,1);assert.match(doc.getElementById('sireSelect').textContent,/乐购男孩/);
   change('sireSearch','不存在123','input');assert.ok(doc.getElementById('generateBtn').disabled);
   doc.getElementById('randomParentsBtn').click();assert.ok(!doc.getElementById('generateBtn').disabled);

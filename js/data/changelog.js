@@ -3,9 +3,9 @@
 
   ns.Changelog = ns.Changelog || {};
   ns.Changelog.meta = {
-    version: "v0.16a",
-    updatedAt: "2026-09-24T15:52:14+08:00",
-    displayUpdatedAt: "2026.09.24 15:52"
+    version: "v0.16b",
+    updatedAt: "2026-09-25T18:44:29+08:00",
+    displayUpdatedAt: "2026.09.25 18:44"
   };
   ns.Changelog.contentStats = Object.freeze({
     nonConditionRaces: 622,
@@ -23,6 +23,7 @@
   };
 
   ns.Changelog.entries = [
+    { date: "2026.9.25", version: "v0.16b", title: "殿堂收藏与血统扩展", items: ["新增退役名马殿堂，可收藏、备份并带入主席世界，也可加入肉鸽配种池；血统资料与肉鸽遗传玩法同步扩展。"] },
     { date: "2026.9.24", version: "v0.16a", title: "退役血统简表", items: ["普通生涯新增退役血统简表，可回顾赛马父母与祖先；旧存档也会显示已有资料。"] },
     { date: "2026.9.24", version: "v0.16", title: "血统系统与生涯赛事升级", items: ["普通生涯新增血统配合、遗传效果与谱系图；赛事筛选报名优化，主席模式繁育遗传和赛场资料同步扩展。"] },
     { date: "2026.9.23", version: "v0.15c", title: "首页文案与传奇存档入口", items: ["首页五种模式的介绍文案统一整理并改写，传奇模式与普通生涯共用存档时也能直接继续；模式名称与内容统计同步修正。"] },

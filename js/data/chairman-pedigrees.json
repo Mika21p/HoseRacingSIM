@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "verifiedAt": "2026-09-20",
+  "verifiedAt": "2026-09-25",
   "records": [
     {
       "id": "jbis-0000000285",
@@ -244,6 +244,39 @@
       ]
     },
     {
+      "id": "jbis-0000014242",
+      "jbisId": "0000014242",
+      "name": "ミスマルミチ",
+      "originalName": "ミスマルミチ",
+      "aliases": [
+        "ミスマルミチ",
+        "misumarumichi"
+      ],
+      "gender": "牝马",
+      "birthYear": 1965,
+      "fatherId": "",
+      "motherId": "",
+      "sourceUrl": "https://www.jbis.or.jp/horse/0000098280/",
+      "profileUrl": "https://www.jbis.or.jp/horse/0000014242/",
+      "verifiedAt": "2026-09-25",
+      "verifiedParents": false,
+      "core": false,
+      "displayName": "ミスマルミチ",
+      "pinyin": "ミスマルミチ",
+      "romanizedName": "misumarumichi",
+      "game": {
+        "breedingBase": 50,
+        "distance": null,
+        "surface": null,
+        "growthType": null,
+        "note": "游戏粗略预设；不是JBIS的繁殖评价。资料不足时采用中性生成。"
+      },
+      "verification": "祖先资料／父母尚缺",
+      "regionTags": [
+        "日本"
+      ]
+    },
+    {
       "id": "jbis-0000015913",
       "jbisId": "0000015913",
       "name": "トウカイクイン",
@@ -301,6 +334,72 @@
       "displayName": "Mejiro Asama",
       "pinyin": "mejiroasama",
       "romanizedName": "Mejiro Asama",
+      "game": {
+        "breedingBase": 50,
+        "distance": null,
+        "surface": null,
+        "growthType": null,
+        "note": "游戏粗略预设；不是JBIS的繁殖评价。资料不足时采用中性生成。"
+      },
+      "verification": "父母已核实",
+      "regionTags": [
+        "日本"
+      ]
+    },
+    {
+      "id": "jbis-0000042323",
+      "jbisId": "0000042323",
+      "name": "メジロナガサキ",
+      "originalName": "メジロナガサキ",
+      "aliases": [
+        "メジロナガサキ",
+        "mejironagasaki"
+      ],
+      "gender": "牝马",
+      "birthYear": 1971,
+      "fatherId": "",
+      "motherId": "",
+      "sourceUrl": "https://www.jbis.or.jp/horse/0000286632/",
+      "profileUrl": "https://www.jbis.or.jp/horse/0000042323/",
+      "verifiedAt": "2026-09-25",
+      "verifiedParents": false,
+      "core": false,
+      "displayName": "メジロナガサキ",
+      "pinyin": "メジロナガサキ",
+      "romanizedName": "mejironagasaki",
+      "game": {
+        "breedingBase": 50,
+        "distance": null,
+        "surface": null,
+        "growthType": null,
+        "note": "游戏粗略预设；不是JBIS的繁殖评价。资料不足时采用中性生成。"
+      },
+      "verification": "祖先资料／父母尚缺",
+      "regionTags": [
+        "日本"
+      ]
+    },
+    {
+      "id": "jbis-0000044755",
+      "jbisId": "0000044755",
+      "name": "イツトー",
+      "originalName": "イツトー",
+      "aliases": [
+        "イツトー",
+        "itsutoo"
+      ],
+      "gender": "牝马",
+      "birthYear": 1971,
+      "fatherId": "jbis-0000333359",
+      "motherId": "jbis-0000014242",
+      "sourceUrl": "https://www.jbis.or.jp/horse/0000098280/",
+      "profileUrl": "https://www.jbis.or.jp/horse/0000044755/",
+      "verifiedAt": "2026-09-25",
+      "verifiedParents": true,
+      "core": false,
+      "displayName": "イツトー",
+      "pinyin": "イツトー",
+      "romanizedName": "itsutoo",
       "game": {
         "breedingBase": 50,
         "distance": null,
@@ -574,6 +673,105 @@
       "displayName": "Tokai Midori",
       "pinyin": "tokaimidori",
       "romanizedName": "Tokai Midori",
+      "game": {
+        "breedingBase": 50,
+        "distance": null,
+        "surface": null,
+        "growthType": null,
+        "note": "游戏粗略预设；不是JBIS的繁殖评价。资料不足时采用中性生成。"
+      },
+      "verification": "父母已核实",
+      "regionTags": [
+        "日本"
+      ]
+    },
+    {
+      "id": "jbis-0000097964",
+      "jbisId": "0000097964",
+      "name": "メジロチエイサー",
+      "originalName": "メジロチエイサー",
+      "aliases": [
+        "メジロチエイサー",
+        "mejirochieisaa"
+      ],
+      "gender": "牝马",
+      "birthYear": 1977,
+      "fatherId": "",
+      "motherId": "",
+      "sourceUrl": "https://www.jbis.or.jp/horse/0000286632/",
+      "profileUrl": "https://www.jbis.or.jp/horse/0000097964/",
+      "verifiedAt": "2026-09-25",
+      "verifiedParents": false,
+      "core": false,
+      "displayName": "メジロチエイサー",
+      "pinyin": "メジロチエイサー",
+      "romanizedName": "mejirochieisaa",
+      "game": {
+        "breedingBase": 50,
+        "distance": null,
+        "surface": null,
+        "growthType": null,
+        "note": "游戏粗略预设；不是JBIS的繁殖评价。资料不足时采用中性生成。"
+      },
+      "verification": "祖先资料／父母尚缺",
+      "regionTags": [
+        "日本"
+      ]
+    },
+    {
+      "id": "jbis-0000098122",
+      "jbisId": "0000098122",
+      "name": "アンバーシヤダイ",
+      "originalName": "アンバーシヤダイ",
+      "aliases": [
+        "アンバーシヤダイ",
+        "anbaashiyadai"
+      ],
+      "gender": "牡马",
+      "birthYear": 1977,
+      "fatherId": "jbis-0000333544",
+      "motherId": "jbis-0000380822",
+      "sourceUrl": "https://www.jbis.or.jp/horse/0000098122/",
+      "profileUrl": "https://www.jbis.or.jp/horse/0000098122/",
+      "verifiedAt": "2026-09-25",
+      "verifiedParents": true,
+      "core": false,
+      "displayName": "アンバーシヤダイ",
+      "pinyin": "アンバーシヤダイ",
+      "romanizedName": "anbaashiyadai",
+      "game": {
+        "breedingBase": 50,
+        "distance": null,
+        "surface": null,
+        "growthType": null,
+        "note": "游戏粗略预设；不是JBIS的繁殖评价。资料不足时采用中性生成。"
+      },
+      "verification": "父母已核实",
+      "regionTags": [
+        "日本"
+      ]
+    },
+    {
+      "id": "jbis-0000098280",
+      "jbisId": "0000098280",
+      "name": "Hagino Top Lady(JPN)",
+      "originalName": "Hagino Top Lady",
+      "gender": "牝马",
+      "birthYear": 1977,
+      "fatherId": "jbis-0000333480",
+      "motherId": "jbis-0000044755",
+      "aliases": [
+        "ハギノトツプレデイ",
+        "Hagino Top Lady(JPN)",
+        "Hagino Top Lady"
+      ],
+      "sourceUrl": "https://www.jbis.or.jp/horse/0000098280/",
+      "verifiedAt": "2026-09-25",
+      "verifiedParents": true,
+      "core": false,
+      "displayName": "Hagino Top Lady",
+      "pinyin": "haginotoplady",
+      "romanizedName": "Hagino Top Lady",
       "game": {
         "breedingBase": 50,
         "distance": null,
@@ -1033,6 +1231,39 @@
       ]
     },
     {
+      "id": "jbis-0000146003",
+      "jbisId": "0000146003",
+      "name": "メジロビユーテイー",
+      "originalName": "メジロビユーテイー",
+      "aliases": [
+        "メジロビユーテイー",
+        "mejirobiyuuteii"
+      ],
+      "gender": "牝马",
+      "birthYear": 1982,
+      "fatherId": "jbis-0000333257",
+      "motherId": "jbis-0000042323",
+      "sourceUrl": "https://www.jbis.or.jp/horse/0000286632/",
+      "profileUrl": "https://www.jbis.or.jp/horse/0000146003/",
+      "verifiedAt": "2026-09-25",
+      "verifiedParents": true,
+      "core": false,
+      "displayName": "メジロビユーテイー",
+      "pinyin": "メジロビユーテイー",
+      "romanizedName": "mejirobiyuuteii",
+      "game": {
+        "breedingBase": 50,
+        "distance": null,
+        "surface": null,
+        "growthType": null,
+        "note": "游戏粗略预设；不是JBIS的繁殖评价。资料不足时采用中性生成。"
+      },
+      "verification": "父母已核实",
+      "regionTags": [
+        "日本"
+      ]
+    },
+    {
       "id": "jbis-0000146600",
       "jbisId": "0000146600",
       "name": "Tokai Natural(JPN)",
@@ -1096,6 +1327,39 @@
         "note": "游戏粗略预设；不是JBIS的繁殖评价。资料不足时采用中性生成。"
       },
       "verification": "父母已核实",
+      "regionTags": [
+        "日本"
+      ]
+    },
+    {
+      "id": "jbis-0000166449",
+      "jbisId": "0000166449",
+      "name": "カズミハルコマ",
+      "originalName": "カズミハルコマ",
+      "aliases": [
+        "カズミハルコマ",
+        "kazumiharukoma"
+      ],
+      "gender": "牝马",
+      "birthYear": 1984,
+      "fatherId": "",
+      "motherId": "",
+      "sourceUrl": "https://www.jbis.or.jp/horse/0001044299/",
+      "profileUrl": "https://www.jbis.or.jp/horse/0000166449/",
+      "verifiedAt": "2026-09-25",
+      "verifiedParents": false,
+      "core": false,
+      "displayName": "カズミハルコマ",
+      "pinyin": "カズミハルコマ",
+      "romanizedName": "kazumiharukoma",
+      "game": {
+        "breedingBase": 50,
+        "distance": null,
+        "surface": null,
+        "growthType": null,
+        "note": "游戏粗略预设；不是JBIS的繁殖评价。资料不足时采用中性生成。"
+      },
+      "verification": "祖先资料／父母尚缺",
       "regionTags": [
         "日本"
       ]
@@ -1203,6 +1467,41 @@
       ]
     },
     {
+      "id": "jbis-0000196381",
+      "jbisId": "0000196381",
+      "name": "Daiichi Ruby(JPN)",
+      "originalName": "Daiichi Ruby",
+      "gender": "牝马",
+      "birthYear": 1987,
+      "fatherId": "jbis-0000061253",
+      "motherId": "jbis-0000098280",
+      "aliases": [
+        "ダイイチルビー",
+        "Daiichi Ruby(JPN)",
+        "Daiichi Ruby",
+        "第一红宝石"
+      ],
+      "sourceUrl": "https://www.jbis.or.jp/horse/0000196381/",
+      "verifiedAt": "2026-09-25",
+      "verifiedParents": true,
+      "core": true,
+      "region": "日本",
+      "displayName": "第一红宝石",
+      "pinyin": "dyhbs",
+      "romanizedName": "Daiichi Ruby",
+      "game": {
+        "breedingBase": 65,
+        "distance": 1400,
+        "surface": "草地",
+        "growthType": "普迟",
+        "note": "游戏粗略预设；不是JBIS的繁殖评价。资料不足时采用中性生成。"
+      },
+      "verification": "父母已核实",
+      "regionTags": [
+        "日本"
+      ]
+    },
+    {
       "id": "jbis-0000197616",
       "jbisId": "0000197616",
       "name": "Campaign Girl(JPN)",
@@ -1297,6 +1596,73 @@
         "note": "游戏粗略预设；不是JBIS的繁殖评价。资料不足时采用中性生成。"
       },
       "verification": "父母已核实",
+      "regionTags": [
+        "日本"
+      ]
+    },
+    {
+      "id": "jbis-0000201489",
+      "jbisId": "0000201489",
+      "name": "メジロライアン",
+      "originalName": "メジロライアン",
+      "aliases": [
+        "メジロライアン",
+        "目白莱恩",
+        "Mejiro Ryan"
+      ],
+      "gender": "牡马",
+      "birthYear": 1987,
+      "fatherId": "jbis-0000098122",
+      "motherId": "jbis-0000097964",
+      "sourceUrl": "https://www.jbis.or.jp/horse/0000286632/",
+      "profileUrl": "https://www.jbis.or.jp/horse/0000201489/",
+      "verifiedAt": "2026-09-25",
+      "verifiedParents": true,
+      "core": false,
+      "displayName": "目白莱恩",
+      "pinyin": "mble",
+      "romanizedName": "Mejiro Ryan",
+      "game": {
+        "breedingBase": 50,
+        "distance": 2200,
+        "surface": "草地",
+        "growthType": "普早",
+        "note": "游戏粗略预设；不是JBIS的繁殖评价。资料不足时采用中性生成。"
+      },
+      "verification": "父母已核实",
+      "regionTags": [
+        "日本"
+      ]
+    },
+    {
+      "id": "jbis-0000202389",
+      "jbisId": "0000202389",
+      "name": "パストラリズム",
+      "originalName": "パストラリズム",
+      "aliases": [
+        "パストラリズム",
+        "pasutorarizumu"
+      ],
+      "gender": "牝马",
+      "birthYear": 1987,
+      "fatherId": "",
+      "motherId": "",
+      "sourceUrl": "https://www.jbis.or.jp/horse/0001104811/",
+      "profileUrl": "https://www.jbis.or.jp/horse/0000202389/",
+      "verifiedAt": "2026-09-25",
+      "verifiedParents": false,
+      "core": false,
+      "displayName": "パストラリズム",
+      "pinyin": "パストラリズム",
+      "romanizedName": "pasutorarizumu",
+      "game": {
+        "breedingBase": 50,
+        "distance": null,
+        "surface": null,
+        "growthType": null,
+        "note": "游戏粗略预设；不是JBIS的繁殖评价。资料不足时采用中性生成。"
+      },
+      "verification": "祖先资料／父母尚缺",
       "regionTags": [
         "日本"
       ]
@@ -2018,6 +2384,41 @@
       ]
     },
     {
+      "id": "jbis-0000286632",
+      "jbisId": "0000286632",
+      "name": "Mejiro Dober(JPN)",
+      "originalName": "Mejiro Dober",
+      "gender": "牝马",
+      "birthYear": 1994,
+      "fatherId": "jbis-0000201489",
+      "motherId": "jbis-0000146003",
+      "aliases": [
+        "メジロドーベル",
+        "Mejiro Dober(JPN)",
+        "Mejiro Dober",
+        "目白多伯"
+      ],
+      "sourceUrl": "https://www.jbis.or.jp/horse/0000286632/",
+      "verifiedAt": "2026-09-25",
+      "verifiedParents": true,
+      "core": true,
+      "region": "日本",
+      "displayName": "目白多伯",
+      "pinyin": "mbdb",
+      "romanizedName": "Mejiro Dober",
+      "game": {
+        "breedingBase": 65,
+        "distance": 2200,
+        "surface": "草地",
+        "growthType": "早熟",
+        "note": "游戏粗略预设；不是JBIS的繁殖评价。资料不足时采用中性生成。"
+      },
+      "verification": "父母已核实",
+      "regionTags": [
+        "日本"
+      ]
+    },
+    {
       "id": "jbis-0000286968",
       "jbisId": "0000286968",
       "name": "Stay Gold(JPN)",
@@ -2227,6 +2628,41 @@
       ]
     },
     {
+      "id": "jbis-0000302080",
+      "jbisId": "0000302080",
+      "name": "T.M. Opera O(JPN)",
+      "originalName": "T.M. Opera O",
+      "gender": "牡马",
+      "birthYear": 1996,
+      "fatherId": "jbis-0000339572",
+      "motherId": "jbis-0000382776",
+      "aliases": [
+        "テイエムオペラオー",
+        "T.M. Opera O(JPN)",
+        "T.M. Opera O",
+        "好歌剧"
+      ],
+      "sourceUrl": "https://www.jbis.or.jp/horse/0000302080/",
+      "verifiedAt": "2026-09-25",
+      "verifiedParents": true,
+      "core": true,
+      "region": "日本",
+      "displayName": "好歌剧",
+      "pinyin": "hgj",
+      "romanizedName": "T.M. Opera O",
+      "game": {
+        "breedingBase": 35,
+        "distance": 2400,
+        "surface": "草地",
+        "growthType": "普早",
+        "note": "游戏粗略预设；不是JBIS的繁殖评价。资料不足时采用中性生成。"
+      },
+      "verification": "父母已核实",
+      "regionTags": [
+        "日本"
+      ]
+    },
+    {
       "id": "jbis-0000308961",
       "jbisId": "0000308961",
       "name": "Lady Blossom(JPN)",
@@ -2361,6 +2797,39 @@
       ]
     },
     {
+      "id": "jbis-0000316290",
+      "jbisId": "0000316290",
+      "name": "スプリングチケット",
+      "originalName": "スプリングチケット",
+      "aliases": [
+        "スプリングチケット",
+        "supuringuchiketto"
+      ],
+      "gender": "牝马",
+      "birthYear": 1997,
+      "fatherId": "jbis-0000161740",
+      "motherId": "jbis-0000166449",
+      "sourceUrl": "https://www.jbis.or.jp/horse/0001044299/",
+      "profileUrl": "https://www.jbis.or.jp/horse/0000316290/",
+      "verifiedAt": "2026-09-25",
+      "verifiedParents": true,
+      "core": false,
+      "displayName": "スプリングチケット",
+      "pinyin": "スプリングチケット",
+      "romanizedName": "supuringuchiketto",
+      "game": {
+        "breedingBase": 50,
+        "distance": null,
+        "surface": null,
+        "growthType": null,
+        "note": "游戏粗略预设；不是JBIS的繁殖评价。资料不足时采用中性生成。"
+      },
+      "verification": "父母已核实",
+      "regionTags": [
+        "日本"
+      ]
+    },
+    {
       "id": "jbis-0000316406",
       "jbisId": "0000316406",
       "name": "Oriental Art(JPN)",
@@ -2475,17 +2944,18 @@
         "マンハッタンカフェ",
         "Manhattan Cafe(JPN)",
         "Manhattan Cafe",
-        "曼城茶座"
+        "曼城茶座",
+        "曼哈顿咖啡"
       ],
       "sourceUrl": "https://www.jbis.or.jp/horse/0000324971/",
       "verifiedAt": "2026-09-20",
       "verifiedParents": true,
-      "core": false,
+      "core": true,
       "displayName": "曼城茶座",
       "pinyin": "mccz",
       "romanizedName": "Manhattan Cafe",
       "game": {
-        "breedingBase": 50,
+        "breedingBase": 80,
         "distance": 3000,
         "surface": "草地",
         "growthType": "普早",
@@ -2494,7 +2964,8 @@
       "verification": "父母已核实",
       "regionTags": [
         "日本"
-      ]
+      ],
+      "region": "日本"
     },
     {
       "id": "jbis-0000325260",
@@ -2519,6 +2990,39 @@
       "displayName": "布兰雪莉",
       "pinyin": "blxl",
       "romanizedName": "Blancherie",
+      "game": {
+        "breedingBase": 50,
+        "distance": null,
+        "surface": null,
+        "growthType": null,
+        "note": "游戏粗略预设；不是JBIS的繁殖评价。资料不足时采用中性生成。"
+      },
+      "verification": "父母已核实",
+      "regionTags": [
+        "日本"
+      ]
+    },
+    {
+      "id": "jbis-0000329411",
+      "jbisId": "0000329411",
+      "name": "ポイントフラッグ",
+      "originalName": "ポイントフラッグ",
+      "aliases": [
+        "ポイントフラッグ",
+        "pointofuraggu"
+      ],
+      "gender": "牝马",
+      "birthYear": 1998,
+      "fatherId": "jbis-0000203356",
+      "motherId": "jbis-0000202389",
+      "sourceUrl": "https://www.jbis.or.jp/horse/0001104811/",
+      "profileUrl": "https://www.jbis.or.jp/horse/0000329411/",
+      "verifiedAt": "2026-09-25",
+      "verifiedParents": true,
+      "core": false,
+      "displayName": "ポイントフラッグ",
+      "pinyin": "ポイントフラッグ",
+      "romanizedName": "pointofuraggu",
       "game": {
         "breedingBase": 50,
         "distance": null,
@@ -2942,6 +3446,40 @@
       ]
     },
     {
+      "id": "jbis-0000333359",
+      "jbisId": "0000333359",
+      "name": "ヴエンチア(GB)",
+      "originalName": "ヴエンチア",
+      "aliases": [
+        "ヴエンチア(GB)",
+        "ヴエンチア",
+        "vuenchia"
+      ],
+      "gender": "牡马",
+      "birthYear": 1957,
+      "fatherId": "",
+      "motherId": "",
+      "sourceUrl": "https://www.jbis.or.jp/horse/0000098280/",
+      "profileUrl": "https://www.jbis.or.jp/horse/0000333359/",
+      "verifiedAt": "2026-09-25",
+      "verifiedParents": false,
+      "core": false,
+      "displayName": "ヴエンチア",
+      "pinyin": "ヴエンチア",
+      "romanizedName": "vuenchia",
+      "game": {
+        "breedingBase": 50,
+        "distance": null,
+        "surface": null,
+        "growthType": null,
+        "note": "游戏粗略预设；不是JBIS的繁殖评价。资料不足时采用中性生成。"
+      },
+      "verification": "祖先资料／父母尚缺",
+      "regionTags": [
+        "日本"
+      ]
+    },
+    {
       "id": "jbis-0000333363",
       "jbisId": "0000333363",
       "name": "Remand(GB)",
@@ -3213,6 +3751,40 @@
       "displayName": "スノツブ",
       "pinyin": "スノツブ",
       "romanizedName": "sunotsubu",
+      "game": {
+        "breedingBase": 50,
+        "distance": null,
+        "surface": null,
+        "growthType": null,
+        "note": "游戏粗略预设；不是JBIS的繁殖评价。资料不足时采用中性生成。"
+      },
+      "verification": "父母已核实",
+      "regionTags": [
+        "日本"
+      ]
+    },
+    {
+      "id": "jbis-0000333480",
+      "jbisId": "0000333480",
+      "name": "サンシー(FR)",
+      "originalName": "サンシー",
+      "aliases": [
+        "サンシー(FR)",
+        "サンシー",
+        "sanshii"
+      ],
+      "gender": "牡马",
+      "birthYear": 1969,
+      "fatherId": "jbis-0000334478",
+      "motherId": "jbis-0000389121",
+      "sourceUrl": "https://www.jbis.or.jp/horse/0000098280/",
+      "profileUrl": "https://www.jbis.or.jp/horse/0000333480/",
+      "verifiedAt": "2026-09-25",
+      "verifiedParents": true,
+      "core": false,
+      "displayName": "サンシー",
+      "pinyin": "サンシー",
+      "romanizedName": "sanshii",
       "game": {
         "breedingBase": 50,
         "distance": null,
@@ -14870,6 +15442,40 @@
       ]
     },
     {
+      "id": "jbis-0000339572",
+      "jbisId": "0000339572",
+      "name": "オペラハウス(GB)",
+      "originalName": "オペラハウス",
+      "aliases": [
+        "オペラハウス(GB)",
+        "オペラハウス",
+        "operahausu"
+      ],
+      "gender": "牡马",
+      "birthYear": 1988,
+      "fatherId": "jbis-0000336572",
+      "motherId": "jbis-0000404690",
+      "sourceUrl": "https://www.jbis.or.jp/horse/0000302080/",
+      "profileUrl": "https://www.jbis.or.jp/horse/0000339572/",
+      "verifiedAt": "2026-09-25",
+      "verifiedParents": true,
+      "core": false,
+      "displayName": "オペラハウス",
+      "pinyin": "オペラハウス",
+      "romanizedName": "operahausu",
+      "game": {
+        "breedingBase": 50,
+        "distance": null,
+        "surface": null,
+        "growthType": null,
+        "note": "游戏粗略预设；不是JBIS的繁殖评价。资料不足时采用中性生成。"
+      },
+      "verification": "父母已核实",
+      "regionTags": [
+        "日本"
+      ]
+    },
+    {
       "id": "jbis-0000339602",
       "jbisId": "0000339602",
       "name": "Ahmad(ARG)",
@@ -17786,6 +18392,39 @@
       ]
     },
     {
+      "id": "jbis-0000380822",
+      "jbisId": "0000380822",
+      "name": "Clear Amber(USA)",
+      "originalName": "Clear Amber",
+      "gender": "牝马",
+      "birthYear": 1967,
+      "fatherId": "",
+      "motherId": "",
+      "aliases": [
+        "クリアアンバー(USA)",
+        "Clear Amber(USA)",
+        "Clear Amber"
+      ],
+      "sourceUrl": "https://www.jbis.or.jp/horse/0000380822/",
+      "verifiedAt": "2026-09-25",
+      "verifiedParents": false,
+      "core": false,
+      "displayName": "Clear Amber",
+      "pinyin": "clearamber",
+      "romanizedName": "Clear Amber",
+      "game": {
+        "breedingBase": 50,
+        "distance": null,
+        "surface": null,
+        "growthType": null,
+        "note": "游戏粗略预设；不是JBIS的繁殖评价。资料不足时采用中性生成。"
+      },
+      "verification": "祖先资料／父母尚缺",
+      "regionTags": [
+        "日本"
+      ]
+    },
+    {
       "id": "jbis-0000381167",
       "jbisId": "0000381167",
       "name": "Scarlet Ink(USA)",
@@ -17940,6 +18579,40 @@
       "displayName": "グランマステイーヴンス",
       "pinyin": "グランマステイーヴンス",
       "romanizedName": "guranmasuteiivunsu",
+      "game": {
+        "breedingBase": 50,
+        "distance": null,
+        "surface": null,
+        "growthType": null,
+        "note": "游戏粗略预设；不是JBIS的繁殖评价。资料不足时采用中性生成。"
+      },
+      "verification": "父母已核实",
+      "regionTags": [
+        "日本"
+      ]
+    },
+    {
+      "id": "jbis-0000382776",
+      "jbisId": "0000382776",
+      "name": "ワンスウエド(USA)",
+      "originalName": "ワンスウエド",
+      "aliases": [
+        "ワンスウエド(USA)",
+        "ワンスウエド",
+        "wansuuedo"
+      ],
+      "gender": "牝马",
+      "birthYear": 1984,
+      "fatherId": "jbis-0000335274",
+      "motherId": "jbis-0000391074",
+      "sourceUrl": "https://www.jbis.or.jp/horse/0000302080/",
+      "profileUrl": "https://www.jbis.or.jp/horse/0000382776/",
+      "verifiedAt": "2026-09-25",
+      "verifiedParents": true,
+      "core": false,
+      "displayName": "ワンスウエド",
+      "pinyin": "ワンスウエド",
+      "romanizedName": "wansuuedo",
       "game": {
         "breedingBase": 50,
         "distance": null,
@@ -24841,6 +25514,39 @@
       ]
     },
     {
+      "id": "jbis-0000389121",
+      "jbisId": "0000389121",
+      "name": "Wordys(FR)",
+      "originalName": "Wordys",
+      "aliases": [
+        "Wordys(FR)",
+        "Wordys"
+      ],
+      "gender": "牝马",
+      "birthYear": 1957,
+      "fatherId": "",
+      "motherId": "",
+      "sourceUrl": "https://www.jbis.or.jp/horse/0000098280/",
+      "profileUrl": "https://www.jbis.or.jp/horse/0000389121/",
+      "verifiedAt": "2026-09-25",
+      "verifiedParents": false,
+      "core": false,
+      "displayName": "Wordys",
+      "pinyin": "wordys",
+      "romanizedName": "Wordys",
+      "game": {
+        "breedingBase": 50,
+        "distance": null,
+        "surface": null,
+        "growthType": null,
+        "note": "游戏粗略预设；不是JBIS的繁殖评价。资料不足时采用中性生成。"
+      },
+      "verification": "祖先资料／父母尚缺",
+      "regionTags": [
+        "日本"
+      ]
+    },
+    {
       "id": "jbis-0000389141",
       "jbisId": "0000389141",
       "name": "Affectionately(USA)",
@@ -27631,6 +28337,39 @@
       "verification": "祖先资料／父母尚缺",
       "regionTags": [
         "美国",
+        "日本"
+      ]
+    },
+    {
+      "id": "jbis-0000391074",
+      "jbisId": "0000391074",
+      "name": "Noura(USA)",
+      "originalName": "Noura",
+      "aliases": [
+        "Noura(USA)",
+        "Noura"
+      ],
+      "gender": "牝马",
+      "birthYear": 1978,
+      "fatherId": "",
+      "motherId": "",
+      "sourceUrl": "https://www.jbis.or.jp/horse/0000302080/",
+      "profileUrl": "https://www.jbis.or.jp/horse/0000391074/",
+      "verifiedAt": "2026-09-25",
+      "verifiedParents": false,
+      "core": false,
+      "displayName": "Noura",
+      "pinyin": "noura",
+      "romanizedName": "Noura",
+      "game": {
+        "breedingBase": 50,
+        "distance": null,
+        "surface": null,
+        "growthType": null,
+        "note": "游戏粗略预设；不是JBIS的繁殖评价。资料不足时采用中性生成。"
+      },
+      "verification": "祖先资料／父母尚缺",
+      "regionTags": [
         "日本"
       ]
     },
@@ -33014,6 +33753,39 @@
       ]
     },
     {
+      "id": "jbis-0000404690",
+      "jbisId": "0000404690",
+      "name": "Colorspin(FR)",
+      "originalName": "Colorspin",
+      "aliases": [
+        "Colorspin(FR)",
+        "Colorspin"
+      ],
+      "gender": "牝马",
+      "birthYear": 1983,
+      "fatherId": "",
+      "motherId": "",
+      "sourceUrl": "https://www.jbis.or.jp/horse/0000302080/",
+      "profileUrl": "https://www.jbis.or.jp/horse/0000404690/",
+      "verifiedAt": "2026-09-25",
+      "verifiedParents": false,
+      "core": false,
+      "displayName": "Colorspin",
+      "pinyin": "colorspin",
+      "romanizedName": "Colorspin",
+      "game": {
+        "breedingBase": 50,
+        "distance": null,
+        "surface": null,
+        "growthType": null,
+        "note": "游戏粗略预设；不是JBIS的繁殖评价。资料不足时采用中性生成。"
+      },
+      "verification": "祖先资料／父母尚缺",
+      "regionTags": [
+        "日本"
+      ]
+    },
+    {
       "id": "jbis-0000404708",
       "jbisId": "0000404708",
       "name": "Eliza Blue(USA)",
@@ -37584,17 +38356,18 @@
       "aliases": [
         "ウインドインハーヘア(IRE)",
         "Wind in Her Hair(IRE)",
-        "Wind in Her Hair"
+        "Wind in Her Hair",
+        "风中秀发"
       ],
       "sourceUrl": "https://www.jbis.or.jp/horse/0000430846/",
       "verifiedAt": "2026-09-20",
       "verifiedParents": true,
-      "core": false,
-      "displayName": "Wind in Her Hair",
-      "pinyin": "windinherhair",
+      "core": true,
+      "displayName": "风中秀发",
+      "pinyin": "fzxf",
       "romanizedName": "Wind in Her Hair",
       "game": {
-        "breedingBase": 50,
+        "breedingBase": 90,
         "distance": null,
         "surface": null,
         "growthType": null,
@@ -37604,7 +38377,8 @@
       "regionTags": [
         "日本",
         "欧洲"
-      ]
+      ],
+      "region": "日本"
     },
     {
       "id": "jbis-0000430858",
@@ -44520,6 +45294,41 @@
       ]
     },
     {
+      "id": "jbis-0001044299",
+      "jbisId": "0001044299",
+      "name": "Curren Chan(JPN)",
+      "originalName": "Curren Chan",
+      "gender": "牝马",
+      "birthYear": 2007,
+      "fatherId": "jbis-0000615577",
+      "motherId": "jbis-0000316290",
+      "aliases": [
+        "カレンチャン",
+        "Curren Chan(JPN)",
+        "Curren Chan",
+        "真机伶"
+      ],
+      "sourceUrl": "https://www.jbis.or.jp/horse/0001044299/",
+      "verifiedAt": "2026-09-25",
+      "verifiedParents": true,
+      "core": true,
+      "region": "日本",
+      "displayName": "真机伶",
+      "pinyin": "zjl",
+      "romanizedName": "Curren Chan",
+      "game": {
+        "breedingBase": 65,
+        "distance": 1200,
+        "surface": "草地",
+        "growthType": "普迟",
+        "note": "游戏粗略预设；不是JBIS的繁殖评价。资料不足时采用中性生成。"
+      },
+      "verification": "父母已核实",
+      "regionTags": [
+        "日本"
+      ]
+    },
+    {
       "id": "jbis-0001048481",
       "jbisId": "0001048481",
       "name": "Reizend(JPN)",
@@ -45021,6 +45830,41 @@
         "note": "游戏粗略预设；不是JBIS的繁殖评价。资料不足时采用中性生成。"
       },
       "verification": "祖先资料／父母尚缺",
+      "regionTags": [
+        "日本"
+      ]
+    },
+    {
+      "id": "jbis-0001104811",
+      "jbisId": "0001104811",
+      "name": "Gold Ship(JPN)",
+      "originalName": "Gold Ship",
+      "gender": "牡马",
+      "birthYear": 2009,
+      "fatherId": "jbis-0000286968",
+      "motherId": "jbis-0000329411",
+      "aliases": [
+        "ゴールドシップ",
+        "Gold Ship(JPN)",
+        "Gold Ship",
+        "黄金船"
+      ],
+      "sourceUrl": "https://www.jbis.or.jp/horse/0001104811/",
+      "verifiedAt": "2026-09-25",
+      "verifiedParents": true,
+      "core": true,
+      "region": "日本",
+      "displayName": "黄金船",
+      "pinyin": "hjc",
+      "romanizedName": "Gold Ship",
+      "game": {
+        "breedingBase": 65,
+        "distance": 2500,
+        "surface": "草地",
+        "growthType": "普早",
+        "note": "游戏粗略预设；不是JBIS的繁殖评价。资料不足时采用中性生成。"
+      },
+      "verification": "父母已核实",
       "regionTags": [
         "日本"
       ]
@@ -48707,22 +49551,22 @@
     {
       "region": "日本",
       "sex": "牡马",
-      "count": 30,
+      "count": 33,
       "eras": [
         7,
+        11,
         9,
-        8,
         6
       ]
     },
     {
       "region": "日本",
       "sex": "牝马",
-      "count": 50,
+      "count": 54,
       "eras": [
         10,
-        16,
-        14,
+        19,
+        15,
         10
       ]
     },
@@ -48861,6 +49705,56 @@
       "id": "jbis-0000385402",
       "horse": "Sash of Honour(GB)",
       "path": "Dyna Sash(JPN)／母母母"
+    },
+    {
+      "id": "jbis-0000097964",
+      "horse": "メジロチエイサー",
+      "path": "Mejiro Dober(JPN)／父母父"
+    },
+    {
+      "id": "jbis-0000097964",
+      "horse": "メジロチエイサー",
+      "path": "Mejiro Dober(JPN)／父母母"
+    },
+    {
+      "id": "jbis-0000042323",
+      "horse": "メジロナガサキ",
+      "path": "Mejiro Dober(JPN)／母母父"
+    },
+    {
+      "id": "jbis-0000042323",
+      "horse": "メジロナガサキ",
+      "path": "Mejiro Dober(JPN)／母母母"
+    },
+    {
+      "id": "jbis-0000404690",
+      "horse": "Colorspin(FR)",
+      "path": "T.M. Opera O(JPN)／父母父"
+    },
+    {
+      "id": "jbis-0000404690",
+      "horse": "Colorspin(FR)",
+      "path": "T.M. Opera O(JPN)／父母母"
+    },
+    {
+      "id": "jbis-0000391074",
+      "horse": "Noura(USA)",
+      "path": "T.M. Opera O(JPN)／母母父"
+    },
+    {
+      "id": "jbis-0000391074",
+      "horse": "Noura(USA)",
+      "path": "T.M. Opera O(JPN)／母母母"
+    },
+    {
+      "id": "jbis-0000336203",
+      "horse": "Law Society(USA)",
+      "path": "Manhattan Cafe(JPN)／母父父"
+    },
+    {
+      "id": "jbis-0000336203",
+      "horse": "Law Society(USA)",
+      "path": "Manhattan Cafe(JPN)／母父母"
     },
     {
       "id": "jbis-0000335203",
@@ -49031,6 +49925,26 @@
       "id": "jbis-0000406670",
       "horse": "Witching Hour(USA)",
       "path": "Broom Dance(USA)／母母"
+    },
+    {
+      "id": "jbis-0000334011",
+      "horse": "Busted(GB)",
+      "path": "Wind in Her Hair(IRE)／母父父"
+    },
+    {
+      "id": "jbis-0000334011",
+      "horse": "Busted(GB)",
+      "path": "Wind in Her Hair(IRE)／母父母"
+    },
+    {
+      "id": "jbis-0000390924",
+      "horse": "Highclere(GB)",
+      "path": "Wind in Her Hair(IRE)／母母父"
+    },
+    {
+      "id": "jbis-0000390924",
+      "horse": "Highclere(GB)",
+      "path": "Wind in Her Hair(IRE)／母母母"
     },
     {
       "id": "jbis-0000395126",
@@ -49243,6 +50157,16 @@
       "path": "Zenyatta(USA)／母母母"
     },
     {
+      "id": "jbis-0000166449",
+      "horse": "カズミハルコマ",
+      "path": "Curren Chan(JPN)／母母父"
+    },
+    {
+      "id": "jbis-0000166449",
+      "horse": "カズミハルコマ",
+      "path": "Curren Chan(JPN)／母母母"
+    },
+    {
       "id": "jbis-0000361930",
       "horse": "Ocean Crest(USA)",
       "path": "Surf Club(USA)／父父"
@@ -49271,6 +50195,16 @@
       "id": "jbis-0000412268",
       "horse": "Riviere D'or(USA)",
       "path": "Goldikova(IRE)／母母母"
+    },
+    {
+      "id": "jbis-0000202389",
+      "horse": "パストラリズム",
+      "path": "Gold Ship(JPN)／母母父"
+    },
+    {
+      "id": "jbis-0000202389",
+      "horse": "パストラリズム",
+      "path": "Gold Ship(JPN)／母母母"
     },
     {
       "id": "jbis-0000432426",

@@ -538,6 +538,7 @@
           <div class="home-secondary-actions">
             <button class="secondary" id="homeHelpBtn" type="button">游戏帮助</button>
             <button class="secondary" id="homeChangelogBtn" type="button">更新日志</button>
+            <button class="secondary" id="homeHallBtn" type="button">殿堂 <span id="homeHallCount">0／10</span></button>
           </div>
         </div>
         <footer class="site-footer">
@@ -773,6 +774,7 @@
                   <button class="secondary more-action" id="newCareerBtn" type="button"><strong>开始新生涯</strong><span>重新选择血统、练马师与模式</span></button>
                   <button class="secondary more-action" id="workspaceHelpBtn" type="button"><strong>游戏帮助</strong><span>查看属性、规则与操作说明</span></button>
                   <button class="secondary more-action" id="workspaceChangelogBtn" type="button"><strong>更新日志</strong><span>查看近期改动和后续计划</span></button>
+                  <button class="secondary more-action" id="moreHallBtn" type="button"><strong>我的殿堂 <span id="moreHallCount">0／10</span></strong><span>管理收藏赛马、回顾战绩与血统</span></button>
                 </div>
                 <div class="workspace-save-card">
                   <div><p class="eyebrow">本机存档</p><p class="muted" id="workspaceSaveStatusText">暂无存档</p></div>
@@ -788,6 +790,9 @@
         <div class="drawer-header"><div><p class="eyebrow">使用说明</p><h2>游戏帮助</h2></div><button class="secondary" type="button" data-help-close="helpPanel">关闭</button></div>
         <div class="drawer-scroll">${ns.Help ? ns.Help.attributeHelpHtml : ""}</div>
       </aside>
+      <dialog class="hall-dialog" id="hallDialog" aria-labelledby="hallDialogTitle">
+        <div class="hall-dialog-shell"><header class="hall-dialog-header"><div><p class="eyebrow">生涯收藏</p><h2 id="hallDialogTitle">我的殿堂</h2></div><button class="secondary" type="button" data-hall-close>关闭</button></header><div id="hallStorageNotice" class="hall-storage-notice" role="status" hidden></div><div id="hallDialogBody"></div></div>
+      </dialog>
       <div class="race-result-overlay" id="raceResultDialog" role="dialog" aria-modal="true" aria-labelledby="raceResultTitle" hidden>
         <section class="race-result-dialog" id="raceResultContent"></section>
       </div>
@@ -1327,7 +1332,7 @@
               <div class="grade-list">${renderGradeList(h.trackAptitudes)}</div>
             </div>
           </div>
-          ${(career.gameMode || h.gameMode || 'normal') === 'normal' ? ns.CareerBloodlineUI?.retirementTable(h) || '' : ''}
+          ${['normal', 'roguelike'].includes(career.gameMode || h.gameMode || 'normal') ? (ns.CareerBloodlineUI?.retirementTable(h) || '') : ''}${['normal', 'legend', 'roguelike'].includes(career.gameMode || h.gameMode || 'normal') ? (ns.HallUI?.retirementAction(career, summary) || '') : ''}
         </div>
       `;
     }

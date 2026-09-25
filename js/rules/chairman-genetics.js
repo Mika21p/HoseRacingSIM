@@ -30,7 +30,16 @@
   }
   function applyTemplate(w,h,t){
     const g=assigned(t.id), patch=w.templateOverrides?.find(p=>p.id===t.id)?.patch?.game||{};
-    if(g){
+    if(t.source==='hall'&&t.game?.genetics){
+      const data=t.game, genetics=copy(data.genetics);h.genetics=genetics;
+      setValues(w,h,genetics.quality??data.breedingBase??50,genetics.stability??50);
+      h.surfaceGrades=copy(data.surfaceGrades||genetics.surfaceGrades||{});h.trackAptitudes=copy(data.trackAptitudes||genetics.trackAptitudes||{});
+      const distance=data.distance||genetics.distance||{min:1800,core:2000,max:2200};
+      Object.assign(h,{distMin:distance.min,coreDist:distance.core,distMax:distance.max,growthType:data.growthType||genetics.growthType||h.growthType,
+        temperamentLabel:data.temperamentLabel||genetics.temperamentLabel||h.temperamentLabel,heavyType:data.heavyType||genetics.heavyType||h.heavyType});
+      h.surfacePref=ns.HorseRules.deriveSurfacePreference(h.surfaceGrades);h.distType=W().category(h.coreDist);h.temperament=ns.HorseRules.temperamentValue(h.temperamentLabel);
+      const peak=ns.HorseRules.generatePeak(h.growthType);h.peakStart=peak.start;h.peakEnd=peak.end;
+    }else if(g){
       h.genetics=copy(g);setValues(w,h,patch.breedingBase??g.quality,g.stability);
       h.surfaceGrades=copy(g.surfaceGrades);h.trackAptitudes=copy(g.trackAptitudes);
       Object.assign(h,{distMin:g.distance.min,coreDist:g.distance.core,distMax:g.distance.max,growthType:g.growthType,temperamentLabel:g.temperamentLabel,heavyType:g.heavyType});

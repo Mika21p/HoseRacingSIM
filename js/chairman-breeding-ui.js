@@ -4,14 +4,14 @@
   const labels = { none: "未留种", candidate: "待用", active: "繁殖中", retired: "繁殖引退", template: "基础资料", juvenile: "幼驹", ancestor: "祖先档案" };
   ns.ChairmanBreedingUI = { create(c) {
     const { escape: e, button: b, input, select, modal } = c;
-    const name = (id) => {const h=B.get(c.world,id)||(ns.ChairmanEditor?.templates(c.world)||ns.ChairmanPedigrees.records).find(h=>h.id===id);return h?.displayName||h?.name||h?.originalName||"未记录";};
+    const name = (id) => {const h=B.get(c.world,id)||(B.templates(c.world)).find(h=>h.id===id);return h?.displayName||h?.name||h?.originalName||"未记录";};
     const link = (id, text) => id ? b("pedigree", text || name(id), id, 'class="cm-link"') : "未记录";
     const data = (form) => Object.fromEntries(new FormData(form));
     async function prefs(values) { if (c.store.writable) await c.commit(W.edit(c.world, "ui", values)); else Object.assign(c.world.ui, values); }
     const page = (result, action = "breedPage") => `<div class="cm-pagination">${b(action, "上一页", Math.max(0, result.offset - 50), result.offset ? "" : "disabled")}<span>共${result.total}条 · 第${Math.floor(result.offset / 50) + 1}页</span>${b(action, "下一页", result.offset + 50, result.more ? "" : "disabled")}</div>`;
-    const sources = [["", "全部"], ["historical", "史实基础资料"], ["foundation", "架空始祖"], ["bred", "自动繁殖"], ["external", "外来二岁马"], ["custom", "自建"], ["ai", "随机马"], ["imported", "导入家系"], ["imported-family", "家系引入"] ];
+    const sources = [["", "全部"], ["hall", "殿堂引入"], ["historical", "史实基础资料"], ["foundation", "架空始祖"], ["bred", "自动繁殖"], ["external", "外来二岁马"], ["custom", "自建"], ["ai", "随机马"], ["imported", "导入家系"], ["imported-family", "家系引入"] ];
     function rows(result) {
-      return `<div class="cm-table-wrap"><table data-table="breeding" data-primary-columns="0,1,4" data-name-column="0"><thead><tr><th>名字</th><th>出生／性别／地区</th><th>父</th><th>母</th><th>来源／状态／实绩评价</th><th>收藏</th></tr></thead><tbody>${result.rows.map((h) => `<tr data-row-id="${e(h.id)}"><td>${link(h.id, h.name)}${h.playerModified?"<small>玩家修改</small>":""}${h.disabled?"<small>已停用</small>":""}${ns.ChairmanEditor?.enabled(c.world)&&h.strength!=null?`<small>能力 ${h.strength} · 配种 ${h.breedingStrength??"—"}</small>`:""}</td><td>${h.source === "imported" ? "模板" : h.status === "template" ? "史实" : "游戏"}${h.birthYear}年 · ${e(h.gender)}<small>${e(h.region)}</small></td><td>${link(h.fatherId)}</td><td>${link(h.motherId)}</td><td>${e(sources.find((s) => s[0] === h.source)?.[1] || h.source)}<small>${e(labels[h.breedingStatus] || labels[h.status] || h.status)} · ${e(h.grade)}${h.assessment?` · ${e(h.assessment.confidence)} · ${h.assessment.starters}匹出赛子代 · ${e(h.assessment.trend)}`:""}</small></td><td>${b("breedFavorite", (c.world.ui.breedingFavorites || []).includes(h.id) ? "★ 已收藏" : "☆ 收藏", h.id)}</td></tr>`).join("")}</tbody></table></div>`;
+      return `<div class="cm-table-wrap"><table data-table="breeding" data-primary-columns="0,1,4" data-name-column="0"><thead><tr><th>名字</th><th>出生／性别／地区</th><th>父</th><th>母</th><th>来源／状态／实绩评价</th><th>收藏</th></tr></thead><tbody>${result.rows.map((h) => `<tr data-row-id="${e(h.id)}"><td>${link(h.id, h.name)}${h.playerModified?"<small>玩家修改</small>":""}${h.disabled?"<small>已停用</small>":""}${ns.ChairmanEditor?.enabled(c.world)&&h.strength!=null?`<small>能力 ${h.strength} · 配种 ${h.breedingStrength??"—"}</small>`:""}</td><td>${h.source === "hall" ? "殿堂" : h.source === "imported" ? "模板" : h.status === "template" ? "史实" : "游戏"}${h.birthYear == null ? "· 年代未知" : `${h.birthYear}年`} · ${e(h.gender)}<small>${e(h.region)}</small></td><td>${link(h.fatherId)}</td><td>${link(h.motherId)}</td><td>${e(sources.find((s) => s[0] === h.source)?.[1] || h.source)}<small>${e(labels[h.breedingStatus] || labels[h.status] || h.status)} · ${e(h.grade)}${h.assessment?` · ${e(h.assessment.confidence)} · ${h.assessment.starters}匹出赛子代 · ${e(h.assessment.trend)}`:""}</small></td><td>${b("breedFavorite", (c.world.ui.breedingFavorites || []).includes(h.id) ? "★ 已收藏" : "☆ 收藏", h.id)}</td></tr>`).join("")}</tbody></table></div>`;
     }
     async function render(tab) {
       if (tab !== "breeding") return false;
@@ -20,7 +20,7 @@
         c.body.innerHTML = `<h2>血统与世代</h2><p>启用后从当前年份规划配种，次年出生，二岁出道。已有赛马的竞赛参数保持不变，不补造过去亲缘。</p>${b("breedEnable", "启用自动繁殖")}${b("breedView", "基础血统库", "library")}${b("contentImport", "导入血统家族包", "family")}`; return true;
       }
       const p = w.ui.breedingFilter || { view: "active" }, view = p.view || "active";
-      let html = `<div class="cm-breeding-nav"><div class="cm-tabs">${[["library", "基础血统库"], ["active", "当前繁殖群"], ["candidate", "待用马"], ["plans", "年度配种"], ["young", "幼驹"], ["boards", "繁殖榜单"], ["families", "母父与母系"], ["report", "年度报告"]].map(([id, label]) => b("breedView", label, id, view === id ? 'aria-current="page"' : "")).join("")}</div>${UI.more(b("breedFoundation", "建立基础繁殖群")+b("contentImport","导入血统家族包","family"))}</div>`;
+      let html = `<div class="cm-breeding-nav"><div class="cm-tabs">${[["library", "基础血统库"], ["active", "当前繁殖群"], ["candidate", "待用马"], ["plans", "年度配种"], ["young", "幼驹"], ["boards", "繁殖榜单"], ["families", "母父与母系"], ["report", "年度报告"]].map(([id, label]) => b("breedView", label, id, view === id ? 'aria-current="page"' : "")).join("")}</div>${UI.more(b("breedFoundation", "建立基础繁殖群")+(ns.HallOfFame?.chairmanTemplates?.().some(t=>t.core)?b("breedHallImport","引入殿堂马"):"")+b("contentImport","导入血统家族包","family"))}</div>`;
       if (["families","report"].includes(view)) {html+=await ns.ChairmanBloodlineUI.render(c,view,p);
       } else if (view === "plans") {
         const copy = W.clone(w); let planned = [], error = "";
@@ -46,7 +46,7 @@
     }
     function tree(id, level = 0, library = false, childSide = null) {
       const depth = 3 - level, ancestors = [];
-      const templates = ns.ChairmanEditor?.templates(c.world)||ns.ChairmanPedigrees.records;
+      const templates = B.templates(c.world);
       const get = key => library ? templates.find(v=>v.id===key) : B.get(c.world,key);
       const lineLabels=new Map(ns.BloodlineCatalog.lines.map(l=>[l.id,l.label]));
       const node = (key, path) => {const h=get(key),g=h?.genetics||ns.BloodlineCatalog.assignments.find(a=>a.id===h?.id)?.genetics;return {id:h?.id||null,name:h?.displayName||h?.name||h?.originalName||'未知',path,broodmareSire:childSide==='motherId'&&path==='父',lineLabel:lineLabels.get(g?.lineId)||(g?.lineId?.startsWith('fictional:')?'架空家系':null),factors:g?.factors||[]};};
@@ -63,7 +63,7 @@
 
     const relations = new Map();
     async function content(id, view = "pedigree", offset = 0) {
-      const w = c.world, t = (ns.ChairmanEditor?.templates(c.world)||ns.ChairmanPedigrees.records).find((h) => h.id === id), raw = B.get(w, id), h = raw ? B.publicHorse(w, raw) : t;
+      const w = c.world, t = (B.templates(c.world)).find((h) => h.id === id), raw = B.get(w, id), h = raw ? B.publicHorse(w, raw) : t;
       if (!h) throw new Error("此亲缘尚未核实，资料未收录。");
       const relation = relations.get(id) || "direct";
       let html = "";
@@ -76,14 +76,14 @@
         for (const [title, getter] of [["本年WTR前十", W.rating], ["历代WTR前十", (h) => Math.max(h.breeding?.bestWtr ?? -Infinity, W.rating(h) ?? -Infinity)]]) html += `<section><h3>${title}</h3>${active.filter((h) => getter(h) != null && Number.isFinite(getter(h))).sort((a, b) => getter(b) - getter(a)).slice(0, 10).map((h) => `<p>${link(h.id)} · ${ns.ChairmanRatings.integer(getter(h))}</p>`).join("") || "暂无评分"}</section>`;
         return html + '</div></details>';
       }
-      html += `<div class="cm-toolbar"><div>${raw?.breeding ? `${e(labels[h.breedingStatus])} · 实绩评价 ${e(h.grade)}${h.breedingStrength != null ? `（素质${h.breedingStrength}，稳定度${h.breedingStability??"—"}）` : ""} · 冠军种马 ${h.championYears.length}次` : "基础血统资料"}</div>${UI.more((ns.ChairmanEditor?.enabled(w)?b(raw?"worldEditHorse":"worldEditTemplate",raw?"编辑马匹":"编辑库资料",id)+(raw?b("worldEditReal","真实参数",id):""):"")+b("contentExportFamily","导出家族模板包",id)+b("breedFavorite", (w.ui.breedingFavorites || []).includes(id) ? "★ 已收藏" : "☆ 收藏", id) + (raw && B.available(w, raw) ? b("breedPin", h.pinned ? "取消指定保留" : "指定保留", id) + b("breedRetire", "勒令繁殖引退", id) : "") + (t?.core&&!t.disabled ? b("breedIntroduce", "引入世界（预览）", id) : ""))}</div>${raw&&h.assessment?`<p>实绩评价：${e(h.grade)} · ${e(h.assessment.confidence)} · ${e(h.assessment.trend)} · 出赛子代${h.assessment.starters}匹，未出赛${h.assessment.unraced}匹。子代表现${e(h.assessment.consistency)}，受配偶及竞赛环境影响。</p>`:""}${tree(id, 0, !!t)}<details class="cm-help"><summary>资料与来源</summary><p>${e(h.originalName || h.name)} · ${e((h.aliases || []).join("、"))}</p><p>编号 ${e(h.id)} · ${raw ? "游戏" : "史实"}${h.birthYear}年出生 · ${e(h.gender)}</p>${raw?.historicalBirthYear ? `<p>史实出生年 ${raw.historicalBirthYear}</p>` : ""}${h.sourceUrl && /^https:\/\/www\.jbis\.(jp|or\.jp)\/horse\/\d+\//.test(h.sourceUrl) ? `<a href="${e(h.sourceUrl)}" target="_blank" rel="noopener">JBIS来源资料</a>` : ""}</details>`;
+      html += `<div class="cm-toolbar"><div>${raw?.breeding ? `${e(labels[h.breedingStatus])} · 实绩评价 ${e(h.grade)}${h.breedingStrength != null ? `（素质${h.breedingStrength}，稳定度${h.breedingStability??"—"}）` : ""} · 冠军种马 ${h.championYears.length}次` : "基础血统资料"}</div>${UI.more((ns.ChairmanEditor?.enabled(w)?(raw?b("worldEditHorse","编辑马匹",id)+b("worldEditReal","真实参数",id):t?.source==="hall"?"":b("worldEditTemplate","编辑库资料",id)):"")+b("contentExportFamily","导出家族模板包",id)+b("breedFavorite", (w.ui.breedingFavorites || []).includes(id) ? "★ 已收藏" : "☆ 收藏", id) + (raw && B.available(w, raw) ? b("breedPin", h.pinned ? "取消指定保留" : "指定保留", id) + b("breedRetire", "勒令繁殖引退", id) : "") + (t?.core&&!t.disabled ? b("breedIntroduce", "引入世界（预览）", id) : ""))}</div>${raw?.preHallCareer?.summary?`<details class="cm-help"><summary>殿堂引入前履历：${h.preHallCareer.summary.starts}战${h.preHallCareer.summary.wins}胜 · 一级赛${h.preHallCareer.summary.gradeOneWins}胜</summary><div class="cm-table-wrap"><table><thead><tr><th>时间</th><th>赛事</th><th>结果</th></tr></thead><tbody>${(h.preHallCareer.races||[]).slice().reverse().map(r=>`<tr><td>${e(r.public?.timeLabel||"—")}</td><td>${e(r.hidden?.race?.name||r.race?.name||"未知赛事")}</td><td>${e(r.public?.rankLabel||"着外")}</td></tr>`).join("")||'<tr><td colspan="3">暂无赛绩</td></tr>'}</tbody></table></div></details>`:""}${raw&&h.assessment?`<p>实绩评价：${e(h.grade)} · ${e(h.assessment.confidence)} · ${e(h.assessment.trend)} · 出赛子代${h.assessment.starters}匹，未出赛${h.assessment.unraced}匹。子代表现${e(h.assessment.consistency)}，受配偶及竞赛环境影响。</p>`:""}${tree(id, 0, !!t)}<details class="cm-help"><summary>资料与来源</summary><p>${e(h.originalName || h.name)} · ${e((h.aliases || []).join("、"))}</p><p>编号 ${e(h.id)} · ${raw ? (raw.sourceKind === "hall" ? "殿堂引入" : "游戏") : "史实"}${h.birthYear}年出生 · ${e(h.gender)}</p>${raw?.historicalBirthYear ? `<p>史实出生年 ${raw.historicalBirthYear}</p>` : ""}${h.sourceUrl && /^https:\/\/www\.jbis\.(jp|or\.jp)\/horse\/\d+\//.test(h.sourceUrl) ? `<a href="${e(h.sourceUrl)}" target="_blank" rel="noopener">JBIS来源资料</a>` : ""}</details>`;
       if(t?.playerModified)html+='<small>玩家修改；原始来源资料仅供对照。</small>';if(t&&ns.ChairmanEditor?.enabled(w))html+=`<details><summary>生成预设（未来引入）</summary><p>配种基准 ${e(t.game?.breedingBase??'默认')} · 参考距离 ${e(t.game?.distance??'随机')} · ${e(t.game?.surface||'默认场地')} · ${e(t.game?.growthType||'随机成长')}</p></details>`; return html;
     }
     async function detail(id, offset = 0, relation = "direct", view = "pedigree") {
       relations.set(id, relation);
       await prefs({ breedingRecent: [...new Set([id, ...(c.world.ui.breedingRecent || [])])].slice(0, 30) });
       if (c.world.horses.some((h) => h.id === id)) return ns.ChairmanApp.horseDetail(id, offset, view);
-      const h = B.get(c.world, id) || (ns.ChairmanEditor?.templates(c.world)||ns.ChairmanPedigrees.records).find((h) => h.id === id);
+      const h = B.get(c.world, id) || (B.templates(c.world)).find((h) => h.id === id);
       modal(h?.displayName || h?.name || h?.originalName || "血统档案", `<div class="cm-tabs">${b("pedigree", "血统", id)}${B.get(c.world, id) ? b("breedDescendants", "后代", id, 'data-relation="direct"') : ""}</div>${await content(id, view, offset)}`, { key: `pedigree:${id}`, render: () => detail(id, offset, relation, view) });
     }
     function parentFields(form, values = {}) {
@@ -153,6 +153,11 @@
       else if (action === "breedPin" || action === "breedRetire") { await c.commit(B.edit(w, action === "breedPin" ? "pin" : "retire", { id })); await detail(id); }
       else if (action === "breedCancel") { await c.commit(B.edit(w, "cancelMating", { id })); await c.render(); }
       else if (action === "breedFoundation" || action === "breedIntroduce") modal(action === "breedFoundation" ? "建立基础繁殖群" : "引入基础个体", `<form data-form="${action}">${input("templateId", "资料编号", id || "")}${select("region", "引入地区", W.regionNames(w), "日本")}${action === "breedFoundation" ? select("source", "来源包", [["", "按地区参考环境"], ...W.REGIONS, ["mixed", "混合"]], "") : ""}<p>引入年龄为8～14岁，祖先共享已有身份。同一资料只实例化一次，年代或亲缘冲突将阻止引入。</p><button>预览具体名单</button></form>`);
+      else if (action === "breedHallImport") {
+        const choices = (ns.HallOfFame?.chairmanTemplates?.() || []).filter(t => t.core && !t.disabled);
+        if (!choices.length) throw new Error("当前殿堂没有可引入的赛马。");
+        modal("引入殿堂赛马", `<form data-form="breedHallImport">${select("templateId", "殿堂赛马", choices.map(t => [t.id, `${t.displayName} · ${t.gender}`]), choices[0].id)}${select("region", "引入地区", W.regionNames(w), "日本")}<p>殿堂赛马以已退役繁殖马进入世界；出生能力、适性与血统按殿堂档案保存，并附带引入前生涯记录。</p><button>预览具体名单</button></form>`);
+      }
       else if (action === "breedMate") matingForm();
       else if (action === "breedApplyCreation") { if (!creation || creation.base !== w.revision) throw new Error("世界已变化，请重新预览。"); await c.commit(creation.out); creation = null; c.dialog.close(); await c.render(); }
       else if (action === "breedApplyIntroduction") { if (!introduction || introduction.base !== w.revision) throw new Error("世界已变化，请重新预览。"); await c.commit(introduction.out); introduction = null; c.dialog.close(); await c.render(); }
@@ -169,7 +174,7 @@
       if (kind === "breedFilter") { p.normalSort=["strength","breedingStrength"].includes(p.sort)?w.ui.breedingFilter?.normalSort??"":p.sort||"";await prefs({ breedingFilter: { view: w.ui.breedingFilter?.view || "active", ...p, offset: 0 } }); await c.render(); }
       else if (kind === "breedBoard") { await prefs({ breedingFilter: { view: w.ui.breedingFilter?.view === "report" ? "report" : "boards", year: p.year } }); await c.render(); }
       else if (kind === "breedMating") { await c.commit(B.edit(w, "mating", p)); c.dialog.close(); await c.render(); }
-      else if (kind === "breedFoundation" || kind === "breedIntroduce") {
+      else if (kind === "breedFoundation" || kind === "breedIntroduce" || kind === "breedHallImport") {
         const out = B.edit(w, kind === "breedFoundation" ? "foundation" : "introduce", p), before = new Set(B.all(w).map((h) => h.id)), added = B.all(out.world).filter((h) => !before.has(h.id));
         introduction = { base: w.revision, out }; modal("确认引入名单", `<p>将新增${added.length}个个体及祖先档案。已有同来源个体复用，不恢复年轻。</p>${added.filter((h) => h.breeding).slice(0, 50).map((h) => `<p>${e(h.name)} · ${W.ageOf(w, h)}岁 · 父${e(B.get(out.world, h.fatherId)?.name || "未记录")} / 母${e(B.get(out.world, h.motherId)?.name || "未记录")}</p>`).join("")}${b("breedApplyIntroduction", "保存引入结果")}`);
       } else return false;

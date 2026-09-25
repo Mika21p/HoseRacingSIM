@@ -103,6 +103,7 @@
     const workspaceChallengeNav = document.getElementById("workspaceChallengeNav");
     const isRogueCareer = !!(state.career && state.career.gameMode === "roguelike");
     if (homeScreen) homeScreen.hidden = state.activeScreen !== "home";
+    if (ns.HallUI) { const label = ns.HallUI.countText(); for (const id of ["homeHallCount", "moreHallCount"]) { const node = document.getElementById(id); if (node) node.textContent = label.replace("殿堂 ", ""); } }
     const hasStandardCareer = hasSavedGame();
     const savedMode = savedCareerMode();
     // 普通生涯与传奇模式共用一份存档，继续入口只出现在与存档模式相符的卡片上。
@@ -127,7 +128,7 @@
     }
     if (workspaceChallengeNav) workspaceChallengeNav.hidden = !isRogueCareer;
     const bloodlineNav = document.getElementById("workspaceBloodlineNav");
-    if (bloodlineNav) bloodlineNav.hidden = isRogueCareer;
+    if (bloodlineNav) bloodlineNav.hidden = false;
     ns.CareerBloodlineUI.render(document.getElementById("bloodlinePanel"), state.career);
     ns.UI.renderWorkspaceStatus(document.getElementById("workspaceStatus"), state.career);
     ns.UI.renderHorse(document.getElementById("horsePanel"), state.career, {
@@ -197,7 +198,7 @@
   function applyWorkspaceView() {
     const isRogueCareer = !!(state.career && state.career.gameMode === "roguelike");
     const allowedViews = isRogueCareer
-      ? ["action", "horse", "challenge", "more"]
+      ? ["action", "horse", "bloodline", "challenge", "more"]
       : ["action", "horse", "bloodline", "more"];
     const view = allowedViews.includes(state.activeView)
       ? state.activeView
@@ -226,7 +227,7 @@
   function setWorkspaceView(view, options) {
     const isRogueCareer = !!(state.career && state.career.gameMode === "roguelike");
     const allowedViews = isRogueCareer
-      ? ["action", "horse", "challenge", "more"]
+      ? ["action", "horse", "bloodline", "challenge", "more"]
       : ["action", "horse", "bloodline", "more"];
     if (!allowedViews.includes(view)) return;
     const opts = options || {};
@@ -359,7 +360,7 @@
     if (["career", "settled"].includes(run.phase) && run.activeCareer) {
       state.career = run.activeCareer;
       state.careerSource = "rogue";
-      state.retiredSummary = run.retiredSummary || null;
+      state.retiredSummary = run.retiredSummary || (run.activeCareer?.retired ? ns.CareerRules.retire(run.activeCareer) : null);
       showCareer();
       return;
     }
@@ -373,7 +374,8 @@
 
   function startRogueRun() {
     if (state.rogueSave.run) return;
-    state.rogueSave.run = ns.RoguelikeRules.createRun(state.rogueSave.profile);
+    try { state.rogueSave.run = ns.RoguelikeRules.createRun(state.rogueSave.profile, { includeHall: !!document.getElementById("rogueHallOptIn")?.checked }); }
+    catch (error) { window.alert(error.message); return; }
     state.rogueShopNotice = "";
     state.rogueCandidateIndex = 0;
     state.rogueInventoryExpanded = false;
@@ -454,7 +456,7 @@
         </section>
         <p class="rogue-shop-notice" role="status" aria-live="polite">${escapeHtml(state.rogueShopNotice)}</p>
         <div class="rogue-start-card">
-          <div><p class="eyebrow">库存已准备好</p><h2>进入三匹候选的选马页面</h2><p>无需购买商品也能开始；进入后商店会锁定至本局结算。</p></div>
+          <div><p class="eyebrow">库存已准备好</p><h2>进入三匹候选的选马页面</h2><p>无需购买商品也能开始；进入后商店会锁定至本局结算。</p><label class="rogue-hall-option"><input id="rogueHallOptIn" type="checkbox" ${ns.HallOfFame?.count() ? "" : "disabled"}> 将殿堂马加入本局随机父母池（默认关闭）${ns.HallOfFame?.count() ? ` · 当前${ns.HallOfFame.count()}匹` : " · 殿堂暂无可用马"}</label></div>
           <span class="rogue-mobile-dock-balance">余额 <b>${state.rogueSave.profile.honorCoins}</b></span>
           <button type="button" data-rogue-start>进入选马</button>
         </div>
@@ -510,10 +512,7 @@
           <span><small>毛色</small><b>${escapeHtml(h.coat)}</b></span>
           <span><small>体重</small><b>${h.weight}kg</b></span>
         </div>
-        <div class="rogue-bloodline-row">
-          <details class="rogue-bloodline"><summary><span>父系</span><strong>${escapeHtml(h.sireName)}</strong></summary><p>${escapeHtml(bloodlineNote("sire", h.sireId))}</p></details>
-          <details class="rogue-bloodline"><summary><span>母系</span><strong>${escapeHtml(h.damName)}</strong></summary><p>${escapeHtml(bloodlineNote("dam", h.damId))}</p></details>
-        </div>
+        <section class="rogue-candidate-pedigree">${ns.CareerBloodlineUI.candidateBloodline(h)}</section>
         ${commentGroupHtml(candidate.initialComments, `${candidate.id}:initial`, "初次评估", false)}
         ${candidate.reviewComments ? commentGroupHtml(candidate.reviewComments, `${candidate.id}:review`, candidate.reviewLabel, true) : ""}
         <div class="rogue-service-groups">${itemControl("refresh", "刷新券")}${itemControl("review", "评语券")}</div>
@@ -1269,7 +1268,7 @@
       if (!restoredCareer) throw new Error("Save payload has no career.");
       state.career = restoredCareer;
       state.careerSource = "standard";
-      state.retiredSummary = payload.state.retiredSummary || null;
+      state.retiredSummary = payload.state.retiredSummary || (restoredCareer.retired ? ns.CareerRules.retire(restoredCareer) : null);
       state.historyExpanded = !!payload.state.historyExpanded;
       state.trainerCommentsCollapsed = !!payload.state.trainerCommentsCollapsed;
       state.adaptationHintsCollapsed = !!payload.state.adaptationHintsCollapsed;
@@ -2480,6 +2479,8 @@
     const homeEraBtn = document.getElementById("homeEraBtn");
     const homeHelpBtn = document.getElementById("homeHelpBtn");
     const homeChangelogBtn = document.getElementById("homeChangelogBtn");
+    const homeHallBtn = document.getElementById("homeHallBtn");
+    const moreHallBtn = document.getElementById("moreHallBtn");
     const copyFeedbackGroupBtn = document.getElementById("copyFeedbackGroupBtn");
     const setupCloseBtn = document.getElementById("setupCloseBtn");
     const newCareerBtn = document.getElementById("newCareerBtn");
@@ -2538,6 +2539,8 @@
     if (homeRogueContinueBtn) homeRogueContinueBtn.addEventListener("click", continueRogue);
     if (homeEraBtn) homeEraBtn.addEventListener("click", openEra);
     if (homeHelpBtn) homeHelpBtn.addEventListener("click", () => openHelp(homeHelpBtn));
+    if (homeHallBtn) homeHallBtn.addEventListener("click", () => ns.HallUI.open());
+    if (moreHallBtn) moreHallBtn.addEventListener("click", () => ns.HallUI.open());
     if (homeChangelogBtn) {
       homeChangelogBtn.addEventListener("click", () => {
         const toggle = document.getElementById("changelogToggleBtn");
@@ -2809,6 +2812,7 @@
       .concat(ns.EraScenarioRegistry ? ns.EraScenarioRegistry.validate() : []);
     if (eraWarnings.length) console.warn("Era scenario data warnings:", eraWarnings);
     bindHistoricalDataLoadNotice();
+    try { await ns.HallOfFame?.open(); } catch (error) { console.warn("殿堂存储暂不可用:", error); }
     loadSavedGame();
     loadRogueGame();
     loadEraGame();
@@ -2820,6 +2824,22 @@
     bindChangelogEvents();
     ns.UI.renderSetup(root);
     ns.CareerBloodlineUI.bindSetup();
+    ns.HallUI?.bind();
+    document.addEventListener("click", async (event) => {
+      const button = event.target.closest("[data-hall-collect]");
+      if (!button) return;
+      event.preventDefault();
+      try {
+        await ns.HallOfFame.add(state.career, state.retiredSummary);
+        refresh();
+        ns.HallUI.render();
+        window.dispatchEvent(new CustomEvent("keiba-hall-changed"));
+      } catch (error) {
+        if (error.message.includes("已满")) ns.HallUI.open();
+        else window.alert(error.message);
+      }
+    });
+    window.addEventListener("keiba-hall-changed", refresh);
     document.getElementById("generateBtn").addEventListener("click", generate);
     bindSetupEvents();
     bindWorkspaceEvents();

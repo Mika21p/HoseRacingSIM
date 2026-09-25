@@ -465,7 +465,7 @@
       ? null
       : (gameMode === "legend" ? R.roll(20) + 80 : R.rollMulti(2, 20) + 60);
     const strength = gameMode === "roguelike"
-      ? rollProfileStrength(strengthProfile, effects)
+      ? rollProfileStrength(strengthProfile, { strengthType: 'standard' })
       : (gameMode === "legend"
         ? rawStrength
         : R.clamp(applyStrengthType(rawStrength, effects.strengthType), 62, 100));

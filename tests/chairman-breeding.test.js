@@ -12,10 +12,10 @@ function year(W, world) {
   return W.finishYear(w);
 }
 const json = (v) => JSON.parse(JSON.stringify(v));
-test('curated core has 30 sires and 50 mares per region, verified parents, shared IDs and acyclic ancestry', () => {
+test('curated core includes the Japanese expansion, verified parents, shared IDs and acyclic ancestry', () => {
   const { rules: n } = setup(), data = n.ChairmanPedigrees, byId = new Map(data.records.map((h) => [h.id, h]));
   assert.equal(byId.size, data.records.length);
-  for (const region of ['日本', '欧洲', '美国']) for (const [gender, count] of [['牡马', 30], ['牝马', 50]]) {
+  for (const region of ['日本', '欧洲', '美国']) for (const [gender, count] of [['牡马', region === '日本' ? 33 : 30], ['牝马', region === '日本' ? 54 : 50]]) {
     const rows = data.records.filter((h) => h.core && h.region === region && h.gender === gender);
     assert.equal(rows.length, count);
     for (const h of rows) {

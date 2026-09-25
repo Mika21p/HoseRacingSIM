@@ -1,0 +1,37 @@
+.hall-dialog { width: min(980px, calc(100vw - 28px)); max-width: 980px; max-height: min(90vh, 900px); padding: 0; border: 1px solid #526176; border-radius: 18px; color: var(--text, #f4f1e9); background: #101923; box-shadow: 0 24px 90px #0009; }
+.hall-dialog::backdrop { background: #05090edb; backdrop-filter: blur(4px); }
+.hall-dialog-shell { max-height: min(90vh, 900px); overflow: auto; padding: clamp(16px, 3vw, 30px); }
+.hall-dialog-header, .hall-detail-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.hall-dialog-header h2 { margin: 0; }
+.hall-list-toolbar { display: flex; flex-wrap: wrap; align-items: end; gap: 12px; margin: 20px 0 14px; }
+.hall-list-toolbar label { display: grid; gap: 5px; color: #c5d0d9; font-size: 13px; }
+.hall-list-toolbar input, .hall-list-toolbar select { min-width: 150px; }
+.hall-list { display: grid; gap: 10px; }
+.hall-card { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: stretch; gap: 10px; padding: 12px; border: 1px solid #344556; border-radius: 12px; background: #17232e; }
+.hall-card-open { display: grid; justify-items: start; gap: 4px; min-width: 0; padding: 4px; text-align: left; color: inherit; border: 0; background: transparent; }
+.hall-card-open strong { font-size: 19px; color: #fff; }
+.hall-card-open span, .hall-card-open small { color: #c5d0d9; overflow-wrap: anywhere; }
+.hall-remove { align-self: center; }
+.hall-empty { padding: 28px 12px; text-align: center; color: #b8c5d1; }
+.hall-data-actions { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px; }
+.hall-file-label { display: inline-flex; align-items: center; cursor: pointer; }
+.hall-file-label input { position: absolute; width: 1px; height: 1px; opacity: 0; }
+.hall-detail > h2 { margin: 20px 0 6px; }
+.hall-detail-top > span { color: #bcc9d4; }
+.hall-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 0; }
+.hall-detail-content { padding-top: 4px; }
+.hall-storage-notice { margin: 16px 0; padding: 12px; border-radius: 8px; background: #5a321d; color: #ffdfbd; }
+.hall-retirement-action { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; margin-top: 18px; padding: 14px 16px; border: 1px solid #566b72; border-radius: 10px; background: #16232a; }
+.hall-retirement-action p { margin: 0; color: #d6e0e4; }
+.rogue-hall-option { display: block; margin-top: 12px; color: #d6e0e4; }
+.rogue-hall-option input { margin-right: 8px; accent-color: #d5a347; }
+@media (max-width: 600px) {
+  .hall-dialog { width: calc(100vw - 16px); max-height: 94vh; }
+  .hall-dialog-shell { max-height: 94vh; padding: 16px 12px; }
+  .hall-card { grid-template-columns: minmax(0, 1fr); }
+  .hall-remove { justify-self: end; }
+  .hall-list-toolbar { align-items: stretch; }
+  .hall-list-toolbar label { flex: 1 1 42%; min-width: 0; }
+  .hall-list-toolbar input, .hall-list-toolbar select { min-width: 0; width: 100%; }
+  .hall-retirement-action { align-items: stretch; }
+}

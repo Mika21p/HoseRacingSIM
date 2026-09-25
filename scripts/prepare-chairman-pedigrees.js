@@ -33,14 +33,22 @@ const groups = [
   [35, 'Tokai Teio|Mejiro McQueen']
 ];
 const bases = new Map(groups.flatMap(([n, list]) => list.split('|').map((name) => [normalize(name), n])));
+// Game-only breeding presets for the Japanese-focused expansion. These are
+// deliberately separate from the sourced identity and parent links.
+for (const [name, base] of [
+  ['Wind in Her Hair', 90], ['Gold Ship', 65], ['Mejiro Dober', 65],
+  ['Manhattan Cafe', 80], ['Curren Chan', 65], ['T.M. Opera O', 35],
+  ['Daiichi Ruby', 65]
+]) bases.set(normalize(name), base);
 const extraNames = { 'Sunday Silence': '周日宁静', 'Northern Dancer': '北地舞人', 'Mr. Prospector': '淘金者', 'Sadler\'s Wells': '鞍匠井', 'Galileo': '伽利略', 'Danehill': '丹山', 'Urban Sea': '都市海洋', 'A.P. Indy': '艾匹印第', 'Tapit': '普鲁笔', 'Into Mischief': '恶作剧', 'Kingman': '皇治', 'La Troienne': '拉托莲', 'Kind': '善良', 'Hasili': '夏西里' };
 for (const h of source.records) {
   const romanized = { 'jbis-0000108334': 'Marble Tosho', 'jbis-0000383510': 'Immense', 'jbis-0001239512': 'Best In The World' }[h.id];
   if (romanized) { h.aliases = [...new Set([...(h.aliases || []), h.originalName])]; h.originalName = romanized; h.nameSourceUrl = `https://www.jbis.or.jp/horse/${h.jbisId}/`; }
   const old = historical.get(normalize(h.originalName)) || japanese.get(h.originalName.normalize('NFKC'));
+  const priorDisplayName = h.displayName, priorPinyin = h.pinyin;
   h.displayName = ['欧洲', '美国'].includes(h.region) ? h.originalName : nameOverrides[h.originalName] || old?.displayNameZh || extraNames[h.originalName] || h.originalName;
   h.aliases = [...new Set([...(h.aliases || []), h.originalName, h.name, h.displayName, ...(old ? [old.name, old.displayNameEn] : [])].filter(Boolean))];
-  h.pinyin = [...h.displayName].map((ch) => B.initial(ch)).join('').toLowerCase();
+  h.pinyin = priorDisplayName === h.displayName && priorPinyin ? priorPinyin : [...h.displayName].map((ch) => B.initial(ch)).join('').toLowerCase();
   h.romanizedName = /[A-Za-z]/.test(h.originalName) ? h.originalName : old?.displayNameEn || kanaIndex(h.originalName);
   h.aliases = [...new Set([...h.aliases, h.romanizedName])];
   const starts = (old?.races || []).map((run) => project.races.find((r) => r.id === run.raceId)).filter(Boolean);

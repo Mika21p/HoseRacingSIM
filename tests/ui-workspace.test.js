@@ -65,15 +65,15 @@ test("home, global metadata and mobile navigation are wired", () => {
   const homeModes = read("js/data/home-modes.js");
   const styles = read("css/styles.css");
   assert.match(index, /styles\.css\?v=20260922-mode-selector-nav/);
-  assert.match(index, /render\.js\?v=20260924-retirement-pedigree/);
-  assert.match(index, /app\.js\?v=20260924-bloodline/);
+  assert.match(index, /render\.js\?v=20260925-hall-v1/);
+  assert.match(index, /app\.js\?v=20260925-hall-v1/);
   assert.match(index, /home-modes\.js\?v=20260923-home-copy/);
   assert.match(index, /golden-road-1998\.js\?v=20260720-era-v5/);
   assert.match(index, /race-simulator\.js\?v=20260920-ratings/);
   assert.match(index, /era-narrative\.js\?v=20260720-era-v5/);
   assert.match(index, /era\.js\?v=20260922-trainer-prose/);
   assert.match(index, /id="appVersion"/);
-  assert.match(changelog, /version: "v0\.16a"/);
+  assert.match(changelog, /version: "v0\.16b"/);
   assert.match(changelog, /version: "v0\.15c"/);
   assert.match(changelog, /nonConditionRaces: 622/);
   assert.match(render, /class="home-mode-grid"/);
@@ -171,7 +171,7 @@ test("roguelike UI keeps an isolated save and the confirmed normal strength form
   assert.match(app, /class="rogue-candidate-dock"/);
   assert.match(app, /rogueCandidateIndex: 0/);
   assert.match(app, /rogueShopCategory: "consumables"/);
-  assert.match(app, /\["action", "horse", "challenge", "more"\]/);
+  assert.match(app, /\["action", "horse", "bloodline", "challenge", "more"\]/);
   assert.match(app, /workspaceChallengeNav\.hidden = !isRogueCareer/);
   assert.match(app, /function challengeHintHtml/);
   assert.match(app, /data-workspace-jump="challenge"/);

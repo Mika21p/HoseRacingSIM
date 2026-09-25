@@ -7,7 +7,7 @@
   const label = { burst: '瞬发', sustained: '持久', attrition: '消耗' };
   const choices = gender => data.roots.map(id => library.get(id)).filter(r => r.gender === gender).map(r => `<option value="${e(r.id)}">${e(r.displayName || r.name)}${r.originalName ? ' · ' + e(r.originalName) : ''}</option>`).join('');
   root.innerHTML = `<h1>血统系统验证台</h1><p class="notice">第二版修订：常规速度软保底 · 本页不写入正式存档</p><p id="datasetNote" class="notice"></p>
-    <div class="controls"><label>试验资料<select name="dataset">${ns.BloodlineCatalog ? '<option value="catalog">完整血统库 · 240匹核心繁殖马</option>' : ''}${ns.BloodlinePilot ? '<option value="pilot">现有种马库 · 12匹父母试赋值</option>' : ''}<option value="fictional">虚构马匹 · 规则对照</option></select></label><label>典型配合<select name="scenario"></select></label>
+    <div class="controls"><label>试验资料<select name="dataset">${ns.BloodlineCatalog ? `<option value="catalog">完整血统库 · ${ns.BloodlineCatalog.roots.length}匹核心繁殖马</option>` : ''}${ns.BloodlinePilot ? '<option value="pilot">现有种马库 · 12匹父母试赋值</option>' : ''}<option value="fictional">虚构马匹 · 规则对照</option></select></label><label>典型配合<select name="scenario"></select></label>
     <label>运行模式<select name="mode"><option value="normal">常规模式：自由幻想配种</option><option value="chairman">主席模式：繁殖素质分化</option></select></label>
     <label>随机种子<input name="seed" type="number" min="0" max="4294967295" value="20260923"></label>
     <label>父马<select name="father">${choices('牡马')}</select></label><label>母马<select name="mother">${choices('牝马')}</select></label></div>

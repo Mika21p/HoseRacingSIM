@@ -14,7 +14,7 @@
   function template(w,id){return templates(w).find(t=>t.id===id);}
   function publicTemplate(w,t){return Object.fromEntries(['id','name','displayName','originalName','aliases','pinyin','romanizedName','gender','coat','birthYear','historicalBirthYear','fatherId','motherId','region','regionTags','sourceUrl','sourceKey','grade','core','disabled','playerModified','status','source'].filter(k=>t[k]!==undefined).map(k=>[k,copy(t[k])]));}
   function project(w,h){
-    const keys=[...identity,'id','origin','sourceKind','status','annual','lifetime','booked','target','seriesTarget','seriesTitles','locationRegion','restUntil','editedByWorld'];
+    const keys=[...identity,'id','origin','sourceKind','hallSourceId','preHallCareer','status','annual','lifetime','booked','target','seriesTarget','seriesTitles','locationRegion','restUntil','editedByWorld'];
     const p=Object.fromEntries(keys.filter(k=>h[k]!==undefined).map(k=>[k,copy(h[k])]));
     if(enabled(w)||h.origin==='custom'){p.real=Object.fromEntries(traits.filter(k=>h[k]!==undefined).map(k=>[k,copy(h[k])]));if(enabled(w)){p.real.breedingStrength=h.breeding?.strength??h.breedingStrength??null;p.real.breedingStability=h.genetics?.stability??null;}p.real.decline=h.maturity?.decline??null;p.real.lastInjury=copy(h.lastInjury);}
     return p;

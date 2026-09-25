@@ -8,7 +8,12 @@
   const all = (w) => [...w.horses, ...(w.pedigrees || [])];
   const map = (w) => new Map(all(w).map((h) => [h.id, h]));
   const get = (w, id) => w.horses.find((h) => h.id === id) || (w.pedigrees || []).find((h) => h.id === id);
-  const templates = w => ns.ChairmanEditor?.staticTemplates(w) || ns.ChairmanPedigrees?.records || [];
+  const templates = w => {
+    const base = ns.ChairmanEditor?.templates(w) || ns.ChairmanPedigrees?.records || [];
+    const hall = ns.HallOfFame?.chairmanTemplates?.() || [];
+    const known = new Set(base.map(t => t.id));
+    return [...base, ...hall.filter(t => !known.has(t.id))];
+  };
   function seeded(w, action) {
     if (activeRandom.has(w)) return action();
     const random = R.seeded(w.breeding.rngState); activeRandom.add(w);
@@ -121,13 +126,14 @@
     if (existing) assert(year(w) - existing.birthYear >= 3 && year(w) - existing.birthYear < (gender === "牝马" ? 22 : 25), "已有祖先年龄不适合留种，不能通过重新引入恢复年轻。");
     const h = W().addHorse(w, { age: existing ? year(w) - existing.birthYear : R.rollRange(8, 14), homeRegion: region, gender,
       ...(existing ? { id: existing.id, fatherId: existing.fatherId, motherId: existing.motherId, parentsLocked: true } : {}),
-      status: "retired", origin: "ai", sourceKind: template ? "historical" : "foundation" });
+      status: "retired", origin: "ai", sourceKind: template ? (template.source === "hall" ? "hall" : "historical") : "foundation" });
     w.horses.pop(); w.totalHorses--;
     if (w.honorProfiles) w.honorProfiles = w.honorProfiles.filter(p => p.id !== h.id);
     if (existing) w.pedigrees[w.pedigrees.indexOf(existing)] = h; else (w.pedigrees ||= []).push(h);
     h.name = template ? template.displayName || template.originalName : `外来始祖·${h.name}`;
     h.templateId = template?.id || ""; h.templateVersion = w.breeding.templateVersion; h.historicalBirthYear = template?.birthYear ?? null;
     h.sourceUrl = template?.sourceUrl || "";
+    if (template?.source === "hall") { h.hallSourceId = template.sourceKey; h.preHallCareer = clone(template.preHallCareer || null); }
     h.aliases = template?.aliases || []; h.originalName = template?.originalName || h.name; h.romanizedName = template?.romanizedName || h.originalName; h.pinyin = template?.pinyin || "";
     if(template){const legacy=R.clamp((template.game?.breedingBase??50)+R.rollRange(-5,5),1,100);if(w.breeding.version===1)h.breeding.strength=legacy;}
     h.breeding.status = "active"; h.breeding.everActive = true; h.breeding.joinedYear = year(w);
@@ -140,7 +146,7 @@
     return h;
   }
   function attachAncestors(w, roots) {
-    const source = new Map((ns.ChairmanEditor?.templates(w)||templates(w)).map((h) => [h.id, h])), placed = new Map(all(w).filter((h) => h.templateId||h.familyTemplateId).map((h) => [h.templateId||h.familyTemplateId, h]));
+    const source = new Map(templates(w).map((h) => [h.id, h])), placed = new Map(all(w).filter((h) => h.templateId||h.familyTemplateId).map((h) => [h.templateId||h.familyTemplateId, h]));
     function visit(tid, latest, path = new Set()) {
       if (!tid || !source.has(tid)) return "";
       assert(!path.has(tid), "基础资料血统循环。");
@@ -348,7 +354,7 @@
     return { id: h.id, name: h.name, originalName: h.originalName || h.name, romanizedName: h.romanizedName || h.originalName || h.name, aliases: h.aliases || [], pinyin: h.pinyin || "",
       gender: h.gender, birthYear: h.birthYear, historicalBirthYear: h.historicalBirthYear ?? null, age,
       fatherId: h.fatherId || "", motherId: h.motherId || "", region: h.homeRegion || "", status: h.status,
-      source: h.sourceKind || (h.origin === "custom" ? "custom" : "ai"), templateId: h.templateId || "", sourceUrl: h.sourceUrl || "",
+      source: h.sourceKind || (h.origin === "custom" ? "custom" : "ai"), templateId: h.templateId || "", sourceUrl: h.sourceUrl || "", hallSourceId: h.hallSourceId || "", preHallCareer: clone(h.preHallCareer || null),
       breedingStatus: b?.status || "none", grade: b?assessment.grade:"未公开", assessment,
       ...(ns.ChairmanEditor?.enabled(w)?{strength:h.strength}:{}),pinned: !!b?.pinned, championYears: b?.championYears || [], ...(ns.ChairmanEditor?.enabled(w) ? { breedingStrength: b?.strength ?? null, breedingStability:h.genetics?.stability??null } : {}) };
   }
@@ -366,7 +372,7 @@
     const p = options, byId = map(w), favorite = new Set(w.ui.breedingFavorites || []);
     let rows = p.view === "library" ? templates(w).filter((h) => !p.instantiable || h.core && !h.disabled).map((h) => ({ id: h.id, templateId: h.id, core: !!h.core, name: h.displayName || h.originalName, originalName: h.originalName,
       aliases: h.aliases || [], pinyin: h.pinyin || "", romanizedName: h.romanizedName || h.originalName, birthYear: h.birthYear, historicalBirthYear: h.birthYear, gender: h.gender, region: h.region,
-      fatherId: h.fatherId, motherId: h.motherId, regionTags: h.regionTags || [], status: "template", source: "historical", breedingStatus: h.core ? "template" : "ancestor", grade: "未公开", disabled:!!h.disabled, playerModified:!!h.playerModified, sourceUrl: h.sourceUrl }))
+      fatherId: h.fatherId, motherId: h.motherId, regionTags: h.regionTags || [], status: "template", source: h.source === "hall" ? "hall" : "historical", breedingStatus: h.core ? "template" : "ancestor", grade: "未公开", disabled:!!h.disabled, playerModified:!!h.playerModified, sourceUrl: h.sourceUrl }))
       : all(w).map((h) => publicHorse(w, h));
     if(p.view==='library') rows.push(...(ns.ChairmanEditor?.familyTemplates(w)||w.familyTemplates||[]).filter(t=>!p.instantiable||t.core&&!t.disabled).map(t=>({... (ns.ChairmanEditor?.publicTemplate(w,t)||t),templateId:t.id,originalName:t.originalName||t.name,pinyin:t.pinyin||'',romanizedName:t.romanizedName||t.name,aliases:t.aliases||[],source:'imported',status:'template',breedingStatus:'template'})));
     if (p.matingEligible) rows = rows.filter((h) => byId.has(h.id) && available(w, byId.get(h.id)));
@@ -453,6 +459,6 @@
     assert(Array.isArray(w.breeding.manual), "指定配种记录无效。");
     const ms = new Set(); for (const p of w.breeding.manual) { assert(byId.has(p.fatherId) && byId.has(p.motherId) && !ms.has(p.motherId), "指定配种关联无效或重复。"); ms.add(p.motherId); }
   }
-  ns.ChairmanBreeding = { inheritAptitudes, all, get, seeded, grade, initial, recordRating, initialize, ancestors, related, available, legalPair, quotas, reputations,
+  ns.ChairmanBreeding = { inheritAptitudes, all, get, templates, seeded, grade, initial, recordRating, initialize, ancestors, related, available, legalPair, quotas, reputations,
     selectBreeders, founder, foundation, enable, resolveParents, plan, inherited, closeYear, startYear, childStats, publicHorse, query, descendants, edit, validate };
 })();

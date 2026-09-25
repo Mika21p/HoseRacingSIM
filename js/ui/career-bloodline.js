@@ -8,6 +8,7 @@
     return `<div class="bloodline-picker" id="careerBloodlinePicker"><div class="section-title-row"><div><h3>选择父母</h3><p class="muted">跨地区、跨年代自由配合</p></div><button type="button" class="secondary" id="randomParentsBtn">随机配合</button></div><div class="bloodline-parents">${[['sire', '父马'], ['dam', '母马']].map(([key, name]) => `<section><label>${name}搜索<input id="${key}Search" type="search" placeholder="名字或别名" aria-label="搜索${name}"></label><div class="bloodline-filters"><label>地区<select id="${key}Region">${options(['', '日本', '欧洲', '美国'])}</select></label><label>特点<select id="${key}Trait">${options(['', '瞬发', '持久', '消耗', '均衡'])}</select></label></div><label>${name}<select id="${key}Select"></select></label><p class="muted" id="${key}Summary"></p></section>`).join('')}</div><div id="pairBrief" aria-live="polite"></div></div>`;
   }
   function brief(p) {
+    if (p.mode === 'roguelike') return rogueBrief(p);
     const weights = Object.entries(p.directionWeights || {}).filter(([k]) => ['burst', 'sustained', 'attrition'].includes(k)).sort((a, b) => b[1] - a[1]);
     const lines = [];
     if (weights.length) lines.push(weights[0][1] - weights[weights.length - 1][1] < .15 ? '血统方向较均衡，后代可能走出不同路线。' : `血统倾向${labels[weights[0][0]]}，这是遗传方向，不代表后代一定拥有该项优势。`);
@@ -24,6 +25,18 @@
     if (p.risk?.incomplete) lines.push('部分祖先资料未知，无法完整判断亲缘和血统多样性。');
     if (!lines.length) lines.push('现有资料不足，暂无法分析血统倾向。');
     return `<ul class="bloodline-brief">${lines.map(s => `<li>${e(s)}</li>`).join('')}</ul>`;
+  }
+  function rogueBrief(p) {
+    const summary = ns.CareerBloodline.routeSummary(p);
+    return `<ul class="bloodline-brief">${[...summary.lines, ...summary.warnings].map(line => `<li>${e(line)}</li>`).join('')}</ul>${summary.theories.length ? `<p class="muted">配合特点：${summary.theories.map(t => e(t.label)).join(' · ')}。这些特点参与适性遗传，不提供速度奖励。</p>` : ''}`;
+  }
+  function rogueParents(p) {
+    const summary = ns.CareerBloodline.routeSummary(p);
+    return `<div class="rogue-pedigree-parents">${summary.parents.map(parent => `<p><small>${parent.relation}</small><strong>${e(parent.name)}</strong><span>${e(parent.line)} · ${e(parent.surface)} · ${e(parent.distance)} · ${e(parent.direction)}</span></p>`).join('')}</div><p class="muted">母父：${e(summary.broodmareSire)}</p>`;
+  }
+  function candidateBloodline(h) {
+    if (!h.pedigree?.ancestors) return `<p>父系：${e(h.sireName || '未知')} · 母系：${e(h.damName || '未知')}</p><p class="muted">旧版血系记录，暂无完整祖先资料。</p>`;
+    return rogueParents(h.pedigree) + rogueBrief(h.pedigree);
   }
   function bindSetup() {
     if (!document.getElementById('careerBloodlinePicker')) return;
@@ -68,14 +81,17 @@
     const h = career?.horse;
     if (!h) { panel.innerHTML = ''; return; }
     const p = h.pedigree;
-    const header = `<h2>${e(h.name)}的血统</h2>${h.debugMode ? '<p class="muted">属性经过调试修改，当前表现不完全来自遗传。</p>' : ''}<div class="bloodline-identity"><p>父马<br><strong>${e(h.sireName || '未知')}</strong></p><p>母马<br><strong>${e(h.damName || '未知')}</strong></p><p>母父<br><strong>${e(p?.ancestors?.find(a => a.path === '母父')?.name || '未知')}</strong></p></div>`;
+    const rogue = career.gameMode === 'roguelike';
+    const title = `<h2>${e(h.name)}的血统</h2>${h.debugMode ? '<p class="muted">属性经过调试修改，当前表现不完全来自遗传。</p>' : ''}`;
+    const header = title + (rogue && p?.ancestors ? '' : `<div class="bloodline-identity"><p>父马<br><strong>${e(h.sireName || '未知')}</strong></p><p>母马<br><strong>${e(h.damName || '未知')}</strong></p><p>母父<br><strong>${e(p?.ancestors?.find(a => a.path === '母父')?.name || '未知')}</strong></p></div>`);
     if (!p?.ancestors) { panel.innerHTML = header + '<p>旧版血系记录，暂无完整祖先资料。</p>'; return; }
     const sameHorse = panel.dataset.horseId === String(h.id);
     const depth = sameHorse && panel.dataset.treeDepth === '4' ? 4 : 3;
     panel.dataset.horseId = h.id; panel.dataset.treeDepth = depth;
-    panel.innerHTML = header + '<h3>血统简评</h3>' + brief(p) + '<p class="muted">以上是血统倾向；已生成的实际适性请在“马匹”页面查看。</p><h3>血统图</h3>' +
+    panel.innerHTML = header + (h.bloodlineAdapted ? '<p class="muted">接受过场地适应调教，出生血统记录保持不变。</p>' : '') + (rogue ? rogueParents(p) : '') + '<h3>血统简评</h3>' + (rogue ? rogueBrief(p) : brief(p)) + `<p class="muted">${rogue ? '血统提供路线倾向，实际适性仍需结合评语与比赛表现判断。' : '以上是血统倾向；已生成的实际适性请在“马匹”页面查看。'}</p><h3>血统图</h3>` +
       `<div class="pt-depth" aria-label="血统代数">${[3,4].map(d=>`<button type="button" data-tree-depth="${d}" aria-pressed="${depth===d}">${d===3?'三':'四'}代</button>`).join('')}</div>` +
       ns.PedigreeTree.render({key:'career:'+h.id, root:{id:h.id,name:h.name}, ancestors:p.ancestors, depth});
+    if (rogue) ns.PedigreeTree.highlight(panel, (p.theories || []).filter(t => t.id !== 'factor').flatMap(t => t.ids || []));
     panel.querySelectorAll('[data-tree-depth]').forEach(button=>button.addEventListener('click',()=>{panel.dataset.treeDepth=button.dataset.treeDepth;render(panel,career);}));
   }
   function retirementTable(horse) {
@@ -91,5 +107,5 @@
     }
     return `<section class="retirement-pedigree"><table aria-label="两代血统表"><caption>血统</caption><tbody><tr>${cell('父', '父马', 2)}${cell('父父', '父父')}</tr><tr>${cell('父母', '父母')}</tr><tr>${cell('母', '母马', 2)}${cell('母父', '母父')}</tr><tr>${cell('母母', '母母')}</tr></tbody></table>${legacy ? '<p class="muted">旧版血系记录，暂无完整祖先资料。</p>' : ''}</section>`;
   }
-  ns.CareerBloodlineUI = { setupHtml, bindSetup, render, brief, retirementTable };
+  ns.CareerBloodlineUI = { setupHtml, bindSetup, render, brief, retirementTable, candidateBloodline };
 })();

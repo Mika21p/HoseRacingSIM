@@ -62,9 +62,9 @@ test("trainer bloodline preferences remain light and never zero out ordinary blo
     assert.ok(rules.RoguelikeRules.bloodlineWeight(sire, "obrien", "sire") > 0);
     assert.ok(rules.RoguelikeRules.bloodlineWeight(sire, "pletcher", "sire") > 0);
   });
-  assert.equal(rules.RoguelikeRules.bloodlineWeight({ id: "deep-impact" }, "sato-yuta", "sire"), 135);
-  assert.equal(rules.RoguelikeRules.bloodlineWeight({ id: "urban-sea" }, "obrien", "dam"), 115);
-  assert.equal(rules.RoguelikeRules.bloodlineWeight({ id: "deep-impact" }, "pletcher", "sire"), 100);
+  assert.equal(rules.RoguelikeRules.bloodlineWeight({ id: "deep-impact", region: "日本" }, "sato-yuta", "sire"), 135);
+  assert.equal(rules.RoguelikeRules.bloodlineWeight({ id: "urban-sea", region: "欧洲" }, "obrien", "dam"), 115);
+  assert.equal(rules.RoguelikeRules.bloodlineWeight({ id: "deep-impact", region: "日本" }, "pletcher", "sire"), 100);
 });
 
 test("candidate generation records actual parents and a usable route", () => {
