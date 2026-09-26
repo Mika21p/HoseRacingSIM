@@ -460,7 +460,12 @@
             <p class="home-banner-lead">赛马育成模拟。<br>从一匹小马开始，培育、出赛，直到世界赛场。</p>
             <div class="home-banner-caption"><span>育成</span><i></i><span>竞逐</span><i></i><span>荣耀</span></div>
           </div>
-          <span class="home-art-caption" aria-hidden="true">THE TRACK IS YOURS.</span>
+          <button class="home-hall-entry" id="homeHallBtn" type="button" aria-label="殿堂一览" aria-describedby="homeHallHint" aria-haspopup="dialog" aria-controls="hallDialog">
+            <span class="home-hall-plaque">
+              <span class="home-hall-emblem" aria-hidden="true">✦</span>
+              <span class="home-hall-copy"><span class="home-hall-title">殿堂一览 <span class="home-hall-arrow" aria-hidden="true">↗</span></span><span class="home-hall-detail">已收藏 <span id="homeHallCount">0／10</span> 匹名马</span><span class="home-hall-hint" id="homeHallHint">点击骏马或铭牌进入</span></span>
+            </span>
+          </button>
         </section>
         <div class="home-mode-heading"><div><h2>选择你的赛马之旅</h2></div><span>${homeStatsText}</span></div>
         <div class="home-mode-grid">
@@ -538,7 +543,6 @@
           <div class="home-secondary-actions">
             <button class="secondary" id="homeHelpBtn" type="button">游戏帮助</button>
             <button class="secondary" id="homeChangelogBtn" type="button">更新日志</button>
-            <button class="secondary" id="homeHallBtn" type="button">殿堂 <span id="homeHallCount">0／10</span></button>
           </div>
         </div>
         <footer class="site-footer">
