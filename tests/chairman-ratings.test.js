@@ -15,6 +15,39 @@ test('distance interpolation, compressed margins, exact manual benchmark and ind
   horses.forEach(h=>{h.strength=1;h.annual={manual:9999};h.peakStart='七岁春';});rows.forEach(p=>{p.total=-1000;p.pressure=8;p.manualRating=999;});
   assert.deepEqual(plain(S.rateRaceTF(race,rows,horses,6,{})),plain(before));
 });
+test('legacy winner standards cannot seed TF, while runners own form still propagates',()=>{
+  const race={id:'debut',raceClass:'new',surface:'草地',distance:1600};
+  const rows=[0,2,4,6,8].map((margin,i)=>({horseId:String(i),rank:i+1,margin}));
+  const horses=rows.map(r=>({id:r.horseId,recentForm:[]}));
+  const legacy={debut:[150,160],['草地|'+W.category(1600)]:[130,140]};
+  const calibration={count:100,target:100,references:{}};
+  const fresh=S.rateRaceTF(race,rows,horses,6,{},calibration);
+  assert.equal(fresh.source,'initial');assert.equal(fresh.ratings['0'],110);
+  assert.deepEqual(plain(S.rateRaceTF(race,rows,horses,6,legacy,calibration)),plain(fresh));
+  delete legacy.debut;
+  assert.deepEqual(plain(S.rateRaceTF(race,rows,horses,6,legacy,calibration)),plain(fresh));
+  horses[0].recentForm=[{turn:3,tf:108,surface:'草地',distance:1600}];
+  assert.equal(S.rateRaceTF(race,rows,horses,6,legacy).source,'winner-history');
+  horses[1].recentForm=[0,3].map(turn=>({turn,tf:100,surface:'草地',distance:1600}));
+  const anchored=S.rateRaceTF(race,rows,horses,6,legacy);
+  assert.equal(anchored.source,'benchmark');assert.equal(anchored.ratings['0'],105);
+});
+
+test('advancing a legacy world ignores and does not update winner standards',()=>{
+  const fresh=W.createWorld({seed:5701,horseCount:24});
+  assert.equal(fresh.tfStandards,undefined);
+  const legacy=W.clone(fresh);legacy.tfStandards={};
+  for(const race of legacy.races){
+    legacy.tfStandards[race.id]=[190,200];
+    legacy.tfStandards[race.surface+'|'+W.category(race.distance)]=[190,200];
+  }
+  const before=plain(legacy.tfStandards), a=W.advanceHalfMonth(fresh), b=W.advanceHalfMonth(legacy);
+  assert.ok(a.performances.length>0);
+  assert.deepEqual(plain(b.performances),plain(a.performances));
+  assert.deepEqual(plain(b.world.tfStandards),before);
+  assert.equal(a.world.tfStandards,undefined);
+});
+
 test('scale offset is reproducible, shared and statistically 25/50/25 without RNG use',()=>{
   const count={4:0,5:0,6:0};for(let i=0;i<20000;i++){const d=S.getRatingScaleOffset(775,`1:race-${i}`);count[d]++;assert.equal(d,S.getRatingScaleOffset(775,`1:race-${i}`));}
   assert.ok(Math.abs(count[4]/20000-.25)<.02);assert.ok(Math.abs(count[5]/20000-.5)<.02);assert.ok(Math.abs(count[6]/20000-.25)<.02);

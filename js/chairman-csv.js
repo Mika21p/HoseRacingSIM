@@ -11,7 +11,7 @@
     field("fatherId", "父马编号"), field("motherId", "母马编号"), field("sireId", "父系模板"), field("damId", "母系模板"),
     field("surfaceGrades.grass", "草地适性"), field("surfaceGrades.dirt", "泥地适性"),
     field("trackAptitudes.burst", "瞬发适性"), field("trackAptitudes.sustained", "持久适性"), field("trackAptitudes.attrition", "消耗适性")];
-  const RACE = [field("id", "编号"), field("name", "比赛名"), field("raceClass", "格付"), field("trackId", "马场编号"), field("trackName", "马场"),
+  const RACE = [field("id", "编号"), field("name", "比赛名"), field("raceClass", "格付"), field("prestige", "赛事声望", "number"), field("trackId", "马场编号"), field("trackName", "马场"),
     field("surface", "场地"), field("distance", "距离米", "number"), field("month", "月份", "number"), field("half", "半月", "half"),
     field("ageRule", "年龄条件"), field("sexRule", "性别条件"), field("capacity", "参赛上限", "number"),
     ...[1, 2, 3, 4, 5].map((n) => field(`prizes.${n - 1}`, `${n}着赏金万`, "number"))];
@@ -173,6 +173,7 @@
           if (!track && !suppliedTrackId && !trackName && existing) track = w.tracks.find((t) => t.id === existing.trackId);
           if (!track) { errors.push(`第${row.line}行，马场：无法唯一匹配“${trackName || suppliedTrackId}”，请指定映射。`); continue; }
           value.trackId = track.id;
+          if(w.worldSystemVersion===2&&headers.includes("赛事声望")&&row.values[headers.indexOf("赛事声望")].trim()!=="")value.prestigeOverride=true;
         }
         try { if (kind === "horse") { W.initializeHorseTime(w, value, existing); W.validateHorse(w, value); } else W.validateRace(w, value); }
         catch (error) { errors.push(`第${row.line}行：${error.message}`); continue; }

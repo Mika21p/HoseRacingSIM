@@ -30,8 +30,8 @@
       const name=String(options.renames?.[`${kind}:${row.id}`]||row.name||'').trim();
       check(old||kind==='race'||!collections[kind].some(v=>v.name===name),'同名对象需要明确关联或改名：'+name);
       const id=old?.id||`${kind}-${w.nextId++}`;
-      const modified=old?.sourceRecord?.status==='modified'||old?.playerModified||kind==='race'&&old&&w.worldChanges.some(c=>c.kind==='race'&&c.entityId===old.id)||options.referenceUpdate&&kind==='region'&&!!old;
-      const write=!old||mode==='update'&&!modified&&!bound&&!(options.referenceUpdate&&world.referenceVersion===ns.ChairmanVenues.version);
+      const modified=old?.prestigeOverride||old?.sourceRecord?.status==='modified'||old?.playerModified||kind==='race'&&old&&w.worldChanges.some(c=>c.kind==='race'&&c.entityId===old.id)||options.referenceUpdate&&kind==='region'&&!!old;
+      const write=!old||mode==='update'&&!modified&&!bound&&!(options.referenceUpdate&&world.referenceVersion===ns.ChairmanVenues.version&&world.prestigeVersion===ns.ChairmanPrestige.version);
       if(modified&&mode==='update')warnings.push(name+'已由玩家修改，本次保留。');
       maps[`${kind}:${row.id}`]=id;
       if(!mapping)w.sourceMappings.push({id:key,packageId:p.id,kind,sourceId:row.id,localId:id,revision:p.revision,hash:hash(row)});
@@ -56,7 +56,7 @@
     for(const r of p.races){const m=map('race',r),trackId=maps['track:'+r.trackId];check(trackId,'赛事缺少马场。');const v={...copy(r),id:m.id,name:m.name,trackId,courseConfigId:maps['course:'+r.courseConfigId]||'',grade:r.grade||V.labels[r.raceClass],deleted:false};
       if(m.old?.lastHeldYear){v.lastHeldYear=m.old.lastHeldYear;if(v.lastHeldYear===W.date(w.turn).year)v.notBeforeYear=v.lastHeldYear+1;}
       delete v.courseProfile;delete v.courseProfileId;delete v.courseRouteId;delete v.courseRouteName;
-      W.validateRace(w,v);put('race',m,v);
+      ns.ChairmanPrestige.initialize(v);W.validateRace(w,v);put('race',m,v);
     }
     for(const g of p.meetingGroups||[]){const m=map('meeting',g),members=g.raceIds.map(id=>maps['race:'+id]);check(members.every(Boolean),'举办组成员引用缺失。');const value={...copy(g),id:m.id,name:m.name,trackIds:g.trackIds.map(id=>maps['track:'+id]),raceIds:[...new Set([...(m.old?.raceIds||[]),...members])],yearOverrides:Object.fromEntries(Object.entries(g.yearOverrides||{}).map(([y,id])=>[y,maps['track:'+id]]))};
       if(m.old){if(m.write)Object.assign(m.old,value);else m.old.raceIds=value.raceIds;}else w.meetingGroups.push(value);
@@ -78,7 +78,7 @@
     const keys=w.regions.map(r=>r.key).filter(k=>ns.ChairmanVenues.regionSpecs.some(r=>r.key===k));
     const fresh=V.create({worldType:'reference',regionKeys:keys,population:Object.fromEntries(keys.map(k=>[k,0])),foundation:false,breeding:false,seed:1,id:'reference-catalogue'});
     const p=exportEvents(fresh,{raceIds:fresh.races.filter(r=>!r.support).map(r=>r.id)}),out=yield* previewSteps(w,p,{mode:'update',referenceUpdate:true});
-    out.output.world.referenceAudit=ns.ChairmanVenues.catalogue().filter(r=>keys.includes(r.regionKey)).map(r=>{const old=w.referenceAudit.find(a=>a.sourceId===r.sourceId);return {...copy(old?.status==='modified'?old:r),regionId:out.output.world.regions.find(a=>a.key===r.regionKey).id};});out.output.world.referenceVersion=ns.ChairmanVenues.version;return out;
+    out.output.world.referenceAudit=ns.ChairmanVenues.catalogue().filter(r=>keys.includes(r.regionKey)).map(r=>{const old=w.referenceAudit.find(a=>a.sourceId===r.sourceId);return {...copy(old?.status==='modified'?old:r),regionId:out.output.world.regions.find(a=>a.key===r.regionKey).id};});out.output.world.referenceVersion=ns.ChairmanVenues.version;out.output.world.prestigeVersion=ns.ChairmanPrestige.version;return out;
   }
   ns.ChairmanWorldPackages={exportEvents,previewSteps,referencePreview};
 })();

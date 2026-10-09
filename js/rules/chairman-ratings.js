@@ -36,7 +36,7 @@
     rows = rows.slice(0,5); const value = weightedMedian(rows);
     return { value, count: rows.length, spread: rows.length ? median(rows.map(p => Math.abs(p.tf-value))) : 0, rows };
   }
-  function rateRaceTF(race, results, horses, turn, standards, calibration) {
+  function rateRaceTF(race, results, horses, turn, _legacyStandards, calibration) {
     const byId = new Map(horses.map(h => [h.id, h]));
     // Public inputs only: deliberately discard simulator totals, pressure and abilities.
     const field = results.filter(p => !p.retired && p.rank != null).map(p => ({ horseId: p.horseId, rank: p.rank,
@@ -54,8 +54,8 @@
     let winnerRating = chosen?.win, source = chosen ? 'benchmark' : '', benchmarkId = chosen?.horseId || null;
     const winner = field.find(p=>p.rank===1) || field[0];
     if (winnerRating == null && winner.form.value != null) { winnerRating = winner.form.value; source = 'winner-history'; benchmarkId = winner.horseId; }
-    const history = standards?.[race.id] || standards?.[`${race.surface}|${ns.ChairmanRules.category(race.distance)}`];
-    if (winnerRating == null && history?.length) { winnerRating = median(history); source = 'race-history'; }
+    // Old save files may retain winner standards, but only runners' own form
+    // can anchor this race. Unrelated past winners provide no field evidence.
     if (winnerRating == null) { winnerRating = 100 + median(field.map(p=>p.d)); source = 'initial'; }
     // Standardisation: public contemporaries provide an absolute reference for
     // otherwise closed chains of relative anchors. There is no grade bonus/cap.
@@ -72,7 +72,7 @@
     return Object.fromEntries(rows.filter(p=>!p.retired && p.rank != null).map(p=>[p.id, p.horseId===benchmarkId ? score : integer(score+d-deficit(p,race.distance))]));
   }
   function record(h, p, count) {
-    const row = { turn:p.turn, tf:p.tf, raceClass:p.raceClass, rank:p.rank, retired:!!p.retired, surface:p.surface, distance:p.distance,
+    const row = { turn:p.turn, tf:p.tf, ...(p.rawTf!=null?{rawTf:p.rawTf}:{}), raceClass:p.raceClass, rank:p.rank, retired:!!p.retired, surface:p.surface, distance:p.distance,
       region:p.surfaceRegion, count, age:p.age, year:p.year, raceId:p.raceId };
     h.recentForm = [...(h.recentForm || []).filter(r=>r.turn>=p.turn-12 && r.turn!==p.turn), row].slice(-12);
     if (!['g1','g2','g3'].includes(p.raceClass)) { const s = h.background || (h.background={starts:0,wins:0,prize:0,lastTf:null}); s.starts++; if(p.rank===1)s.wins++; s.prize+=p.prize; if(p.tf!=null)s.lastTf=p.tf; }
@@ -99,7 +99,7 @@
   function migrate(world, performances, ratings) {
     const W = ns.ChairmanRules;
     return W.mutate(world, (w,out) => {
-      w.ratingVersion=VERSION; w.aiVersion=2; w.ratingSeed=w.seed>>>0; w.aiRngState=hash(`ai:${w.seed}`); w.tfStandards={};
+      w.ratingVersion=VERSION; w.aiVersion=2; w.ratingSeed=w.seed>>>0; w.aiRngState=hash(`ai:${w.seed}`); delete w.tfStandards;
       const byHorse=new Map(), byYear=new Map();
       for(const p of [...performances].sort((a,b)=>a.turn-b.turn)) { if(!byHorse.has(p.horseId))byHorse.set(p.horseId,[]); byHorse.get(p.horseId).push(p); const k=`${p.year}:${p.horseId}`; if(!byYear.has(k))byYear.set(k,[]); byYear.get(k).push(p); }
       for(const h of w.horses) {

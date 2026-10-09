@@ -111,7 +111,7 @@ test("background CSV worker matches foreground preview and keeps original random
   const { rules } = loadChairmanRules(), W = rules.ChairmanRules, w = W.createWorld({ seed: 874, horseCount: 12 });
   const csv = rules.ChairmanCSV.template(w, "horse"), messages = [], self = { postMessage: (m) => messages.push(m) };
   const context = vm.createContext({ self, console });
-  context.importScripts = (...files) => files.forEach((f) => vm.runInContext(read(`js/${f}`), context));
+  context.importScripts = (...files) => files.forEach((f) => vm.runInContext(read(`js/${f.split("?")[0]}`), context));
   vm.runInContext(read("js/chairman-worker.js"), context);
   self.onmessage({ data: { kind: "csv", payload: { world: plain(w), kind: "horse", text: csv } } });
   assert.equal(messages.at(-1).error, undefined); const result = messages.at(-1).result;

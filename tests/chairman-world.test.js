@@ -125,11 +125,11 @@ test('initial population targets, environment versions and fixed-edition venue l
  const area=w.regions[0];w=V.edit(w,'region',{id:area.id,environment:{...area.environment,grass:'欧洲'}}).world;assert.equal(w.regions[0].generationVersion,2);assert.equal(V.resolveRace(w,w.races.find(x=>x.id===r.id),1).chairmanEnvironment.grass,'美国');W.validateWorld(w);
 });
 
-test('minimum named fields are reserved across the planning horizon before conflicting starts consume their runners',()=>{
+test('short future fields cannot take runners away from a materially better conflicting target',()=>{
  const {w,V,W}=setup(['usa'],0);w.meetingGroups=[];w.venueAssignments=[];
  const original=w.races.find(r=>r.raceClass==='g1'&&r.surface==='草地');w.races=[{...original,id:'near',name:'先行重赏',month:2,half:1,ageRule:'3+',sexRule:'all'},{...original,id:'later',name:'牝马后续重赏',raceClass:'g3',grade:'G3',month:2,half:2,ageRule:'3+',sexRule:'female'}];
- W.seeded(w,()=>{for(let i=0;i<6;i++)W.addHorse(w,{homeRegionId:w.regions[0].id,homeRegion:w.regions[0].name,age:3,qualification:1,gender:'牝马'});});V.plan(w);
- for(const r of w.races)assert.ok(w.horses.filter(h=>h.booked?.raceId===r.id).length>=2,r.name);
+ W.seeded(w,()=>{for(let i=0;i<6;i++)W.addHorse(w,{homeRegionId:w.regions[0].id,homeRegion:w.regions[0].name,age:3,qualification:1,gender:'牝马'});});w.horses.forEach(h=>{h.lifetime.starts=4;h.annual.manual=125;});V.plan(w);
+ assert.deepEqual(w.races.map(r=>w.horses.filter(h=>h.booked?.raceId===r.id).length),[6,0]);
  W.validateWorld(w);
 });
 
@@ -166,20 +166,20 @@ test('Goliath and Andre Baboin have actual venues shared by ordinary and chairma
  const gold=n.RaceRegistry.all().find(r=>r.id==='ascot-gold-cup');assert.equal(gold.distance,4000);assert.equal(gold.raceClass,'g1');assert.equal(gold.month,6);
 });
 
-test('locked current events accept uncommitted runners without moving committed entries',()=>{
+test('locked current events admit willing new runners without forcing others into a weaker short field',()=>{
 const n=loadChairmanRules().rules,W=n.ChairmanRules,V=n.ChairmanWorld;
 const w=W.createWorld({worldType:'reference',regionKeys:['japan'],population:{japan:4},annualTargets:{japan:1},breeding:false,seed:7});
 const template=w.races.find(r=>r.raceClass==='g1'&&r.surface==='草地');w.races=['g3','g1'].map((raceClass,i)=>({...template,id:'fixture-'+i,name:'测试'+i,raceClass,grade:raceClass.toUpperCase(),month:1,half:1,ageRule:'3+',sexRule:'all',capacity:16,deleted:false,lastHeldYear:null,notBeforeYear:1}));w.meetingGroups=[];w.venueAssignments=[];w.lockedRaces={};
 for(const h of w.horses){h.birthYear=-3;h.qualification=5;h.lifetime.starts=2;h.lifetime.wins=1;h.booked=null;h.restUntil=0;h.lastRaceTurn=null;h.target=null;}
 for(let i=0;i<3;i++){const r=V.resolveRace(w,w.races[i?1:0],1),h=w.horses[i];w.lockedRaces['1:'+r.id]=r;h.booked={raceId:r.id,turn:0,targetRegion:r.surfaceRegion,targetRegionId:r.regionId,fromRegionId:h.homeRegionId,preparationTurn:null,travelTurns:0};}
-w.aiRngState=5;const committed=w.horses.slice(0,3).map(h=>JSON.stringify(h.booked));V.plan(w);assert.deepEqual(w.races.map(r=>w.horses.filter(h=>h.booked?.raceId===r.id).length),[2,2]);assert.deepEqual(w.horses.slice(0,3).map(h=>JSON.stringify(h.booked)),committed);
+w.aiRngState=5;const committed=w.horses.slice(0,3).map(h=>JSON.stringify(h.booked));V.plan(w);assert.deepEqual(w.races.map(r=>w.horses.filter(h=>h.booked?.raceId===r.id).length),[1,3]);assert.deepEqual(w.horses.slice(0,3).map(h=>JSON.stringify(h.booked)),committed);
 });
 
-test('locked future events accept uncommitted runners without moving committed entries',()=>{
+test('locked future short fields do not force a change of a suitable current target',()=>{
 const n=loadChairmanRules().rules,W=n.ChairmanRules,V=n.ChairmanWorld;
 const w=W.createWorld({worldType:'reference',regionKeys:['japan'],population:{japan:4},annualTargets:{japan:1},breeding:false,seed:7});
 const template=w.races.find(r=>r.raceClass==='g1'&&r.surface==='草地');w.races=['g3','g1'].map((raceClass,i)=>({...template,id:'fixture-'+i,name:'测试'+i,raceClass,grade:raceClass.toUpperCase(),month:1,half:1,ageRule:'3+',sexRule:'all',capacity:16,deleted:false,lastHeldYear:null,notBeforeYear:1}));w.meetingGroups=[];w.venueAssignments=[];w.lockedRaces={};
 for(const h of w.horses){h.birthYear=-3;h.qualification=5;h.lifetime.starts=2;h.lifetime.wins=1;h.booked=null;h.restUntil=0;h.lastRaceTurn=null;h.target=null;}
 for(let i=0;i<3;i++){const r=V.resolveRace(w,w.races[i?1:0],1),h=w.horses[i];w.lockedRaces['1:'+r.id]=r;h.booked={raceId:r.id,turn:0,targetRegion:r.surfaceRegion,targetRegionId:r.regionId,fromRegionId:h.homeRegionId,preparationTurn:null,travelTurns:0};}
-w.races[0].half=2;const frozen=w.lockedRaces['1:fixture-0'];frozen.half=2;w.horses[0].booked.turn=1;w.aiRngState=5;const committed=w.horses.slice(0,3).map(h=>JSON.stringify(h.booked));V.plan(w);assert.deepEqual(w.races.map(r=>w.horses.filter(h=>h.booked?.raceId===r.id).length),[2,2]);assert.deepEqual(w.horses.slice(0,3).map(h=>JSON.stringify(h.booked)),committed);
+w.races[0].half=2;const frozen=w.lockedRaces['1:fixture-0'];frozen.half=2;w.horses[0].booked.turn=1;w.aiRngState=5;const committed=w.horses.slice(0,3).map(h=>JSON.stringify(h.booked));V.plan(w);assert.deepEqual(w.races.map(r=>w.horses.filter(h=>h.booked?.raceId===r.id).length),[1,3]);assert.deepEqual(w.horses.slice(0,3).map(h=>JSON.stringify(h.booked)),committed);
 });

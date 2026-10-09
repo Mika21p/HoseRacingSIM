@@ -5,7 +5,7 @@
   const pick=(o,keys)=>Object.fromEntries(keys.filter(k=>o[k]!==undefined).map(k=>[k,clone(o[k])]));
   const identity=h=>h.familySourceKey||(h.templateId?'jbis:'+h.templateId:'');
   const hash=o=>String(ns.ChairmanRatings.hash(JSON.stringify(o)));
-  const raceFields=['id','name','raceClass','surface','distance','month','half','ageRule','sexRule','capacity','prizes','trackId'];
+  const raceFields=['id','name','raceClass','prestige','surface','distance','month','half','ageRule','sexRule','capacity','prizes','trackId'];
   const seriesFields=['id','name','title','raceIds','ageRule','bonus','honorWeight'];
   const nodeFields=['id','sourceKey','name','originalName','aliases','pinyin','romanizedName','gender','coat','birthYear','historicalBirthYear','fatherId','motherId','region','sourceUrl','grade','playerModified'];
   const bands={'较低':[1,39],'普通':[40,59],'良好':[60,74],'优秀':[75,89],'顶级':[90,100]};

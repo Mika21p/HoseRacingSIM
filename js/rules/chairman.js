@@ -50,7 +50,7 @@
   function observedKey(race) { return `${race.surfaceRegion}|${race.surface}|${category(race.distance)}`; }
   function emptyStats(year) { return { year, starts: 0, wins: 0, g1: 0, prize: 0, tf: null, suggested: null, manual: null }; }
   function rating(horse) { return horse.annual.manual == null ? horse.annual.suggested : horse.annual.manual; }
-  function entryRating(horse) { return rating(horse) ?? (horse.annual.tf == null ? null : horse.annual.tf - 5) ?? horse.previousWtr ?? (horse.previousTf == null ? null : horse.previousTf - 5); }
+  function entryRating(horse) { return rating(horse) ?? (horse.annual.tf == null ? null : horse.annual.tf - 5) ?? horse.previousWtr ?? (horse.previousTf == null ? null : horse.previousTf - 5) ?? (horse.development?.lastTf==null?null:horse.development.lastTf-5) ?? (horse.tfReference?.at(-1)?.tf==null?null:horse.tfReference.at(-1).tf-5); }
   function seeded(w, operation) {
     const random = R.seeded(w.rngState);
     const result = R.withSource(random, operation);
@@ -110,6 +110,7 @@
     assert(Array.isArray(track.surfaces) && track.surfaces.length && track.surfaces.every((v) => ["草地", "泥地"].includes(v)), "请选择马场支持的场地。");
   }
   function validateRace(w, race) {
+    if(w.worldSystemVersion===2)assert(ns.ChairmanPrestige.valid(race.prestige), "赛事声望须为0～100的整数，留空采用默认值。");
     assert(typeof race.name === "string" && race.name.trim(), "请填写比赛名。");
     const track = w.tracks.find((t) => t.id === race.trackId);
     assert(track && !track.deleted, "请选择现有马场。");
@@ -228,7 +229,7 @@
     const opts = options || {};
     if (opts.worldType) return ns.ChairmanWorld.create(opts);
     const seed = Number.isInteger(opts.seed) ? opts.seed >>> 0 : (Date.now() ^ Math.floor(Math.random() * 0xffffffff)) >>> 0;
-    const w = { id: opts.id || `world-${Date.now()}-${seed}`, schemaVersion: 1, rulesVersion: 1, ratingVersion: 2, ratingPrecisionVersion: 1, aiVersion: 2, ratingSeed: seed, aiRngState: ns.ChairmanRatings.hash(`ai:${seed}`), tfStandards: {}, revision: 0,
+    const w = { id: opts.id || `world-${Date.now()}-${seed}`, schemaVersion: 1, rulesVersion: 1, ratingVersion: 2, ratingPrecisionVersion: 1, aiVersion: 2, ratingSeed: seed, aiRngState: ns.ChairmanRatings.hash(`ai:${seed}`), revision: 0,
       name: opts.name || "我的国际马会", turn: 0, phase: "season", seed, rngState: seed, nextId: 1,
       settings: { annualNewHorses: 75, autoRetire: true }, regions: regions({}), tracks: [], races: [], horses: [],
       totalHorses: 0, awardDraft: {}, awardsStrict: true, lastCompletedTurn: null, ui: {}, lockedRaces: {} };
@@ -297,16 +298,22 @@
     const output = mutate(world, (w, out) => {
       ns.ChairmanSeries?.prepare(w,true);
       const d = date(w.turn);
-      const tfCalibration = ns.ChairmanRatings.calibration(w);
+      ns.ChairmanDevelopment.initialize(w);
+      const development=ns.ChairmanDevelopment.enabled(w),tfContext=development?ns.ChairmanDevelopment.context(w):null;
+      const tfCalibration = development?null:ns.ChairmanRatings.calibration(w);
       w.lockedRaces = w.lockedRaces || {};
+      if(w.worldSystemVersion===2){
+        for(const h of w.horses)if(h.status==='active')ns.ChairmanWorld.reconcileCampaign(w,h);
+        ns.ChairmanWorld.travelTick(w);
+      }
       for (const h of w.horses) {
         if (h.status !== "active") continue;
         const t = timeFor(w, h);
         ns.MaturityRules.applyMonthlyDecline(h, h.maturity, h.maturity.lastCheckedIndex, t.index);
         h.maturity.lastCheckedIndex = t.index;
         if (h.booked && h.booked.preparationTurn != null && h.booked.preparationTurn <= w.turn) {
-          h.locationRegion = h.booked.targetRegion;
-          if (w.worldSystemVersion === 2) { h.locationRegionId = h.booked.targetRegionId; ns.ChairmanWorld.freeze(w, h.booked.raceId, date(h.booked.turn).year); }
+          if(w.worldSystemVersion!==2)h.locationRegion = h.booked.targetRegion;
+          if (w.worldSystemVersion === 2) { ns.ChairmanWorld.freeze(w, h.booked.raceId, date(h.booked.turn).year); }
           const key = `${date(h.booked.turn).year}:${h.booked.raceId}`;
           if (!w.lockedRaces[key]) w.lockedRaces[key] = clone(engineRace(w, w.races.find((r) => r.id === h.booked.raceId),date(h.booked.turn).year));
         }
@@ -317,10 +324,11 @@
         const race = locked || engineRace(w, definition);
         if (!locked && definition.deleted || race.month !== d.month || race.half !== d.half || definition.lastHeldYear === d.year || !locked && d.year < (definition.notBeforeYear || 1)) continue;
         definition.lastHeldYear = d.year;
+        if(development&&['new','maiden'].includes(race.raceClass)&&!locked)continue;
         if (w.worldSystemVersion === 2) ns.ChairmanWorld.freeze(w, definition.id, d.year);
         delete w.lockedRaces[`${d.year}:${definition.id}`];
         const occurrenceId = `${d.year}:${race.id}`;
-        const horses = w.horses.filter((h) => h.booked && h.booked.raceId === race.id && h.booked.turn === w.turn && eligible(w, h, race, w.turn));
+        const horses = w.horses.filter((h) => h.booked && h.booked.raceId === race.id && h.booked.turn === w.turn && eligible(w, h, race, w.turn) && (w.worldSystemVersion!==2||!h.transit&&h.locationRegionId===race.regionId));
         if (w.worldSystemVersion === 2 && race.demandDriven && horses.length < 2) { horses.forEach(h=>{h.booked=null;}); continue; }
         const occurrence = { id: occurrenceId, turn: w.turn, year: d.year, raceId: race.id, race: clone(race), rulesVersion: w.rulesVersion || 1, ratingVersion: w.ratingVersion,
           name: race.name, raceClass: race.raceClass, status: horses.length < 2 ? "cancelled" : "completed", count: horses.length };
@@ -337,18 +345,23 @@
         });
         const simulated = ns.RaceRules.simulateWorldRace(runners, simRace);
         occurrence.trackCondition = simulated.trackCondition;
-        const evaluation = ns.ChairmanRatings.rateRaceTF(race, simulated.results, horses, w.turn, w.tfStandards, tfCalibration);
+        const evaluation = development?tfContext.rate({...race,prestige:ns.ChairmanPrestige.value(race)},simulated.results,w.turn):ns.ChairmanRatings.rateRaceTF(race, simulated.results, horses, w.turn, undefined, tfCalibration);
+        const novices=new Set(horses.filter(h=>(h.qualification??0)===0).map(h=>h.id));
+        if(development){
+          tfContext.record(race,simulated.results,w.turn,evaluation);
+          tfContext.settleDebut(race,simulated.results,w.turn,novices);
+          for(const h of horses)ns.ChairmanDevelopment.persist(tfContext,h);
+          occurrence.tfMechanismVersion=1;occurrence.tfPrestigeBonus=evaluation.prestigeBonus||0;
+        }
         occurrence.tfBenchmarkId = evaluation.benchmarkId;
         occurrence.tfSource = evaluation.source;
         occurrence.scaleOffset = ns.ChairmanRatings.getRatingScaleOffset(w.ratingSeed ?? w.seed, occurrenceId);
-        w.tfStandards = w.tfStandards || {};
-        if (evaluation.winnerRating != null) for (const key of [race.id, `${race.surface}|${category(race.distance)}`]) w.tfStandards[key] = [...(w.tfStandards[key] || []), evaluation.winnerRating].slice(-5);
-        simulated.results.forEach(r => { r.tf = evaluation.ratings[r.horseId] ?? null; });
+        simulated.results.forEach(r => { r.tf = evaluation.ratings[r.horseId] ?? null;if(development){r.rawTf=evaluation.rawRatings?.[r.horseId]??null;r.tfPrestigeBonus=r.tf==null?0:evaluation.prestigeBonus||0;r.tfMechanismVersion=1;} });
         for (const result of simulated.results) {
           const h = horses.find((item) => item.id === result.horseId);
           const performance = { ...result, id: `${occurrenceId}:${h.id}`, occurrenceId, raceId: race.id,
             turn: w.turn, year: d.year, rulesVersion: w.rulesVersion || 1, ratingVersion: w.ratingVersion, horseName: h.name, owner: h.owner, association: h.association,
-            age: ageOf(w, h), gender: h.gender, homeRegion: h.homeRegion, ...(w.worldSystemVersion === 2 ? {homeRegionId:h.homeRegionId,regionId:race.regionId,trackId:race.trackId} : {}),
+            age: ageOf(w, h), gender: h.gender, homeRegion: h.homeRegion, ...(w.worldSystemVersion === 2 ? {homeRegionId:h.homeRegionId,regionId:race.regionId,trackId:race.trackId,travelPurpose:h.campaign?.reason||h.travelReason||'既有报名'} : {}),
             raceName: race.name, raceClass: race.raceClass, surfaceRegion: race.surfaceRegion, surface: race.surface, distance: race.distance,
             ratingDeficit: result.retired ? null : ns.ChairmanRatings.deficit(result,race.distance), manualRating: null, priorPerformanceId: h.lastPerformanceId || null, priorTf: h.lastTf, priorEventRating: h.lastEventRating, count: horses.length,
             prize: result.rank && result.rank <= 5 ? race.prizes[result.rank - 1] : 0 };
@@ -379,10 +392,11 @@
         }
       }
       ns.ChairmanSeries?.settle(w,out);
+      if(development)ns.ChairmanDevelopment.settle(w,tfContext);
       w.backgroundSummary = { turn: w.turn, completed: out.occurrences.filter(r => !['g1','g2','g3'].includes(r.raceClass) && r.status === 'completed').length, cancelled: out.occurrences.filter(r => !['g1','g2','g3'].includes(r.raceClass) && r.status === 'cancelled').length };
       w.lastCompletedTurn = w.turn;
       if (w.turn % 24 === 23) w.phase = "yearEnd";
-      else { w.turn++; planEntries(w); }
+      else { w.turn++; if(w.worldSystemVersion===2)ns.ChairmanWorld.travelTick(w); planEntries(w); }
     });
     if (!options?.deferHonors) ns.ChairmanHonors?.runAutomatic(output);
     return output;
@@ -419,6 +433,7 @@
         h.annual = emptyStats(year + 1);
       }
       w.turn++;
+      if(w.worldSystemVersion===2)ns.ChairmanWorld.travelTick(w);
       w.phase = "season";
       w.awardDraft = {};
       w.awardDetails = {};
@@ -474,7 +489,14 @@
         if (existing) {
           assert(existing.origin === "custom" || w.worldSystemVersion===2 && Object.keys(value).every(k=>["id","homeRegion","homeRegionId","locationRegion","locationRegionId"].includes(k)), "普通AI马的真实属性不可编辑。");
           const h = { ...existing, ...value };
-          if (h.homeRegion !== existing.homeRegion) { h.locationRegion = h.homeRegion; h.booked = null; }
+          if (h.homeRegion !== existing.homeRegion) {
+            if(w.worldSystemVersion!==2){h.locationRegion=h.homeRegion;h.booked=null;}
+            else {
+              // Administrative transfer does not move the horse or undo a departure.
+              if(!h.transit&&!(h.booked&&w.lockedRaces?.[`${date(h.booked.turn).year}:${h.booked.raceId}`]))h.booked=null;
+              h.target=null;h.campaign=null;
+            }
+          }
           initializeHorseTime(w, h, existing);
           validateHorse(w, h);
           Object.assign(existing, h);
@@ -518,6 +540,7 @@
     });
   }
   function validateWorld(w) {
+    ns.ChairmanDevelopment?.validate(w);
     ns.ChairmanSeries?.validate(w);
     ns.ChairmanEditor?.validate(w);
     assert(w && w.schemaVersion === 1 && typeof w.id === "string", "存档版本不受支持。");
