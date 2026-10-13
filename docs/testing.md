@@ -1,6 +1,6 @@
 # 本地自动化测试
 
-项目使用 Node.js 内置测试框架，不需要安装第三方依赖。请使用 Node.js 20 或更高版本。
+项目使用 Node.js 内置测试框架，并使用 `jsdom`、`fake-indexeddb` 等开发依赖。请使用 Node.js 20 或更高版本；首次安装或锁文件变化后执行 `npm ci`，依赖以 `package.json` 和 `package-lock.json` 为准。
 
 ## 首次启用推送前检查
 
