@@ -3,7 +3,7 @@
 
   ns.HistoricalHorseRegistry.register({
       "id": "just-a-way",
-      "name": "???????",
+      "name": "ジャスタウェイ",
       "displayName": "一路通",
       "displayNameZh": "一路通",
       "displayNameEn": "Just A Way",

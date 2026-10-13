@@ -3,7 +3,7 @@
 
   ns.HistoricalHorseRegistry.register({
       "id": "air-groove",
-      "name": "??????",
+      "name": "エアグルーヴ",
       "displayName": "气槽",
       "displayNameZh": "气槽",
       "displayNameEn": "Air Groove",

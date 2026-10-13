@@ -3,7 +3,7 @@
 
   ns.HistoricalHorseRegistry.register({
       "id": "ten-point",
-      "name": "??????",
+      "name": "テンポイント",
       "displayName": "十点",
       "displayNameZh": "十点",
       "displayNameEn": "Ten Point",

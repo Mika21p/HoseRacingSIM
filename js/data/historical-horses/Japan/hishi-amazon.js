@@ -3,7 +3,7 @@
 
   ns.HistoricalHorseRegistry.register({
       "id": "hishi-amazon",
-      "name": "??????",
+      "name": "ヒシアマゾン",
       "displayName": "菱亚马逊",
       "displayNameZh": "菱亚马逊",
       "displayNameEn": "Hishi Amazon",

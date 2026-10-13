@@ -3,7 +3,7 @@
 
   ns.HistoricalHorseRegistry.register({
       "id": "symboli-kris-s",
-      "name": "?????????",
+      "name": "シンボリクリスエス",
       "displayName": "吉兆",
       "displayNameZh": "吉兆",
       "displayNameEn": "Symboli Kris S",

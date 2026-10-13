@@ -3,7 +3,7 @@
 
   ns.HistoricalHorseRegistry.register({
       "id": "duramente",
-      "name": "??????",
+      "name": "ドゥラメンテ",
       "displayName": "大鸣大放",
       "displayNameZh": "大鸣大放",
       "displayNameEn": "Duramente",

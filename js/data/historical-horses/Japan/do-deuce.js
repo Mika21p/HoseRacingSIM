@@ -3,7 +3,7 @@
 
   ns.HistoricalHorseRegistry.register({
       "id": "do-deuce",
-      "name": "??????",
+      "name": "ドウデュース",
       "displayName": "胜局在望",
       "displayNameZh": "胜局在望",
       "displayNameEn": "Do Deuce",

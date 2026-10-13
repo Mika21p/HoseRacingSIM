@@ -3,7 +3,7 @@
 
   ns.HistoricalHorseRegistry.register({
       "id": "biwa-hayahide",
-      "name": "??????",
+      "name": "ビワハヤヒデ",
       "displayName": "琵琶晨光",
       "displayNameZh": "琵琶晨光",
       "displayNameEn": "Biwa Hayahide",

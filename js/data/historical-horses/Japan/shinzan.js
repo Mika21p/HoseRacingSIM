@@ -3,7 +3,7 @@
 
   ns.HistoricalHorseRegistry.register({
       "id": "shinzan",
-      "name": "????",
+      "name": "シンザン",
       "displayName": "神赞",
       "displayNameZh": "神赞",
       "displayNameEn": "Shinzan",

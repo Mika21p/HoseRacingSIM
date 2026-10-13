@@ -3,7 +3,7 @@
 
   ns.HistoricalHorseRegistry.register({
       "id": "lys-gracieux",
-      "name": "???????",
+      "name": "リスグラシュー",
       "displayName": "雍容白荷",
       "displayNameZh": "雍容白荷",
       "displayNameEn": "Lys Gracieux",

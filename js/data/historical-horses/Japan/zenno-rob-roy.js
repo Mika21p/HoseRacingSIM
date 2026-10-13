@@ -3,7 +3,7 @@
 
   ns.HistoricalHorseRegistry.register({
       "id": "zenno-rob-roy",
-      "name": "???????",
+      "name": "ゼンノロブロイ",
       "displayName": "荒漠英雄",
       "displayNameZh": "荒漠英雄",
       "displayNameEn": "Zenno Rob Roy",

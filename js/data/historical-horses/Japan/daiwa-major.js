@@ -3,7 +3,7 @@
 
   ns.HistoricalHorseRegistry.register({
       "id": "daiwa-major",
-      "name": "???????",
+      "name": "ダイワメジャー",
       "displayName": "大和主将",
       "displayNameZh": "大和主将",
       "displayNameEn": "Daiwa Major",

@@ -3,7 +3,7 @@
 
   ns.HistoricalHorseRegistry.register({
       "id": "mihono-bourbon",
-      "name": "???????",
+      "name": "ミホノブルボン",
       "displayName": "美浦波旁",
       "displayNameZh": "美浦波旁",
       "displayNameEn": "Mihono Bourbon",

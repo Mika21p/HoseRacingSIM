@@ -3,7 +3,7 @@
 
   ns.HistoricalHorseRegistry.register({
       "id": "victoire-pisa",
-      "name": "?????????",
+      "name": "ヴィクトワールピサ",
       "displayName": "比萨胜驹",
       "displayNameZh": "比萨胜驹",
       "displayNameEn": "Victoire Pisa",

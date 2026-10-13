@@ -3,7 +3,7 @@
 
   ns.HistoricalHorseRegistry.register({
       "id": "mayano-top-gun",
-      "name": "????????",
+      "name": "マヤノトップガン",
       "displayName": "摩耶重炮",
       "displayNameZh": "摩耶重炮",
       "displayNameEn": "Mayano Top Gun",

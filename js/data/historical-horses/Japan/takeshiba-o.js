@@ -3,7 +3,7 @@
 
   ns.HistoricalHorseRegistry.register({
       "id": "takeshiba-o",
-      "name": "??????",
+      "name": "タケシバオー",
       "displayName": "竹芝王",
       "displayNameZh": "竹芝王",
       "displayNameEn": "Takeshiba O",

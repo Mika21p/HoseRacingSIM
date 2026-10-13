@@ -3,7 +3,7 @@
 
   ns.HistoricalHorseRegistry.register({
       "id": "sodashi",
-      "name": "???",
+      "name": "ソダシ",
       "displayName": "苏妲己",
       "displayNameZh": "苏妲己",
       "displayNameEn": "Sodashi",

@@ -3,7 +3,7 @@
 
   ns.HistoricalHorseRegistry.register({
       "id": "saint-lite",
-      "name": "??????",
+      "name": "セントライト",
       "displayName": "圣烈特",
       "displayNameZh": "圣烈特",
       "displayNameEn": "Saint Lite",

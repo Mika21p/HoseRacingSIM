@@ -3,7 +3,7 @@
 
   ns.HistoricalHorseRegistry.register({
       "id": "speed-symboli",
-      "name": "????????",
+      "name": "スピードシンボリ",
       "displayName": "速度象征",
       "displayNameZh": "速度象征",
       "displayNameEn": "Speed Symboli",

@@ -3,7 +3,7 @@
 
   ns.HistoricalHorseRegistry.register({
       "id": "mr-cb",
-      "name": "????????",
+      "name": "ミスターシービー",
       "displayName": "千明代表",
       "displayNameZh": "千明代表",
       "displayNameEn": "Mr. C.B.",

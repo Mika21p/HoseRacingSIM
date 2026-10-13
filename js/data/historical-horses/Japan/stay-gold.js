@@ -3,7 +3,7 @@
 
   ns.HistoricalHorseRegistry.register({
       "id": "stay-gold",
-      "name": "???????",
+      "name": "ステイゴールド",
       "displayName": "黄金旅程",
       "displayNameZh": "黄金旅程",
       "displayNameEn": "Stay Gold",

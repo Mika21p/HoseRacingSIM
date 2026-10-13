@@ -3,7 +3,7 @@
 
   ns.HistoricalHorseRegistry.register({
       "id": "maruzensky",
-      "name": "???????",
+      "name": "マルゼンスキー",
       "displayName": "丸善斯基",
       "displayNameZh": "丸善斯基",
       "displayNameEn": "Maruzensky",
