@@ -73,9 +73,9 @@ test("home, global metadata and mobile navigation are wired", () => {
   assert.match(index, /era-narrative\.js\?v=20260720-era-v5/);
   assert.match(index, /era\.js\?v=20260922-trainer-prose/);
   assert.match(index, /id="appVersion"/);
-  assert.match(changelog, /version: "v0\.16c"/);
+  assert.match(changelog, /version: "v0\.16d"/);
   assert.match(changelog, /version: "v0\.15c"/);
-  assert.match(changelog, /nonConditionRaces: 622/);
+  assert.match(changelog, /nonConditionRaces: 629/);
   assert.match(render, /class="home-mode-grid"/);
   assert.match(render, /class="home-support-row"/);
   assert.doesNotMatch(render, /class="home-route-card"/);
