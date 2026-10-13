@@ -2,7 +2,7 @@ const test=require('node:test'),assert=require('node:assert/strict'),fs=require(
 const {loadChairmanRules}=require('./helpers/project-loader');
 const {createFixtures}=require('../scripts/lib/chairman-scheduling-fixtures');
 test('local route caches preserve planning across travel edits, rest and transport changes',()=>{
- const p=loadChairmanRules(),b=loadChairmanRules();vm.runInContext(fs.readFileSync('artifacts/chairman-stage9-baseline-world.js','utf8'),b.context);
+ const p=loadChairmanRules(),b=loadChairmanRules();vm.runInContext(fs.readFileSync(require('path').join(__dirname,'fixtures/chairman/chairman-stage9-baseline-world.js'),'utf8'),b.context);
  const n=p.rules,f=createFixtures(n),w=f.world();w.turn=1;
  w.races=[f.race(w,'home','g1',{turn:4}),f.race(w,'away','g1',{region:1,turn:5}),f.race(w,'away2','g3',{region:1,turn:5})];
  for(const edit of [()=>{},()=>{w.travelOverrides[[w.regions[0].id,w.regions[1].id].sort().join('|')]=4;},()=>{w.horses[0].restUntil=9;w.horses[1].transit={toRegionId:w.regions[1].id,arrivalTurn:3,kind:'outbound'};},()=>{w.races[1].deleted=true;}]){

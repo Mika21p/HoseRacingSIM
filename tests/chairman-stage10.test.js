@@ -1,6 +1,6 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('fs');
 const {loadChairmanRules}=require('./helpers/project-loader'),{createFixtures}=require('../scripts/lib/chairman-scheduling-fixtures');
-function setup(name,trace=false){const p=loadChairmanRules(),source=require('../scripts/lib/chairman-stage10-variants').variant(fs.readFileSync('artifacts/chairman-stage10-baseline-world.js','utf8'),name),t=require('../scripts/lib/chairman-stage10-trace').attach(p,source,trace),n=p.rules,f=createFixtures(n);return {n,f,w:f.world(),t};}
+function setup(name,trace=false){const p=loadChairmanRules(),source=require('../scripts/lib/chairman-stage10-variants').variant(fs.readFileSync(require('path').join(__dirname,'fixtures/chairman/chairman-stage10-baseline-world.js'),'utf8'),name),t=require('../scripts/lib/chairman-stage10-trace').attach(p,source,trace),n=p.rules,f=createFixtures(n);return {n,f,w:f.world(),t};}
 test('young filly can book a legal near prep while retaining her major target',()=>{
  const {n,f,w}=setup('prep');w.horses=w.horses.slice(0,1);const h=w.horses[0];h.gender='牝马';h.birthYear=-2;
  w.races=[{...f.race(w,'goal','g1',{turn:4}),prestige:100},{...f.race(w,'prep','g2'),prestige:80}];
