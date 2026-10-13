@@ -193,6 +193,8 @@
     'the-goodwood': 'morphettville', 'manikato-stakes': 'moonee-valley', 'doncaster-mile': 'randwick',
     'queen-elizabeth-stakes-aus': 'randwick', 'cox-plate': 'moonee-valley', 'caulfield-cup': 'caulfield',
     'victoria-derby': 'flemington', 'melbourne-cup': 'flemington',
+    'australian-cup': 'flemington', 'makybe-diva-stakes': 'flemington', 'turnbull-stakes': 'flemington',
+    'futurity-stakes': 'caulfield', 'caulfield-stakes': 'caulfield', 'ranvet-stakes': 'rosehill',
     'blue-point-sprint': 'meydan', 'neom-turf-cup': 'king-abdulaziz', 'red-sea-turf-handicap': 'king-abdulaziz',
     'saudi-derby': 'king-abdulaziz', 'saudi-cup': 'king-abdulaziz',
     'al-quoz-sprint': 'meydan', 'al-fahidi-fort': 'meydan', 'cape-verdi': 'meydan', 'jebel-hatta': 'meydan',

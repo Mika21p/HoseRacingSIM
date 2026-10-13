@@ -10,7 +10,7 @@
       { raceId: "queen-elizabeth-stakes-aus", year: 2017, ability: 97, jockeyId: "hugh-bowman", finish: 1 },
       { raceId: "cox-plate", year: 2017, ability: 97, jockeyId: "hugh-bowman", finish: 1 },
       { raceId: "cox-plate", year: 2018, ability: 97, jockeyId: "hugh-bowman", finish: 1 },
-      { raceId: "queen-elizabeth-stakes-aus", year: 2019, ability: 97, jockeyId: "hugh-bowman", finish: 1 }
+      { raceId: "queen-elizabeth-stakes-aus", year: 2019, ability: 97, jockeyId: "hugh-bowman", finish: 1 }, { raceId: "caulfield-stakes", year: 2016, ability: 96, jockeyId: "hugh-bowman", finish: 1 }, { raceId: "turnbull-stakes", year: 2017, ability: 96, jockeyId: "hugh-bowman", finish: 1 }, { raceId: "turnbull-stakes", year: 2018, ability: 97, jockeyId: "hugh-bowman", finish: 1 }
     ]
   });
 })();

@@ -96,22 +96,22 @@
       id: "olivier-peslier",
       name: "O. Peslier",
       periods: [
-        { from: 1993, to: 2012, ability: 88 }
+        { from: 1993, to: 2012, ability: 90 }
       ]
     },
     {
       id: "ryan-moore",
       name: "R. Moore",
       periods: [
-        { from: 2004, to: 2012, ability: 84 },
-        { from: 2013, to: 2026, ability: 89 }
+        { from: 2004, to: 2012, ability: 80 },
+        { from: 2013, to: 2026, ability: 90 }
       ]
     },
     {
       id: "damian-lane",
       name: "D. Lane",
       periods: [
-        { from: 2017, to: 2026, ability: 84 }
+        { from: 2017, to: 2026, ability: 80 }
       ]
     },
     {
@@ -453,7 +453,7 @@
       id: "joao-moreira",
       name: "J. Moreira",
       periods: [
-        { from: 2010, to: 2026, ability: 87 }
+        { from: 2010, to: 2026, ability: 90 }
       ]
     },
     {
@@ -468,32 +468,32 @@
       id: "edmondo-botti",
       name: "E. Botti",
       periods: [
-        { from: 1987, to: 1998, ability: 85 },
-        { from: 1999, to: 2007, ability: 87 }
+        { from: 1987, to: 1998, ability: 90 },
+        { from: 1999, to: 2007, ability: 90 }
       ]
     },
     {
       id: "donnacha-obrien",
       name: "D. O'Brien",
       periods: [
-        { from: 2014, to: 2017, ability: 84 },
-        { from: 2018, to: 2019, ability: 88 }
+        { from: 2014, to: 2017, ability: 80 },
+        { from: 2018, to: 2019, ability: 90 }
       ]
     },
     {
       id: "andrea-atzeni",
       name: "A. Atzeni",
       periods: [
-        { from: 2008, to: 2011, ability: 83 },
-        { from: 2012, to: 2026, ability: 87 }
+        { from: 2008, to: 2011, ability: 80 },
+        { from: 2012, to: 2026, ability: 90 }
       ]
     },
     {
       id: "jamie-kah",
       name: "J. Kah",
       periods: [
-        { from: 2011, to: 2018, ability: 83 },
-        { from: 2019, to: 2026, ability: 87 }
+        { from: 2011, to: 2018, ability: 80 },
+        { from: 2019, to: 2026, ability: 90 }
       ]
     },
     {
@@ -646,45 +646,45 @@
       id: "ron-turcotte",
       name: "R. Turcotte",
       periods: [
-        { from: 1961, to: 1978, ability: 88 }
+        { from: 1961, to: 1978, ability: 90 }
       ]
     },
     {
       id: "jean-cruguet",
       name: "J. Cruguet",
       periods: [
-        { from: 1965, to: 1980, ability: 84 }
+        { from: 1965, to: 1980, ability: 80 }
       ]
     },
     {
       id: "steve-cauthen",
       name: "S. Cauthen",
       periods: [
-        { from: 1976, to: 1987, ability: 88 },
-        { from: 1988, to: 1992, ability: 86 }
+        { from: 1976, to: 1987, ability: 90 },
+        { from: 1988, to: 1992, ability: 90 }
       ]
     },
     {
       id: "laffit-pincay-jr",
       name: "L. Pincay Jr.",
       periods: [
-        { from: 1966, to: 2003, ability: 89 }
+        { from: 1966, to: 2003, ability: 90 }
       ]
     },
     {
       id: "victor-espinoza",
       name: "V. Espinoza",
       periods: [
-        { from: 1993, to: 2014, ability: 82 },
-        { from: 2015, to: 2026, ability: 86 }
+        { from: 1993, to: 2014, ability: 80 },
+        { from: 2015, to: 2026, ability: 90 }
       ]
     },
     {
       id: "mike-smith",
       name: "M. Smith",
       periods: [
-        { from: 1982, to: 2009, ability: 87 },
-        { from: 2010, to: 2026, ability: 89 }
+        { from: 1982, to: 2009, ability: 90 },
+        { from: 2010, to: 2026, ability: 90 }
       ]
     },
     {
@@ -698,14 +698,14 @@
       id: "charley-kurtsinger",
       name: "C. Kurtsinger",
       periods: [
-        { from: 1924, to: 1946, ability: 84 }
+        { from: 1924, to: 1946, ability: 80 }
       ]
     },
     {
       id: "ron-franklin",
       name: "R. Franklin",
       periods: [
-        { from: 1978, to: 1980, ability: 78 }
+        { from: 1978, to: 1980, ability: 80 }
       ]
     },
     {
@@ -719,28 +719,28 @@
       id: "jerry-bailey",
       name: "J. Bailey",
       periods: [
-        { from: 1974, to: 2006, ability: 89 }
+        { from: 1974, to: 2006, ability: 90 }
       ]
     },
     {
       id: "chris-mccarron",
       name: "C. McCarron",
       periods: [
-        { from: 1974, to: 2002, ability: 88 }
+        { from: 1974, to: 2002, ability: 90 }
       ]
     },
     {
       id: "calvin-borel",
       name: "C. Borel",
       periods: [
-        { from: 1983, to: 2026, ability: 84 }
+        { from: 1983, to: 2026, ability: 80 }
       ]
     },
     {
       id: "tom-queally",
       name: "T. Queally",
       periods: [
-        { from: 2004, to: 2014, ability: 85 },
+        { from: 2004, to: 2014, ability: 90 },
         { from: 2015, to: 2026, ability: 80 }
       ]
     },
@@ -748,15 +748,15 @@
       id: "mick-kinane",
       name: "M. Kinane",
       periods: [
-        { from: 1975, to: 1996, ability: 87 },
-        { from: 1997, to: 2009, ability: 89 }
+        { from: 1975, to: 1996, ability: 90 },
+        { from: 1997, to: 2009, ability: 90 }
       ]
     },
     {
       id: "frankie-dettori",
       name: "L. Dettori",
       periods: [
-        { from: 1989, to: 2014, ability: 88 },
+        { from: 1989, to: 2014, ability: 90 },
         { from: 2015, to: 2026, ability: 90 }
       ]
     },
@@ -764,14 +764,14 @@
       id: "greville-starkey",
       name: "G. Starkey",
       periods: [
-        { from: 1954, to: 1989, ability: 84 }
+        { from: 1954, to: 1989, ability: 80 }
       ]
     },
     {
       id: "pat-eddery",
       name: "P. Eddery",
       periods: [
-        { from: 1967, to: 2003, ability: 89 }
+        { from: 1967, to: 2003, ability: 90 }
       ]
     },
     {
@@ -779,62 +779,62 @@
       name: "L. Piggott",
       periods: [
         { from: 1948, to: 1985, ability: 90 },
-        { from: 1990, to: 1995, ability: 84 }
+        { from: 1990, to: 1995, ability: 80 }
       ]
     },
     {
       id: "walter-swinburn",
       name: "W. Swinburn",
       periods: [
-        { from: 1978, to: 2000, ability: 86 }
+        { from: 1978, to: 2000, ability: 90 }
       ]
     },
     {
       id: "cash-asmussen",
       name: "C. Asmussen",
       periods: [
-        { from: 1979, to: 2001, ability: 86 }
+        { from: 1979, to: 2001, ability: 90 }
       ]
     },
     {
       id: "christophe-soumillon",
       name: "C. Soumillon",
       periods: [
-        { from: 2000, to: 2010, ability: 87 },
-        { from: 2011, to: 2026, ability: 89 }
+        { from: 2000, to: 2010, ability: 90 },
+        { from: 2011, to: 2026, ability: 90 }
       ]
     },
     {
       id: "jim-crowley",
       name: "J. Crowley",
       periods: [
-        { from: 2006, to: 2015, ability: 82 },
-        { from: 2016, to: 2026, ability: 86 }
+        { from: 2006, to: 2015, ability: 80 },
+        { from: 2016, to: 2026, ability: 90 }
       ]
     },
     {
       id: "kieren-fallon",
       name: "K. Fallon",
       periods: [
-        { from: 1984, to: 1996, ability: 84 },
-        { from: 1997, to: 2006, ability: 88 },
-        { from: 2007, to: 2016, ability: 82 }
+        { from: 1984, to: 1996, ability: 80 },
+        { from: 1997, to: 2006, ability: 90 },
+        { from: 2007, to: 2016, ability: 80 }
       ]
     },
     {
       id: "thierry-jarnet",
       name: "T. Jarnet",
       periods: [
-        { from: 1984, to: 2002, ability: 86 },
-        { from: 2003, to: 2016, ability: 87 }
+        { from: 1984, to: 2002, ability: 90 },
+        { from: 2003, to: 2016, ability: 90 }
       ]
     },
     {
       id: "james-mcdonald",
       name: "J. McDonald",
       periods: [
-        { from: 2007, to: 2010, ability: 82 },
-        { from: 2011, to: 2016, ability: 86 },
+        { from: 2007, to: 2010, ability: 80 },
+        { from: 2011, to: 2016, ability: 90 },
         { from: 2017, to: 2026, ability: 90 }
       ]
     },
@@ -842,41 +842,41 @@
       id: "craig-williams",
       name: "C. Williams",
       periods: [
-        { from: 1993, to: 2005, ability: 82 },
-        { from: 2006, to: 2026, ability: 87 }
+        { from: 1993, to: 2005, ability: 80 },
+        { from: 2006, to: 2026, ability: 90 }
       ]
     },
     {
       id: "hugh-bowman",
       name: "H. Bowman",
       periods: [
-        { from: 1999, to: 2013, ability: 84 },
+        { from: 1999, to: 2013, ability: 80 },
         { from: 2014, to: 2019, ability: 90 },
-        { from: 2020, to: 2026, ability: 86 }
+        { from: 2020, to: 2026, ability: 90 }
       ]
     },
     {
       id: "damien-oliver",
       name: "D. Oliver",
       periods: [
-        { from: 1988, to: 1995, ability: 84 },
-        { from: 1996, to: 2023, ability: 89 }
+        { from: 1988, to: 1995, ability: 80 },
+        { from: 1996, to: 2023, ability: 90 }
       ]
     },
     {
       id: "kerrin-mcevoy",
       name: "K. McEvoy",
       periods: [
-        { from: 1997, to: 2010, ability: 84 },
-        { from: 2011, to: 2026, ability: 87 }
+        { from: 1997, to: 2010, ability: 80 },
+        { from: 2011, to: 2026, ability: 90 }
       ]
     },
     {
       id: "zac-purton",
       name: "Z. Purton",
       periods: [
-        { from: 2003, to: 2006, ability: 82 },
-        { from: 2007, to: 2013, ability: 86 },
+        { from: 2003, to: 2006, ability: 80 },
+        { from: 2007, to: 2013, ability: 90 },
         { from: 2014, to: 2026, ability: 90 }
       ]
     },
@@ -885,7 +885,7 @@
       name: "K. Teetan",
       periods: [
         { from: 2007, to: 2012, ability: 80 },
-        { from: 2013, to: 2026, ability: 85 }
+        { from: 2013, to: 2026, ability: 90 }
       ]
     },
     {
@@ -893,16 +893,16 @@
       name: "V. Ho",
       periods: [
         { from: 2009, to: 2015, ability: 80 },
-        { from: 2016, to: 2019, ability: 84 },
-        { from: 2020, to: 2026, ability: 87 }
+        { from: 2016, to: 2019, ability: 80 },
+        { from: 2020, to: 2026, ability: 90 }
       ]
     },
     {
       id: "matthew-chadwick",
       name: "M. Chadwick",
       periods: [
-        { from: 2008, to: 2013, ability: 84 },
-        { from: 2014, to: 2026, ability: 82 }
+        { from: 2008, to: 2013, ability: 80 },
+        { from: 2014, to: 2026, ability: 80 }
       ]
     },
     {
@@ -910,39 +910,39 @@
       name: "D. Leung",
       periods: [
         { from: 2008, to: 2016, ability: 80 },
-        { from: 2017, to: 2026, ability: 83 }
+        { from: 2017, to: 2026, ability: 80 }
       ]
     },
     {
       id: "felix-coetzee",
       name: "F. Coetzee",
       periods: [
-        { from: 1982, to: 2003, ability: 84 },
-        { from: 2004, to: 2014, ability: 87 }
+        { from: 1982, to: 2003, ability: 80 },
+        { from: 2004, to: 2014, ability: 90 }
       ]
     },
     {
       id: "olivier-doleuze",
       name: "O. Doleuze",
       periods: [
-        { from: 1988, to: 2006, ability: 84 },
-        { from: 2007, to: 2017, ability: 86 }
+        { from: 1988, to: 2006, ability: 80 },
+        { from: 2007, to: 2017, ability: 90 }
       ]
     },
     {
       id: "gerald-mosse",
       name: "G. Mosse",
       periods: [
-        { from: 1983, to: 2006, ability: 87 },
-        { from: 2007, to: 2020, ability: 84 }
+        { from: 1983, to: 2006, ability: 90 },
+        { from: 2007, to: 2020, ability: 80 }
       ]
     },
     {
       id: "brett-prebble",
       name: "B. Prebble",
       periods: [
-        { from: 1996, to: 2005, ability: 82 },
-        { from: 2006, to: 2018, ability: 86 },
+        { from: 1996, to: 2005, ability: 80 },
+        { from: 2006, to: 2018, ability: 90 },
         { from: 2019, to: 2021, ability: 80 }
       ]
     },
@@ -950,88 +950,88 @@
       id: "douglas-whyte",
       name: "D. Whyte",
       periods: [
-        { from: 1988, to: 1999, ability: 84 },
-        { from: 2000, to: 2013, ability: 88 },
-        { from: 2014, to: 2019, ability: 84 }
+        { from: 1988, to: 1999, ability: 80 },
+        { from: 2000, to: 2013, ability: 90 },
+        { from: 2014, to: 2019, ability: 80 }
       ]
     },
     {
       id: "anthony-delpech",
       name: "A. Delpech",
       periods: [
-        { from: 1991, to: 2004, ability: 84 },
-        { from: 2005, to: 2018, ability: 86 }
+        { from: 1991, to: 2004, ability: 80 },
+        { from: 2005, to: 2018, ability: 90 }
       ]
     },
     {
       id: "william-buick",
       name: "W. Buick",
       periods: [
-        { from: 2007, to: 2014, ability: 84 },
-        { from: 2015, to: 2026, ability: 89 }
+        { from: 2007, to: 2014, ability: 80 },
+        { from: 2015, to: 2026, ability: 90 }
       ]
     },
     {
       id: "james-doyle",
       name: "J. Doyle",
       periods: [
-        { from: 2005, to: 2013, ability: 82 },
-        { from: 2014, to: 2026, ability: 87 }
+        { from: 2005, to: 2013, ability: 80 },
+        { from: 2014, to: 2026, ability: 90 }
       ]
     },
     {
       id: "johnny-murtagh",
       name: "J. Murtagh",
       periods: [
-        { from: 1987, to: 2000, ability: 84 },
-        { from: 2001, to: 2014, ability: 88 }
+        { from: 1987, to: 2000, ability: 80 },
+        { from: 2001, to: 2014, ability: 90 }
       ]
     },
     {
       id: "joseph-obrien",
       name: "J. O'Brien",
       periods: [
-        { from: 2011, to: 2016, ability: 84 }
+        { from: 2011, to: 2016, ability: 80 }
       ]
     },
     {
       id: "richard-hughes",
       name: "R. Hughes",
       periods: [
-        { from: 1988, to: 2000, ability: 82 },
-        { from: 2001, to: 2015, ability: 87 }
+        { from: 1988, to: 2000, ability: 80 },
+        { from: 2001, to: 2015, ability: 90 }
       ]
     },
     {
       id: "freddy-head",
       name: "F. Head",
       periods: [
-        { from: 1966, to: 1984, ability: 86 },
-        { from: 1985, to: 1997, ability: 89 }
+        { from: 1966, to: 1984, ability: 90 },
+        { from: 1985, to: 1997, ability: 90 }
       ]
     },
     {
       id: "paul-hanagan",
       name: "P. Hanagan",
       periods: [
-        { from: 1998, to: 2010, ability: 82 },
-        { from: 2011, to: 2021, ability: 86 }
+        { from: 1998, to: 2010, ability: 80 },
+        { from: 2011, to: 2021, ability: 90 }
       ]
     },
     {
       id: "stephane-pasquier",
       name: "S. Pasquier",
       periods: [
-        { from: 1995, to: 2007, ability: 82 },
-        { from: 2008, to: 2026, ability: 85 }
+        { from: 1995, to: 2007, ability: 80 },
+        { from: 2008, to: 2026, ability: 90 }
       ]
     },
     {
       id: "jamie-spencer",
       name: "J. Spencer",
       periods: [
-        { from: 1996, to: 2005, ability: 84 },
-        { from: 2006, to: 2026, ability: 86 }
+        { from: 1996, to: 2005, ability: 80 },
+        { from: 2006, to: 2026, ability: 90 }
       ]
     },
     {
@@ -1252,63 +1252,63 @@
       id: "george-duffield",
       name: "G. Duffield",
       periods: [
-        { from: 1967, to: 2003, ability: 84 }
+        { from: 1967, to: 2003, ability: 80 }
       ]
     },
     {
       id: "colm-odonoghue",
       name: "C. O'Donoghue",
       periods: [
-        { from: 1999, to: 2012, ability: 82 },
-        { from: 2013, to: 2021, ability: 85 }
+        { from: 1999, to: 2012, ability: 80 },
+        { from: 2013, to: 2021, ability: 90 }
       ]
     },
     {
       id: "chris-hayes",
       name: "C. Hayes",
       periods: [
-        { from: 2004, to: 2015, ability: 81 },
-        { from: 2016, to: 2026, ability: 85 }
+        { from: 2004, to: 2015, ability: 80 },
+        { from: 2016, to: 2026, ability: 90 }
       ]
     },
     {
       id: "maxime-guyon",
       name: "M. Guyon",
       periods: [
-        { from: 2005, to: 2012, ability: 82 },
-        { from: 2013, to: 2026, ability: 87 }
+        { from: 2005, to: 2012, ability: 80 },
+        { from: 2013, to: 2026, ability: 90 }
       ]
     },
     {
       id: "oisin-murphy",
       name: "O. Murphy",
       periods: [
-        { from: 2013, to: 2017, ability: 82 },
-        { from: 2018, to: 2026, ability: 88 }
+        { from: 2013, to: 2017, ability: 80 },
+        { from: 2018, to: 2026, ability: 90 }
       ]
     },
     {
       id: "ioritz-mendizabal",
       name: "I. Mendizabal",
       periods: [
-        { from: 1994, to: 2010, ability: 84 },
-        { from: 2011, to: 2026, ability: 82 }
+        { from: 1994, to: 2010, ability: 80 },
+        { from: 2011, to: 2026, ability: 80 }
       ]
     },
     {
       id: "cristian-demuro",
       name: "C. Demuro",
       periods: [
-        { from: 2009, to: 2016, ability: 82 },
-        { from: 2017, to: 2026, ability: 87 }
+        { from: 2009, to: 2016, ability: 80 },
+        { from: 2017, to: 2026, ability: 90 }
       ]
     },
     {
       id: "pierre-charles-boudot",
       name: "P. Boudot",
       periods: [
-        { from: 2009, to: 2014, ability: 82 },
-        { from: 2015, to: 2021, ability: 88 }
+        { from: 2009, to: 2014, ability: 80 },
+        { from: 2015, to: 2021, ability: 90 }
       ]
     },
     {
@@ -1316,23 +1316,23 @@
       name: "A. Lemaitre",
       periods: [
         { from: 2010, to: 2018, ability: 80 },
-        { from: 2019, to: 2026, ability: 84 }
+        { from: 2019, to: 2026, ability: 80 }
       ]
     },
     {
       id: "andrasch-starke",
       name: "A. Starke",
       periods: [
-        { from: 1989, to: 2005, ability: 84 },
-        { from: 2006, to: 2026, ability: 86 }
+        { from: 1989, to: 2005, ability: 80 },
+        { from: 2006, to: 2026, ability: 90 }
       ]
     },
     {
       id: "colin-keane",
       name: "C. Keane",
       periods: [
-        { from: 2014, to: 2018, ability: 82 },
-        { from: 2019, to: 2026, ability: 87 }
+        { from: 2014, to: 2018, ability: 80 },
+        { from: 2019, to: 2026, ability: 90 }
       ]
     },
     {
@@ -1340,23 +1340,23 @@
       name: "R. Ryan",
       periods: [
         { from: 2016, to: 2021, ability: 80 },
-        { from: 2022, to: 2026, ability: 85 }
+        { from: 2022, to: 2026, ability: 90 }
       ]
     },
     {
       id: "luke-morris",
       name: "L. Morris",
       periods: [
-        { from: 2005, to: 2014, ability: 81 },
-        { from: 2015, to: 2026, ability: 84 }
+        { from: 2005, to: 2014, ability: 80 },
+        { from: 2015, to: 2026, ability: 80 }
       ]
     },
     {
       id: "john-velazquez",
       name: "J. Velazquez",
       periods: [
-        { from: 1990, to: 2009, ability: 87 },
-        { from: 2010, to: 2026, ability: 89 }
+        { from: 1990, to: 2009, ability: 90 },
+        { from: 2010, to: 2026, ability: 90 }
       ]
     },
     {
@@ -1587,25 +1587,25 @@
       id: "jay-ford",
       name: "J. Ford",
       periods: [
-        { from: 2003, to: 2026, ability: 83 }
+        { from: 2003, to: 2026, ability: 80 }
       ]
     },
     {
       id: "nash-rawiller",
       name: "N. Rawiller",
       periods: [
-        { from: 1992, to: 2006, ability: 85 },
-        { from: 2007, to: 2014, ability: 89 },
-        { from: 2015, to: 2017, ability: 87 },
-        { from: 2019, to: 2026, ability: 88 }
+        { from: 1992, to: 2006, ability: 90 },
+        { from: 2007, to: 2014, ability: 90 },
+        { from: 2015, to: 2017, ability: 90 },
+        { from: 2019, to: 2026, ability: 90 }
       ]
     },
     {
       id: "luke-nolen",
       name: "L. Nolen",
       periods: [
-        { from: 1998, to: 2008, ability: 82 },
-        { from: 2009, to: 2026, ability: 86 }
+        { from: 1998, to: 2008, ability: 80 },
+        { from: 2009, to: 2026, ability: 90 }
       ]
     },
     {
@@ -1613,14 +1613,14 @@
       name: "A. Kirby",
       periods: [
         { from: 2004, to: 2012, ability: 80 },
-        { from: 2013, to: 2022, ability: 85 }
+        { from: 2013, to: 2022, ability: 90 }
       ]
     },
     {
       id: "cieren-fallon",
       name: "C. Fallon",
       periods: [
-        { from: 2019, to: 2026, ability: 83 }
+        { from: 2019, to: 2026, ability: 80 }
       ]
     },
     {
@@ -1628,15 +1628,15 @@
       name: "J. Hart",
       periods: [
         { from: 2011, to: 2018, ability: 80 },
-        { from: 2019, to: 2026, ability: 84 }
+        { from: 2019, to: 2026, ability: 80 }
       ]
     },
     {
       id: "willie-carson",
       name: "W. Carson",
       periods: [
-        { from: 1962, to: 1985, ability: 88 },
-        { from: 1986, to: 1996, ability: 85 }
+        { from: 1962, to: 1985, ability: 90 },
+        { from: 1986, to: 1996, ability: 90 }
       ]
     },
     {
@@ -1644,15 +1644,15 @@
       name: "P. Mulrennan",
       periods: [
         { from: 2002, to: 2014, ability: 80 },
-        { from: 2015, to: 2026, ability: 84 }
+        { from: 2015, to: 2026, ability: 80 }
       ]
     },
     {
       id: "gregory-benoist",
       name: "G. Benoist",
       periods: [
-        { from: 1999, to: 2012, ability: 82 },
-        { from: 2013, to: 2022, ability: 87 }
+        { from: 1999, to: 2012, ability: 80 },
+        { from: 2013, to: 2022, ability: 90 }
       ]
     },
     {
@@ -1660,14 +1660,14 @@
       name: "K. Stott",
       periods: [
         { from: 2012, to: 2018, ability: 80 },
-        { from: 2019, to: 2026, ability: 84 }
+        { from: 2019, to: 2026, ability: 80 }
       ]
     },
     {
       id: "callum-rodriguez",
       name: "C. Rodriguez",
       periods: [
-        { from: 2016, to: 2026, ability: 82 }
+        { from: 2016, to: 2026, ability: 80 }
       ]
     },
     {
@@ -1675,7 +1675,7 @@
       name: "T. Eaves",
       periods: [
         { from: 1999, to: 2016, ability: 80 },
-        { from: 2017, to: 2026, ability: 83 }
+        { from: 2017, to: 2026, ability: 80 }
       ]
     },
     {
@@ -1683,7 +1683,7 @@
       name: "M. Harley",
       periods: [
         { from: 2004, to: 2014, ability: 80 },
-        { from: 2015, to: 2022, ability: 83 }
+        { from: 2015, to: 2022, ability: 80 }
       ]
     },
     {
@@ -1691,31 +1691,31 @@
       name: "D. Allan",
       periods: [
         { from: 1996, to: 2014, ability: 80 },
-        { from: 2015, to: 2026, ability: 83 }
+        { from: 2015, to: 2026, ability: 80 }
       ]
     },
     {
       id: "glen-boss",
       name: "G. Boss",
       periods: [
-        { from: 1991, to: 2005, ability: 84 },
-        { from: 2006, to: 2021, ability: 87 }
+        { from: 1991, to: 2005, ability: 80 },
+        { from: 2006, to: 2021, ability: 90 }
       ]
     },
     {
       id: "steven-arnold",
       name: "S. Arnold",
       periods: [
-        { from: 1990, to: 2005, ability: 82 },
-        { from: 2006, to: 2018, ability: 85 }
+        { from: 1990, to: 2005, ability: 80 },
+        { from: 2006, to: 2018, ability: 90 }
       ]
     },
     {
       id: "wayne-lordan",
       name: "W. Lordan",
       periods: [
-        { from: 2001, to: 2011, ability: 82 },
-        { from: 2012, to: 2026, ability: 85 }
+        { from: 2001, to: 2011, ability: 80 },
+        { from: 2012, to: 2026, ability: 90 }
       ]
     },
     {
@@ -1820,125 +1820,125 @@
       id: "bauyrzhan-murzabayev",
       name: "B. Murzabayev",
       periods: [
-        { from: 2018, to: 2026, ability: 84 }
+        { from: 2018, to: 2026, ability: 80 }
       ]
     },
     {
       id: "clarence-kummer",
       name: "C. Kummer",
       periods: [
-        { from: 1916, to: 1928, ability: 86 }
+        { from: 1916, to: 1928, ability: 90 }
       ]
     },
     {
       id: "eric-guerin",
       name: "E. Guerin",
       periods: [
-        { from: 1942, to: 1975, ability: 86 }
+        { from: 1942, to: 1975, ability: 90 }
       ]
     },
     {
       id: "braulio-baeza",
       name: "B. Baeza",
       periods: [
-        { from: 1955, to: 1976, ability: 88 }
+        { from: 1955, to: 1976, ability: 90 }
       ]
     },
     {
       id: "heliodoro-gustines",
       name: "H. Gustines",
       periods: [
-        { from: 1957, to: 1980, ability: 85 }
+        { from: 1957, to: 1980, ability: 90 }
       ]
     },
     {
       id: "eddie-maple",
       name: "E. Maple",
       periods: [
-        { from: 1965, to: 1970, ability: 82 },
-        { from: 1971, to: 1998, ability: 87 }
+        { from: 1965, to: 1970, ability: 80 },
+        { from: 1971, to: 1998, ability: 90 }
       ]
     },
     {
       id: "steve-brooks",
       name: "S. Brooks",
       periods: [
-        { from: 1938, to: 1963, ability: 89 }
+        { from: 1938, to: 1963, ability: 90 }
       ]
     },
     {
       id: "jose-caraballo",
       name: "J. Caraballo",
       periods: [
-        { from: 1984, to: 2018, ability: 82 }
+        { from: 1984, to: 2018, ability: 80 }
       ]
     },
     {
       id: "manuel-ycaza",
       name: "M. Ycaza",
       periods: [
-        { from: 1956, to: 1971, ability: 89 },
-        { from: 1983, to: 1983, ability: 84 }
+        { from: 1956, to: 1971, ability: 90 },
+        { from: 1983, to: 1983, ability: 80 }
       ]
     },
     {
       id: "cornelio-velasquez",
       name: "C. Velasquez",
       periods: [
-        { from: 1990, to: 1995, ability: 82 },
-        { from: 1996, to: 2016, ability: 85 }
+        { from: 1990, to: 1995, ability: 80 },
+        { from: 1996, to: 2016, ability: 90 }
       ]
     },
     {
       id: "eibar-coa",
       name: "E. Coa",
       periods: [
-        { from: 1992, to: 2005, ability: 83 },
-        { from: 2006, to: 2011, ability: 86 }
+        { from: 1992, to: 2005, ability: 80 },
+        { from: 2006, to: 2011, ability: 90 }
       ]
     },
     {
       id: "jorge-velasquez",
       name: "J. Velasquez",
       periods: [
-        { from: 1963, to: 1996, ability: 87 }
+        { from: 1963, to: 1996, ability: 90 }
       ]
     },
     {
       id: "red-pollard",
       name: "R. Pollard",
       periods: [
-        { from: 1928, to: 1955, ability: 82 }
+        { from: 1928, to: 1955, ability: 80 }
       ]
     },
     {
       id: "flavien-prat",
       name: "F. Prat",
       periods: [
-        { from: 2009, to: 2014, ability: 83 },
-        { from: 2015, to: 2026, ability: 89 }
+        { from: 2009, to: 2014, ability: 80 },
+        { from: 2015, to: 2026, ability: 90 }
       ]
     },
     {
       id: "florent-geroux",
       name: "F. Geroux",
       periods: [
-        { from: 2004, to: 2013, ability: 82 },
-        { from: 2014, to: 2026, ability: 87 }
+        { from: 2004, to: 2013, ability: 80 },
+        { from: 2014, to: 2026, ability: 90 }
       ]
     },
     {
       id: "jose-lezcano",
       name: "J. Lezcano",
       periods: [
-        { from: 2004, to: 2026, ability: 84 }
+        { from: 2004, to: 2026, ability: 80 }
       ]
     },
     {
       id: "irad-ortiz-jr",
       name: "I. Ortiz Jr.",
       periods: [
-        { from: 2011, to: 2017, ability: 86 },
+        { from: 2011, to: 2017, ability: 90 },
         { from: 2018, to: 2026, ability: 90 }
       ]
     },
@@ -1946,54 +1946,54 @@
       id: "joel-rosario",
       name: "J. Rosario",
       periods: [
-        { from: 2006, to: 2014, ability: 86 },
-        { from: 2015, to: 2026, ability: 89 }
+        { from: 2006, to: 2014, ability: 90 },
+        { from: 2015, to: 2026, ability: 90 }
       ]
     },
     {
       id: "julien-leparoux",
       name: "J. Leparoux",
       periods: [
-        { from: 2005, to: 2012, ability: 86 },
-        { from: 2013, to: 2026, ability: 84 }
+        { from: 2005, to: 2012, ability: 90 },
+        { from: 2013, to: 2026, ability: 80 }
       ]
     },
     {
       id: "junior-alvarado",
       name: "J. Alvarado",
       periods: [
-        { from: 2007, to: 2021, ability: 82 },
-        { from: 2022, to: 2026, ability: 85 }
+        { from: 2007, to: 2021, ability: 80 },
+        { from: 2022, to: 2026, ability: 90 }
       ]
     },
     {
       id: "luis-saez",
       name: "L. Saez",
       periods: [
-        { from: 2009, to: 2016, ability: 82 },
-        { from: 2017, to: 2026, ability: 87 }
+        { from: 2009, to: 2016, ability: 80 },
+        { from: 2017, to: 2026, ability: 90 }
       ]
     },
     {
       id: "gary-stevens",
       name: "G. Stevens",
       periods: [
-        { from: 1979, to: 2005, ability: 88 },
-        { from: 2013, to: 2018, ability: 86 }
+        { from: 1979, to: 2005, ability: 90 },
+        { from: 2013, to: 2018, ability: 90 }
       ]
     },
     {
       id: "garrett-gomez",
       name: "G. Gomez",
       periods: [
-        { from: 1988, to: 2013, ability: 88 }
+        { from: 1988, to: 2013, ability: 90 }
       ]
     },
     {
       id: "jacinto-vasquez",
       name: "J. Vasquez",
       periods: [
-        { from: 1960, to: 1996, ability: 88 }
+        { from: 1960, to: 1996, ability: 90 }
       ]
     },
     {
@@ -2188,6 +2188,29 @@
       name: "大野拓弥",
       periods: [
         { from: 2002, to: 2026, ability: 60 }
+      ]
+    },
+    {
+      id: "tom-marquand",
+      name: "T. Marquand",
+      periods: [
+        { from: 2015, to: 2019, ability: 80 },
+        { from: 2020, to: 2026, ability: 90 }
+      ]
+    },
+    {
+      id: "jim-byrne",
+      name: "J. Byrne",
+      periods: [
+        { from: 1997, to: 2024, ability: 80 }
+      ]
+    },
+    {
+      id: "blake-shinn",
+      name: "B. Shinn",
+      periods: [
+        { from: 2003, to: 2007, ability: 80 },
+        { from: 2008, to: 2026, ability: 90 }
       ]
     }
   ];
@@ -2475,6 +2498,9 @@
     ,"javier-castellano": ["usa"]
     ,"isao-sugawara": ["japan"]
     ,"takuya-ono": ["japan"]
+    ,"tom-marquand": ["europe"]
+    ,"jim-byrne": ["australia"]
+    ,"blake-shinn": ["australia", "hongkong"]
   };
 
   ns.Jockeys.forEach((jockey) => {

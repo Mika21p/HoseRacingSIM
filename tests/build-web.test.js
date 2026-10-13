@@ -30,7 +30,7 @@ test("production build preserves historical-horse data and loads one bundle", as
   t.after(() => fs.rmSync(temporaryRoot, { recursive: true, force: true }));
   const result = buildWeb({ outputRoot: path.join(temporaryRoot, "dist") });
 
-  assert.equal(result.files.length, 471);
+  assert.equal(result.files.length, 490);
   assert.equal(new Set(result.files).size, result.files.length);
   assert.match(result.bundlePath, /^assets\/historical-horses\.[a-f0-9]{12}\.js$/);
 
