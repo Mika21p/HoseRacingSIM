@@ -3,7 +3,7 @@
 
   ns.HistoricalHorseRegistry.register({
       "id": "tosho-boy",
-      "name": "トウシヨウボーイ",
+      "name": "トウショウボーイ",
       "displayName": "东商小子",
       "displayNameZh": "东商小子",
       "displayNameEn": "Tosho Boy",
