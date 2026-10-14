@@ -18,6 +18,6 @@ test('new Japan and US defaults reproduce the attendance-tested explicit populat
 test('provisional population defaults double all regions and honor explicit zero settings',()=>{
  const n=require('./helpers/project-loader').loadChairmanRules().rules,V=n.ChairmanWorld;
  assert.equal(V.defaultPopulation('britain',68),680);assert.equal(V.defaultPopulation('france',60),600);
- assert.equal(V.defaultPopulation('ireland',39),392);assert.equal(V.defaultPopulation('germany',0),200);assert.equal(V.defaultPopulation('italy',0),200);
+ assert.equal(V.defaultPopulation('ireland',39),392);assert.equal(V.defaultPopulation('germany',14),300);assert.equal(V.defaultPopulation('italy',8),300);assert.equal(V.defaultPopulation('germany',0),300);
  const w=V.create({id:'zero-explicit',worldType:'reference',regionKeys:['usa'],population:{usa:0},annualTargets:{usa:0},seed:123,foundation:false,breeding:false});assert.equal(w.horses.length,0);assert.equal(w.regions[0].annualTarget,0);
 });
