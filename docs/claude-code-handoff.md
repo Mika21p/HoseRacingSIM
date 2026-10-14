@@ -76,6 +76,7 @@
 | --- | --- | --- |
 | B. 主席模式 | `feat/chairman-age-supply`（ba38e78） | 2026-10-15 合并到 main 并随 v0.16e 发布（合并提交 633deca）。改动包括：同回合高声望 G1 分流；非日本参考地区人口下限 150（德国、意大利默认 300）；同年同国经典路线相邻两站最小间隔 1 回合（德国、意大利二千坚尼后牝马转本国牝马路线）；欧洲参考地区新马草泥比例 80/15/5。无存档字段变化。验证与遗留见[年龄层供给诊断](主席模式年龄层供给诊断-2026-10-13.md)第11节；证据在主目录 `artifacts/chairman-age-supply-20261013/`。worktree `.claude/worktrees/chairman-age-supply` 保留，内含的误复制 `artifacts/` 已删除；在 worktree 跑测试不需要 `artifacts/`，阶段9～11基准已移入 `tests/fixtures`。 |
 | C. 史实马数据 | `data/historical-australia-batch1`（d79f1fe） | 2026-10-13 已合并到 main，随 v0.16d 发布：新增 7 场澳洲 G1、19 匹史实马、3 名骑手，骑手能力分规整为整十档。遗留：骑手规整未做长期模拟（需要时交 F 线）；Takeover Target 中文名“接管目标”与 wpstud“兼并目标”不一致未处理；`docs/historical-horse-roster.csv` 未收录这批澳洲马。 |
+| D. 界面与体验 | `ui/home-first-screen`（6afff9e） | 2026-10-15 合并到 main（合并提交 26d5657），随 v0.16f 定版：桌面首屏完整显示五个模式入口；手机端模式卡片精简、殿堂铭牌移到文案下方；「三步开始」改为默认收起的折叠区块。无存档或规则改动。详见[首页首屏优化交接](首页首屏优化交接-2026-10-15.md)。遗留：真实存档下的「继续」布局和低配手机性能未测；`docs/homepage-design.md` 尚未同步手机卡片规则。 |
 
 ## 给 Claude 的首条消息
 
