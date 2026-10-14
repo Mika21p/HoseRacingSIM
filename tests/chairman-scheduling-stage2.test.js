@@ -124,3 +124,54 @@ test('prestige editor previews and saves zero, restores reference default and re
  await ui.click('world:race',id,{});form=c.dialog.querySelector('form');form.elements.prestige.value='2.5';await assert.rejects(()=>ui.submit(form),/声望/);
  }finally{browser.close();}
 });
+
+function g1Pair(f,w,prestige,turn=2){return [{...f.race(w,'mile-g1','g1',{turn}),prestige:95},{...f.race(w,'sprint-g1','g1',{turn,distance:1000}),prestige}];}
+function mileForm(w){w.horses.forEach(h=>{h.recentForm=[-1,-4].map(turn=>({turn,tf:120,surface:'草地',distance:1600,rank:1}));});return w;}
+const targeted=(w,id)=>w.horses.filter(h=>h.target?.raceId===id).length;
+
+test('same-turn high-prestige G1s share a surplus field across distances without dropping the donor below eight',()=>{
+ const {f,V}=setup(),w=mileForm(f.world());w.races=g1Pair(f,w,90);V.plan(w);
+ assert.equal(targeted(w,'mile-g1'),8);assert.equal(targeted(w,'sprint-g1'),4);
+ const before=A.hash(w);V.plan(w);assert.equal(A.hash(w),before);
+ // With only eight entrants the donor keeps everyone.
+ const small=f.world();small.horses=small.horses.slice(0,8);mileForm(small);small.races=g1Pair(f,small,90);V.plan(small);
+ assert.equal(targeted(small,'mile-g1'),8);assert.equal(targeted(small,'sprint-g1'),0);
+ // G1s below prestige 85 are outside the balance.
+ const low=mileForm(f.world());low.races=g1Pair(f,low,80);V.plan(low);assert.equal(targeted(low,'sprint-g1'),0);
+});
+
+test('classic-route legs may follow at a short interval; other races and other years keep three turns',()=>{
+ const {f,w,h,V}=setup();
+ const guineas={...f.race(w,'guineas','g2',{turn:9}),sourceId:'europe-g2-mehl-mulhens-rennen'},union={...f.race(w,'union','g2',{turn:10}),sourceId:'europe-g2-union-rennen'},other={...f.race(w,'other','g2',{turn:10}),sourceId:'europe-g3-diana-trial'};
+ w.races=[guineas,union,other];w.turn=10;h.gender='牡马';h.lastRaceTurn=9;h.lastRace={raceId:'guineas',raceClass:'g2',rank:3};
+ const rUnion=V.resolveRace(w,union,1),rOther=V.resolveRace(w,other,1);
+ assert.equal(V.raceInterval(w,h,rUnion,10),1);assert.equal(V.intervalReady(w,h,rUnion,10),true);
+ assert.equal(V.intervalReady(w,h,rOther,10),false);
+ assert.equal(V.route(w,h,rUnion,10).reachable,true);assert.equal(V.route(w,h,rOther,10).reachable,false);
+ // A previous-year leg does not open the exception.
+ assert.equal(V.raceInterval(w,{...h,lastRaceTurn:-15},{...rUnion},10),3);
+ // Chains only go forward.
+ h.lastRace={raceId:'union',raceClass:'g2',rank:1};assert.equal(V.raceInterval(w,h,V.resolveRace(w,guineas,1),10),3);
+ for(const chain of V.CLASSIC_CHAINS)assert.ok(chain.length>=2&&chain.every(id=>typeof id==='string'));
+ // An open Guineas leads fillies to their own trial, not the Derby route.
+ h.lastRace={raceId:'guineas',raceClass:'g2',rank:3};
+ assert.equal(V.raceInterval(w,{...h,gender:'牝马'},rOther,10),1);assert.equal(V.raceInterval(w,{...h,gender:'牝马'},rUnion,10),3);
+ assert.equal(V.raceInterval(w,{...h,gender:'牡马'},rUnion,10),1);
+});
+
+test('European reference regions generate mostly turf horses; Japan, US and blank defaults are unchanged',()=>{
+ const n=loadChairmanRules().rules,V=n.ChairmanWorld;
+ const w=V.create({worldType:'reference',regionKeys:['japan','usa','britain','italy'],population:{japan:0,usa:0,britain:0,italy:0},breeding:false,seed:3});
+ const weights=Object.fromEntries(w.regions.map(r=>[r.name,r.generation.surfaceWeights]));
+ assert.deepEqual({...weights['日本']},{草地:70,泥地:25,二刀流:5});assert.deepEqual({...weights['美国']},{草地:60,泥地:35,二刀流:5});
+ assert.deepEqual({...weights['英国']},{草地:80,泥地:15,二刀流:5});assert.deepEqual({...weights['意大利']},{草地:80,泥地:15,二刀流:5});
+ assert.deepEqual({...V.defaults().surfaceWeights},{草地:60,泥地:35,二刀流:5});
+});
+
+test('G1 balance does not move horses into risky conditions or overseas races',()=>{
+ const {f,V}=setup(),w=f.world();
+ w.horses.forEach(h=>{h.recentForm=[{turn:-1,tf:120,surface:'草地',distance:1600,rank:1},{turn:-4,tf:120,surface:'草地',distance:1600,rank:1},{turn:-6,tf:90,surface:'草地',distance:1000,rank:9},{turn:-8,tf:90,surface:'草地',distance:1000,rank:9}];});
+ w.races=[{...f.race(w,'mile-g1','g1',{turn:4}),prestige:95},{...f.race(w,'sprint-g1','g1',{turn:4,distance:1000}),prestige:90},
+   {...f.race(w,'abroad-g1','g1',{turn:4,region:1}),prestige:90}];
+ V.plan(w);assert.equal(targeted(w,'mile-g1'),12);
+});

@@ -8,12 +8,17 @@
   const graded = r => ['g1','g2','g3'].includes(typeof r === 'string' ? r : r.raceClass);
   const labels = {new:'新马',maiden:'未胜利','one-win':'1胜','two-win':'2胜','three-win':'3胜',op:'OP',g3:'G3',g2:'G2',g1:'G1'};
   const level = {new:0,maiden:0,'one-win':1,'two-win':2,'three-win':3};
+  // European reference calendars have no dirt graded races; a small dirt share
+  // remains for expeditions. Only new reference worlds read these defaults.
+  const REFERENCE_SURFACE_WEIGHTS={japan:{草地:70,泥地:25,二刀流:5},欧洲:{草地:80,泥地:15,二刀流:5}};
   const defaults = () => ({surfaceWeights:{草地:60,泥地:35,二刀流:5},trackTypeWeights:{burst:1,sustained:1,attrition:1},distanceWeights:{grass:[20,20,20,20,10,10],dirt:[30,30,30,12,2,1]}});
   // Provisional doubled defaults for all new reference regions; attendance
   // validation currently covers Japan and the US. Existing worlds and
   // explicit population/annual targets are never changed by these defaults.
+  // The 150 floor keeps a 75-horse annual crop in small regions: at 50 a year
+  // a few classics a turn apart could not each reach five runners.
   function defaultPopulation(key,confirmedCount) {
-    const base=key==='japan'?1000:Math.max(100,Math.ceil(confirmedCount*5/4)*4);
+    const base=key==='japan'?1000:Math.max(150,Math.ceil(confirmedCount*5/4)*4);
     return base*2;
   }
   const mint = (w, prefix) => `${prefix}-${w.nextId++}`;
@@ -61,9 +66,30 @@
     if(override!=null)return override;
     return region(w,from)?.trafficGroup===region(w,to)?.trafficGroup?1:2;
   }
+  // Consecutive legs of one country's classic route may follow each other in the
+  // same season at a shorter interval; race fatigue still prices the short gap.
+  const CLASSIC_CHAINS=[
+    ['satsuki-sho','tokyo-yushun','kikka-sho'],['oka-sho','yushun-himba','shuka-sho'],
+    ['kentucky-derby','preakness-stakes','belmont-stakes'],
+    ['two-thousand-guineas','epsom-derby','st-leger-stakes'],['one-thousand-guineas','epsom-oaks'],
+    ['poule-dessai-des-poulains','prix-du-jockey-club'],['poule-dessai-des-pouliches','prix-de-diane'],
+    ['irish-two-thousand-guineas','irish-derby'],['irish-one-thousand-guineas','irish-oaks'],
+    ['europe-g2-mehl-mulhens-rennen','europe-g2-union-rennen','deutsches-derby'],['europe-g3-diana-trial','preis-der-diana'],
+    ['europe-g3-premio-parioli','europe-g2-derby-italiano']
+  ];
+  // Fillies leave an open Guineas for their own route, not for the Derby.
+  const FILLY_CLASSIC_NEXT=new Map([['europe-g2-mehl-mulhens-rennen','europe-g3-diana-trial'],['europe-g3-premio-parioli','europe-g2-oaks-ditalia']]);
+  const CLASSIC_NEXT=new Map(CLASSIC_CHAINS.flatMap(c=>c.slice(1).map((id,i)=>[c[i],id])));
+  function classicNext(sourceId,gender) {return gender==='牝马'&&FILLY_CLASSIC_NEXT.has(sourceId)?FILLY_CLASSIC_NEXT.get(sourceId):CLASSIC_NEXT.get(sourceId);}
+  function classicFollow(w,h,race,turn) {
+    if(h.lastRaceTurn==null||!race?.sourceId||W().date(h.lastRaceTurn).year!==W().date(turn).year)return false;
+    return classicNext(w.races.find(r=>r.id===h.lastRace?.raceId)?.sourceId,h.gender)===race.sourceId;
+  }
+  function raceInterval(w,h,race,turn) {return classicFollow(w,h,race,turn)?1:3;}
+  function intervalReady(w,h,race,turn) {return h.lastRaceTurn==null||turn-h.lastRaceTurn>=raceInterval(w,h,race,turn);}
   function route(w,h,race,turn) {
     const from=h.transit?.toRegionId||h.locationRegionId||region(w,h.locationRegion)?.id,to=race.regionId;
-    const duration=travelTurns(w,from,to),earliest=Math.max(Math.max(w.turn,h.transit?.arrivalTurn||0)+duration,(h.lastRaceTurn??-3)+3,(h.development?.lastTurn??-3)+3,h.restUntil||0);
+    const duration=travelTurns(w,from,to),earliest=Math.max(Math.max(w.turn,h.transit?.arrivalTurn||0)+duration,(h.lastRaceTurn??-3)+raceInterval(w,h,race,turn),(h.development?.lastTurn??-3)+3,h.restUntil||0);
     return {reachable:turn>=earliest,preparationTurn:duration?turn-duration:null,fromRegionId:from,targetRegionId:to,targetRegion:race.surfaceRegion,duration};
   }
   function travelBurden(w,h,path) {
@@ -259,7 +285,7 @@
       const entries=ns.ChairmanVenues.catalogue().filter(r=>r.regionKey===key),confirmed=entries.filter(r=>r.status==='confirmed');
       const count=opts.population?.[key]??defaultPopulation(key,confirmed.length);
       check(Number.isSafeInteger(count)&&count>=0,'初始马数须为非负整数。');
-      const area=newRegion(w,{...spec,id:mint(w,'region'),initialCount:count,annualTarget:opts.annualTargets?.[key]??Math.ceil(count/4),generation:{...defaults(),...(key==='japan'?{surfaceWeights:{草地:70,泥地:25,二刀流:5}}:{})}});validateRegion(area);w.regions.push(area);
+      const area=newRegion(w,{...spec,id:mint(w,'region'),initialCount:count,annualTarget:opts.annualTargets?.[key]??Math.ceil(count/4),generation:{...defaults(),...(REFERENCE_SURFACE_WEIGHTS[key==='japan'?'japan':spec.baseRegion]?{surfaceWeights:{...REFERENCE_SURFACE_WEIGHTS[key==='japan'?'japan':spec.baseRegion]}}:{})}});validateRegion(area);w.regions.push(area);
       w.referenceAudit.push(...entries.map(e=>({...copy(e),regionId:area.id})));
       const hostedVenueKeys={
         'breeders-cup':['santa-anita','del-mar','keeneland'],
@@ -337,6 +363,7 @@
     if((published??0)>=110||evidence.overall>=110&&evidence.rows.length>=2)return 'honor';
     return (published??evidence.overall)>=95?'challenge':'experience';
   }
+  const fullFieldG1=r=>r.raceClass==='g1'&&ns.ChairmanPrestige.value(r)>=85,G1_BALANCE_LOSS=2;
   const raceTiers={new:0,maiden:0,'one-win':1,'two-win':2,'three-win':3,op:4,g3:5,g2:6,g1:7};
   function planningObjective(h,role) {
     const published=W().entryRating(h);
@@ -349,8 +376,9 @@
   function objectiveValue(objective,r) {
     return 9-Math.abs(raceTiers[r.raceClass]-objective.desired)*2.2+ns.ChairmanPrestige.value(r)*objective.prestigeWeight;
   }
-  function compatiblePrep(w,c,target) {
-    return c.key===target.key || c.turn<target.turn && target.turn-c.turn>=Math.max(3,travelTurns(w,c.race.regionId,target.race.regionId)+1)
+  function compatiblePrep(w,c,target,h) {
+    const gap=classicNext(c.race.sourceId,h?.gender)===target.race.sourceId&&W().date(c.turn).year===W().date(target.turn).year?1:3;
+    return c.key===target.key || c.turn<target.turn && target.turn-c.turn>=Math.max(gap,travelTurns(w,c.race.regionId,target.race.regionId)+1)
       && c.race.surface===target.race.surface && Math.abs(c.race.distance-target.race.distance)<=400 && !c.form.risky;
   }
   function setTarget(h,target,role) {
@@ -404,9 +432,9 @@
         const regional=region(w,h.generationRegionId||h.homeRegionId),choices=[],rejected=emit?[]:null;
         for(const e of eligibleBuckets.get(bucketKey)){
           const r=e.race;if(goal&&r.id!==goal.race.id&&(e.turn>=goal.turn||goal.turn-e.turn<Math.max(3,travelTurns(w,r.regionId,goal.race.regionId)))){if(rejected)rejected.push({key:e.key,reasons:['series-conflict']});continue;}
-          const routeKey=JSON.stringify([r.regionId,r.surfaceRegion,e.turn]);
+          const routeKey=JSON.stringify([r.regionId,r.surfaceRegion,e.turn,classicFollow(w,h,r,e.turn)]);
           if(!routeCache.has(routeKey))routeCache.set(routeKey,route(w,h,r,e.turn));
-          const path=routeCache.get(routeKey);if(!path.reachable){if(rejected)rejected.push({key:e.key,reasons:[...(e.turn<(h.restUntil||0)?['injury-rest']:[]),...(e.turn<(h.lastRaceTurn??-3)+3?['race-interval']:[]),...(e.turn<now+path.duration?['transport']:[])]});continue;}
+          const path=routeCache.get(routeKey);if(!path.reachable){if(rejected)rejected.push({key:e.key,reasons:[...(e.turn<(h.restUntil||0)?['injury-rest']:[]),...(!intervalReady(w,h,r,e.turn)?['race-interval']:[]),...(e.turn<now+path.duration?['transport']:[])]});continue;}
           const formKey=r.surface+':'+r.distance;
           if(!formCache.has(formKey))formCache.set(formKey,planningForm(evidence,r));
           const form=formCache.get(formKey);
@@ -438,7 +466,7 @@
       for(const p of pending){const old=p.allChoices.find(c=>c.race.id===p.oldTarget?.raceId&&c.turn===p.oldTarget.turn);
         if(old&&old.race.regionId===p.h.homeRegionId&&p.h.locationRegionId===p.h.homeRegionId&&(reserved.get(old.key)||0)<old.race.capacity){heldTargets.set(p.h.id,old.key);reserved.set(old.key,(reserved.get(old.key)||0)+1);}
         const booking=p.allChoices.find(c=>c.race.id===p.old?.raceId&&c.turn===p.old.turn);
-        if(booking&&booking.race.regionId===p.h.homeRegionId&&p.h.locationRegionId===p.h.homeRegionId&&(!old||compatiblePrep(w,booking,old))&&occupied(booking.key)<booking.race.capacity){heldBookings.set(p.h.id,booking.key);bookingReserved.set(booking.key,(bookingReserved.get(booking.key)||0)+1);}
+        if(booking&&booking.race.regionId===p.h.homeRegionId&&p.h.locationRegionId===p.h.homeRegionId&&(!old||compatiblePrep(w,booking,old,p.h))&&occupied(booking.key)<booking.race.capacity){heldBookings.set(p.h.id,booking.key);bookingReserved.set(booking.key,(bookingReserved.get(booking.key)||0)+1);}
       }
       for(const p of pending){
         const held=heldTargets.get(p.h.id);if(held)reserved.set(held,reserved.get(held)-1);
@@ -456,17 +484,24 @@
         }
         const previous=targets.find(c=>c.race.id===p.oldTarget?.raceId&&c.turn===p.oldTarget.turn);
         if(previous&&target&&!target.seriesGoal&&target.targetUtility-previous.targetUtility<2.5)target=previous;
+        // Balance same-turn high-prestige G1s across surfaces and distances: a horse
+        // may leave a G1 that keeps a full field without it for a short one nearby.
+        if(target&&!target.seriesGoal&&fullFieldG1(target.race)&&(reserved.get(target.key)||0)>=8){
+          const from=target;
+          for(const c of targets)if(c.key!==from.key&&c.turn===from.turn&&fullFieldG1(c.race)&&(reserved.get(c.key)||0)<8&&!c.form.risky&&!c.path.duration
+            &&from.targetUtility-c.targetUtility<=G1_BALANCE_LOSS&&(target===from||c.targetUtility>target.targetUtility))target=c;
+        }
         p.target=target;setTarget(p.h,target,p.role);
         const ideal=p.allChoices.reduce((best,c)=>!best||c.targetUtility>best.targetUtility?c:best,null);
         if(target&&ideal&&ideal.key!==target.key&&!targets.includes(ideal))p.h.target.reason='落选备选';
         if(target&&target===previous&&p.oldTarget.reason)p.h.target.reason=p.oldTarget.reason;
         if(target)reserved.set(target.key,(reserved.get(target.key)||0)+1);
-        p.choices=p.allChoices.filter(c=>c.turn<now+6&&(!target||compatiblePrep(w,c,target)));
+        p.choices=p.allChoices.filter(c=>c.turn<now+6&&(!target||compatiblePrep(w,c,target,p.h)));
         // A target inside the booking window is preferred to an unnecessary extra start.
         // Far targets allow a suitable local prep, or deliberate rest when none exists.
         if(target&&target.turn<now+6)p.choices=p.choices.map(c=>({...c,utility:c.utility+(c.key===target.key?5:0)}));
         p.choiceByKey=new Map(p.choices.map(c=>[c.key,c]));
-        if(emit)emit('candidates',{horseId:p.h.id,eligibleKeys:p.eligibleKeys,rejected:p.rejected,target:p.h.target,choices:p.allChoices.map(c=>({key:c.key,utility:c.utility,path:c.path,form:c.form,bookingBlocked:c.turn>=now+6?'outside-booking-window':target&&!compatiblePrep(w,c,target)?'target-preparation':null}))});
+        if(emit)emit('candidates',{horseId:p.h.id,eligibleKeys:p.eligibleKeys,rejected:p.rejected,target:p.h.target,choices:p.allChoices.map(c=>({key:c.key,utility:c.utility,path:c.path,form:c.form,bookingBlocked:c.turn>=now+6?'outside-booking-window':target&&!compatiblePrep(w,c,target,p.h)?'target-preparation':null}))});
         p.h.scheduleReason=target?'休整备战目标':'暂无合法参赛机会';
         const available=p.choices.filter(c=>occupied(c.key)<c.race.capacity);
         const reference=available.reduce((a,c)=>!a||c.utility>a.utility?c:a,null);
@@ -477,7 +512,7 @@
         let e=null,score=-Infinity;for(const candidate of p.choices){if(occupied(candidate.key)>=candidate.race.capacity)continue;const value=candidate.utility+need(candidate);if(value>score){e=candidate;score=value;}}
         const sameTarget=target&&target.race.id===p.oldTarget?.raceId&&target.turn===p.oldTarget.turn;
         const retained=available.find(c=>c.race.id===p.old?.raceId&&c.turn===p.old.turn&&(reference.utility-c.utility<=1
-          ||sameTarget&&c.race.regionId===p.h.homeRegionId&&target.race.regionId===p.h.homeRegionId&&c.key!==target.key&&compatiblePrep(w,c,target)&&!c.form.risky));
+          ||sameTarget&&c.race.regionId===p.h.homeRegionId&&target.race.regionId===p.h.homeRegionId&&c.key!==target.key&&compatiblePrep(w,c,target,p.h)&&!c.form.risky));
         if(retained)e=retained;
         if(emit)emit('allocation',{horseId:p.h.id,selected:e?.key||null,reason:retained?'retained-booking':'utility-with-field-support',options:p.choices.map(c=>({key:c.key,utility:c.utility,need:need(c),occupied:occupied(c.key),capacity:c.race.capacity}))});
         if(!e)continue;
@@ -599,5 +634,5 @@
     check(new Set(w.venueAssignments.map(a=>a.id)).size===w.venueAssignments.length,'年度举办记录重复。');
     for(const a of w.venueAssignments)check(w.meetingGroups.some(g=>g.id===a.groupId)&&w.tracks.some(t=>t.id===a.trackId)&&Number.isInteger(a.year)&&a.year>=1&&(!a.frozen||Array.isArray(a.races)&&a.races.every(r=>r.trackId===a.trackId)),'年度举办记录无效。');
   }
-  ns.ChairmanWorld={courseLabel,courseProfile,courseRows,isV2,classes,labels,graded,defaults,defaultPopulation,newRegion,newTrack,profile,region,horseInput,initializeHorse,synchronize,travelTurns,route,travelTick,travelBurden,reconcileCampaign,groupFor,resolveRace,refreshAssignments,freeze,rememberActual,validateGroup,eligible,recordPerformance,create,assertReady,plan,editKinds,edit,preview,apply,validate,prizes,sourceRace};
+  ns.ChairmanWorld={CLASSIC_CHAINS,raceInterval,intervalReady,courseLabel,courseProfile,courseRows,isV2,classes,labels,graded,defaults,defaultPopulation,newRegion,newTrack,profile,region,horseInput,initializeHorse,synchronize,travelTurns,route,travelTick,travelBurden,reconcileCampaign,groupFor,resolveRace,refreshAssignments,freeze,rememberActual,validateGroup,eligible,recordPerformance,create,assertReady,plan,editKinds,edit,preview,apply,validate,prizes,sourceRace};
 })();

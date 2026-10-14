@@ -3,9 +3,9 @@
 
   ns.Changelog = ns.Changelog || {};
   ns.Changelog.meta = {
-    version: "v0.16d",
-    updatedAt: "2026-10-13T18:00:00+08:00",
-    displayUpdatedAt: "2026.10.13 18:00"
+    version: "v0.16e",
+    updatedAt: "2026-10-14T18:00:00+08:00",
+    displayUpdatedAt: "2026.10.14 18:00"
   };
   ns.Changelog.contentStats = Object.freeze({
     nonConditionRaces: 629,
@@ -23,6 +23,7 @@
   };
 
   ns.Changelog.entries = [
+    { date: "2026.10.14", version: "v0.16e", title: "主席模式年龄层与经典赛排赛优化", items: ["同一天举办的多场高声望两岁 G1 会更均匀地分配参赛马。", "各国经典赛路线允许间隔较短的连战，例如二千坚尼接德比；德国、意大利的牝马会转向本国牝马路线。", "新建主席世界中，德国、意大利默认马数增加，欧洲各地区的新马更偏向草地。"] },
     { date: "2026.10.13", version: "v0.16d", title: "澳洲 G1 与史实马扩充", items: ["新增 7 场澳洲 G1：未来锦标、兰威锦标、澳洲杯、东奔一万锦标、戴花锦标、东宝锦标、考菲尔德锦标。", "新增 19 匹澳洲及相关史实马，并为已有名马补充胜鞍；新增骑手 Marquand、Byrne、Shinn。", "骑手能力分统一为整十档，部分比赛的模拟结果会有所不同。"] },
     { date: "2026.10.9", version: "v0.16c", title: "主席模式排赛与评分优化", items: ["优化NPC排赛与赛马成长评分，调整新马评分参考和高声望赛事加成，让主席世界的赛季推进更连贯。"] },
     { date: "2026.9.25", version: "v0.16b", title: "殿堂收藏与血统扩展", items: ["新增退役名马殿堂，可收藏、备份并带入主席世界，也可加入肉鸽配种池；血统资料与肉鸽遗传玩法同步扩展。"] },
