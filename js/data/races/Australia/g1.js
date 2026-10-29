@@ -224,6 +224,97 @@
       "course": "其他地方",
       "distance": 3200,
       "ageRule": "3岁以上"
+    },
+    {
+      "id": "futurity-stakes",
+      "nameOriginal": "Futurity Stakes",
+      "nameZh": "未来锦标",
+      "grade": "G1",
+      "raceClass": "g1",
+      "month": 2,
+      "half": 2,
+      "surface": "草地",
+      "course": "其他地方",
+      "distance": 1400,
+      "ageRule": "3岁以上"
+    },
+    {
+      "id": "ranvet-stakes",
+      "nameOriginal": "Ranvet Stakes",
+      "nameZh": "兰威锦标",
+      "grade": "G1",
+      "raceClass": "g1",
+      "month": 3,
+      "half": 2,
+      "surface": "草地",
+      "course": "其他地方",
+      "distance": 2000,
+      "ageRule": "3岁以上"
+    },
+    {
+      "id": "australian-cup",
+      "nameOriginal": "Australian Cup",
+      "nameZh": "澳洲杯",
+      "grade": "G1",
+      "raceClass": "g1",
+      "month": 3,
+      "half": 2,
+      "surface": "草地",
+      "course": "其他地方",
+      "distance": 2000,
+      "ageRule": "3岁以上"
+    },
+    {
+      "id": "doomben-10000",
+      "nameOriginal": "Doomben 10,000",
+      "nameZh": "东奔一万锦标",
+      "grade": "G1",
+      "raceClass": "g1",
+      "month": 5,
+      "half": 2,
+      "surface": "草地",
+      "course": "其他地方",
+      "distance": 1200,
+      "ageRule": "3岁以上"
+    },
+    {
+      "id": "makybe-diva-stakes",
+      "nameOriginal": "Makybe Diva Stakes",
+      "nameZh": "戴花锦标",
+      "grade": "G1",
+      "raceClass": "g1",
+      "month": 9,
+      "half": 2,
+      "surface": "草地",
+      "course": "其他地方",
+      "distance": 1600,
+      "ageRule": "3岁以上"
+    },
+    {
+      "id": "turnbull-stakes",
+      "nameOriginal": "Turnbull Stakes",
+      "nameZh": "东宝锦标",
+      "grade": "G1",
+      "raceClass": "g1",
+      "month": 10,
+      "half": 1,
+      "surface": "草地",
+      "course": "其他地方",
+      "distance": 2000,
+      "ageRule": "4岁以上"
+    },
+    {
+      "id": "caulfield-stakes",
+      "nameOriginal": "Might and Power Stakes (Caulfield Stakes)",
+      "nameZh": "考菲尔德锦标",
+      "grade": "G1",
+      "raceClass": "g1",
+      "month": 10,
+      "half": 1,
+      "surface": "草地",
+      "course": "其他地方",
+      "distance": 2000,
+      "ageRule": "3岁以上"
     }
   ]);
 })();

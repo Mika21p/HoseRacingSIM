@@ -30,7 +30,7 @@ test("production build preserves historical-horse data and loads one bundle", as
   t.after(() => fs.rmSync(temporaryRoot, { recursive: true, force: true }));
   const result = buildWeb({ outputRoot: path.join(temporaryRoot, "dist") });
 
-  assert.equal(result.files.length, 471);
+  assert.equal(result.files.length, 490);
   assert.equal(new Set(result.files).size, result.files.length);
   assert.match(result.bundlePath, /^assets\/historical-horses\.[a-f0-9]{12}\.js$/);
 
@@ -101,7 +101,7 @@ test("production build preserves historical-horse data and loads one bundle", as
   assert.ok(fs.existsSync(path.join(result.outputRoot, "js", "data", "jra-course-catalogue.js")));
   assert.ok(fs.existsSync(path.join(result.outputRoot, "js", "data", "race-course-profiles.js")));
   assert.match(productionIndex, /js\/data\/jra-course-catalogue\.js\?v=20260922-phase2/);
-  assert.match(productionIndex, /js\/data\/race-course-profiles\.js\?v=20260923-registration/);
+  assert.match(productionIndex, /js\/data\/race-course-profiles\.js\?v=20261013-v16d/);
   assert.match(
     productionIndex,
     new RegExp(`js/data/historical-horses/index\\.js\\?v=${result.hash}`)

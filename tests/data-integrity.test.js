@@ -50,9 +50,9 @@ test("published content statistics match unique registered data", () => {
   assert.equal(new Set(project.races.map((race) => race.id)).size, project.races.length);
   assert.equal(new Set(project.horses.map((horse) => horse.id)).size, project.horses.length);
   assert.equal(new Set(project.jockeys.map((jockey) => jockey.id)).size, project.jockeys.length);
-  assert.equal(nonConditionRaces.length, 622);
-  assert.equal(project.horses.length, 471);
-  assert.equal(project.jockeys.length, 273);
+  assert.equal(nonConditionRaces.length, 629);
+  assert.equal(project.horses.length, 490);
+  assert.equal(project.jockeys.length, 276);
   assert.equal(stats.nonConditionRaces, nonConditionRaces.length);
   assert.equal(stats.historicalHorses, project.horses.length);
   assert.equal(stats.jockeys, project.jockeys.length);

@@ -14,7 +14,7 @@ test("赛场适性规则下的模拟结果保持确定性", () => {
     const horse = r.HorseRules.generateHorse({ gameMode: "normal" }), race = r.RaceRegistry.all().find((v) => v.id === id);
     results.push(r.RaceRules.simulateRace(horse, race, { currentTime: r.TimeRules.fromIndex(r.TimeRules.toIndex(3, 6, 1)) }));
   }
-  assert.equal(crypto.createHash("sha256").update(JSON.stringify(results)).digest("hex"), "b6e05bf3974928e1a8610d03603ca0019510bbd7671612159e2af78d3d425db0");
+  assert.equal(crypto.createHash("sha256").update(JSON.stringify(results)).digest("hex"), "d0153177cbb23507cf6a03fe09eb9e35abdc2f5ebeb3ee69cab2e8d87e37906f");
 });
 function make(count = 36) { return W.createWorld({ id: "test-world", seed: 37119, horseCount: count }); }
 test("chairman preset preserves source races and balanced generations", () => {

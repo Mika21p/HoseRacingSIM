@@ -61,7 +61,7 @@
         "ability": 90,
         "jockeyId": "joseph-obrien",
         "finish": 1
-      }
+      }, { "raceId": "caulfield-stakes", "year": 2010, "ability": 90, "jockeyId": "steven-arnold", "finish": 1 }
     ]
   });
 })();

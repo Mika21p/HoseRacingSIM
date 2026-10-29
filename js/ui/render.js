@@ -512,16 +512,19 @@
         </div>
 
         <section class="home-how-to" aria-labelledby="homeHowToTitle">
-          <div class="home-section-heading">
-            <p class="eyebrow">如何开始</p>
-            <h2 id="homeHowToTitle">三步开始你的赛马生涯</h2>
-            <p class="home-how-to-note">以普通生涯为例</p>
-          </div>
-          <div class="home-play-grid">
-            <article class="home-play-card"><span>01</span><h3>创建小马</h3><p>选择血统、练马师和主战骑手，生成独特的能力、成长与适性。</p></article>
-            <article class="home-play-card"><span>02</span><h3>规划赛程</h3><p>根据距离、场地和成长阶段报名比赛，再逐回合推进时间。</p></article>
-            <article class="home-play-card"><span>03</span><h3>冲击荣誉</h3><p>挑战各地重赏与史实名马，最终回顾完整战绩和生涯成就。</p></article>
-          </div>
+          <details class="home-how-to-details">
+            <summary class="home-section-heading">
+              <span class="eyebrow">如何开始</span>
+              <h2 id="homeHowToTitle">三步开始你的赛马生涯</h2>
+              <span class="home-how-to-note">以普通生涯为例</span>
+              <span class="home-how-to-toggle" aria-hidden="true"></span>
+            </summary>
+            <div class="home-play-grid">
+              <article class="home-play-card"><span>01</span><h3>创建小马</h3><p>选择血统、练马师和主战骑手，生成独特的能力、成长与适性。</p></article>
+              <article class="home-play-card"><span>02</span><h3>规划赛程</h3><p>根据距离、场地和成长阶段报名比赛，再逐回合推进时间。</p></article>
+              <article class="home-play-card"><span>03</span><h3>冲击荣誉</h3><p>挑战各地重赏与史实名马，最终回顾完整战绩和生涯成就。</p></article>
+            </div>
+          </details>
         </section>
 
         <div class="home-support-row">

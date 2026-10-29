@@ -472,7 +472,26 @@
       "Europe/salomina.js",
       "Europe/night-magic.js",
       "Europe/amarette.js",
-      "Europe/miss-yoda.js"
+      "Europe/miss-yoda.js",
+      "Australia/via-sistina.js",
+      "Australia/anamoe.js",
+      "Australia/probabeel.js",
+      "Australia/preferment.js",
+      "Australia/humidor.js",
+      "Europe/dubai-honour.js",
+      "Australia/avilius.js",
+      "Australia/our-ivanhowe.js",
+      "Australia/sunshine-in-paris.js",
+      "Australia/giga-kick.js",
+      "Australia/eduardo.js",
+      "Australia/grunt.js",
+      "Australia/dissident.js",
+      "Australia/brave-smash.js",
+      "Australia/streets-of-avalon.js",
+      "Australia/pericles.js",
+      "Europe/addeybb.js",
+      "Australia/redzel.js",
+      "Australia/alligator-blood.js"
   ];
 
   function loadScript(file) {

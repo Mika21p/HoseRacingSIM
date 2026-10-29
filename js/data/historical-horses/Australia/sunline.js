@@ -6,7 +6,7 @@
     races: [
       { raceId: "cox-plate", year: 1999, ability: 92, jockeyId: "greg-childs", finish: 1 },
       { raceId: "manikato-stakes", year: 2000, ability: 92, jockeyId: "greg-childs", finish: 1 },
-      { raceId: "cox-plate", year: 2000, ability: 93, jockeyId: "greg-childs", finish: 1 }
+      { raceId: "cox-plate", year: 2000, ability: 93, jockeyId: "greg-childs", finish: 1 }, { raceId: "turnbull-stakes", year: 2001, ability: 91, jockeyId: "greg-childs", finish: 1 }
     ],
     legendEligibilityWins: [
       { raceName: "Doncaster Handicap", year: 1999, surfaceRegion: "澳洲", surface: "草地", distance: 1600, jockeyId: "larry-cassidy" }

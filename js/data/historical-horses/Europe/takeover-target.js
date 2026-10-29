@@ -47,7 +47,7 @@
         "ability": 82,
         "jockeyId": "jay-ford",
         "finish": 1
-      }
+      }, { "raceId": "doomben-10000", "year": 2007, "ability": 82, "jockeyId": "jay-ford", "finish": 1 }
     ]
   });
 })();
