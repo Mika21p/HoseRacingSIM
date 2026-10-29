@@ -1,3 +1,4 @@
+/* Base: overlay, newspaper palette and shared typography. */
 .era-overlay {
   position: fixed;
   inset: 0;
@@ -259,6 +260,7 @@ body.has-era .app-meta-widget {
   width: 100%;
 }
 
+/* Layout: edition header, narrative column and stable dossier. */
 .era-editorial-header {
   align-items: stretch;
   min-height: 96px;
@@ -338,6 +340,13 @@ body.has-era .app-meta-widget {
   min-height: 330px;
   padding: clamp(24px, 4vw, 46px);
   border-top: 5px solid var(--era-red);
+  color: var(--era-ink) !important;
+}
+
+.era-current-scene .era-scene-slots,
+.era-current-scene .era-scene-slot,
+.era-current-scene .era-scene-slot > p {
+  color: var(--era-ink) !important;
 }
 
 .era-current-kicker {
@@ -805,6 +814,7 @@ body.has-era .app-meta-widget {
 }
 
 .era-drawer-backdrop,
+/* Components: schedule and newspaper drawers. */
 .era-newspaper-backdrop {
   position: fixed;
   inset: 0;
@@ -1159,4 +1169,157 @@ body.has-era .app-meta-widget {
   .era-newspaper-drawer {
     transition: none;
   }
+}
+
+/* Current prototype records: scoped readability overrides. */
+.era-run [data-era-current-scene],
+.era-run [data-era-timeline],
+.era-run [data-era-yearbook],
+.era-run [data-era-encyclopedia],
+.era-run .era-dossier,
+.era-run .era-editorial-summary {
+  color: #17231e;
+}
+.era-run [data-era-current-scene] h2,
+.era-run [data-era-current-scene] h3,
+.era-run [data-era-timeline] h2,
+.era-run [data-era-yearbook] h2,
+.era-run [data-era-encyclopedia] h2,
+.era-run .era-dossier h2,
+.era-run .era-dossier h3,
+.era-run .era-editorial-summary h2 {
+  color: #183f32;
+}
+.era-run [data-era-current-scene] > p:not(.eyebrow),
+.era-run [data-era-current-scene] li,
+.era-run [data-era-timeline] p,
+.era-run [data-era-timeline] li,
+.era-run [data-era-yearbook] p,
+.era-run [data-era-yearbook] li,
+.era-run [data-era-encyclopedia] p,
+.era-run [data-era-encyclopedia] li,
+.era-run .era-dossier p,
+.era-run .era-editorial-summary p {
+  color: #17231e;
+}
+
+/* P1b retains the newspaper palette and provides readable compact records. */
+.era-run [data-era-current-scene],
+.era-run [data-era-timeline],
+.era-run [data-era-yearbook],
+.era-run [data-era-encyclopedia],
+.era-run .era-dossier {
+  padding: 24px;
+  margin-bottom: 20px;
+  border: 1px solid #c7bdab;
+  background: #f8f4e9;
+}
+.era-run details { padding: 12px 0; border-bottom: 1px solid #d2c8b9; }
+.era-run summary { cursor: pointer; line-height: 1.6; }
+.era-run p, .era-run li { line-height: 1.8; overflow-wrap: anywhere; }
+.era-run button, .era-hub button { margin: 6px 6px 6px 0; }
+.era-run input, .era-hub input { max-width: 100%; margin: 8px 0 16px; }
+.era-hub label { display: block; }
+.era-newspaper-drawer article { padding: 20px; border-bottom: 1px solid #c7bdab; }
+@media (max-width: 760px) {
+  .era-run [data-era-current-scene], .era-run [data-era-yearbook], .era-run [data-era-timeline], .era-run [data-era-encyclopedia], .era-run .era-dossier { padding: 16px; min-width: 0; }
+  .era-run .era-editorial-grid { display: block; }
+  .era-run .era-header-actions { flex-wrap: wrap; }
+}
+
+/* The current scene stays on the front page; records are read on demand. */
+.era-run [data-era-panel][hidden] { display: none !important; }
+.era-panel-nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin: 12px 0 28px;
+  padding: 8px 0;
+  border-top: 3px double var(--era-green);
+  border-bottom: 1px solid var(--era-rule);
+}
+.era-run .era-panel-nav button {
+  margin: 0;
+  padding: 12px 10px;
+  border: 0;
+  border-bottom: 3px solid transparent;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: var(--era-green);
+  font-size: 15px;
+}
+.era-run .era-panel-nav button[aria-pressed="true"] {
+  border-bottom-color: var(--era-green);
+  background: var(--era-green);
+  color: var(--era-paper);
+}
+.era-run button:focus-visible,
+.era-run summary:focus-visible {
+  outline: 3px solid var(--era-gold);
+  outline-offset: 3px;
+}
+.era-run .era-more { position: relative; border: 0; padding: 0; }
+.era-more > summary { padding: 12px; color: var(--era-green); font-weight: 700; }
+.era-more > div {
+  position: absolute;
+  right: 0;
+  z-index: 4;
+  width: min(330px, 75vw);
+  padding: 18px;
+  border: 1px solid var(--era-rule);
+  background: var(--era-paper);
+  box-shadow: 0 12px 30px rgba(24, 49, 38, 0.15);
+}
+.era-run .era-more p { font-size: 13px; }
+.era-run [data-era-current-scene] > p:not(.eyebrow) { max-width: 38em; font-size: 18px; line-height: 1.95; }
+.era-run .era-dossier { border-top: 4px solid var(--era-green); }
+.era-full-dossier > summary { color: var(--era-green); font-weight: 700; }
+.era-retirement { margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--era-rule); }
+.era-retirement p { font-size: 13px; }
+.era-booking { padding: 20px 24px; border-left: 4px solid var(--era-gold); background: var(--era-paper); }
+.era-booking h2 { margin-top: 0; font-size: 18px; }
+@media (max-width: 760px) {
+  .era-panel-nav { gap: 4px; margin-bottom: 18px; }
+  .era-run .era-panel-nav button { padding: 12px 8px; font-size: 14px; }
+  .era-run [data-era-current-scene] > p:not(.eyebrow) { font-size: 16px; }
+  .era-booking { padding: 16px; }
+}
+
+/* Record tools share the compact typography of a race programme. */
+.era-run [data-era-record][hidden],
+.era-run [data-era-group][hidden],
+.era-run [data-era-empty][hidden] { display: none !important; }
+.era-record-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 12px;
+  padding: 16px 0;
+  border-bottom: 1px solid var(--era-rule);
+}
+.era-record-tools label { display: grid; gap: 6px; min-width: 0; color: var(--era-green); font-size: 13px; }
+.era-run .era-record-tools input,
+.era-run .era-record-tools select {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 240px;
+  min-height: 44px;
+  margin: 0;
+  padding: 8px 10px;
+  border: 1px solid #a69d88;
+  border-radius: 3px;
+  background: #fffdf7;
+  color: #17231e;
+  font: inherit;
+}
+.era-record-tools [data-era-count] { flex-basis: 100%; margin: 0; color: var(--era-muted); font-size: 13px; }
+.era-record-groups > section > h3 { margin: 24px 0 8px; padding-bottom: 8px; border-bottom: 2px solid var(--era-rule); color: var(--era-green); font-size: 17px; }
+.era-record-tools input:focus-visible,
+.era-record-tools select:focus-visible,
+[data-era-news-id]:focus-visible { outline: 3px solid var(--era-gold); outline-offset: 3px; }
+@media (max-width: 760px) {
+  .era-record-tools { gap: 10px; }
+  .era-record-tools label { flex: 1 1 120px; }
+  .era-record-tools input, .era-record-tools select { max-width: 100%; }
 }

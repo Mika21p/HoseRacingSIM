@@ -1206,9 +1206,330 @@
     };
   }
 
+  const ERA_FIELD_MIN_SIZE = 2;
+  const ERA_FIELD_MAX_SIZE = 32;
+
+  function eraOpponentHorseId(opponent) {
+    return String(opponent.horseId || opponent.id || "");
+  }
+
+  function eraOpponentEntry(opponent, key) {
+    const horseId = eraOpponentHorseId(opponent);
+    return {
+      key,
+      name: opponent.name || opponent.displayName || "",
+      displayName: opponent.displayName || opponent.name || "",
+      displayNameZh: opponent.displayNameZh || opponent.displayName || opponent.name || "",
+      displayNameEn: opponent.displayNameEn || opponent.name || "",
+      horseId,
+      ability: opponent.ability,
+      year: opponent.year || "",
+      jockeyId: opponent.jockeyId || "",
+      jockeyName: opponent.jockeyName || "",
+      riderAbility: Number.isFinite(opponent.riderAbility) ? opponent.riderAbility : 70,
+      historicalScore: opponent.anonymous
+        ? (Number.isFinite(opponent.estimatedScore) ? opponent.estimatedScore : null)
+        : (Number.isFinite(opponent.historicalScore) ? opponent.historicalScore : null),
+      estimatedScore: Number.isFinite(opponent.estimatedScore) ? opponent.estimatedScore : null,
+      scoreSource: opponent.anonymous ? "era-estimated" : "historical-fixed",
+      historicalFinish: Number.isFinite(opponent.historicalFinish) ? opponent.historicalFinish : null,
+      anonymous: !!opponent.anonymous,
+      deadHeat: !!opponent.deadHeat,
+      retired: !!opponent.retired,
+      specialSprint: false
+    };
+  }
+
+  function normalizeEraFieldInput(horse, options) {
+    const opts = options || {};
+    const headcount = Number(opts.headcount);
+    const opponents = Array.isArray(opts.opponents) ? opts.opponents.filter(Boolean) : [];
+    if (!Number.isInteger(headcount)
+      || headcount < ERA_FIELD_MIN_SIZE || headcount > ERA_FIELD_MAX_SIZE) {
+      throw new Error(`剧情模式场地赛：参赛人数必须是${ERA_FIELD_MIN_SIZE}到${ERA_FIELD_MAX_SIZE}之间的整数。`);
+    }
+    if (opponents.length !== headcount - 1) {
+      throw new Error(`剧情模式场地赛：参赛人数为${headcount}时需要${headcount - 1}名对手，实际收到${opponents.length}名。`);
+    }
+    const playerId = String((horse && (horse.horseId || horse.id)) || "");
+    const seen = new Set();
+    opponents.forEach((opponent) => {
+      const id = eraOpponentHorseId(opponent);
+      if (!id) throw new Error("剧情模式场地赛：对手缺少马匹ID。");
+      if (seen.has(id)) throw new Error(`剧情模式场地赛：对手马匹ID重复（${id}）。`);
+      seen.add(id);
+      if (playerId && id === playerId) throw new Error(`剧情模式场地赛：对手与玩家马匹ID冲突（${id}）。`);
+      if (!Number.isFinite(opponent.historicalScore)) {
+        throw new Error(`剧情模式场地赛：对手${id}的历史分数无效。`);
+      }
+    });
+    return { headcount, opponents };
+  }
+
+  // 匿名对手按输入顺序排在全部实名对手与玩家之后，因此永远低于所有实名马，也不会夺得冠军。
+  function estimateAnonymousScores(opponents, playerTotal) {
+    const named = opponents.filter((opponent) => !opponent.anonymous);
+    const anchor = named.length > 0
+      ? Math.min(...named.map((opponent) => opponent.historicalScore))
+      : (Number.isFinite(playerTotal) ? playerTotal : 100);
+    opponents.forEach((opponent, index) => {
+      if (!opponent.anonymous) return;
+      const supplied = Number.isFinite(opponent.estimatedScore) ? opponent.estimatedScore : null;
+      const estimate = supplied == null ? anchor - 1 - index : supplied;
+      if (!(estimate < anchor)) {
+        throw new Error(`剧情模式场地赛：匿名对手${eraOpponentHorseId(opponent)}的估算分${estimate}不低于实名对手的${anchor}。`);
+      }
+      opponent.estimatedScore = estimate;
+    });
+  }
+
+  // 同着组按历史分数分组，组内保持历史名次；分组不可被玩家拆开。
+  function buildHistoricalScoreGroups(items) {
+    const scoreOf = (item) => item.entry.historicalScore;
+    const sorted = items.slice().sort((left, right) => scoreOf(right) - scoreOf(left));
+    const groups = [];
+    sorted.forEach((item) => {
+      const last = groups[groups.length - 1];
+      if (last && scoreOf(last[0]) === scoreOf(item)) last.push(item);
+      else groups.push([item]);
+    });
+    return groups.map((group) => group.sort((left, right) => {
+      const leftFinish = left.entry.historicalFinish;
+      const rightFinish = right.entry.historicalFinish;
+      const leftKey = Number.isFinite(leftFinish) ? leftFinish : Infinity;
+      const rightKey = Number.isFinite(rightFinish) ? rightFinish : Infinity;
+      return leftKey - rightKey || left.inputIndex - right.inputIndex;
+    }));
+  }
+
+  // 竞争排名：同分共享名次，后续名次整体后移（1/2/3/3/5）。
+  function assignEraFieldRanks(finishers) {
+    const groups = [];
+    let groupStart = 0;
+    finishers.forEach((item, index) => {
+      const last = groups[groups.length - 1];
+      if (last && !item.item.isPlayer && !last[0].item.isPlayer && last[0].score === item.score) last.push(item);
+      else {
+        groups.push([item]);
+        groupStart = index;
+      }
+    });
+    let startIndex = 0;
+    groups.forEach((group) => {
+      group.forEach((item) => {
+        item.result.rank = startIndex + 1;
+        item.result.deadHeat = group.length > 1;
+        item.result.tieSize = group.length;
+      });
+      startIndex += group.length;
+    });
+  }
+
+  function simulateEraFieldRace(horse, race, options) {
+    const opts = options || {};
+    const { headcount, opponents } = normalizeEraFieldInput(horse, opts);
+    const scheduledOpponent = opponents.find((opponent) => !opponent.anonymous) || opponents[0] || null;
+    const context = buildRaceContext(horse, race, {
+      opponent: scheduledOpponent || { trackCondition: "" },
+      playerJockey: opts.playerJockey,
+      playerJockeyId: opts.playerJockeyId,
+      playerRiderAbility: opts.playerRiderAbility,
+      currentTime: opts.currentTime,
+      maturity: opts.maturity,
+      maturityDecline: opts.maturityDecline,
+      temperamentMod: opts.temperamentMod,
+      preRaceCondition: opts.preRaceCondition,
+      trackCondition: opts.trackCondition
+    });
+    const trackCondition = context.trackCondition;
+    const playerJockey = context.playerJockey;
+    const playerCalc = context.playerCalc;
+    const playerEntry = context.playerEntry;
+
+    const playerResult = runOneRunner(playerEntry);
+    applyPreRaceAccident(playerResult, context.preRaceCondition);
+
+    estimateAnonymousScores(opponents, playerResult.total);
+
+    const scheduledIndex = Math.max(0, opponents.indexOf(scheduledOpponent));
+    const runnerItems = opponents.map((opponent, inputIndex) => {
+      const key = inputIndex === scheduledIndex ? "opponent" : `field-${inputIndex}`;
+      const entry = eraOpponentEntry(opponent, key);
+      const result = runOneRunner(entry);
+      if (entry.retired) {
+        result.retired = true;
+        result.retiredPhase = result.retiredPhase || "途中";
+        result.total = null;
+      }
+      return { opponent, entry, result, inputIndex, key };
+    });
+
+    const namedItems = runnerItems.filter((item) => !item.entry.anonymous && !item.result.retired);
+    const anonymousItems = runnerItems.filter((item) => item.entry.anonymous && !item.result.retired);
+    const retiredItems = runnerItems.filter((item) => item.result.retired);
+
+    // 匿名对手用固定估算分，不做随机模拟；估算分已保证低于全部实名对手。
+    anonymousItems.sort((left, right) => right.entry.estimatedScore - left.entry.estimatedScore
+      || left.inputIndex - right.inputIndex);
+
+    const groups = buildHistoricalScoreGroups(namedItems);
+    const playerSlotItem = { entry: playerEntry, result: playerResult, isPlayer: true };
+    const finishers = [];
+    let playerPlaced = playerResult.retired;
+    groups.forEach((group) => {
+      const groupScore = group[0].entry.historicalScore;
+      // 玩家同分时整组留在玩家前面，玩家不会插进同着组中间。
+      if (!playerPlaced && playerResult.total > groupScore) {
+        finishers.push({ item: playerSlotItem, result: playerResult, score: playerResult.total });
+        playerPlaced = true;
+      }
+      group.forEach((item) => {
+        finishers.push({ item, result: item.result, score: item.entry.historicalScore });
+      });
+    });
+    anonymousItems.forEach((item) => {
+      if (!playerPlaced && playerResult.total > item.entry.historicalScore) {
+        finishers.push({ item: playerSlotItem, result: playerResult, score: playerResult.total, isPlayer: true });
+        playerPlaced = true;
+      }
+      finishers.push({ item, result: item.result, score: item.entry.historicalScore });
+    });
+    if (!playerPlaced && !playerResult.retired) {
+      finishers.push({ item: playerSlotItem, result: playerResult, score: playerResult.total });
+    }
+
+    finishers.forEach((item, index) => {
+      item.result.fieldPosition = index + 1;
+    });
+    assignEraFieldRanks(finishers);
+
+    const playerSlot = finishers.find((item) => item.item.isPlayer) || null;
+    const playerRank = playerSlot ? playerSlot.result.rank : null;
+    const playerTieSize = playerSlot ? playerSlot.result.tieSize : 0;
+    const winnerSlot = finishers[0] || null;
+    const winnerResult = winnerSlot ? winnerSlot.item.result : null;
+    const scheduledItem = runnerItems[scheduledIndex] || null;
+    const scheduledResult = scheduledItem ? scheduledItem.result : null;
+    const scheduledSlot = scheduledResult
+      ? finishers.find((item) => item.item.result === scheduledResult) || null
+      : null;
+    const ordered = finishers.map((item) => item.result)
+      .concat(retiredItems.map((item) => item.result))
+      .concat(playerResult.retired ? [playerResult] : []);
+    ordered.forEach((result, index) => {
+      result.fieldPosition = result.retired ? null : index + 1;
+    });
+    const playerFieldPosition = playerSlot ? playerSlot.result.fieldPosition : null;
+
+    const pointsPerLength = getPointsPerLength(race.distance);
+    let scoreDiff = null;
+    let marginLengths = null;
+    let tieOutcome = playerTieSize > 1 ? "dead-heat" : "";
+    if (!playerResult.retired && winnerResult && winnerResult !== playerResult) {
+      scoreDiff = playerResult.total - winnerResult.total;
+      marginLengths = Math.abs(scoreDiff) / pointsPerLength;
+      if (scoreDiff === 0) tieOutcome = playerRank === 1 ? "dead-heat" : "player-loss";
+    }
+    const marginLabel = winnerResult === playerResult ? "" : createMarginLabel(marginLengths, tieOutcome);
+    const injury = retirementInjury(playerResult, context.preRaceCondition);
+    const raceNameZh = race.nameZh || race.name || "";
+    const raceNameOriginal = race.nameOriginal || race.name || raceNameZh;
+
+    const publicOpponents = runnerItems.map((item) => {
+      const result = item.result;
+      const opponentRank = result.retired ? null : result.rank;
+      return {
+        key: item.key,
+        horseId: item.entry.horseId,
+        displayName: item.entry.displayName,
+        displayNameZh: item.entry.displayNameZh,
+        displayNameEn: item.entry.displayNameEn,
+        year: item.entry.year,
+        jockeyName: item.entry.jockeyName,
+        anonymous: item.entry.anonymous,
+        deadHeat: !!result.deadHeat,
+        historicalFinish: item.entry.historicalFinish,
+        estimatedScore: item.entry.anonymous ? item.entry.estimatedScore : null,
+        rank: opponentRank,
+        rankLabel: rankLabel(opponentRank, result.retired),
+        retired: result.retired,
+        retiredPhase: result.retiredPhase || ""
+      };
+    });
+
+    return {
+      public: {
+        raceId: race.id,
+        raceName: raceNameZh,
+        raceNameZh,
+        raceNameOriginal,
+        trackCondition,
+        rank: playerRank,
+        rankLabel: rankLabel(playerRank, playerResult.retired),
+        opponentName: scheduledOpponent ? (scheduledOpponent.displayName || scheduledOpponent.name || "") : "",
+        opponentNameZh: scheduledOpponent
+          ? (scheduledOpponent.displayNameZh || scheduledOpponent.displayName || scheduledOpponent.name || "")
+          : "",
+        opponentNameEn: scheduledOpponent
+          ? (scheduledOpponent.displayNameEn || scheduledOpponent.name || "")
+          : "",
+        opponentYear: scheduledOpponent ? (scheduledOpponent.year || "") : "",
+        mainOpponentHorseId: scheduledOpponent ? eraOpponentHorseId(scheduledOpponent) : "",
+        opponents: publicOpponents,
+        scheduledOpponentRetired: !!(scheduledResult && scheduledResult.retired),
+        playerJockeyName: playerJockey.name,
+        opponentJockeyName: scheduledOpponent ? (scheduledOpponent.jockeyName || "") : "",
+        replacementOpponentJockeyName: "",
+        opponentRank: scheduledSlot ? scheduledSlot.result.rank : null,
+        tieOutcome,
+        deadHeat: tieOutcome === "dead-heat" && playerRank === 1,
+        retired: playerResult.retired,
+        retiredPhase: playerResult.retiredPhase,
+        injury: injury ? {
+          phase: injury.phase,
+          reason: injury.reason,
+          severity: injury.severityLabel,
+          restMonths: injury.restMonths,
+          forcedRetirement: injury.forcedRetirement
+        } : null
+      },
+      hidden: {
+        race,
+        fieldRace: true,
+        eraField: true,
+        legendField: false,
+        fieldSize: headcount,
+        headcount,
+        playerFieldPosition,
+        opponentFieldPosition: scheduledSlot ? scheduledSlot.result.fieldPosition : null,
+        fieldOpponents: runnerItems.map((item) => item.opponent),
+        legendOpponents: [],
+        fieldResults: ordered,
+        marginReferenceResult: winnerResult,
+        trackCondition,
+        pointsPerLength,
+        scoreDiff,
+        marginLengths,
+        marginLabel,
+        tieOutcome,
+        scoreLine: `${finalMark(playerResult)} - ${finalMark(winnerResult)}`,
+        preRaceCondition: context.preRaceCondition,
+        injury,
+        playerCalc,
+        opponent: scheduledOpponent,
+        scheduledOpponent,
+        scheduledOpponentResult: scheduledResult,
+        replacementOpponent: null,
+        replacementResult: null,
+        results: ordered
+      }
+    };
+  }
+
   ns.RaceRules = {
     simulateWorldRace,
     simulateRace,
+    simulateEraFieldRace,
     chooseOpponent,
     chooseOpponentField,
     getLegendFieldCandidates,
